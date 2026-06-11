@@ -1,0 +1,13 @@
+﻿using ShopDemo.Shared.Domain;
+
+namespace ShopDemo.Catalog.Domain.Events;
+
+public sealed record StockReplenishedDomainEvent(
+    Guid ProductId,
+    int UnitsAdded,
+    int TotalStock
+) : IDomainEvent
+{
+    public Guid EventId { get; } = Guid.NewGuid();
+    public DateTimeOffset OccurredOn { get; } = DateTimeOffset.UtcNow;
+}

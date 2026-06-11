@@ -1,9 +1,9 @@
 namespace ShopDemo.Shared.Domain;
 
 public abstract class Entity<TId> where TId : notnull{
-    public TId Id { get; private set; } = default!;
+    public TId Id { get; protected set; } = default!;
 
-    protected Entity(){};
+    protected Entity(){}
     protected Entity(TId id) => Id = id;
 
     public override bool Equals(object? obj){
@@ -14,9 +14,6 @@ public abstract class Entity<TId> where TId : notnull{
     }
 
     public override int GetHashCode() => HashCode.Combine(GetType(), Id);
-
-    public static bool operator ==(Entity<TId> left, Entity<TId> right) => left.Equals(right)??right is null;
-
-    public static bool operator !=(Entity<TId> left, Entity<TId> right) => !(left == right);
-
+    public static bool operator ==(Entity<TId>? left, Entity<TId>? right) => left?.Equals(right) ?? right is null;
+    public static bool operator !=(Entity<TId>? left, Entity<TId>? right) => !(left == right);
 }

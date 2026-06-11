@@ -1,23 +1,23 @@
 {
   "format": 1,
   "restore": {
-    "C:\\Cursos\\ShopDemo\\ShopDemo.Orders.Infraestructure\\ShopDemo.Orders.Infraestructure.csproj": {}
+    "I:\\Curso\\ShopDemo\\ShopDemo.Orders.Infraestructure\\ShopDemo.Orders.Infraestructure.csproj": {}
   },
   "projects": {
-    "C:\\Cursos\\ShopDemo\\ShopDemo.Orders.Infraestructure\\ShopDemo.Orders.Infraestructure.csproj": {
+    "I:\\Curso\\ShopDemo\\ShopDemo.Orders.Infraestructure\\ShopDemo.Orders.Infraestructure.csproj": {
       "version": "1.0.0",
       "restore": {
-        "projectUniqueName": "C:\\Cursos\\ShopDemo\\ShopDemo.Orders.Infraestructure\\ShopDemo.Orders.Infraestructure.csproj",
+        "projectUniqueName": "I:\\Curso\\ShopDemo\\ShopDemo.Orders.Infraestructure\\ShopDemo.Orders.Infraestructure.csproj",
         "projectName": "ShopDemo.Orders.Infraestructure",
-        "projectPath": "C:\\Cursos\\ShopDemo\\ShopDemo.Orders.Infraestructure\\ShopDemo.Orders.Infraestructure.csproj",
-        "packagesPath": "C:\\Users\\Huawei\\.nuget\\packages\\",
-        "outputPath": "C:\\Cursos\\ShopDemo\\ShopDemo.Orders.Infraestructure\\obj\\",
+        "projectPath": "I:\\Curso\\ShopDemo\\ShopDemo.Orders.Infraestructure\\ShopDemo.Orders.Infraestructure.csproj",
+        "packagesPath": "C:\\Users\\winbugsmx\\AppData\\Local\\Temp\\cursor-sandbox-cache\\52d827a13029bde22f36dcf4d6a729c3\\nuget",
+        "outputPath": "I:\\Curso\\ShopDemo\\ShopDemo.Orders.Infraestructure\\obj\\",
         "projectStyle": "PackageReference",
         "fallbackFolders": [
-          "D:\\Program Files (x86)\\Microsoft Visual Studio\\Shared\\NuGetPackages"
+          "C:\\Program Files (x86)\\Microsoft Visual Studio\\Shared\\NuGetPackages"
         ],
         "configFilePaths": [
-          "C:\\Users\\Huawei\\AppData\\Roaming\\NuGet\\NuGet.Config",
+          "C:\\Users\\winbugsmx\\AppData\\Roaming\\NuGet\\NuGet.Config",
           "C:\\Program Files (x86)\\NuGet\\Config\\Microsoft.VisualStudio.FallbackLocation.config",
           "C:\\Program Files (x86)\\NuGet\\Config\\Microsoft.VisualStudio.Offline.config"
         ],
@@ -68,7 +68,7 @@
               "privateAssets": "all"
             }
           },
-          "runtimeIdentifierGraphPath": "C:\\Program Files\\dotnet\\sdk\\10.0.300/PortableRuntimeIdentifierGraph.json",
+          "runtimeIdentifierGraphPath": "C:\\Program Files\\dotnet\\sdk\\10.0.301/PortableRuntimeIdentifierGraph.json",
           "packagesToPrune": {
             "Microsoft.CSharp": "(,4.7.32767]",
             "Microsoft.VisualBasic": "(,10.4.32767]",

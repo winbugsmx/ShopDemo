@@ -1,0 +1,32 @@
+﻿services:
+  catalog-db:
+    image: postgres:16-alpine
+    environment:
+      POSTGRES_DB: ShopDemo_catalog
+      POSTGRES_USER: ShopDemo
+      POSTGRES_PASSWORD: ShopDemo123
+    ports:
+      - "5432:5432"
+    volumes:
+      - catalog-db-data:/var/lib/postgresql/data
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U ShopDemo"]
+      interval: 5s
+      timeout: 5s
+      retries: 5
+
+  catalog-service:
+    build:
+      context: ..
+      dockerfile: ShopDemo.Catalog.Api/Dockerfile
+    ports:
+      - "8001:8080"
+    environment:
+      - ASPNETCORE_ENVIRONMENT=Development
+      - ConnectionStrings__DefaultConnection=Host=catalog-db;Port=5432;Database=ShopDemo_catalog;Username=ShopDemo;Password=ShopDemo123
+    depends_on:
+      catalog-db:
+        condition: service_healthy
+
+volumes:
+  catalog-db-data:

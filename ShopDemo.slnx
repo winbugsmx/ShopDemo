@@ -1,0 +1,11 @@
+<Solution>
+  <Project Path="ShopDemo.Catalog.Api/ShopDemo.Catalog.Api.csproj" />
+  <Project Path="ShopDemo.Catalog.Application/ShopDemo.Catalog.Application.csproj" />
+  <Project Path="ShopDemo.Catalog.Domain/ShopDemo.Catalog.Domain.csproj" />
+  <Project Path="ShopDemo.Catalog.Infraestructure/ShopDemo.Catalog.Infraestructure.csproj" />
+  <Project Path="ShopDemo.Orders.Api/ShopDemo.Orders.Api.csproj" />
+  <Project Path="ShopDemo.Orders.Application/ShopDemo.Orders.Application.csproj" />
+  <Project Path="ShopDemo.Orders.Domain/ShopDemo.Orders.Domain.csproj" />
+  <Project Path="ShopDemo.Orders.Infraestructure/ShopDemo.Orders.Infraestructure.csproj" />
+  <Project Path="ShopDemo.Shared/ShopDemo.Shared.csproj" />
+</Solution>

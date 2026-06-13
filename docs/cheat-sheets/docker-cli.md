@@ -55,7 +55,7 @@ docker run -d \
   --name catalog-api \
   -p 8001:8080 \
   -e ASPNETCORE_ENVIRONMENT=Development \
-  -e ConnectionStrings__DefaultConnection="Host=host.docker.internal;Port=5432;Database=ShopDemo_catalog;Username=ShopDemo;Password=ShopDemo123" \
+  -e ConnectionStrings__DefaultConnection="Host=host.docker.internal;Port=5432;Database=ShopDemoCatalog;Username=ShopDemo;Password=ShopDemo123" \
   shopdemo-catalog:1.0
 ```
 
@@ -140,7 +140,7 @@ docker compose logs -f catalog-db
 **Conectarse a PostgreSQL dentro del contenedor:**
 
 ```bash
-docker exec -it shopdemocatalogapi-catalog-db-1 psql -U ShopDemo -d ShopDemo_catalog
+docker exec -it shopdemocatalogapi-catalog-db-1 psql -U ShopDemo -d ShopDemoCatalog
 ```
 
 ---
@@ -178,7 +178,7 @@ ASP.NET Core mapea variables con doble guion bajo (`__`):
 ```yaml
 environment:
   - ASPNETCORE_ENVIRONMENT=Development
-  - ConnectionStrings__DefaultConnection=Host=catalog-db;Port=5432;Database=ShopDemo_catalog;Username=ShopDemo;Password=ShopDemo123
+  - ConnectionStrings__DefaultConnection=Host=catalog-db;Port=5432;Database=ShopDemoCatalog;Username=ShopDemo;Password=ShopDemo123
 ```
 
 ---

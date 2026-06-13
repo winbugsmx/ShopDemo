@@ -169,7 +169,7 @@ kubectl logs -f -l app=catalog-api --tail=100
 
 ```bash
 kubectl create secret generic catalog-db-secret \
-  --from-literal=ConnectionStrings__DefaultConnection="Host=postgres;Port=5432;Database=ShopDemo_catalog;Username=ShopDemo;Password=ShopDemo123"
+  --from-literal=ConnectionStrings__DefaultConnection="Host=postgres;Port=5432;Database=ShopDemoCatalog;Username=ShopDemo;Password=ShopDemo123"
 ```
 
 **Referenciar en Deployment:**

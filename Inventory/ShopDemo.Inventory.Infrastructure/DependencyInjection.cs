@@ -25,7 +25,16 @@ public static class DependencyInjection
 
         services.AddScoped<IStockEntryRepository, StockEntryRepository>();
         services.AddScoped<IUnitOfWork, UnitOfWork>();
-        services.AddScoped<IIntegrationEventPublisher, LoggingIntegrationEventPublisher>();
+
+        if (configuration.GetValue<bool>("EventHubs:Enabled"))
+        {
+            services.AddSingleton<IIntegrationEventPublisher, EventHubsIntegrationEventPublisher>();
+            services.AddHostedService<CatalogEventsProcessor>();
+        }
+        else
+        {
+            services.AddScoped<IIntegrationEventPublisher, LoggingIntegrationEventPublisher>();
+        }
 
         // Use Cases como implementaciones de Inbound Ports (hexagonal)
         services.AddScoped<IRegisterStockUseCase, RegisterStockUseCase>();

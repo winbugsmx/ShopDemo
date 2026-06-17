@@ -24,7 +24,11 @@ public static class DependencyInjection
 
         services.AddScoped<IProductRepository, ProductRepository>();
         services.AddScoped<IUnitOfWork, UnitOfWork>();
-        services.AddScoped<IDomainEventPublisher, LoggingDomainEventPublisher>();
+
+        if (configuration.GetValue<bool>("EventHubs:Enabled"))
+            services.AddSingleton<IDomainEventPublisher, EventHubsDomainEventPublisher>();
+        else
+            services.AddScoped<IDomainEventPublisher, LoggingDomainEventPublisher>();
 
         return services;
     }

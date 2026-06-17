@@ -1,0 +1,28 @@
+# Microservicio Catalog — Material del curso
+
+Documentación para el bounded context **Catalog** en **ShopDemo**, con **Clean Architecture + DDD + CQRS**.
+
+## Documentos
+
+| Documento | Descripción |
+|---|---|
+| [REQUERIMIENTOS-CATALOG.md](./REQUERIMIENTOS-CATALOG.md) | Especificación funcional y técnica |
+| [IMPLEMENTACION-CATALOG.md](./IMPLEMENTACION-CATALOG.md) | Guía paso a paso con código actual y explicación de clases |
+
+## Relación con otros microservicios
+
+```
+Catalog (8001)  →  define productos y emite ProductId
+       ↓
+Inventory (8003)  →  registra stock para ese ProductId
+       ↓
+Orders (8002)     →  crea pedidos referenciando ProductId
+```
+
+## Puertos
+
+| Servicio | API | PostgreSQL (host) |
+|---|---|---|
+| **Catalog** | **8001** | **5433** |
+| Orders | 8002 | 5434 |
+| Inventory | 8003 | 5435 |

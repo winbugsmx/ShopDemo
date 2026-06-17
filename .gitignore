@@ -55,3 +55,8 @@ secrets.json
 
 # Docker local overrides
 docker-compose.override.yml
+
+# Environment files with secrets (Event Hubs connection strings)
+.env
+**/.env
+!.env.example

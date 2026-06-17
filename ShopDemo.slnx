@@ -1,11 +1,21 @@
 <Solution>
-  <Project Path="ShopDemo.Catalog.Api/ShopDemo.Catalog.Api.csproj" />
-  <Project Path="ShopDemo.Catalog.Application/ShopDemo.Catalog.Application.csproj" />
-  <Project Path="ShopDemo.Catalog.Domain/ShopDemo.Catalog.Domain.csproj" />
-  <Project Path="ShopDemo.Catalog.Infraestructure/ShopDemo.Catalog.Infraestructure.csproj" />
-  <Project Path="ShopDemo.Orders.Api/ShopDemo.Orders.Api.csproj" />
-  <Project Path="ShopDemo.Orders.Application/ShopDemo.Orders.Application.csproj" />
-  <Project Path="ShopDemo.Orders.Domain/ShopDemo.Orders.Domain.csproj" />
-  <Project Path="ShopDemo.Orders.Infraestructure/ShopDemo.Orders.Infraestructure.csproj" />
+  <Folder Name="/Catalog/">
+    <Project Path="Catalog/ShopDemo.Catalog.Api/ShopDemo.Catalog.Api.csproj" />
+    <Project Path="Catalog/ShopDemo.Catalog.Application/ShopDemo.Catalog.Application.csproj" />
+    <Project Path="Catalog/ShopDemo.Catalog.Domain/ShopDemo.Catalog.Domain.csproj" />
+    <Project Path="Catalog/ShopDemo.Catalog.Infraestructure/ShopDemo.Catalog.Infraestructure.csproj" />
+  </Folder>
+  <Folder Name="/Orders/">
+    <Project Path="Orders/ShopDemo.Orders.Api/ShopDemo.Orders.Api.csproj" />
+    <Project Path="Orders/ShopDemo.Orders.Application/ShopDemo.Orders.Application.csproj" />
+    <Project Path="Orders/ShopDemo.Orders.Domain/ShopDemo.Orders.Domain.csproj" />
+    <Project Path="Orders/ShopDemo.Orders.Infraestructure/ShopDemo.Orders.Infraestructure.csproj" />
+  </Folder>
+  <Folder Name="/Inventory/">
+    <Project Path="Inventory/ShopDemo.Inventory.Api/ShopDemo.Inventory.Api.csproj" />
+    <Project Path="Inventory/ShopDemo.Inventory.Application/ShopDemo.Inventory.Application.csproj" />
+    <Project Path="Inventory/ShopDemo.Inventory.Domain/ShopDemo.Inventory.Domain.csproj" />
+    <Project Path="Inventory/ShopDemo.Inventory.Infrastructure/ShopDemo.Inventory.Infrastructure.csproj" />
+  </Folder>
   <Project Path="ShopDemo.Shared/ShopDemo.Shared.csproj" />
 </Solution>

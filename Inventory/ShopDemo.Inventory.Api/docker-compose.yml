@@ -1,0 +1,35 @@
+services:
+  inventory-db:
+    image: postgres:16-alpine
+    container_name: shopdemo-inventory-db
+    environment:
+      POSTGRES_DB: ShopDemoInventory
+      POSTGRES_USER: ShopDemo
+      POSTGRES_PASSWORD: ShopDemo123
+    ports:
+      - "5435:5432"
+    volumes:
+      - inventory-db-data:/var/lib/postgresql/data
+      - ./docker/postgres/init:/docker-entrypoint-initdb.d:ro
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U ShopDemo -d ShopDemoInventory"]
+      interval: 5s
+      timeout: 5s
+      retries: 5
+
+  inventory-service:
+    build:
+      context: ../..
+      dockerfile: Inventory/ShopDemo.Inventory.Api/Dockerfile
+    container_name: shopdemo-inventory-api
+    ports:
+      - "8003:8080"
+    environment:
+      - ASPNETCORE_ENVIRONMENT=Development
+      - ConnectionStrings__DefaultConnection=Host=inventory-db;Port=5432;Database=ShopDemoInventory;Username=ShopDemo;Password=ShopDemo123
+    depends_on:
+      inventory-db:
+        condition: service_healthy
+
+volumes:
+  inventory-db-data:

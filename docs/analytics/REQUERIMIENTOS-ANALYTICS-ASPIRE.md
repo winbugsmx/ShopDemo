@@ -1,6 +1,14 @@
 # Documento de Requerimientos — Analytics + .NET Aspire (ShopDemo)
 
-**Curso:** Arquitectura Clean + DDD — Lite Thinking  
+| Campo | Detalle |
+|:------|:--------|
+| **Empresa** | Lite Thinking |
+| **Curso** | Microservicios con .NET en Kubernetes y Entornos Multicloud |
+| **Instructor** | Lcc. Gilberto Valentino Juárez Sánchez |
+| **Contacto** | WhatsApp: +52 5614206660 |
+| | E-mail: gilberto.juarez@gmail.com |
+| | E-mail: lcc.gilberto.juarez@gmail.com |
+
 **Bounded Context:** Analytics (observador) + Orquestación Aspire  
 **Versión:** 1.0  
 **Estado:** Implementado

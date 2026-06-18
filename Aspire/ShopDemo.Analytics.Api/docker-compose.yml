@@ -1,0 +1,31 @@
+services:
+  azurite:
+    image: mcr.microsoft.com/azure-storage/azurite
+    container_name: shopdemo-analytics-azurite
+    ports:
+      - "10001:10000"
+    volumes:
+      - analytics-azurite-data:/data
+    command: azurite-blob --blobHost 0.0.0.0 --blobPort 10000 --location /data
+
+  analytics-service:
+    build:
+      context: ../..
+      dockerfile: Aspire/ShopDemo.Analytics.Api/Dockerfile
+    container_name: shopdemo-analytics-api
+    ports:
+      - "8004:8080"
+    environment:
+      - ASPNETCORE_ENVIRONMENT=Development
+      - EventHubs__Enabled=${EVENT_HUBS_ENABLED:-false}
+      - EventHubs__ConnectionString=${EVENT_HUBS_CONNECTION_STRING:-}
+      - EventHubs__EventHubName=${EVENT_HUBS_NAME:-shopdemo-events}
+      - EventHubs__ConsumerGroup=${EVENT_HUBS_CONSUMER_GROUP:-analytics-service}
+      - EventHubs__CheckpointStorageConnectionString=${EVENT_HUBS_CHECKPOINT_STORAGE:-DefaultEndpointsProtocol=http;AccountName=devstoreaccount1;AccountKey=Eby8vdM02xNOcqFlqUwJPLlmEtlCDXJ1OUzFT50uSRZ6IFsuFq2UVErCz4I6tq/K1SZFPTOtr/KBHBeksoGMGw==;BlobEndpoint=http://azurite:10000/devstoreaccount1;}
+      - EventHubs__CheckpointContainerName=${EVENT_HUBS_CHECKPOINT_CONTAINER:-analytics-checkpoints}
+    depends_on:
+      azurite:
+        condition: service_started
+
+volumes:
+  analytics-azurite-data:

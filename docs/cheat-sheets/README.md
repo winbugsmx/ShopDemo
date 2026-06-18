@@ -1,5 +1,14 @@
 # Cheat Sheets — Curso de Microservicios con .NET
 
+| Campo | Detalle |
+|:------|:--------|
+| **Empresa** | Lite Thinking |
+| **Curso** | Microservicios con .NET en Kubernetes y Entornos Multicloud |
+| **Instructor** | Lcc. Gilberto Valentino Juárez Sánchez |
+| **Contacto** | WhatsApp: +52 5614206660 |
+| | E-mail: gilberto.juarez@gmail.com |
+| | E-mail: lcc.gilberto.juarez@gmail.com |
+
 Material de referencia rápida para complementar el curso de microservicios usando **.NET**, **Docker** y **Kubernetes**, basado en la solución **ShopDemo**.
 
 ---

@@ -1,5 +1,14 @@
 # Analytics + Aspire — Material del curso
 
+| Campo | Detalle |
+|:------|:--------|
+| **Empresa** | Lite Thinking |
+| **Curso** | Microservicios con .NET en Kubernetes y Entornos Multicloud |
+| **Instructor** | Lcc. Gilberto Valentino Juárez Sánchez |
+| **Contacto** | WhatsApp: +52 5614206660 |
+| | E-mail: gilberto.juarez@gmail.com |
+| | E-mail: lcc.gilberto.juarez@gmail.com |
+
 Documentación para la integración de **.NET Aspire** y el microservicio observador **ShopDemo.Analytics.Api** en **ShopDemo**.
 
 ## Documentos

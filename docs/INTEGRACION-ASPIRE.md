@@ -1,6 +1,14 @@
 # Integración con .NET Aspire — Propuesta y guía paso a paso (ShopDemo)
 
-**Curso:** Arquitectura Clean + DDD — Lite Thinking  
+| Campo | Detalle |
+|:------|:--------|
+| **Empresa** | Lite Thinking |
+| **Curso** | Microservicios con .NET en Kubernetes y Entornos Multicloud |
+| **Instructor** | Lcc. Gilberto Valentino Juárez Sánchez |
+| **Contacto** | WhatsApp: +52 5614206660 |
+| | E-mail: gilberto.juarez@gmail.com |
+| | E-mail: lcc.gilberto.juarez@gmail.com |
+
 **Versión:** 2.0 — **Implementado**  
 **Estado del código:** Aspire + Analytics.Api en `Aspire/` — ver [docs/analytics/](./analytics/)
 

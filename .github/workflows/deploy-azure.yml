@@ -1,0 +1,69 @@
+# Build y despliegue a Azure Container Apps (ShopDemo)
+# Requiere secrets: AZURE_CREDENTIALS, ACR_NAME, AZURE_RG, ACA_ENV
+
+name: Deploy Azure
+
+on:
+  workflow_dispatch:
+  push:
+    branches: [main]
+    paths:
+      - 'Catalog/**'
+      - 'Orders/**'
+      - 'Inventory/**'
+      - 'Aspire/ShopDemo.Analytics.Api/**'
+      - 'ShopDemo.Shared/**'
+      - '.github/workflows/deploy-azure.yml'
+
+env:
+  ACR_NAME: ${{ secrets.ACR_NAME }}
+  AZURE_RG: ${{ secrets.AZURE_RG }}
+  ACA_ENV: ${{ secrets.ACA_ENV }}
+
+jobs:
+  build-and-deploy:
+    runs-on: ubuntu-latest
+    strategy:
+      matrix:
+        include:
+          - service: catalog
+            dockerfile: Catalog/ShopDemo.Catalog.Api/Dockerfile
+            image: shopdemo-catalog
+            containerapp: ca-shopdemo-catalog
+          - service: orders
+            dockerfile: Orders/ShopDemo.Orders.Api/Dockerfile
+            image: shopdemo-orders
+            containerapp: ca-shopdemo-orders
+          - service: inventory
+            dockerfile: Inventory/ShopDemo.Inventory.Api/Dockerfile
+            image: shopdemo-inventory
+            containerapp: ca-shopdemo-inventory
+          - service: analytics
+            dockerfile: Aspire/ShopDemo.Analytics.Api/Dockerfile
+            image: shopdemo-analytics
+            containerapp: ca-shopdemo-analytics
+
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Azure Login
+        uses: azure/login@v2
+        with:
+          creds: ${{ secrets.AZURE_CREDENTIALS }}
+
+      - name: ACR Login
+        run: az acr login --name ${{ env.ACR_NAME }}
+
+      - name: Build and push image
+        run: |
+          ACR_LOGIN=$(az acr show --name ${{ env.ACR_NAME }} --query loginServer -o tsv)
+          docker build -f ${{ matrix.dockerfile }} -t $ACR_LOGIN/${{ matrix.image }}:${{ github.sha }} .
+          docker push $ACR_LOGIN/${{ matrix.image }}:${{ github.sha }}
+
+      - name: Update Container App
+        run: |
+          ACR_LOGIN=$(az acr show --name ${{ env.ACR_NAME }} --query loginServer -o tsv)
+          az containerapp update \
+            --name ${{ matrix.containerapp }} \
+            --resource-group ${{ env.AZURE_RG }} \
+            --image $ACR_LOGIN/${{ matrix.image }}:${{ github.sha }}

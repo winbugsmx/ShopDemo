@@ -1,6 +1,14 @@
 # Documento de Implementación — Microservicio Orders (ShopDemo)
 
-**Curso:** Arquitectura Clean + DDD — Lite Thinking  
+| Campo | Detalle |
+|:------|:--------|
+| **Empresa** | Lite Thinking |
+| **Curso** | Microservicios con .NET en Kubernetes y Entornos Multicloud |
+| **Instructor** | Lcc. Gilberto Valentino Juárez Sánchez |
+| **Contacto** | WhatsApp: +52 5614206660 |
+| | E-mail: gilberto.juarez@gmail.com |
+| | E-mail: lcc.gilberto.juarez@gmail.com |
+
 **Tipo:** Guía de implementación con código funcional de referencia  
 **Versión:** 1.0  
 **Prerequisito:** Catalog implementado + `ShopDemo.Shared` disponible

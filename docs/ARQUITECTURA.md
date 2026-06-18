@@ -1,5 +1,18 @@
 # Arquitectura de ShopDemo
 
+| Campo | Detalle |
+|:------|:--------|
+| **Empresa** | Lite Thinking |
+| **Curso** | Microservicios con .NET en Kubernetes y Entornos Multicloud |
+| **Instructor** | Lcc. Gilberto Valentino Juárez Sánchez |
+| **Contacto** | WhatsApp: +52 5614206660 |
+| | E-mail: gilberto.juarez@gmail.com |
+| | E-mail: lcc.gilberto.juarez@gmail.com |
+
+**Índice general del curso:** [README.md](../README.md) · **Prueba de APIs:** [GUIA-ENDPOINTS.md](./GUIA-ENDPOINTS.md)
+
+---
+
 ## 1. Visión general
 
 **ShopDemo** es una plataforma de e-commerce organizada como **sistema distribuido por bounded contexts**, implementada en **.NET 10**. Cada microservicio de negocio tiene su propia base de datos PostgreSQL y API HTTP independiente. La orquestación local unificada se realiza con **.NET Aspire** (`ShopDemo.AppHost`).
@@ -35,6 +48,76 @@ La solución combina dos estilos arquitectónicos de forma intencional en los mi
 │  PostgreSQL ×3, Azurite, Event Hubs config, service discovery, dashboard     │
 └──────────────────────────────────────────────────────────────────────────────┘
 ```
+
+---
+
+## 1.1 Roadmap de etapas (práctica del curso)
+
+La solución se construye y valida en **etapas incrementales**. En cada una conviene leer el documento de **requerimientos** (el qué y el por qué) y el de **implementación** (el cómo).
+
+```mermaid
+flowchart LR
+    E1[Etapa 1\nCatalog] --> E2[Etapa 2\nOrders]
+    E2 --> E3[Etapa 3\nInventory]
+    E3 --> E4[Etapa 4\nE2E HTTP]
+    E4 --> E5[Etapa 5\nEvent Hubs]
+    E5 --> E6[Etapa 6\nAspire + Analytics]
+    E6 --> E7[Etapa 7\nAzure ACA]
+    E6 --> E8[Etapa 8\nAWS ECS]
+```
+
+| Etapa | Entregable | Requerimientos | Implementación | Validación |
+|---|---|---|---|---|
+| 0 | Entender el dominio | — | [GUIA-ENDPOINTS](./GUIA-ENDPOINTS.md) | Postman E2E |
+| 1 | Catalog API | [catalog/REQUERIMIENTOS-CATALOG](./catalog/REQUERIMIENTOS-CATALOG.md) | [catalog/IMPLEMENTACION-CATALOG](./catalog/IMPLEMENTACION-CATALOG.md) | `POST /api/products` |
+| 2 | Orders API | [orders/REQUERIMIENTOS-ORDERS](./orders/REQUERIMIENTOS-ORDERS.md) | [orders/IMPLEMENTACION-ORDERS](./orders/IMPLEMENTACION-ORDERS.md) | Confirmar pedido |
+| 3 | Inventory API | [inventory/REQUERIMIENTOS-INVENTORY](./inventory/REQUERIMIENTOS-INVENTORY.md) | [inventory/IMPLEMENTACION-INVENTORY](./inventory/IMPLEMENTACION-INVENTORY.md) | Reserva/liberación stock |
+| 4 | Flujo integrado | [GUIA-ENDPOINTS](./GUIA-ENDPOINTS.md) | §4 de este documento | Compra completa |
+| 5 | Mensajería Azure | [INTEGRACION-AZURE-EVENT-HUBS](./INTEGRACION-AZURE-EVENT-HUBS.md) | Mismo documento | Auto-stock por evento |
+| 6 | Orquestación Aspire | [analytics/REQUERIMIENTOS-ANALYTICS-ASPIRE](./analytics/REQUERIMIENTOS-ANALYTICS-ASPIRE.md) | [analytics/IMPLEMENTACION-ANALYTICS-ASPIRE](./analytics/IMPLEMENTACION-ANALYTICS-ASPIRE.md) | `/api/analytics/events` |
+| 7 | Contenedores en Azure | [despliegue/azure/REQUERIMIENTOS](./despliegue/azure/REQUERIMIENTOS-DESPLIEGUE-AZURE.md) | [despliegue/azure/IMPLEMENTACION](./despliegue/azure/IMPLEMENTACION-DESPLIEGUE-AZURE.md) | ACA + ACR |
+| 8 | Contenedores en AWS | [despliegue/aws/REQUERIMIENTOS](./despliegue/aws/REQUERIMIENTOS-DESPLIEGUE-AWS.md) | [despliegue/aws/IMPLEMENTACION](./despliegue/aws/IMPLEMENTACION-DESPLIEGUE-AWS.md) | ECS + ECR |
+
+---
+
+## 1.2 Modos de ejecución
+
+| Modo | Cuándo usarlo | Comando / ubicación |
+|---|---|---|
+| **Docker Compose** | Etapas 1–5; un servicio aislado | `docker compose up` en cada `*.Api/` |
+| **Aspire AppHost** | Etapa 6; desarrollo integrado | `dotnet run --project Aspire/ShopDemo.AppHost` |
+| **dotnet run** | Depuración de un solo proyecto | `dotnet run --project <Api>.csproj` |
+| **Azure Container Apps** | Etapa 7; nube Microsoft | [despliegue/azure/](./despliegue/azure/) |
+| **AWS ECS Fargate** | Etapa 8; nube Amazon | [despliegue/aws/](./despliegue/aws/) |
+
+---
+
+## 1.3 Matriz de configuración
+
+Variables en formato ASP.NET Core (`Section__Key`). Origen según modo de ejecución:
+
+| Variable | Catalog | Orders | Inventory | Analytics | AppHost |
+|---|---|---|---|---|---|
+| `ConnectionStrings__DefaultConnection` | ✅ | ✅ | ✅ | — | — (Aspire inyecta por referencia PG) |
+| `InventoryApi__BaseUrl` | — | ✅ | — | — | Aspire: auto |
+| `EventHubs__Enabled` | ✅ | ✅ | ✅ | ✅ | `ShopDemo:EventHubs:Enabled` |
+| `EventHubs__ConnectionString` | ✅ | ✅ | ✅ | ✅ | `ShopDemo:EventHubs:ConnectionString` |
+| `EventHubs__EventHubName` | ✅ | ✅ | ✅ | ✅ | `ShopDemo:EventHubs:EventHubName` |
+| `EventHubs__ConsumerGroup` | — | — | ✅ | ✅ | AppHost inyecta |
+| `EventHubs__CheckpointStorageConnectionString` | — | — | ✅ | ✅ | AppHost / Azurite |
+| `EventHubs__CheckpointContainerName` | — | — | ✅ | ✅ | AppHost inyecta |
+
+**Archivos locales:**
+
+| Servicio | `appsettings.json` | `.env` (compose) | User secrets |
+|---|---|---|---|
+| Catalog | `Catalog/.../appsettings.json` | `.env.example` → `.env` | Opcional |
+| Orders | `Orders/.../appsettings.json` | `.env.example` → `.env` | Opcional |
+| Inventory | `Inventory/.../appsettings.json` | `.env.example` → `.env` | Opcional |
+| Analytics | `Aspire/.../appsettings.json` | `.env.example` → `.env` | Opcional |
+| AppHost | `appsettings.Development.json` | — | **Recomendado** para EH |
+
+**Nube:** secretos en Container Apps (Azure), SSM/Secrets Manager (AWS) o GitHub Actions secrets. Detalle en [despliegue/README.md](./despliegue/README.md).
 
 ---
 
@@ -401,6 +484,7 @@ Cada microservicio de negocio tiene su propio `docker-compose.yml`:
 | Catalog | `Catalog/ShopDemo.Catalog.Api/` | 8001 | 5433 |
 | Orders | `Orders/ShopDemo.Orders.Api/` | 8002 | 5434 |
 | Inventory | `Inventory/ShopDemo.Inventory.Api/` | 8003 | 5435 |
+| Analytics | `Aspire/ShopDemo.Analytics.Api/` | 8004 | — (Azurite en compose) |
 
 Patrón común:
 
@@ -424,7 +508,16 @@ dotnet run --project Aspire/ShopDemo.AppHost
 
 **Coexistencia:** Docker Compose y Aspire son alternativas. Compose sirve para desplegar un microservicio aislado; Aspire para desarrollo integrado con dashboard y configuración centralizada.
 
-**Fase posterior (no implementada):** publicación a **Azure Container Apps** vía `azd up`. Ver [INTEGRACION-ASPIRE.md](./INTEGRACION-ASPIRE.md) sección 8.
+### 11.3 Despliegue en nube (Azure / AWS)
+
+| Plataforma | Servicio de cómputo | Documentación |
+|---|---|---|
+| **Azure** | Container Apps + ACR | [docs/despliegue/azure/](./despliegue/azure/) |
+| **AWS** | ECS Fargate + ECR | [docs/despliegue/aws/](./despliegue/aws/) |
+
+Cada guía incluye pasos por **Portal/Consola** y por **CLI**, más workflows GitHub Actions en `.github/workflows/`.
+
+**Fase posterior:** publicación avanzada con `azd up` (Azure). Ver [INTEGRACION-ASPIRE.md](./INTEGRACION-ASPIRE.md) sección 8.
 
 ---
 
@@ -436,6 +529,8 @@ dotnet run --project Aspire/ShopDemo.AppHost
 | Orders | [REQUERIMIENTOS-ORDERS.md](./orders/REQUERIMIENTOS-ORDERS.md) | [IMPLEMENTACION-ORDERS.md](./orders/IMPLEMENTACION-ORDERS.md) |
 | Inventory | [REQUERIMIENTOS-INVENTORY.md](./inventory/REQUERIMIENTOS-INVENTORY.md) | [IMPLEMENTACION-INVENTORY.md](./inventory/IMPLEMENTACION-INVENTORY.md) |
 | Analytics + Aspire | [REQUERIMIENTOS-ANALYTICS-ASPIRE.md](./analytics/REQUERIMIENTOS-ANALYTICS-ASPIRE.md) | [IMPLEMENTACION-ANALYTICS-ASPIRE.md](./analytics/IMPLEMENTACION-ANALYTICS-ASPIRE.md) |
+| Despliegue Azure | [REQUERIMIENTOS-DESPLIEGUE-AZURE.md](./despliegue/azure/REQUERIMIENTOS-DESPLIEGUE-AZURE.md) | [IMPLEMENTACION-DESPLIEGUE-AZURE.md](./despliegue/azure/IMPLEMENTACION-DESPLIEGUE-AZURE.md) |
+| Despliegue AWS | [REQUERIMIENTOS-DESPLIEGUE-AWS.md](./despliegue/aws/REQUERIMIENTOS-DESPLIEGUE-AWS.md) | [IMPLEMENTACION-DESPLIEGUE-AWS.md](./despliegue/aws/IMPLEMENTACION-DESPLIEGUE-AWS.md) |
 
 **Integración transversal:**
 
@@ -463,8 +558,10 @@ dotnet run --project Aspire/ShopDemo.AppHost
 | Azure Event Hubs (publishers) | Implementado (Catalog, Orders, Inventory) | ~90% |
 | Event Hubs consumer Inventory | Implementado (`CatalogEventsProcessor`) | ~85% |
 | Analytics + Aspire AppHost | Implementado | ~85% |
+| Despliegue Docker → Azure (ACA) | Documentado | Guía en `docs/despliegue/azure/` |
+| Despliegue Docker → AWS (ECS) | Documentado | Guía en `docs/despliegue/aws/` |
 | Docker por servicio | Implementado | ~90% |
-| Azure Container Apps / `azd` | Documentado — pendiente | 0% |
+| Azure Container Apps / `azd` (automatizado Aspire) | Documentado — pendiente | 0% |
 
 ---
 
@@ -490,4 +587,6 @@ dotnet run --project Aspire/ShopDemo.AppHost
 
 ShopDemo implementa **tres microservicios de negocio** que modelan un flujo de e-commerce — definición de productos (Catalog), gestión de pedidos (Orders) y control de stock (Inventory) — más un **cuarto servicio observador** (Analytics) orquestado con **.NET Aspire**. Catalog y Orders usan **Clean Architecture con CQRS**; Inventory usa **arquitectura hexagonal** para comparar enfoques en el mismo curso.
 
-La integración entre contextos combina **HTTP síncrono** (Orders → Inventory), **Azure Event Hubs** con fan-out (`inventory-service` + `analytics-service`) y orquestación local vía **AppHost** (PostgreSQL, Azurite, service discovery, dashboard). Cada microservicio de negocio mantiene **PostgreSQL dedicado** en Docker Compose, **Swagger**, documentación en `docs/` y puede ejecutarse de forma independiente o bajo Aspire.
+La integración entre contextos combina **HTTP síncrono** (Orders → Inventory), **Azure Event Hubs** con fan-out (`inventory-service` + `analytics-service`) y orquestación local vía **AppHost** (PostgreSQL, Azurite, service discovery, dashboard). Cada microservicio de negocio mantiene **PostgreSQL dedicado** en Docker Compose, **Swagger**, documentación en `docs/` y puede ejecutarse de forma independiente, bajo Aspire o en **Azure Container Apps / AWS ECS**.
+
+**Guía de inicio para alumnos:** [README.md](../README.md)

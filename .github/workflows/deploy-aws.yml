@@ -1,0 +1,81 @@
+# Build y despliegue a Amazon ECS Fargate (ShopDemo)
+# Requiere secrets: AWS_ROLE_ARN (OIDC) o AWS_ACCESS_KEY_ID + AWS_SECRET_ACCESS_KEY
+
+name: Deploy AWS
+
+on:
+  workflow_dispatch:
+  push:
+    branches: [main]
+    paths:
+      - 'Catalog/**'
+      - 'Orders/**'
+      - 'Inventory/**'
+      - 'Aspire/ShopDemo.Analytics.Api/**'
+      - 'ShopDemo.Shared/**'
+      - '.github/workflows/deploy-aws.yml'
+
+env:
+  AWS_REGION: ${{ secrets.AWS_REGION || 'us-east-1' }}
+  ECS_CLUSTER: ${{ secrets.ECS_CLUSTER || 'shopdemo-cluster' }}
+
+permissions:
+  id-token: write
+  contents: read
+
+jobs:
+  build-and-deploy:
+    runs-on: ubuntu-latest
+    strategy:
+      matrix:
+        include:
+          - dockerfile: Catalog/ShopDemo.Catalog.Api/Dockerfile
+            repository: shopdemo-catalog
+            ecs_service: shopdemo-catalog
+          - dockerfile: Orders/ShopDemo.Orders.Api/Dockerfile
+            repository: shopdemo-orders
+            ecs_service: shopdemo-orders
+          - dockerfile: Inventory/ShopDemo.Inventory.Api/Dockerfile
+            repository: shopdemo-inventory
+            ecs_service: shopdemo-inventory
+          - dockerfile: Aspire/ShopDemo.Analytics.Api/Dockerfile
+            repository: shopdemo-analytics
+            ecs_service: shopdemo-analytics
+
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Configure AWS credentials (OIDC)
+        if: ${{ secrets.AWS_ROLE_ARN != '' }}
+        uses: aws-actions/configure-aws-credentials@v4
+        with:
+          role-to-assume: ${{ secrets.AWS_ROLE_ARN }}
+          aws-region: ${{ env.AWS_REGION }}
+
+      - name: Configure AWS credentials (access key)
+        if: ${{ secrets.AWS_ROLE_ARN == '' }}
+        uses: aws-actions/configure-aws-credentials@v4
+        with:
+          aws-access-key-id: ${{ secrets.AWS_ACCESS_KEY_ID }}
+          aws-secret-access-key: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
+          aws-region: ${{ env.AWS_REGION }}
+
+      - name: Login to Amazon ECR
+        id: ecr
+        uses: aws-actions/amazon-ecr-login@v2
+
+      - name: Build and push image
+        env:
+          ECR_REGISTRY: ${{ steps.ecr.outputs.registry }}
+        run: |
+          docker build -f ${{ matrix.dockerfile }} \
+            -t $ECR_REGISTRY/${{ matrix.repository }}:${{ github.sha }} .
+          docker push $ECR_REGISTRY/${{ matrix.repository }}:${{ github.sha }}
+
+      - name: Force new ECS deployment
+        run: |
+          aws ecs update-service \
+            --cluster ${{ env.ECS_CLUSTER }} \
+            --service ${{ matrix.ecs_service }} \
+            --force-new-deployment \
+            --region ${{ env.AWS_REGION }}

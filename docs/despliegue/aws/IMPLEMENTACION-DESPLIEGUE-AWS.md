@@ -15,12 +15,14 @@
 > Cada paso incluye **Consola AWS** y **AWS CLI** como dos caminos equivalentes.
 
 **Guía de desarrollo:** [GUIA-DESARROLLO-INTEGRACIONES.md](../../GUIA-DESARROLLO-INTEGRACIONES.md) (etapa 8)  
+**Script automatizado (CLI):** [scripts/aws/README.md](../../../scripts/aws/README.md) — `Deploy-AwsShopDemo.ps1` / `Remove-AwsShopDemo.ps1`  
 **Qué integrar:** `Dockerfile` y `docker-compose.yml` de cada API; parámetros SSM/Secrets Manager — **sin código C# nuevo**.
 
 ---
 
 ## Índice
 
+0. [**Script PowerShell automatizado (recomendado)**](#0-script-powershell-automatizado-recomendado)
 1. [Prerequisitos](#1-prerequisitos)
 2. [Variables del laboratorio](#2-variables-del-laboratorio)
 3. [Paso 1 — Configurar AWS CLI](#3-paso-1--configurar-aws-cli)
@@ -41,6 +43,108 @@
 18. [Paso 16 — GitHub Actions](#18-paso-16--github-actions)
 19. [Paso 17 — Limpieza](#19-paso-17--limpieza)
 20. [Solución de problemas](#20-solución-de-problemas)
+
+---
+
+## 0. Script PowerShell automatizado (recomendado)
+
+Provisiona la infraestructura AWS del curso (ECS Fargate, EKS o ambos) desde PowerShell, alineado con los pasos manuales de este documento.
+
+| Recurso | Ruta |
+|---|---|
+| Scripts | [scripts/aws/](../../../scripts/aws/) |
+| Guía detallada | [scripts/aws/README.md](../../../scripts/aws/README.md) |
+| Plantilla de variables | [scripts/aws/.env.aws.example](../../../scripts/aws/.env.aws.example) |
+
+> El script **no hace build ni push** a ECR. Tras ejecutarlo, publica las 5 imágenes (§7 y §16).
+
+### Cuándo usar cada modo
+
+| Modo | Comando | Qué crea | Etapa del curso |
+|---|---|---|---|
+| **ECS** | `.\Deploy-AwsShopDemo.ps1 -Mode ECS` | VPC, ECR, SSM, cluster ECS, Postgres/Azurite Fargate, Cloud Map, 5 APIs + MCP con ALB | 8 + 14b |
+| **EKS** | `.\Deploy-AwsShopDemo.ps1 -Mode EKS` | ECR, cluster EKS (eksctl), Ingress Helm, `k8s/secrets.yaml` | 11 |
+| **All** | `.\Deploy-AwsShopDemo.ps1 -Mode All` | ECS + EKS | 8 + 11 |
+
+Event Hubs **no se crea en AWS**: la mensajería sigue en **Azure** (cross-cloud). Debes pegar la connection string en `.env.aws`.
+
+### Paso A — Configurar variables (`.env.aws`)
+
+```powershell
+cd I:\Curso\ShopDemo\scripts\aws
+copy .env.aws.example .env.aws
+notepad .env.aws
+```
+
+| Variable | Obligatorio | Dónde obtenerlo |
+|---|---|---|
+| `AWS_REGION` | Sí | Consola AWS (barra superior) o `aws configure` |
+| `EVENT_HUBS_CONNECTION_STRING` | Sí | **Azure Portal** → Event Hubs → Shared access policies → **RootManageSharedAccessKey** ([§4.4 Azure](../../INTEGRACION-AZURE-EVENT-HUBS.md#44-obtener-connection-string-del-namespace)) |
+| `EVENT_HUB_NAME` | Sí | Nombre del hub (`shopdemo-events`) |
+| `LAB_PREFIX` | Sí | Prefijo de recursos (`shopdemo`) |
+| `ECS_CLUSTER_NAME` | Modo ECS/All | Nombre del cluster Fargate |
+| `EKS_CLUSTER_NAME` | Modo EKS/All | Nombre del cluster EKS |
+| `POSTGRES_PASSWORD` | Modo ECS/All | Contraseña PostgreSQL en Fargate |
+| `IMAGE_TAG` | Recomendado | Tag en ECR (`latest`) |
+
+Credenciales AWS: `aws configure` (Access Key de IAM → **Security credentials**).
+
+### Paso B — Login y ejecución
+
+```powershell
+aws configure
+aws sts get-caller-identity
+
+# ECS Fargate + ALB (release sin Kubernetes)
+.\Deploy-AwsShopDemo.ps1 -Mode ECS
+
+# O EKS
+.\Deploy-AwsShopDemo.ps1 -Mode EKS
+
+# O ambos
+.\Deploy-AwsShopDemo.ps1 -Mode All
+```
+
+El script guarda estado en `scripts/aws/.deploy-state.json` (no commitear) y muestra DNS de los ALB al terminar (modo ECS).
+
+### Paso C — Publicar imágenes en ECR (obligatorio)
+
+| Opción | Cómo |
+|---|---|
+| **GitHub Actions** | Secrets `AWS_REGION`, `ECS_CLUSTER`, credenciales OIDC o access key → [.github/workflows/deploy-aws.yml](../../../.github/workflows/deploy-aws.yml) |
+| **Manual** | `aws ecr get-login-password` + `docker build` + `docker push` — ver [§7](#7-paso-5--build-y-push-de-imágenes) |
+
+Repos: `shopdemo-catalog`, `shopdemo-orders`, `shopdemo-inventory`, `shopdemo-analytics`, `shopdemo-mcp`.
+
+### Paso D — Validar release
+
+| Modo | Verificación |
+|---|---|
+| **ECS** | `http://<alb-catalog-dns>/swagger` · Orders confirma vía Cloud Map `inventory.shopdemo.local` |
+| **EKS** | Imágenes ECR en `k8s/*/deployment.yaml` → `kubectl apply -f k8s/` ([IMPLEMENTACION-DESPLIEGUE-EKS](../eks/IMPLEMENTACION-DESPLIEGUE-EKS.md)) |
+
+Postman: [GUIA-ENDPOINTS.md](../../GUIA-ENDPOINTS.md).
+
+### Paso E — Limpieza
+
+```powershell
+.\Remove-AwsShopDemo.ps1
+# Confirma escribiendo: delete-<LAB_PREFIX>
+```
+
+Ver también [§19 Limpieza](#19-paso-17--limpieza).
+
+### Relación script ↔ secciones manuales
+
+| Script | Equivalente manual |
+|---|---|
+| VPC + Security Groups | §4–§5 |
+| ECR | §6 |
+| SSM Parameter Store | §8 |
+| ECS cluster + Postgres + Azurite | §9–§11 |
+| Cloud Map + APIs + ALB | §12–§16 |
+| MCP | [IMPLEMENTACION-DESPLIEGUE-MCP-AWS](../../integracion-ia/IMPLEMENTACION-DESPLIEGUE-MCP-AWS.md) |
+| EKS + secrets | [IMPLEMENTACION-DESPLIEGUE-EKS](../eks/IMPLEMENTACION-DESPLIEGUE-EKS.md) |
 
 ---
 

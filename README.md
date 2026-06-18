@@ -84,11 +84,11 @@ Cada etapa tiene un par de documentos: **requerimientos** (qué y por qué) e **
 | **4** | Integración E2E | [GUIA-ENDPOINTS](docs/GUIA-ENDPOINTS.md) | [ARQUITECTURA §4](docs/ARQUITECTURA.md#4-integración-entre-bounded-contexts) | Flujo compra completo |
 | **5** | Azure Event Hubs | [INTEGRACION-AZURE-EVENT-HUBS](docs/INTEGRACION-AZURE-EVENT-HUBS.md) | Mismo doc (paso a paso) | Auto-stock + eventos en log |
 | **6** | Aspire + Analytics | [REQUERIMIENTOS-ANALYTICS-ASPIRE](docs/analytics/REQUERIMIENTOS-ANALYTICS-ASPIRE.md) | [IMPLEMENTACION-ANALYTICS-ASPIRE](docs/analytics/IMPLEMENTACION-ANALYTICS-ASPIRE.md) | `GET /api/analytics/events` |
-| **7** | Docker → Azure | [REQUERIMIENTOS-DESPLIEGUE-AZURE](docs/despliegue/azure/REQUERIMIENTOS-DESPLIEGUE-AZURE.md) | [IMPLEMENTACION-DESPLIEGUE-AZURE](docs/despliegue/azure/IMPLEMENTACION-DESPLIEGUE-AZURE.md) | APIs en Container Apps |
-| **8** | Docker → AWS | [REQUERIMIENTOS-DESPLIEGUE-AWS](docs/despliegue/aws/REQUERIMIENTOS-DESPLIEGUE-AWS.md) | [IMPLEMENTACION-DESPLIEGUE-AWS](docs/despliegue/aws/IMPLEMENTACION-DESPLIEGUE-AWS.md) | APIs en ECS Fargate |
+| **7** | Docker → Azure | [REQUERIMIENTOS-DESPLIEGUE-AZURE](docs/despliegue/azure/REQUERIMIENTOS-DESPLIEGUE-AZURE.md) | [IMPLEMENTACION-DESPLIEGUE-AZURE](docs/despliegue/azure/IMPLEMENTACION-DESPLIEGUE-AZURE.md) · [Script PS](scripts/azure/README.md) | APIs en Container Apps |
+| **8** | Docker → AWS | [REQUERIMIENTOS-DESPLIEGUE-AWS](docs/despliegue/aws/REQUERIMIENTOS-DESPLIEGUE-AWS.md) | [IMPLEMENTACION-DESPLIEGUE-AWS](docs/despliegue/aws/IMPLEMENTACION-DESPLIEGUE-AWS.md) · [Script PS](scripts/aws/README.md) | APIs en ECS Fargate |
 | **9** | Kubernetes local (Minikube) | [REQUERIMIENTOS-KUBERNETES](docs/despliegue/kubernetes/REQUERIMIENTOS-KUBERNETES.md) | [IMPLEMENTACION-KUBERNETES-LOCAL](docs/despliegue/kubernetes/IMPLEMENTACION-KUBERNETES-LOCAL.md) · [Teoría K8s](docs/despliegue/kubernetes/TEORIA-KUBERNETES-OPERACIONES.md) | `kubectl get hpa -n shopdemo` |
-| **10** | Azure AKS | [REQUERIMIENTOS-DESPLIEGUE-AKS](docs/despliegue/aks/REQUERIMIENTOS-DESPLIEGUE-AKS.md) | [IMPLEMENTACION-DESPLIEGUE-AKS](docs/despliegue/aks/IMPLEMENTACION-DESPLIEGUE-AKS.md) | ShopDemo en AKS |
-| **11** | Amazon EKS | [REQUERIMIENTOS-DESPLIEGUE-EKS](docs/despliegue/eks/REQUERIMIENTOS-DESPLIEGUE-EKS.md) | [IMPLEMENTACION-DESPLIEGUE-EKS](docs/despliegue/eks/IMPLEMENTACION-DESPLIEGUE-EKS.md) | ShopDemo en EKS |
+| **10** | Azure AKS | [REQUERIMIENTOS-DESPLIEGUE-AKS](docs/despliegue/aks/REQUERIMIENTOS-DESPLIEGUE-AKS.md) | [IMPLEMENTACION-DESPLIEGUE-AKS](docs/despliegue/aks/IMPLEMENTACION-DESPLIEGUE-AKS.md) · [Script `-Mode AKS`](scripts/azure/README.md) | ShopDemo en AKS |
+| **11** | Amazon EKS | [REQUERIMIENTOS-DESPLIEGUE-EKS](docs/despliegue/eks/REQUERIMIENTOS-DESPLIEGUE-EKS.md) | [IMPLEMENTACION-DESPLIEGUE-EKS](docs/despliegue/eks/IMPLEMENTACION-DESPLIEGUE-EKS.md) · [Script `-Mode EKS`](scripts/aws/README.md) | ShopDemo en EKS |
 | **12** | Observabilidad | [REQUERIMIENTOS-OBSERVABILIDAD](docs/observabilidad/REQUERIMIENTOS-OBSERVABILIDAD.md) | [Azure](docs/observabilidad/azure/IMPLEMENTACION-OBSERVABILIDAD-AZURE.md) · [AWS](docs/observabilidad/aws/IMPLEMENTACION-OBSERVABILIDAD-AWS.md) | Logs + alerta + traceId |
 | **13** | Resiliencia | [REQUERIMIENTOS-RESILIENCIA](docs/resiliencia/REQUERIMIENTOS-RESILIENCIA.md) | [Azure](docs/resiliencia/azure/IMPLEMENTACION-RESILIENCIA-AZURE.md) · [AWS](docs/resiliencia/aws/IMPLEMENTACION-RESILIENCIA-AWS.md) | Recuperación tras fallo de pod/tarea |
 | **14** | Integración IA | [REQUERIMIENTOS-INTEGRACION-IA](docs/integracion-ia/REQUERIMIENTOS-INTEGRACION-IA.md) | [IMPLEMENTACION-MCP-GATEWAY](docs/integracion-ia/IMPLEMENTACION-MCP-GATEWAY.md) · [Azure](docs/integracion-ia/azure/IMPLEMENTACION-INTEGRACION-IA-AZURE.md) · [AWS](docs/integracion-ia/aws/IMPLEMENTACION-INTEGRACION-IA-AWS.md) | MCP tool + alerta KQL/Insights |
@@ -297,7 +297,52 @@ Dos caminos de **release** en Azure. Ambos usan imágenes en **Azure Container R
 | **ACA** | Container Apps | Release serverless, más simple | [IMPLEMENTACION-DESPLIEGUE-AZURE](docs/despliegue/azure/IMPLEMENTACION-DESPLIEGUE-AZURE.md) |
 | **AKS** | Kubernetes Service | Release con manifiestos `k8s/` | [IMPLEMENTACION-DESPLIEGUE-AKS](docs/despliegue/aks/IMPLEMENTACION-DESPLIEGUE-AKS.md) |
 
-### Arranque en Azure (resumen)
+### Scripts PowerShell — configuración y ejecución (recomendado)
+
+Automatizan la infraestructura Azure (Portal/CLI manual sigue disponible en las guías §0).
+
+| Recurso | Ruta |
+|---|---|
+| Carpeta scripts | [scripts/azure/](scripts/azure/) |
+| Guía del script | [scripts/azure/README.md](scripts/azure/README.md) |
+| Plantilla variables | [scripts/azure/.env.azure.example](scripts/azure/.env.azure.example) |
+
+**Flujo en 5 pasos:**
+
+```powershell
+# 1. Variables (Subscription ID, nombres únicos ACR/Event Hubs/Storage)
+cd I:\Curso\ShopDemo\scripts\azure
+copy .env.azure.example .env.azure
+notepad .env.azure
+
+# 2. Login Azure
+az login
+az account set --subscription "<TU-SUBSCRIPTION-ID>"
+
+# 3. Provisionar (elegir modo)
+.\Deploy-AzureShopDemo.ps1 -Mode ACA    # Container Apps + MCP
+.\Deploy-AzureShopDemo.ps1 -Mode AKS  # Cluster + k8s/secrets.yaml
+.\Deploy-AzureShopDemo.ps1 -Mode All  # ACA + AKS
+
+# 4. Publicar imágenes en ACR (obligatorio — el script no hace build)
+#    GitHub Actions: .github/workflows/deploy-azure.yml
+#    O build manual: ver IMPLEMENTACION-DESPLIEGUE-AZURE §8
+
+# 5. Validar y limpiar
+#    ACA: curl https://<fqdn-catalog>/health
+#    AKS: kubectl apply -f k8s/ (tras editar imágenes ACR)
+.\Remove-AzureShopDemo.ps1
+```
+
+| Modo script | Imágenes requeridas en ACR | Validación |
+|---|---|---|
+| `ACA` | 5 × `latest` (o `IMAGE_TAG` en `.env.azure`) | FQDN Container Apps en salida del script |
+| `AKS` | Igual + `kubectl apply` | `kubectl get pods -n shopdemo` |
+| `All` | Igual para ambos entornos | Postman con [GUIA-ENDPOINTS](docs/GUIA-ENDPOINTS.md) |
+
+Documentación detallada: [IMPLEMENTACION-DESPLIEGUE-AZURE §0](docs/despliegue/azure/IMPLEMENTACION-DESPLIEGUE-AZURE.md#0-script-powershell-automatizado-recomendado) · [AKS §0](docs/despliegue/aks/IMPLEMENTACION-DESPLIEGUE-AKS.md#0-script-powershell--mode-aks)
+
+### Arranque en Azure (resumen manual)
 
 | # | Acción | ACA (Container Apps) | AKS |
 |---|---|---|---|
@@ -357,7 +402,49 @@ Dos caminos de **release** en AWS. Ambos usan **Amazon ECR** y despliegan **5 co
 | **ECS** | Fargate | Release sin Kubernetes | [IMPLEMENTACION-DESPLIEGUE-AWS](docs/despliegue/aws/IMPLEMENTACION-DESPLIEGUE-AWS.md) |
 | **EKS** | Elastic Kubernetes Service | Release con manifiestos `k8s/` | [IMPLEMENTACION-DESPLIEGUE-EKS](docs/despliegue/eks/IMPLEMENTACION-DESPLIEGUE-EKS.md) |
 
-### Arranque en AWS (resumen)
+### Scripts PowerShell — configuración y ejecución (recomendado)
+
+| Recurso | Ruta |
+|---|---|
+| Carpeta scripts | [scripts/aws/](scripts/aws/) |
+| Guía del script | [scripts/aws/README.md](scripts/aws/README.md) |
+| Plantilla variables | [scripts/aws/.env.aws.example](scripts/aws/.env.aws.example) |
+
+**Flujo en 5 pasos:**
+
+```powershell
+# 1. Variables (región AWS + connection string Event Hubs desde Azure Portal)
+cd I:\Curso\ShopDemo\scripts\aws
+copy .env.aws.example .env.aws
+notepad .env.aws
+
+# 2. Credenciales AWS
+aws configure
+aws sts get-caller-identity
+
+# 3. Provisionar
+.\Deploy-AwsShopDemo.ps1 -Mode ECS   # Fargate + ALB + Cloud Map + MCP
+.\Deploy-AwsShopDemo.ps1 -Mode EKS   # eksctl + k8s/secrets.yaml
+.\Deploy-AwsShopDemo.ps1 -Mode All
+
+# 4. Publicar imágenes en ECR (obligatorio)
+#    GitHub Actions: .github/workflows/deploy-aws.yml
+#    O manual: IMPLEMENTACION-DESPLIEGUE-AWS §7
+
+# 5. Validar y limpiar
+#    ECS: http://<alb-catalog-dns>/swagger
+#    EKS: kubectl apply -f k8s/
+.\Remove-AwsShopDemo.ps1   # confirmar: delete-shopdemo
+```
+
+| Valor obligatorio en `.env.aws` | Origen |
+|---|---|
+| `EVENT_HUBS_CONNECTION_STRING` | **Azure Portal** (Event Hubs — mensajería cross-cloud) |
+| `AWS_REGION` | Consola AWS / `aws configure` |
+
+Documentación detallada: [IMPLEMENTACION-DESPLIEGUE-AWS §0](docs/despliegue/aws/IMPLEMENTACION-DESPLIEGUE-AWS.md#0-script-powershell-automatizado-recomendado) · [EKS §0](docs/despliegue/eks/IMPLEMENTACION-DESPLIEGUE-EKS.md#0-script-powershell--mode-eks)
+
+### Arranque en AWS (resumen manual)
 
 | # | Acción | ECS Fargate | EKS |
 |---|---|---|---|
@@ -560,6 +647,8 @@ ShopDemo/
 |---|---|
 | **Guía de desarrollo (código paso a paso)** | [docs/GUIA-DESARROLLO-INTEGRACIONES.md](docs/GUIA-DESARROLLO-INTEGRACIONES.md) |
 | Anexos de código | [Shared](docs/ANEXO-CODIGO-SHARED.md) · [Catalog](docs/catalog/ANEXO-CODIGO-CATALOG.md) · [Orders](docs/orders/ANEXO-CODIGO-ORDERS.md) · [Inventory](docs/inventory/ANEXO-CODIGO-INVENTORY.md) · [Event Hubs](docs/ANEXO-CODIGO-EVENT-HUBS.md) · [Analytics/Aspire](docs/analytics/ANEXO-CODIGO-ANALYTICS-ASPIRE.md) · [MCP](docs/integracion-ia/ANEXO-CODIGO-MCP.md) |
+| Scripts Azure (PowerShell) | [scripts/azure/README.md](scripts/azure/README.md) |
+| Scripts AWS (PowerShell) | [scripts/aws/README.md](scripts/aws/README.md) |
 | Arquitectura | [docs/ARQUITECTURA.md](docs/ARQUITECTURA.md) |
 | Endpoints y Postman | [docs/GUIA-ENDPOINTS.md](docs/GUIA-ENDPOINTS.md) |
 | Event Hubs | [docs/INTEGRACION-AZURE-EVENT-HUBS.md](docs/INTEGRACION-AZURE-EVENT-HUBS.md) |

@@ -40,6 +40,8 @@
 | MCP Gateway | [integracion-ia/IMPLEMENTACION-MCP-GATEWAY.md](./integracion-ia/IMPLEMENTACION-MCP-GATEWAY.md) · [ANEXO-CODIGO-MCP.md](./integracion-ia/ANEXO-CODIGO-MCP.md) |
 | Kubernetes | Carpeta [k8s/](../k8s/) (copiar manifiestos) |
 | Docker | `Dockerfile` y `docker-compose.yml` por API |
+| Release Azure (CLI) | [scripts/azure/README.md](../scripts/azure/README.md) |
+| Release AWS (CLI) | [scripts/aws/README.md](../scripts/aws/README.md) |
 | Spec-driven | [spec-driven/IMPLEMENTACION-SPEC-DRIVEN-DEVELOPMENT.md](../spec-driven/IMPLEMENTACION-SPEC-DRIVEN-DEVELOPMENT.md) |
 
 ---
@@ -55,8 +57,8 @@
 | 4 | E2E | [GUIA-ENDPOINTS.md](./GUIA-ENDPOINTS.md) | Flujo compra |
 | 5 | Event Hubs | [ANEXO-CODIGO-EVENT-HUBS](./ANEXO-CODIGO-EVENT-HUBS.md) · [INTEGRACION-AZURE-EVENT-HUBS](./INTEGRACION-AZURE-EVENT-HUBS.md) | Auto-stock + eventos |
 | 6 | Aspire + Analytics | [IMPLEMENTACION-ANALYTICS-ASPIRE.md](./analytics/IMPLEMENTACION-ANALYTICS-ASPIRE.md) | `/api/analytics/events` |
-| 7 | Azure ACA | [despliegue/azure/IMPLEMENTACION-DESPLIEGUE-AZURE.md](./despliegue/azure/IMPLEMENTACION-DESPLIEGUE-AZURE.md) | FQDN APIs |
-| 8 | AWS ECS | [despliegue/aws/IMPLEMENTACION-DESPLIEGUE-AWS.md](./despliegue/aws/IMPLEMENTACION-DESPLIEGUE-AWS.md) | ALB |
+| 7 | Azure ACA | [despliegue/azure/](./despliegue/azure/) · [script §0](./despliegue/azure/IMPLEMENTACION-DESPLIEGUE-AZURE.md#0-script-powershell-automatizado-recomendado) | FQDN APIs |
+| 8 | AWS ECS | [despliegue/aws/](./despliegue/aws/) · [script §0](./despliegue/aws/IMPLEMENTACION-DESPLIEGUE-AWS.md#0-script-powershell-automatizado-recomendado) | ALB |
 | 9 | Minikube | [despliegue/kubernetes/IMPLEMENTACION-KUBERNETES-LOCAL.md](./despliegue/kubernetes/IMPLEMENTACION-KUBERNETES-LOCAL.md) | `kubectl get pods` |
 | 10–11 | AKS / EKS | [aks/](./despliegue/aks/) · [eks/](./despliegue/eks/) | Ingress |
 | 12–13 | Observabilidad / Resiliencia | [observabilidad/](./observabilidad/) · [resiliencia/](./resiliencia/) | Logs, health |
@@ -280,16 +282,49 @@ dotnet run --project Aspire/ShopDemo.AppHost
 
 ## Etapas 7–8 — Despliegue Azure / AWS (contenedores)
 
-No hay código C# nuevo; **integras configuración y pipelines**.
+No hay código C# nuevo; **integras configuración, scripts PowerShell y pipelines**.
+
+### Etapa 7 — Azure (script recomendado)
+
+```powershell
+cd scripts\azure
+copy .env.azure.example .env.azure
+# Completar AZURE_SUBSCRIPTION_ID, ACR_NAME, EVENT_HUB_NAMESPACE, STORAGE_ACCOUNT_NAME
+az login
+.\Deploy-AzureShopDemo.ps1 -Mode ACA
+# Luego: push imágenes ACR → .github/workflows/deploy-azure.yml
+```
+
+| Documento | Contenido |
+|---|---|
+| [IMPLEMENTACION-DESPLIEGUE-AZURE §0](./despliegue/azure/IMPLEMENTACION-DESPLIEGUE-AZURE.md#0-script-powershell-automatizado-recomendado) | Configuración y ejecución del script |
+| [scripts/azure/README.md](../scripts/azure/README.md) | Tabla de variables Portal |
+
+### Etapa 8 — AWS (script recomendado)
+
+```powershell
+cd scripts\aws
+copy .env.aws.example .env.aws
+# Completar EVENT_HUBS_CONNECTION_STRING (Azure Portal) y AWS_REGION
+aws configure
+.\Deploy-AwsShopDemo.ps1 -Mode ECS
+# Luego: push imágenes ECR → .github/workflows/deploy-aws.yml
+```
+
+| Documento | Contenido |
+|---|---|
+| [IMPLEMENTACION-DESPLIEGUE-AWS §0](./despliegue/aws/IMPLEMENTACION-DESPLIEGUE-AWS.md#0-script-powershell-automatizado-recomendado) | Configuración y ejecución del script |
+| [scripts/aws/README.md](../scripts/aws/README.md) | Variables y modos ECS/EKS |
 
 | Qué copiar/configurar | Para qué sirve |
 |---|---|
 | `Dockerfile` de cada API | Build de imagen |
+| `.env.azure` / `.env.aws` | Variables del script (no commitear) |
 | Variables en ACA / ECS / secrets | Connection strings, Event Hubs |
 | `.github/workflows/deploy-azure.yml` | CI/CD Azure (referencia) |
 | `.github/workflows/deploy-aws.yml` | CI/CD AWS (referencia) |
 
-Docs: [despliegue/azure/](./despliegue/azure/) · [despliegue/aws/](./despliegue/aws/)
+Docs manuales: [despliegue/azure/](./despliegue/azure/) · [despliegue/aws/](./despliegue/aws/)
 
 ---
 

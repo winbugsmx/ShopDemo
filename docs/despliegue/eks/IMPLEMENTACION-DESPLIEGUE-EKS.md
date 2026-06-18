@@ -10,6 +10,7 @@
 | | E-mail: lcc.gilberto.juarez@gmail.com |
 
 **Prerequisito:** [IMPLEMENTACION-KUBERNETES-LOCAL.md](../kubernetes/IMPLEMENTACION-KUBERNETES-LOCAL.md)  
+**Script automatizado:** [scripts/aws/README.md](../../../scripts/aws/README.md) (`-Mode EKS` genera `k8s/secrets.yaml`)  
 **Teoría K8s:** [TEORIA-KUBERNETES-OPERACIONES.md](../kubernetes/TEORIA-KUBERNETES-OPERACIONES.md)  
 Cada paso: **Consola AWS** + **CLI**.
 
@@ -17,6 +18,7 @@ Cada paso: **Consola AWS** + **CLI**.
 
 ## Índice
 
+0. [Script PowerShell (`-Mode EKS`)](#0-script-powershell--mode-eks)
 1. [Variables](#1-variables)
 2. [Paso 1 — Repositorios ECR](#2-paso-1--repositorios-ecr)
 3. [Paso 2 — Crear cluster EKS](#3-paso-2--crear-cluster-eks)
@@ -28,6 +30,33 @@ Cada paso: **Consola AWS** + **CLI**.
 9. [Paso 8 — Secrets, Probes y HPA](#9-paso-8--secrets-probes-y-hpa)
 10. [Paso 9 — Testeo](#10-paso-9--testeo)
 11. [Paso 10 — Limpieza](#11-paso-10--limpieza)
+
+---
+
+## 0. Script PowerShell (`-Mode EKS`)
+
+Provisiona ECR, cluster EKS (eksctl), Ingress y `k8s/secrets.yaml`:
+
+```powershell
+cd I:\Curso\ShopDemo\scripts\aws
+copy .env.aws.example .env.aws
+notepad .env.aws   # EVENT_HUBS_CONNECTION_STRING (Azure), EKS_CLUSTER_NAME
+
+aws configure
+.\Deploy-AwsShopDemo.ps1 -Mode EKS
+```
+
+| Qué hace el script | Qué debes hacer tú después |
+|---|---|
+| Repositorios ECR (5) | `docker push` a ECR |
+| `eksctl create cluster` + kubeconfig | Actualizar imágenes en manifiestos `k8s/` |
+| Helm Ingress NGINX | `kubectl apply -f k8s/` |
+| Genera `k8s/secrets.yaml` (Event Hubs cross-cloud) | No commitear secrets |
+
+Guía: [scripts/aws/README.md](../../../scripts/aws/README.md).  
+ECS + EKS: `.\Deploy-AwsShopDemo.ps1 -Mode All`.
+
+Los pasos manuales (§2–§11) complementan el script para aprendizaje o despliegue 100 % manual.
 
 ---
 

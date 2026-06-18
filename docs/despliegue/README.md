@@ -10,9 +10,28 @@
 | | E-mail: lcc.gilberto.juarez@gmail.com |
 
 **Índice general del curso:** [README.md](../../README.md)  
-**Guía de desarrollo (código a integrar):** [GUIA-DESARROLLO-INTEGRACIONES.md](../GUIA-DESARROLLO-INTEGRACIONES.md)
+**Guía de desarrollo:** [GUIA-DESARROLLO-INTEGRACIONES.md](../GUIA-DESARROLLO-INTEGRACIONES.md)
 
 Material del curso para llevar los microservicios Docker a la nube con enfoque **práctico y básico**.
+
+## Scripts PowerShell de release (automatización)
+
+| Plataforma | Carpeta | Guía | Modos |
+|---|---|---|---|
+| **Azure** | [scripts/azure/](../../scripts/azure/) | [README](../../scripts/azure/README.md) | `ACA` · `AKS` · `All` |
+| **AWS** | [scripts/aws/](../../scripts/aws/) | [README](../../scripts/aws/README.md) | `ECS` · `EKS` · `All` |
+
+**No incluyen build Docker** — tras ejecutar el script, publica imágenes con GitHub Actions o build manual.
+
+| Paso | Azure (`scripts/azure/`) | AWS (`scripts/aws/`) |
+|---|---|---|
+| 1 | `copy .env.azure.example .env.azure` | `copy .env.aws.example .env.aws` |
+| 2 | `az login` | `aws configure` |
+| 3 | `.\Deploy-AzureShopDemo.ps1 -Mode ACA` | `.\Deploy-AwsShopDemo.ps1 -Mode ECS` |
+| 4 | Push ACR ([deploy-azure.yml](../../.github/workflows/deploy-azure.yml)) | Push ECR ([deploy-aws.yml](../../.github/workflows/deploy-aws.yml)) |
+| 5 | `.\Remove-AzureShopDemo.ps1` | `.\Remove-AwsShopDemo.ps1` |
+
+Detalle en [IMPLEMENTACION-DESPLIEGUE-AZURE §0](./azure/IMPLEMENTACION-DESPLIEGUE-AZURE.md#0-script-powershell-automatizado-recomendado) y [IMPLEMENTACION-DESPLIEGUE-AWS §0](./aws/IMPLEMENTACION-DESPLIEGUE-AWS.md#0-script-powershell-automatizado-recomendado).
 
 ## Decisiones del curso
 
@@ -24,7 +43,7 @@ Material del curso para llevar los microservicios Docker a la nube con enfoque *
 | AppHost Aspire | Solo desarrollo local — **no se despliega** | Igual |
 | PostgreSQL | Contenedor (ACI / ECS) | Contenedor (ECS + EFS) |
 | Mensajería | Azure Event Hubs (existente en código) | Conexión cross-cloud a Event Hubs |
-| Automatización | CLI + Portal + GitHub Actions básico | CLI + Consola + GitHub Actions básico |
+| Automatización | CLI + Portal + **scripts PowerShell** + GitHub Actions | CLI + Consola + **scripts PowerShell** + GitHub Actions |
 
 ## Documentos por plataforma
 

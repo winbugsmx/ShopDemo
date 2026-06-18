@@ -64,6 +64,13 @@ docker-compose.override.yml
 # Kubernetes secrets (copia local de secrets.example.yaml)
 k8s/secrets.yaml
 
+# Azure deploy scripts — configuración local con secretos
+scripts/azure/.env.azure
+
+# AWS deploy scripts
+scripts/aws/.env.aws
+scripts/aws/.deploy-state.json
+
 # Spec-driven — archivos locales activados por el alumno (pueden contener URLs/secretos)
 CLAUDE.local.md
 .claude/settings.local.json

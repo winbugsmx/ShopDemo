@@ -15,12 +15,14 @@
 > Cada paso incluye **dos enfoques**: configuración por **Portal Azure** y por **Azure CLI**, para que el alumno elija el que prefiera.
 
 **Guía de desarrollo:** [GUIA-DESARROLLO-INTEGRACIONES.md](../../GUIA-DESARROLLO-INTEGRACIONES.md) (etapa 7)  
+**Script automatizado (CLI):** [scripts/azure/README.md](../../../scripts/azure/README.md) — `Deploy-AzureShopDemo.ps1` / `Remove-AzureShopDemo.ps1`  
 **Qué integrar:** `Dockerfile` y `docker-compose.yml` de cada API (ya en el repo); variables de entorno y secretos en ACA — **sin código C# nuevo**.
 
 ---
 
 ## Índice
 
+0. [**Script PowerShell automatizado (recomendado)**](#0-script-powershell-automatizado-recomendado)
 1. [Prerequisitos](#1-prerequisitos)
 2. [Variables del laboratorio](#2-variables-del-laboratorio)
 3. [Paso 1 — Resource Group](#3-paso-1--resource-group)
@@ -38,6 +40,112 @@
 15. [Paso 13 — GitHub Actions (CI/CD)](#15-paso-13--github-actions-cicd)
 16. [Paso 14 — Limpieza de recursos](#16-paso-14--limpieza-de-recursos)
 17. [Solución de problemas](#17-solución-de-problemas)
+
+---
+
+## 0. Script PowerShell automatizado (recomendado)
+
+Para el laboratorio del curso puedes **provisionar casi toda la infraestructura Azure** con un solo script, en lugar de repetir cada paso del Portal/CLI manualmente.
+
+| Recurso | Ruta |
+|---|---|
+| Scripts | [scripts/azure/](../../../scripts/azure/) |
+| Guía detallada | [scripts/azure/README.md](../../../scripts/azure/README.md) |
+| Plantilla de variables | [scripts/azure/.env.azure.example](../../../scripts/azure/.env.azure.example) |
+
+> El script **no construye imágenes Docker**. Después de ejecutarlo debes publicar las imágenes en ACR (GitHub Actions o build manual, §8 y §15).
+
+### Cuándo usar cada modo
+
+| Modo | Comando | Qué crea | Etapa del curso |
+|---|---|---|---|
+| **ACA** | `.\Deploy-AzureShopDemo.ps1 -Mode ACA` | Event Hubs, Storage, ACR, PostgreSQL (ACI), 5 Container Apps + MCP | 7 + 14b |
+| **AKS** | `.\Deploy-AzureShopDemo.ps1 -Mode AKS` | Event Hubs, ACR, cluster AKS, Ingress Helm, `k8s/secrets.yaml` | 10 |
+| **All** | `.\Deploy-AzureShopDemo.ps1 -Mode All` | ACA + AKS (lab completo) | 7 + 10 |
+
+Los pasos manuales de este documento (§3–§13) siguen siendo válidos para **entender** cada recurso o si prefieres el Portal.
+
+### Paso A — Configurar variables (`.env.azure`)
+
+```powershell
+cd I:\Curso\ShopDemo\scripts\azure
+copy .env.azure.example .env.azure
+notepad .env.azure
+```
+
+| Variable | Obligatorio | Dónde obtenerlo |
+|---|---|---|
+| `AZURE_SUBSCRIPTION_ID` | Sí | Portal → **Subscriptions** → **Subscription ID** |
+| `AZURE_LOCATION` | Sí | Región del lab (`eastus`, `mexicocentral`, …) |
+| `RESOURCE_GROUP` | Sí | Nombre que eliges (ej. `rg-shopdemo-lab`) |
+| `ACR_NAME` | Sí | **Único global** en Azure; solo `a-z` y `0-9` |
+| `EVENT_HUB_NAMESPACE` | Sí | **Único global**; el script lo crea si no existe |
+| `STORAGE_ACCOUNT_NAME` | Sí | **Único global**; checkpoints en ACA |
+| `POSTGRES_PASSWORD` | Sí | La defines tú (lab) |
+| `POSTGRES_DNS_LABEL` | Sí | Etiqueta DNS del ACI PostgreSQL (única en región) |
+| `AKS_CLUSTER_NAME` | Solo AKS/All | Nombre del cluster |
+
+El script obtiene solo: connection strings de Event Hubs y Storage, FQDN de PostgreSQL y Container Apps.
+
+### Paso B — Login y ejecución
+
+```powershell
+az login
+az account set --subscription "<TU-SUBSCRIPTION-ID>"
+
+# Container Apps (release serverless)
+.\Deploy-AzureShopDemo.ps1 -Mode ACA
+
+# O Kubernetes en Azure
+.\Deploy-AzureShopDemo.ps1 -Mode AKS
+
+# O ambos
+.\Deploy-AzureShopDemo.ps1 -Mode All
+```
+
+Al finalizar, el script imprime las **URLs** de cada Container App (modo ACA) y las instrucciones para `kubectl apply` (modo AKS).
+
+### Paso C — Publicar imágenes en ACR (obligatorio)
+
+El script crea el registro pero **no hace push**. Opciones:
+
+| Opción | Cómo |
+|---|---|
+| **GitHub Actions** | Configura secrets en el repo (§15) y ejecuta [.github/workflows/deploy-azure.yml](../../../.github/workflows/deploy-azure.yml) |
+| **Manual** | `docker build` + `docker push` — ver [§8 Build y push](#8-paso-6--build-y-push-de-imágenes) |
+
+Imágenes requeridas con tag `IMAGE_TAG` (por defecto `latest`):
+
+`shopdemo-catalog` · `shopdemo-orders` · `shopdemo-inventory` · `shopdemo-analytics` · `shopdemo-mcp`
+
+### Paso D — Validar release
+
+| Modo | Verificación |
+|---|---|
+| **ACA** | `curl https://<fqdn-catalog>/health` · Swagger · carpeta Postman **Health checks** |
+| **AKS** | Editar `k8s/*/deployment.yaml` con `<acr>.azurecr.io/shopdemo-*:latest` → `kubectl apply -f k8s/` (orden en [k8s/README.md](../../../k8s/README.md)) |
+
+Guía de endpoints: [GUIA-ENDPOINTS.md](../../GUIA-ENDPOINTS.md) (sustituir `localhost` por FQDN ACA o Ingress).
+
+### Paso E — Limpieza del laboratorio
+
+```powershell
+.\Remove-AzureShopDemo.ps1
+# Confirma escribiendo el nombre del Resource Group
+```
+
+Borra el Resource Group completo (`RESOURCE_GROUP` en `.env.azure`). Ver también [§16 Limpieza](#16-paso-14--limpieza-de-recursos).
+
+### Relación script ↔ secciones manuales de este documento
+
+| Script (interno) | Equivalente manual |
+|---|---|
+| Resource Group + Event Hubs + Storage | §3, [INTEGRACION-AZURE-EVENT-HUBS](../../INTEGRACION-AZURE-EVENT-HUBS.md) |
+| ACR | §4 |
+| Log Analytics + ACA Environment | §5 |
+| PostgreSQL ACI | §6 |
+| 5 Container Apps | §8–§11 + [MCP Azure](../../integracion-ia/IMPLEMENTACION-DESPLIEGUE-MCP-AZURE.md) |
+| AKS + `k8s/secrets.yaml` | [IMPLEMENTACION-DESPLIEGUE-AKS](../aks/IMPLEMENTACION-DESPLIEGUE-AKS.md) |
 
 ---
 

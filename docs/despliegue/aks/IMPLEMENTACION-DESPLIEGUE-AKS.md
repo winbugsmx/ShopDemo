@@ -10,6 +10,7 @@
 | | E-mail: lcc.gilberto.juarez@gmail.com |
 
 **Prerequisito:** [IMPLEMENTACION-KUBERNETES-LOCAL.md](../kubernetes/IMPLEMENTACION-KUBERNETES-LOCAL.md) (Minikube)  
+**Script automatizado:** [scripts/azure/README.md](../../../scripts/azure/README.md) (`-Mode AKS` genera `k8s/secrets.yaml`)  
 **Teoría K8s:** [TEORIA-KUBERNETES-OPERACIONES.md](../kubernetes/TEORIA-KUBERNETES-OPERACIONES.md)  
 Cada paso: **Portal Azure** + **Azure CLI**.
 
@@ -17,6 +18,7 @@ Cada paso: **Portal Azure** + **Azure CLI**.
 
 ## Índice
 
+0. [Script PowerShell (`-Mode AKS`)](#0-script-powershell--mode-aks)
 1. [Variables del laboratorio](#1-variables-del-laboratorio)
 2. [Paso 1 — Resource Group y ACR](#2-paso-1--resource-group-y-acr)
 3. [Paso 2 — Crear cluster AKS](#3-paso-2--crear-cluster-aks)
@@ -28,6 +30,33 @@ Cada paso: **Portal Azure** + **Azure CLI**.
 9. [Paso 8 — Secrets, Probes y HPA](#9-paso-8--secrets-probes-y-hpa)
 10. [Paso 9 — Testeo](#10-paso-9--testeo)
 11. [Paso 10 — Limpieza](#11-paso-10--limpieza)
+
+---
+
+## 0. Script PowerShell (`-Mode AKS`)
+
+Puedes crear el cluster AKS, Ingress NGINX y el archivo `k8s/secrets.yaml` con el **mismo script** usado para Container Apps:
+
+```powershell
+cd I:\Curso\ShopDemo\scripts\azure
+copy .env.azure.example .env.azure   # si aún no existe
+notepad .env.azure                    # AKS_CLUSTER_NAME, ACR_NAME, etc.
+
+az login
+.\Deploy-AzureShopDemo.ps1 -Mode AKS
+```
+
+| Qué hace el script | Qué debes hacer tú después |
+|---|---|
+| Resource Group, Event Hubs, Storage, ACR | `docker push` 5 imágenes a ACR |
+| Cluster AKS + `az aks get-credentials` | Editar `k8s/*/deployment.yaml` → imagen ACR |
+| Helm Ingress NGINX | `kubectl apply -f k8s/` (orden en [k8s/README.md](../../../k8s/README.md)) |
+| Genera `k8s/secrets.yaml` | **No commitear** secrets |
+
+Guía completa del script: [scripts/azure/README.md](../../../scripts/azure/README.md).  
+Release ACA + AKS juntos: `.\Deploy-AzureShopDemo.ps1 -Mode All`.
+
+Los pasos manuales siguientes (§2–§11) explican cada recurso si prefieres Portal/CLI paso a paso.
 
 ---
 

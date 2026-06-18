@@ -9,7 +9,8 @@
 
 **Documento base:** [README.md](../README.md) · **Guía de APIs:** [GUIA-ENDPOINTS.md](./GUIA-ENDPOINTS.md)  
 **Guía de desarrollo (integrar/copiar código):** [GUIA-DESARROLLO-INTEGRACIONES.md](./GUIA-DESARROLLO-INTEGRACIONES.md)  
-**Anexos de código:** [Shared](./ANEXO-CODIGO-SHARED.md) · [Catalog](./catalog/ANEXO-CODIGO-CATALOG.md) · [Orders](./orders/ANEXO-CODIGO-ORDERS.md) · [Inventory](./inventory/ANEXO-CODIGO-INVENTORY.md) · [Event Hubs](./ANEXO-CODIGO-EVENT-HUBS.md) · [Analytics](./analytics/ANEXO-CODIGO-ANALYTICS-ASPIRE.md) · [MCP](./integracion-ia/ANEXO-CODIGO-MCP.md)
+**Anexos de código:** [Shared](./ANEXO-CODIGO-SHARED.md) · [Catalog](./catalog/ANEXO-CODIGO-CATALOG.md) · [Orders](./orders/ANEXO-CODIGO-ORDERS.md) · [Inventory](./inventory/ANEXO-CODIGO-INVENTORY.md) · [Event Hubs](./ANEXO-CODIGO-EVENT-HUBS.md) · [Analytics](./analytics/ANEXO-CODIGO-ANALYTICS-ASPIRE.md) · [MCP](./integracion-ia/ANEXO-CODIGO-MCP.md)  
+**Scripts release:** [Azure](../scripts/azure/README.md) · [AWS](../scripts/aws/README.md)
 
 ---
 

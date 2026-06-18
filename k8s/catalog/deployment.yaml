@@ -1,0 +1,43 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: shopdemo-catalog
+  namespace: shopdemo
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: shopdemo-catalog
+  template:
+    metadata:
+      labels:
+        app: shopdemo-catalog
+    spec:
+      containers:
+        - name: catalog-api
+          image: shopdemo-catalog:latest
+          imagePullPolicy: IfNotPresent
+          ports:
+            - containerPort: 8080
+          env:
+            - name: ASPNETCORE_ENVIRONMENT
+              value: Production
+            - name: ConnectionStrings__DefaultConnection
+              valueFrom:
+                secretKeyRef:
+                  name: shopdemo-secrets
+                  key: PG_CATALOG_CONN
+            - name: EventHubs__Enabled
+              value: "true"
+            - name: EventHubs__ConnectionString
+              valueFrom:
+                secretKeyRef:
+                  name: shopdemo-secrets
+                  key: EVENT_HUBS_CONNECTION_STRING
+            - name: EventHubs__EventHubName
+              value: shopdemo-events
+          readinessProbe:
+            tcpSocket:
+              port: 8080
+            initialDelaySeconds: 15
+            periodSeconds: 10

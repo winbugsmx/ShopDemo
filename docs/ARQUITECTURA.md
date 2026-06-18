@@ -514,10 +514,9 @@ dotnet run --project Aspire/ShopDemo.AppHost
 |---|---|---|
 | **Azure** | Container Apps + ACR | [docs/despliegue/azure/](./despliegue/azure/) |
 | **AWS** | ECS Fargate + ECR | [docs/despliegue/aws/](./despliegue/aws/) |
+| **Kubernetes** | Minikube / AKS / EKS | [despliegue/kubernetes/](./despliegue/kubernetes/) + [k8s/](../k8s/) |
 
-Cada guía incluye pasos por **Portal/Consola** y por **CLI**, más workflows GitHub Actions en `.github/workflows/`.
-
-**Fase posterior:** publicación avanzada con `azd up` (Azure). Ver [INTEGRACION-ASPIRE.md](./INTEGRACION-ASPIRE.md) sección 8.
+Cada guía incluye pasos por **Portal/Consola** y **CLI**. Manifiestos en `k8s/`.
 
 ---
 
@@ -531,6 +530,9 @@ Cada guía incluye pasos por **Portal/Consola** y por **CLI**, más workflows Gi
 | Analytics + Aspire | [REQUERIMIENTOS-ANALYTICS-ASPIRE.md](./analytics/REQUERIMIENTOS-ANALYTICS-ASPIRE.md) | [IMPLEMENTACION-ANALYTICS-ASPIRE.md](./analytics/IMPLEMENTACION-ANALYTICS-ASPIRE.md) |
 | Despliegue Azure | [REQUERIMIENTOS-DESPLIEGUE-AZURE.md](./despliegue/azure/REQUERIMIENTOS-DESPLIEGUE-AZURE.md) | [IMPLEMENTACION-DESPLIEGUE-AZURE.md](./despliegue/azure/IMPLEMENTACION-DESPLIEGUE-AZURE.md) |
 | Despliegue AWS | [REQUERIMIENTOS-DESPLIEGUE-AWS.md](./despliegue/aws/REQUERIMIENTOS-DESPLIEGUE-AWS.md) | [IMPLEMENTACION-DESPLIEGUE-AWS.md](./despliegue/aws/IMPLEMENTACION-DESPLIEGUE-AWS.md) |
+| Kubernetes local | [REQUERIMIENTOS-KUBERNETES.md](./despliegue/kubernetes/REQUERIMIENTOS-KUBERNETES.md) | [IMPLEMENTACION-KUBERNETES-LOCAL.md](./despliegue/kubernetes/IMPLEMENTACION-KUBERNETES-LOCAL.md) |
+| Azure AKS | [REQUERIMIENTOS-DESPLIEGUE-AKS.md](./despliegue/aks/REQUERIMIENTOS-DESPLIEGUE-AKS.md) | [IMPLEMENTACION-DESPLIEGUE-AKS.md](./despliegue/aks/IMPLEMENTACION-DESPLIEGUE-AKS.md) |
+| Amazon EKS | [REQUERIMIENTOS-DESPLIEGUE-EKS.md](./despliegue/eks/REQUERIMIENTOS-DESPLIEGUE-EKS.md) | [IMPLEMENTACION-DESPLIEGUE-EKS.md](./despliegue/eks/IMPLEMENTACION-DESPLIEGUE-EKS.md) |
 
 **Integración transversal:**
 
@@ -560,6 +562,7 @@ Cada guía incluye pasos por **Portal/Consola** y por **CLI**, más workflows Gi
 | Analytics + Aspire AppHost | Implementado | ~85% |
 | Despliegue Docker → Azure (ACA) | Documentado | Guía en `docs/despliegue/azure/` |
 | Despliegue Docker → AWS (ECS) | Documentado | Guía en `docs/despliegue/aws/` |
+| Kubernetes (Minikube / AKS / EKS) | Implementado | Manifiestos `k8s/` + `docs/despliegue/kubernetes/` |
 | Docker por servicio | Implementado | ~90% |
 | Azure Container Apps / `azd` (automatizado Aspire) | Documentado — pendiente | 0% |
 

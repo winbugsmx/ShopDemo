@@ -1,0 +1,41 @@
+# Manifiestos Kubernetes — ShopDemo
+
+Despliegue de **4 APIs + PostgreSQL (StatefulSet) + Azurite + Ingress NGINX** en el namespace `shopdemo`.
+
+## Estructura
+
+```
+k8s/
+├── namespace.yaml
+├── secrets.example.yaml      → copiar a secrets.yaml (no commitear)
+├── postgres/                 → StatefulSet + Service headless
+├── azurite/                  → Checkpoints Event Hubs
+├── catalog/
+├── orders/
+├── inventory/
+├── analytics/
+└── ingress/                  → NGINX Ingress (shopdemo.local)
+```
+
+## Orden de aplicación
+
+```bash
+kubectl apply -f k8s/namespace.yaml
+kubectl apply -f k8s/secrets.yaml
+kubectl apply -f k8s/postgres/
+kubectl apply -f k8s/azurite/
+# Esperar postgres ready
+kubectl apply -f k8s/catalog/
+kubectl apply -f k8s/inventory/
+kubectl apply -f k8s/orders/
+kubectl apply -f k8s/analytics/
+kubectl apply -f k8s/ingress/
+```
+
+## Documentación
+
+| Entorno | Guía |
+|---|---|
+| Minikube (local) | [docs/despliegue/kubernetes/IMPLEMENTACION-KUBERNETES-LOCAL.md](../docs/despliegue/kubernetes/IMPLEMENTACION-KUBERNETES-LOCAL.md) |
+| Azure AKS | [docs/despliegue/aks/IMPLEMENTACION-DESPLIEGUE-AKS.md](../docs/despliegue/aks/IMPLEMENTACION-DESPLIEGUE-AKS.md) |
+| Amazon EKS | [docs/despliegue/eks/IMPLEMENTACION-DESPLIEGUE-EKS.md](../docs/despliegue/eks/IMPLEMENTACION-DESPLIEGUE-EKS.md) |

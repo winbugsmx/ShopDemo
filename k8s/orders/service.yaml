@@ -1,0 +1,11 @@
+apiVersion: v1
+kind: Service
+metadata:
+  name: shopdemo-orders
+  namespace: shopdemo
+spec:
+  selector:
+    app: shopdemo-orders
+  ports:
+    - port: 8080
+      targetPort: 8080

@@ -58,6 +58,7 @@ kubectl rollout status deployment/catalog-api
 ## Documentación relacionada
 
 - [Arquitectura de ShopDemo](../ARQUITECTURA.md)
+- [Teoría Docker, Kubernetes y Native AOT](../TEORIA-DOCKER-KUBERNETES-AOT.md)
 
 ---
 

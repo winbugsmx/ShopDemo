@@ -27,7 +27,16 @@ Material del curso para llevar los microservicios Docker a la nube con enfoque *
 
 ## Documentos por plataforma
 
-### Azure
+### Kubernetes (Minikube / AKS / EKS)
+
+| Documento | Contenido |
+|---|---|
+| [kubernetes/README.md](./kubernetes/README.md) | Índice K8s |
+| [kubernetes/IMPLEMENTACION-KUBERNETES-LOCAL.md](./kubernetes/IMPLEMENTACION-KUBERNETES-LOCAL.md) | Minikube + manifiestos `k8s/` |
+| [aks/](./aks/) | Teoría e implementación AKS |
+| [eks/](./eks/) | Teoría e implementación EKS |
+
+### Azure (Container Apps)
 
 | Documento | Contenido |
 |---|---|

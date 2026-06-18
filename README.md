@@ -21,8 +21,9 @@ Al finalizar las etapas del curso, el alumno debe poder:
 2. **Comparar** Clean Architecture + CQRS (Catalog, Orders) frente a arquitectura hexagonal (Inventory).
 3. **Integrar** servicios por HTTP síncrono (Orders → Inventory) y por mensajería asíncrona (Azure Event Hubs).
 4. **Observar** el bus de eventos con Analytics y orquestar todo localmente con Aspire.
-5. **Empaquetar** cada API en Docker y **desplegarla** en Azure Container Apps o Amazon ECS Fargate.
-6. **Probar** flujos de punta a punta con Swagger, Postman y la guía de endpoints.
+5. **Empaquetar** cada API en Docker y **desplegarla** en Azure (Container Apps, AKS) y AWS (ECS, EKS).
+6. **Desplegar** en Kubernetes (Minikube local, AKS, EKS) con manifiestos `k8s/`.
+7. **Probar** flujos de punta a punta con Swagger, Postman y la guía de endpoints.
 
 ---
 
@@ -78,60 +79,118 @@ Cada etapa tiene un par de documentos: **requerimientos** (qué y por qué) e **
 | **6** | Aspire + Analytics | [REQUERIMIENTOS-ANALYTICS-ASPIRE](docs/analytics/REQUERIMIENTOS-ANALYTICS-ASPIRE.md) | [IMPLEMENTACION-ANALYTICS-ASPIRE](docs/analytics/IMPLEMENTACION-ANALYTICS-ASPIRE.md) | `GET /api/analytics/events` |
 | **7** | Docker → Azure | [REQUERIMIENTOS-DESPLIEGUE-AZURE](docs/despliegue/azure/REQUERIMIENTOS-DESPLIEGUE-AZURE.md) | [IMPLEMENTACION-DESPLIEGUE-AZURE](docs/despliegue/azure/IMPLEMENTACION-DESPLIEGUE-AZURE.md) | APIs en Container Apps |
 | **8** | Docker → AWS | [REQUERIMIENTOS-DESPLIEGUE-AWS](docs/despliegue/aws/REQUERIMIENTOS-DESPLIEGUE-AWS.md) | [IMPLEMENTACION-DESPLIEGUE-AWS](docs/despliegue/aws/IMPLEMENTACION-DESPLIEGUE-AWS.md) | APIs en ECS Fargate |
+| **9** | Kubernetes local (Minikube) | [REQUERIMIENTOS-KUBERNETES](docs/despliegue/kubernetes/REQUERIMIENTOS-KUBERNETES.md) | [IMPLEMENTACION-KUBERNETES-LOCAL](docs/despliegue/kubernetes/IMPLEMENTACION-KUBERNETES-LOCAL.md) | `kubectl get pods -n shopdemo` |
+| **10** | Azure AKS | [REQUERIMIENTOS-DESPLIEGUE-AKS](docs/despliegue/aks/REQUERIMIENTOS-DESPLIEGUE-AKS.md) | [IMPLEMENTACION-DESPLIEGUE-AKS](docs/despliegue/aks/IMPLEMENTACION-DESPLIEGUE-AKS.md) | ShopDemo en AKS |
+| **11** | Amazon EKS | [REQUERIMIENTOS-DESPLIEGUE-EKS](docs/despliegue/eks/REQUERIMIENTOS-DESPLIEGUE-EKS.md) | [IMPLEMENTACION-DESPLIEGUE-EKS](docs/despliegue/eks/IMPLEMENTACION-DESPLIEGUE-EKS.md) | ShopDemo en EKS |
 
-**Teoría de despliegue:** [Azure](docs/despliegue/azure/TEORIA-CONTENEDORES-AZURE.md) · [AWS](docs/despliegue/aws/TEORIA-CONTENEDORES-AWS.md)
+**Teoría:** [Docker/K8s/AOT](docs/TEORIA-DOCKER-KUBERNETES-AOT.md) · [AKS](docs/despliegue/aks/TEORIA-AKS.md) · [EKS](docs/despliegue/eks/TEORIA-EKS.md) · [Azure ACA](docs/despliegue/azure/TEORIA-CONTENEDORES-AZURE.md) · [AWS ECS](docs/despliegue/aws/TEORIA-CONTENEDORES-AWS.md)
 
 ---
 
-## Cómo levantar los servicios
+## Guía rápida: ¿qué modo de ejecución uso?
 
-Hay **cuatro modos** de ejecución. Elige uno según la etapa que estés practicando.
-
-### Modo 1 — Docker Compose (por microservicio)
-
-Ideal para etapas 1–5. Cada API trae su PostgreSQL.
-
-```bash
-# Terminal 1 — Catalog
-cd Catalog/ShopDemo.Catalog.Api
-copy .env.example .env    # opcional, si usas Event Hubs
-docker compose up --build
-
-# Terminal 2 — Orders
-cd Orders/ShopDemo.Orders.Api
-docker compose up --build
-
-# Terminal 3 — Inventory
-cd Inventory/ShopDemo.Inventory.Api
-docker compose up --build
-
-# Terminal 4 — Analytics (etapa 6+)
-cd Aspire/ShopDemo.Analytics.Api
-docker compose up --build
-```
-
-| Servicio | URL local | PostgreSQL |
+| Si quieres… | Modo | Sección |
 |---|---|---|
-| Catalog | http://localhost:8001 | localhost:5433 |
-| Orders | http://localhost:8002 | localhost:5434 |
-| Inventory | http://localhost:8003 | localhost:5435 |
-| Analytics | http://localhost:8004 | — |
+| Desarrollar o probar **en tu PC** sin nube | **Local** | [Inicio local](#inicio-local-desarrollo-y-pruebas) |
+| Publicar a **Azure** (release) | **Azure** | [Release Azure](#release-azure) |
+| Publicar a **AWS** (release) | **AWS** | [Release AWS](#release-aws) |
 
-### Modo 2 — .NET Aspire (stack integrado)
+```mermaid
+flowchart TD
+    START[¿Dónde ejecuto ShopDemo?]
+    START --> LOCAL[Local — mi máquina]
+    START --> AZ[Azure — release]
+    START --> AWS[AWS — release]
 
-Ideal para etapa 6. **Un solo comando** levanta 4 APIs + PostgreSQL + Azurite + dashboard.
+    LOCAL --> C1[Docker Compose\n3–4 terminales]
+    LOCAL --> C2[Aspire AppHost\n1 comando]
+    LOCAL --> C3[Minikube + k8s/\nKubernetes local]
 
-```bash
-# Configurar Event Hubs en AppHost (una vez)
-dotnet user-secrets set "ShopDemo:EventHubs:ConnectionString" "<TU_CONNECTION_STRING>" \
-  --project Aspire/ShopDemo.AppHost
+    AZ --> A1[Container Apps + ACR]
+    AZ --> A2[AKS + ACR]
 
-dotnet run --project Aspire/ShopDemo.AppHost
+    AWS --> W1[ECS Fargate + ECR]
+    AWS --> W2[EKS + ECR]
 ```
 
-Abre el **Aspire Dashboard** (URL en consola) y prueba los mismos endpoints en puertos 8001–8004.
+---
 
-### Modo 3 — `dotnet run` individual (desarrollo)
+## Inicio local (desarrollo y pruebas)
+
+### Requisitos previos
+
+```bash
+dotnet build ShopDemo.slnx    # compila la solución
+docker --version            # Docker Desktop en ejecución
+```
+
+| Herramienta | Obligatorio para | Enlace |
+|---|---|---|
+| .NET 10 SDK | Aspire / `dotnet run` | [Descargar](https://dotnet.microsoft.com/download) |
+| Docker Desktop | Compose y builds | [Descargar](https://www.docker.com/products/docker-desktop/) |
+| Minikube + kubectl | Solo modo Kubernetes local | [Minikube](https://minikube.sigs.k8s.io/docs/start/) |
+
+### URLs locales (todos los modos)
+
+| Servicio | URL | Swagger |
+|---|---|---|
+| Catalog | http://localhost:8001 | http://localhost:8001/swagger |
+| Orders | http://localhost:8002 | http://localhost:8002/swagger |
+| Inventory | http://localhost:8003 | http://localhost:8003/swagger |
+| Analytics | http://localhost:8004 | http://localhost:8004/swagger |
+
+> **Postman:** importa [ShopDemo.postman_collection.json](docs/ShopDemo.postman_collection.json) — las variables ya apuntan a `localhost`. Ver [Configurar Postman](#configurar-postman-según-entorno).
+
+---
+
+### Opción A — Docker Compose (recomendada para empezar)
+
+**Cuándo usarla:** etapas 1–5; quieres levantar un servicio aislado con su PostgreSQL.
+
+**Orden:** Catalog e Inventory primero; luego Orders (Orders llama a Inventory).
+
+| Paso | Acción | Terminal |
+|---|---|---|
+| 1 | Catalog + PostgreSQL | `cd Catalog/ShopDemo.Catalog.Api` → `copy .env.example .env` → `docker compose up --build` |
+| 2 | Inventory + PostgreSQL + Azurite | `cd Inventory/ShopDemo.Inventory.Api` → `docker compose up --build` |
+| 3 | Orders + PostgreSQL | `cd Orders/ShopDemo.Orders.Api` → `docker compose up --build` |
+| 4 | Analytics (opcional, etapa 6+) | `cd Aspire/ShopDemo.Analytics.Api` → `docker compose up --build` |
+
+**Verificar:**
+
+```bash
+curl http://localhost:8001/swagger/index.html
+curl http://localhost:8003/swagger/index.html
+curl http://localhost:8002/swagger/index.html
+```
+
+**Event Hubs (opcional):** edita `.env` en cada API con `EVENT_HUBS_ENABLED=true` y la connection string. Guía: [INTEGRACION-AZURE-EVENT-HUBS.md](docs/INTEGRACION-AZURE-EVENT-HUBS.md).
+
+**Detener:** `Ctrl+C` en cada terminal o `docker compose down`.
+
+---
+
+### Opción B — .NET Aspire (stack completo en un comando)
+
+**Cuándo usarla:** etapa 6; quieres las 4 APIs + PostgreSQL + Azurite + dashboard sin varias terminales.
+
+| Paso | Comando |
+|---|---|
+| 1 | Configurar Event Hubs (una vez): `dotnet user-secrets set "ShopDemo:EventHubs:ConnectionString" "<CONNECTION_STRING>" --project Aspire/ShopDemo.AppHost` |
+| 2 | Arrancar todo: `dotnet run --project Aspire/ShopDemo.AppHost` |
+| 3 | Abrir **Aspire Dashboard** (URL que muestra la consola) |
+
+Los puertos siguen siendo **8001–8004**. El AppHost inyecta `EventHubs__*` y la URL de Inventory para Orders.
+
+Guía: [IMPLEMENTACION-ANALYTICS-ASPIRE.md](docs/analytics/IMPLEMENTACION-ANALYTICS-ASPIRE.md)
+
+---
+
+### Opción C — `dotnet run` (depuración en Visual Studio / Cursor)
+
+**Cuándo usarla:** depurar un solo microservicio con breakpoints.
+
+Requiere PostgreSQL accesible en `localhost:5433`–`5435` (vía Compose de cada BD o instancia local).
 
 ```bash
 dotnet run --project Catalog/ShopDemo.Catalog.Api
@@ -140,16 +199,132 @@ dotnet run --project Inventory/ShopDemo.Inventory.Api
 dotnet run --project Aspire/ShopDemo.Analytics.Api
 ```
 
-Requiere PostgreSQL local en los puertos 5433–5435 (o ajustar `appsettings.Development.json`).
+---
 
-### Modo 4 — Nube (Azure / AWS)
+### Opción D — Kubernetes local (Minikube)
 
-Sigue las guías de despliegue. Las URLs dejan de ser `localhost` y pasan a FQDN del load balancer / Container App.
+**Cuándo usarla:** etapa 9; practicar manifiestos antes de AKS/EKS.
 
-- **Azure:** [IMPLEMENTACION-DESPLIEGUE-AZURE](docs/despliegue/azure/IMPLEMENTACION-DESPLIEGUE-AZURE.md)
-- **AWS:** [IMPLEMENTACION-DESPLIEGUE-AWS](docs/despliegue/aws/IMPLEMENTACION-DESPLIEGUE-AWS.md)
+| Paso | Resumen |
+|---|---|
+| 1 | `minikube start` + `minikube addons enable ingress` |
+| 2 | Build imágenes en daemon Minikube (`minikube docker-env`) |
+| 3 | `kubectl apply -f k8s/` (ver orden en [k8s/README.md](k8s/README.md)) |
 
-CI/CD de referencia: `.github/workflows/deploy-azure.yml` y `deploy-aws.yml`.
+Guía completa: [IMPLEMENTACION-KUBERNETES-LOCAL.md](docs/despliegue/kubernetes/IMPLEMENTACION-KUBERNETES-LOCAL.md)
+
+**Postman con Ingress:** `catalogBaseUrl` = `http://shopdemo.local/catalog` (tras configurar hosts o `minikube tunnel`).
+
+---
+
+## Release Azure
+
+Dos caminos de **release** en Azure. Ambos usan imágenes en **Azure Container Registry (ACR)**.
+
+| Camino | Servicio Azure | Ideal para | Guía |
+|---|---|---|---|
+| **ACA** | Container Apps | Release serverless, más simple | [IMPLEMENTACION-DESPLIEGUE-AZURE](docs/despliegue/azure/IMPLEMENTACION-DESPLIEGUE-AZURE.md) |
+| **AKS** | Kubernetes Service | Release con manifiestos `k8s/` | [IMPLEMENTACION-DESPLIEGUE-AKS](docs/despliegue/aks/IMPLEMENTACION-DESPLIEGUE-AKS.md) |
+
+### Flujo común release Azure
+
+```mermaid
+flowchart LR
+    A[docker build] --> B[docker push ACR]
+    B --> C{Destino}
+    C -->|ACA| D[Container Apps]
+    C -->|AKS| E[kubectl apply k8s/]
+    D & E --> F[Probar con Postman]
+```
+
+| Paso | ACA (Container Apps) | AKS |
+|---|---|---|
+| 1 | Crear RG + ACR | Crear RG + ACR + cluster AKS |
+| 2 | `docker push` a ACR | `az aks get-credentials` + push ACR |
+| 3 | Crear 4 Container Apps | Instalar Ingress NGINX |
+| 4 | Secrets `EventHubs__*` en cada app | Editar imagen en Deployments → `kubectl apply` |
+| 5 | Copiar FQDN de cada app | Copiar IP/DNS del Ingress |
+
+### URLs release Azure (Postman)
+
+Tras desplegar, actualiza las variables de colección:
+
+| Variable Postman | Origen (ACA) | Origen (AKS Ingress) |
+|---|---|---|
+| `catalogBaseUrl` | `https://ca-shopdemo-catalog.<fqdn>` | `http://<ingress-ip>/catalog` |
+| `ordersBaseUrl` | `https://ca-shopdemo-orders.<fqdn>` | `http://<ingress-ip>/orders` |
+| `inventoryBaseUrl` | URL **interna** o pública si expusiste | `http://<ingress-ip>/inventory` |
+| `analyticsBaseUrl` | `https://ca-shopdemo-analytics.<fqdn>` | `http://<ingress-ip>/analytics` |
+
+**Secrets obligatorios en nube:** `EventHubs__ConnectionString`, connection strings PostgreSQL, Azurite/checkpoint para Inventory y Analytics.
+
+CI/CD: [.github/workflows/deploy-azure.yml](.github/workflows/deploy-azure.yml)
+
+---
+
+## Release AWS
+
+Dos caminos de **release** en AWS. Ambos usan **Amazon ECR**.
+
+| Camino | Servicio AWS | Ideal para | Guía |
+|---|---|---|---|
+| **ECS** | Fargate | Release sin Kubernetes | [IMPLEMENTACION-DESPLIEGUE-AWS](docs/despliegue/aws/IMPLEMENTACION-DESPLIEGUE-AWS.md) |
+| **EKS** | Elastic Kubernetes Service | Release con manifiestos `k8s/` | [IMPLEMENTACION-DESPLIEGUE-EKS](docs/despliegue/eks/IMPLEMENTACION-DESPLIEGUE-EKS.md) |
+
+### Flujo común release AWS
+
+| Paso | ECS Fargate | EKS |
+|---|---|---|
+| 1 | Crear repos ECR | `eksctl create cluster` o Consola EKS |
+| 2 | `docker push` a ECR | `aws eks update-kubeconfig` |
+| 3 | Task definitions + services | EBS CSI + Ingress NGINX |
+| 4 | ALB por API pública | `kubectl apply -f k8s/` |
+| 5 | Cloud Map para Orders→Inventory | Mismos secrets que Minikube |
+
+### URLs release AWS (Postman)
+
+| Variable Postman | Origen (ECS + ALB) | Origen (EKS Ingress) |
+|---|---|---|
+| `catalogBaseUrl` | `http://<alb-catalog-dns>` | `http://<ingress-host>/catalog` |
+| `ordersBaseUrl` | `http://<alb-orders-dns>` | `http://<ingress-host>/orders` |
+| `inventoryBaseUrl` | DNS interno Cloud Map o ALB | `http://<ingress-host>/inventory` |
+| `analyticsBaseUrl` | `http://<alb-analytics-dns>` | `http://<ingress-host>/analytics` |
+
+**Nota:** el código usa **Azure Event Hubs**; los contenedores en AWS necesitan salida HTTPS a internet hacia Azure.
+
+CI/CD: [.github/workflows/deploy-aws.yml](.github/workflows/deploy-aws.yml)
+
+---
+
+## Configurar Postman según entorno
+
+1. Importar [docs/ShopDemo.postman_collection.json](docs/ShopDemo.postman_collection.json)
+2. En la colección → **Variables**, elegir el perfil:
+
+| Perfil | `deploymentProfile` | Qué cambiar |
+|---|---|---|
+| **Local** (default) | `local` | Ya configurado: `localhost:8001`–`8004` |
+| **Azure ACA** | `azure-aca` | Reemplazar `catalogBaseUrl`, `ordersBaseUrl`, `inventoryBaseUrl`, `analyticsBaseUrl` con FQDN de Container Apps |
+| **Azure AKS** | `azure-aks` | URLs con prefijo de Ingress (`/catalog`, `/orders`, …) |
+| **AWS ECS** | `aws-ecs` | DNS de cada ALB |
+| **AWS EKS** | `aws-eks` | Igual que AKS con Ingress |
+
+3. Ejecutar carpeta **Flujo integrado (E2E)** en orden
+4. Tras crear producto/pedido, copiar `id` de la respuesta a variables `productId` / `orderId`
+
+Con **Event Hubs activo**, el paso 2 del E2E (registrar stock) puede omitirse; usa **Analytics → Listar eventos** para validar.
+
+---
+
+## Checklist antes del flujo E2E
+
+| # | Verificación | Local Compose | Aspire | Release nube |
+|---|---|---|---|---|
+| 1 | APIs responden Swagger | ✓ 8001–8003 | ✓ 8001–8004 | ✓ FQDN/Ingress |
+| 2 | Orders alcanza Inventory | `host.docker.internal:8003` | automático | URL interna configurada |
+| 3 | PostgreSQL accesible | compose por API | Aspire PG | ACI/ECS/StatefulSet |
+| 4 | Event Hubs (si aplica) | `.env` | user secrets AppHost | Secrets ACA/EKS/SSM |
+| 5 | Postman variables actualizadas | localhost | localhost | FQDN release |
 
 ---
 
@@ -223,13 +398,15 @@ Archivo plantilla: `Aspire/ShopDemo.Analytics.Api/.env.example`
 
 El AppHost inyecta a cada API como `EventHubs__*` y configura `InventoryApi__BaseUrl` para Orders.
 
-### Plataformas en nube
+### Plataformas en nube (release)
 
 | Plataforma | Dónde poner secretos | Documentación |
 |---|---|---|
-| **Azure Container Apps** | Secrets de cada Container App + `appsettings` AppHost no aplica | [despliegue/azure](docs/despliegue/azure/) |
+| **Azure Container Apps** | Secrets de cada Container App | [despliegue/azure](docs/despliegue/azure/) |
+| **Azure AKS** | Secrets K8s / Key Vault | [despliegue/aks](docs/despliegue/aks/) |
 | **AWS ECS** | SSM Parameter Store / Secrets Manager | [despliegue/aws](docs/despliegue/aws/) |
-| **GitHub Actions** | Repository secrets (`AZURE_CREDENTIALS`, `ACR_NAME`, `AWS_ROLE_ARN`, etc.) | `.github/workflows/` |
+| **Amazon EKS** | Secrets K8s / Parameter Store | [despliegue/eks](docs/despliegue/eks/) |
+| **GitHub Actions** | Repository secrets | [.github/workflows/](.github/workflows/) |
 
 > **Regla:** nunca commitear connection strings reales. Usa `.env` local (gitignored), user secrets o secretos de la plataforma.
 
@@ -237,11 +414,12 @@ El AppHost inyecta a cada API como `EventHubs__*` y configura `InventoryApi__Bas
 
 ## Prueba rápida del flujo integrado
 
-1. Levantar servicios (Compose, Aspire o nube).
-2. Importar [ShopDemo.postman_collection.json](docs/ShopDemo.postman_collection.json).
-3. Seguir la carpeta **Flujo integrado (E2E)** o [GUIA-ENDPOINTS.md](docs/GUIA-ENDPOINTS.md).
+1. Elige modo de ejecución: [Inicio local](#inicio-local-desarrollo-y-pruebas) o [Release](#release-azure).
+2. Completa el [checklist E2E](#checklist-antes-del-flujo-e2e).
+3. Importa y configura [Postman](#configurar-postman-según-entorno).
+4. Ejecuta carpeta **Flujo integrado (E2E)** o sigue [GUIA-ENDPOINTS.md](docs/GUIA-ENDPOINTS.md).
 
-Con Event Hubs activo, el paso manual de stock puede omitirse: Inventory auto-registra al crear producto. Analytics muestra el evento en `GET /api/analytics/events`.
+Con Event Hubs activo, el stock se auto-registra y Analytics lista eventos en `GET /api/analytics/events`.
 
 ---
 
@@ -254,6 +432,7 @@ ShopDemo/
 ├── Inventory/        # Hexagonal — stock
 ├── Aspire/           # AppHost, ServiceDefaults, Analytics
 ├── ShopDemo.Shared/  # Kernel DDD + mensajería
+├── k8s/              # Manifiestos Kubernetes (Minikube, AKS, EKS)
 ├── docs/             # Toda la documentación del curso
 └── .github/workflows/  # CI/CD Azure y AWS
 ```
@@ -270,6 +449,8 @@ ShopDemo/
 | Aspire | [docs/INTEGRACION-ASPIRE.md](docs/INTEGRACION-ASPIRE.md) |
 | Despliegue | [docs/despliegue/README.md](docs/despliegue/README.md) |
 | Cheat sheets CLI | [docs/cheat-sheets/](docs/cheat-sheets/) |
+| Teoría Docker, K8s y AOT | [docs/TEORIA-DOCKER-KUBERNETES-AOT.md](docs/TEORIA-DOCKER-KUBERNETES-AOT.md) |
+| Manifiestos Kubernetes | [k8s/](k8s/) |
 
 ---
 

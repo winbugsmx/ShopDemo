@@ -60,3 +60,6 @@ docker-compose.override.yml
 .env
 **/.env
 !.env.example
+
+# Kubernetes secrets (copia local de secrets.example.yaml)
+k8s/secrets.yaml

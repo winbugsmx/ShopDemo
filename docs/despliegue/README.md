@@ -38,6 +38,13 @@ Material del curso para llevar los microservicios Docker a la nube con enfoque *
 | [aks/](./aks/) | AKS: Helm Ingress, Secrets, Probes, HPA |
 | [eks/](./eks/) | EKS: Helm Ingress, Secrets, Probes, HPA |
 
+### Observabilidad y resiliencia
+
+| Tema | Teoría | Requerimientos | Azure | AWS |
+|---|---|---|---|---|
+| **Observabilidad** | [observabilidad/TEORIA-OBSERVABILIDAD.md](../observabilidad/TEORIA-OBSERVABILIDAD.md) | [REQUERIMIENTOS-OBSERVABILIDAD.md](../observabilidad/REQUERIMIENTOS-OBSERVABILIDAD.md) | [ACA + AKS](../observabilidad/azure/IMPLEMENTACION-OBSERVABILIDAD-AZURE.md) | [ECS + EKS](../observabilidad/aws/IMPLEMENTACION-OBSERVABILIDAD-AWS.md) |
+| **Resiliencia** | [resiliencia/TEORIA-RESILIENCIA.md](../resiliencia/TEORIA-RESILIENCIA.md) | [REQUERIMIENTOS-RESILIENCIA.md](../resiliencia/REQUERIMIENTOS-RESILIENCIA.md) | [ACA + AKS](../resiliencia/azure/IMPLEMENTACION-RESILIENCIA-AZURE.md) | [ECS + EKS](../resiliencia/aws/IMPLEMENTACION-RESILIENCIA-AWS.md) |
+
 ### Azure (Container Apps)
 
 | Documento | Contenido |

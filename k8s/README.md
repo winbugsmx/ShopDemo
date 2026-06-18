@@ -17,6 +17,7 @@ k8s/
 ├── orders/
 ├── inventory/
 ├── analytics/
+├── mcp/                      → MCP Gateway (agentes IA)
 └── ingress/                  → NGINX Ingress (shopdemo.local)
 ```
 
@@ -32,6 +33,7 @@ kubectl apply -f k8s/catalog/
 kubectl apply -f k8s/inventory/
 kubectl apply -f k8s/orders/
 kubectl apply -f k8s/analytics/
+kubectl apply -f k8s/mcp/
 kubectl apply -f k8s/catalog/hpa.yaml
 kubectl apply -f k8s/ingress/
 ```
@@ -43,3 +45,4 @@ kubectl apply -f k8s/ingress/
 | Minikube (local) | [docs/despliegue/kubernetes/IMPLEMENTACION-KUBERNETES-LOCAL.md](../docs/despliegue/kubernetes/IMPLEMENTACION-KUBERNETES-LOCAL.md) |
 | Azure AKS | [docs/despliegue/aks/IMPLEMENTACION-DESPLIEGUE-AKS.md](../docs/despliegue/aks/IMPLEMENTACION-DESPLIEGUE-AKS.md) |
 | Amazon EKS | [docs/despliegue/eks/IMPLEMENTACION-DESPLIEGUE-EKS.md](../docs/despliegue/eks/IMPLEMENTACION-DESPLIEGUE-EKS.md) |
+| MCP Gateway | [docs/integracion-ia/IMPLEMENTACION-DESPLIEGUE-MCP-AZURE.md](../docs/integracion-ia/IMPLEMENTACION-DESPLIEGUE-MCP-AZURE.md) |

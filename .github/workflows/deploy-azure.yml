@@ -12,6 +12,7 @@ on:
       - 'Orders/**'
       - 'Inventory/**'
       - 'Aspire/ShopDemo.Analytics.Api/**'
+      - 'AI/ShopDemo.Mcp.Api/**'
       - 'ShopDemo.Shared/**'
       - '.github/workflows/deploy-azure.yml'
 
@@ -42,6 +43,10 @@ jobs:
             dockerfile: Aspire/ShopDemo.Analytics.Api/Dockerfile
             image: shopdemo-analytics
             containerapp: ca-shopdemo-analytics
+          - service: mcp
+            dockerfile: AI/ShopDemo.Mcp.Api/Dockerfile
+            image: shopdemo-mcp
+            containerapp: ca-shopdemo-mcp
 
     steps:
       - uses: actions/checkout@v4

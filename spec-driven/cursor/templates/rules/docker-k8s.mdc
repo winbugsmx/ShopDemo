@@ -1,0 +1,15 @@
+---
+description: Kubernetes manifests and Minikube workflow
+globs: k8s/**/*
+alwaysApply: false
+---
+
+# Kubernetes
+
+- Apply order: namespace → secrets.yaml → postgres → azurite → APIs → mcp → ingress → hpa.
+- Secrets: copy from `secrets.example.yaml`; never commit `k8s/secrets.yaml`.
+- Probes: HTTP GET `/health` (readiness), `/alive` or `/health` (liveness).
+- Images: `IfNotPresent` for Minikube local build; ACR/ECR full path in cloud.
+- Ingress host: `shopdemo.local` (local); cloud uses LB IP/DNS.
+
+Reference: `docs/despliegue/kubernetes/IMPLEMENTACION-KUBERNETES-LOCAL.md`

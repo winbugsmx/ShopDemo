@@ -12,6 +12,7 @@ on:
       - 'Orders/**'
       - 'Inventory/**'
       - 'Aspire/ShopDemo.Analytics.Api/**'
+      - 'AI/ShopDemo.Mcp.Api/**'
       - 'ShopDemo.Shared/**'
       - '.github/workflows/deploy-aws.yml'
 
@@ -41,6 +42,9 @@ jobs:
           - dockerfile: Aspire/ShopDemo.Analytics.Api/Dockerfile
             repository: shopdemo-analytics
             ecs_service: shopdemo-analytics
+          - dockerfile: AI/ShopDemo.Mcp.Api/Dockerfile
+            repository: shopdemo-mcp
+            ecs_service: shopdemo-mcp
 
     steps:
       - uses: actions/checkout@v4

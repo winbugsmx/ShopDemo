@@ -1,0 +1,14 @@
+---
+description: AWS deployment (ECS, EKS, ECR) — use only for AWS tasks
+globs: docs/despliegue/aws/**/*
+alwaysApply: false
+---
+
+# AWS deploy
+
+- Spec: `spec-driven/specs/07-deploy-aws/SPEC.md`
+- Guides: `docs/despliegue/aws/`, `docs/despliegue/eks/`, `docs/integracion-ia/IMPLEMENTACION-DESPLIEGUE-MCP-AWS.md`
+- Use AWS Console and `aws` / `eksctl` from implementation docs.
+- ECS services: `shopdemo-*`. MCP: `shopdemo-mcp`.
+- Event Hubs remains on Azure — ensure outbound HTTPS from VPC.
+- Do not use `az` CLI in this context.

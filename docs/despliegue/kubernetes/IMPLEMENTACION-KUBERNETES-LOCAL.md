@@ -114,6 +114,7 @@ docker build -f Catalog/ShopDemo.Catalog.Api/Dockerfile -t shopdemo-catalog:late
 docker build -f Orders/ShopDemo.Orders.Api/Dockerfile -t shopdemo-orders:latest .
 docker build -f Inventory/ShopDemo.Inventory.Api/Dockerfile -t shopdemo-inventory:latest .
 docker build -f Aspire/ShopDemo.Analytics.Api/Dockerfile -t shopdemo-analytics:latest .
+docker build -f AI/ShopDemo.Mcp.Api/Dockerfile -t shopdemo-mcp:latest .
 
 docker images | findstr shopdemo
 ```
@@ -163,6 +164,7 @@ kubectl apply -f k8s/catalog/
 kubectl apply -f k8s/inventory/
 kubectl apply -f k8s/orders/
 kubectl apply -f k8s/analytics/
+kubectl apply -f k8s/mcp/
 kubectl apply -f k8s/catalog/hpa.yaml
 
 kubectl get pods -n shopdemo -w

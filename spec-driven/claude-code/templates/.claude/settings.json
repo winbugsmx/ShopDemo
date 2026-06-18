@@ -1,0 +1,21 @@
+{
+  "permissions": {
+    "allow": [
+      "Read",
+      "Edit",
+      "Write",
+      "Glob",
+      "Grep",
+      "Bash(dotnet *)",
+      "Bash(docker *)",
+      "Bash(kubectl *)",
+      "Bash(az *)",
+      "Bash(aws *)",
+      "Bash(git *)"
+    ],
+    "deny": []
+  },
+  "env": {
+    "DOTNET_CLI_TELEMETRY_OPTOUT": "1"
+  }
+}

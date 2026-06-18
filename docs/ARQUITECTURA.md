@@ -9,7 +9,8 @@
 | | E-mail: gilberto.juarez@gmail.com |
 | | E-mail: lcc.gilberto.juarez@gmail.com |
 
-**Índice general del curso:** [README.md](../README.md) · **Prueba de APIs:** [GUIA-ENDPOINTS.md](./GUIA-ENDPOINTS.md)
+**Índice general del curso:** [README.md](../README.md) · **Prueba de APIs:** [GUIA-ENDPOINTS.md](./GUIA-ENDPOINTS.md)  
+**Cómo levantar servicios:** [Tabla maestra de arranque](../README.md#tabla-maestra-de-arranque) · [Local](../README.md#inicio-local-desarrollo-y-pruebas) · [Azure](../README.md#release-azure) · [AWS](../README.md#release-aws)
 
 ---
 
@@ -17,7 +18,7 @@
 
 **ShopDemo** es una plataforma de e-commerce organizada como **sistema distribuido por bounded contexts**, implementada en **.NET 10**. Cada microservicio de negocio tiene su propia base de datos PostgreSQL y API HTTP independiente. La orquestación local unificada se realiza con **.NET Aspire** (`ShopDemo.AppHost`).
 
-La solución combina dos estilos arquitectónicos de forma intencional en los microservicios de dominio, más un **observador de eventos** orquestado por Aspire:
+La solución combina dos estilos arquitectónicos de forma intencional en los microservicios de dominio, más un **observador de eventos** orquestado por Aspire y un **MCP Gateway** para agentes IA:
 
 | Microservicio | Estilo arquitectónico | Orquestación |
 |---|---|---|
@@ -25,12 +26,14 @@ La solución combina dos estilos arquitectónicos de forma intencional en los mi
 | **Orders** | Clean Architecture + DDD | CQRS con MediatR |
 | **Inventory** | Hexagonal (Ports & Adapters) | Casos de uso + Inbound Ports |
 | **Analytics** | API mínima + `BackgroundService` | Consumidor Event Hubs (read-only) |
+| **MCP Gateway** | API HTTP + MCP tools | Proxy a Catalog, Inventory, Analytics |
 | **AppHost** | .NET Aspire | Orquesta 4 APIs + PostgreSQL + Azurite + config Event Hubs |
 
 ```
 ┌──────────────────────────────────────────────────────────────────────────────┐
 │  API (Presentación)                                                          │
 │  Catalog (:8001)  Orders (:8002)  Inventory (:8003)  Analytics (:8004)     │
+│  MCP Gateway (:8005)                                                       │
 ├──────────────────────────────────────────────────────────────────────────────┤
 │  Infrastructure / Adaptadores Driven                                         │
 │  EF Core, HTTP clients, Event Hubs publishers/consumers                      │
@@ -64,6 +67,11 @@ flowchart LR
     E5 --> E6[Etapa 6\nAspire + Analytics]
     E6 --> E7[Etapa 7\nAzure ACA]
     E6 --> E8[Etapa 8\nAWS ECS]
+    E7 --> E9[Etapa 9–11\nK8s Minikube/AKS/EKS]
+    E8 --> E9
+    E9 --> E12[Etapa 12–13\nObservabilidad + Resiliencia]
+    E12 --> E14[Etapa 14\nIA + MCP]
+    E14 --> E15[Etapa 15\nSpec-driven]
 ```
 
 | Etapa | Entregable | Requerimientos | Implementación | Validación |
@@ -77,18 +85,54 @@ flowchart LR
 | 6 | Orquestación Aspire | [analytics/REQUERIMIENTOS-ANALYTICS-ASPIRE](./analytics/REQUERIMIENTOS-ANALYTICS-ASPIRE.md) | [analytics/IMPLEMENTACION-ANALYTICS-ASPIRE](./analytics/IMPLEMENTACION-ANALYTICS-ASPIRE.md) | `/api/analytics/events` |
 | 7 | Contenedores en Azure | [despliegue/azure/REQUERIMIENTOS](./despliegue/azure/REQUERIMIENTOS-DESPLIEGUE-AZURE.md) | [despliegue/azure/IMPLEMENTACION](./despliegue/azure/IMPLEMENTACION-DESPLIEGUE-AZURE.md) | ACA + ACR |
 | 8 | Contenedores en AWS | [despliegue/aws/REQUERIMIENTOS](./despliegue/aws/REQUERIMIENTOS-DESPLIEGUE-AWS.md) | [despliegue/aws/IMPLEMENTACION](./despliegue/aws/IMPLEMENTACION-DESPLIEGUE-AWS.md) | ECS + ECR |
+| 9 | Kubernetes local | [despliegue/kubernetes/REQUERIMIENTOS-KUBERNETES](./despliegue/kubernetes/REQUERIMIENTOS-KUBERNETES.md) | [IMPLEMENTACION-KUBERNETES-LOCAL](./despliegue/kubernetes/IMPLEMENTACION-KUBERNETES-LOCAL.md) | `kubectl get pods -n shopdemo` |
+| 10 | Azure AKS | [despliegue/aks/REQUERIMIENTOS-DESPLIEGUE-AKS](./despliegue/aks/REQUERIMIENTOS-DESPLIEGUE-AKS.md) | [IMPLEMENTACION-DESPLIEGUE-AKS](./despliegue/aks/IMPLEMENTACION-DESPLIEGUE-AKS.md) | Ingress + HPA |
+| 11 | Amazon EKS | [despliegue/eks/REQUERIMIENTOS-DESPLIEGUE-EKS](./despliegue/eks/REQUERIMIENTOS-DESPLIEGUE-EKS.md) | [IMPLEMENTACION-DESPLIEGUE-EKS](./despliegue/eks/IMPLEMENTACION-DESPLIEGUE-EKS.md) | Ingress + HPA |
+| 12 | Observabilidad | [observabilidad/REQUERIMIENTOS](./observabilidad/REQUERIMIENTOS-OBSERVABILIDAD.md) | [Azure](./observabilidad/azure/) · [AWS](./observabilidad/aws/) | Logs + traceId |
+| 13 | Resiliencia | [resiliencia/REQUERIMIENTOS](./resiliencia/REQUERIMIENTOS-RESILIENCIA.md) | [Azure](./resiliencia/azure/) · [AWS](./resiliencia/aws/) | `/health` + recuperación |
+| 14 | Integración IA + MCP | [integracion-ia/REQUERIMIENTOS](./integracion-ia/REQUERIMIENTOS-INTEGRACION-IA.md) | [Azure](./integracion-ia/azure/) · [AWS](./integracion-ia/aws/) | Tools MCP + alertas |
+| 14b | Despliegue MCP | [REQUERIMIENTOS-DESPLIEGUE-MCP](./integracion-ia/REQUERIMIENTOS-DESPLIEGUE-MCP.md) | [Azure](./integracion-ia/IMPLEMENTACION-DESPLIEGUE-MCP-AZURE.md) · [AWS](./integracion-ia/IMPLEMENTACION-DESPLIEGUE-MCP-AWS.md) | `curl .../mcp` |
+| 15 | Spec-driven | [spec-driven/REQUERIMIENTOS](../spec-driven/REQUERIMIENTOS-SPEC-DRIVEN-DEVELOPMENT.md) | [IMPLEMENTACION](../spec-driven/IMPLEMENTACION-SPEC-DRIVEN-DEVELOPMENT.md) | Agente + SPEC.md |
+
+**Índice completo de etapas:** [README.md](../README.md#etapas-del-curso-roadmap)
 
 ---
 
-## 1.2 Modos de ejecución
+## 1.2 Modos de ejecución y arranque
 
-| Modo | Cuándo usarlo | Comando / ubicación |
-|---|---|---|
-| **Docker Compose** | Etapas 1–5; un servicio aislado | `docker compose up` en cada `*.Api/` |
-| **Aspire AppHost** | Etapa 6; desarrollo integrado | `dotnet run --project Aspire/ShopDemo.AppHost` |
-| **dotnet run** | Depuración de un solo proyecto | `dotnet run --project <Api>.csproj` |
-| **Azure Container Apps** | Etapa 7; nube Microsoft | [despliegue/azure/](./despliegue/azure/) |
-| **AWS ECS Fargate** | Etapa 8; nube Amazon | [despliegue/aws/](./despliegue/aws/) |
+| Modo | Cuándo usarlo | Cómo levantar | Servicios incluidos |
+|---|---|---|---|
+| **Docker Compose** | Etapas 1–5; un servicio aislado | `docker compose up --build` en cada `*.Api/` | 1 API + su PostgreSQL (+ Azurite en Inventory/Analytics) |
+| **Aspire AppHost** | Etapa 6; stack integrado | `dotnet run --project Aspire/ShopDemo.AppHost` | Catalog, Orders, Inventory, Analytics + PG + Azurite |
+| **dotnet run** | Depuración unitaria | `dotnet run --project <Api>.csproj` | 1 API (requiere BD/dependencias manuales) |
+| **MCP Gateway** | Etapa 14+; agentes IA | `dotnet run --project AI/ShopDemo.Mcp.Api` | MCP :8005 (requiere Catalog, Inventory, Analytics) |
+| **Minikube + k8s/** | Etapa 9; practicar K8s | `kubectl apply -f k8s/` | 5 APIs + PostgreSQL + Azurite + Ingress |
+| **Azure ACA** | Release serverless | [despliegue/azure/](./despliegue/azure/) | 5 Container Apps + ACR |
+| **Azure AKS** | Release Kubernetes | [despliegue/aks/](./despliegue/aks/) + [k8s/](../k8s/) | Manifiestos `k8s/` en cluster AKS |
+| **AWS ECS** | Release sin K8s | [despliegue/aws/](./despliegue/aws/) | 5 task definitions + ALB |
+| **AWS EKS** | Release Kubernetes | [despliegue/eks/](./despliegue/eks/) + [k8s/](../k8s/) | Mismos manifiestos que Minikube/AKS |
+
+### Orden de arranque (local)
+
+```
+Catalog (8001) → Inventory (8003) → Orders (8002) → Analytics (8004) → MCP (8005)
+```
+
+Orders depende de Inventory por HTTP. MCP depende de Catalog, Inventory y Analytics.
+
+### Verificación de salud
+
+Todas las APIs de negocio exponen **`GET /health`** y **`GET /alive`** (liveness). En Kubernetes, los manifiestos `k8s/*/deployment.yaml` usan estas rutas en probes HTTP.
+
+```bash
+curl http://localhost:8001/health   # Catalog
+curl http://localhost:8002/health   # Orders
+curl http://localhost:8003/health   # Inventory
+curl http://localhost:8004/health   # Analytics
+curl http://localhost:8005/health   # MCP Gateway
+```
+
+**Guía detallada de arranque:** [README.md § Inicio local](../README.md#inicio-local-desarrollo-y-pruebas) · [README.md § Tabla maestra](../README.md#tabla-maestra-de-arranque) · [README.md § Release Azure/AWS](../README.md#release-azure)
 
 ---
 
@@ -123,7 +167,7 @@ Variables en formato ASP.NET Core (`Section__Key`). Origen según modo de ejecuc
 
 ## 2. Estructura de la solución
 
-La solución (`ShopDemo.slnx`) contiene **16 proyectos**:
+La solución (`ShopDemo.slnx`) contiene **17 proyectos**:
 
 | Carpeta | Proyecto | Rol |
 |---|---|---|
@@ -143,6 +187,7 @@ La solución (`ShopDemo.slnx`) contiene **16 proyectos**:
 | Aspire | `ShopDemo.AppHost` | Orquestador Aspire (4 APIs + infra) |
 | Aspire | `ShopDemo.ServiceDefaults` | Telemetría, health, service discovery |
 | Aspire | `ShopDemo.Analytics.Api` | Observador Event Hubs + API de consulta |
+| AI | `ShopDemo.Mcp.Api` | MCP Server HTTP — tools para agentes IA |
 
 ### Regla de dependencias
 
@@ -159,13 +204,14 @@ Api → Infrastructure → Application → Domain → Shared
 
 ## 3. Microservicios y puertos
 
-| Servicio | Puerto API | PostgreSQL (host) | Base de datos | Arquitectura |
-|---|---|---|---|---|
-| **Catalog** | 8001 | 5433* | `ShopDemoCatalog` | Clean + CQRS |
-| **Orders** | 8002 | 5434* | `ShopDemoOrders` | Clean + CQRS |
-| **Inventory** | 8003 | 5435* | `ShopDemoInventory` | Hexagonal |
-| **Analytics** | 8004 | — | — (sin BD; buffer en memoria) | Observador Event Hubs |
-| **Aspire Dashboard** | ~15888 | — | — | Orquestación local |
+| Servicio | Puerto API | PostgreSQL (host) | Base de datos | Arquitectura | Health |
+|---|---|---|---|---|---|
+| **Catalog** | 8001 | 5433* | `ShopDemoCatalog` | Clean + CQRS | `/health`, `/alive` |
+| **Orders** | 8002 | 5434* | `ShopDemoOrders` | Clean + CQRS | `/health`, `/alive` |
+| **Inventory** | 8003 | 5435* | `ShopDemoInventory` | Hexagonal | `/health`, `/alive` |
+| **Analytics** | 8004 | — | — (buffer en memoria) | Observador Event Hubs | `/health` vía ServiceDefaults |
+| **MCP Gateway** | 8005 | — | — | MCP HTTP tools | `/health` |
+| **Aspire Dashboard** | ~15888 | — | — | Orquestación local | — |
 
 \* Con **Docker Compose** cada servicio usa su propio contenedor PostgreSQL en el puerto indicado. Con **Aspire AppHost** se usa un servidor PostgreSQL compartido con tres bases de datos.
 
@@ -404,7 +450,46 @@ Analytics **no es un bounded context de negocio** con dominio propio; es un **ob
 
 ---
 
-## 10. Diagrama de componentes
+## 10. MCP Gateway (integración IA)
+
+**Documentación:** [docs/integracion-ia/](./integracion-ia/) · [AI/README.md](../AI/README.md)
+
+### 10.1 Estado de implementación
+
+| Componente | Estado |
+|---|---|
+| `ShopDemo.Mcp.Api` (HTTP transport `/mcp`) | ✅ Completo |
+| Tools: `CreateProduct`, `GetProductStock`, `ListAnalyticsEvents`, `GetShopDemoStatus` | ✅ Completo |
+| Docker + `docker-compose.yml` | ✅ Completo |
+| Manifiestos K8s (`k8s/mcp/`) + Ingress `/mcp` | ✅ Completo |
+| Despliegue ACA/AKS y ECS/EKS | ✅ Documentado |
+
+### 10.2 Rol arquitectónico
+
+El MCP Gateway **no participa en el flujo de negocio** de pedidos; expone **herramientas** para agentes IA (Cursor, Claude Code) que invocan APIs existentes:
+
+| Atributo | Valor |
+|---|---|
+| Puerto | 8005 |
+| Endpoint MCP | `http://<host>:8005/mcp` |
+| Dependencias HTTP | Catalog (:8001), Inventory (:8003), Analytics (:8004) |
+| Persistencia | Ninguna |
+| Orquestación Aspire | No incluido en AppHost (arranque manual o Docker) |
+
+### 10.3 Arranque
+
+```bash
+# Requiere Catalog, Inventory y Analytics activos
+dotnet run --project AI/ShopDemo.Mcp.Api
+curl http://localhost:8005/health
+```
+
+Docker: `AI/ShopDemo.Mcp.Api/docker-compose.yml`  
+Nube: [IMPLEMENTACION-DESPLIEGUE-MCP-AZURE.md](./integracion-ia/IMPLEMENTACION-DESPLIEGUE-MCP-AZURE.md) · [AWS](./integracion-ia/IMPLEMENTACION-DESPLIEGUE-MCP-AWS.md)
+
+---
+
+## 11. Diagrama de componentes
 
 ```mermaid
 graph TB
@@ -451,6 +536,13 @@ graph TB
         AA -.-> SD
     end
 
+    subgraph "MCP Gateway (IA)"
+        MA[Mcp.Api :8005]
+        MT[ShopDemoMcpTools]
+        MA --> MT
+        MT -->|HTTP tools| CA & IA & AA
+    end
+
     subgraph "Shared + Infraestructura"
         SK[ShopDemo.Shared]
         PG1[(PG Catalog)]
@@ -473,54 +565,82 @@ graph TB
 
 ---
 
-## 11. Despliegue
+## 12. Despliegue y operación
 
-### 11.1 Docker Compose (por microservicio)
+### 12.1 Docker Compose (por microservicio)
 
-Cada microservicio de negocio tiene su propio `docker-compose.yml`:
+Cada API tiene su propio `docker-compose.yml`:
 
-| Servicio | Ubicación compose | API | PostgreSQL |
-|---|---|---|---|
-| Catalog | `Catalog/ShopDemo.Catalog.Api/` | 8001 | 5433 |
-| Orders | `Orders/ShopDemo.Orders.Api/` | 8002 | 5434 |
-| Inventory | `Inventory/ShopDemo.Inventory.Api/` | 8003 | 5435 |
-| Analytics | `Aspire/ShopDemo.Analytics.Api/` | 8004 | — (Azurite en compose) |
+| Servicio | Ubicación compose | API | PostgreSQL | Notas |
+|---|---|---|---|---|
+| Catalog | `Catalog/ShopDemo.Catalog.Api/` | 8001 | 5433 | Health `/health` |
+| Orders | `Orders/ShopDemo.Orders.Api/` | 8002 | 5434 | `InventoryApi__BaseUrl` → host |
+| Inventory | `Inventory/ShopDemo.Inventory.Api/` | 8003 | 5435 | Incluye Azurite |
+| Analytics | `Aspire/ShopDemo.Analytics.Api/` | 8004 | — | Azurite en compose |
+| MCP Gateway | `AI/ShopDemo.Mcp.Api/` | 8005 | — | URLs de APIs en `.env` |
 
 Patrón común:
 
-- Imagen PostgreSQL 16 Alpine
+- Imagen PostgreSQL 16 Alpine (donde aplica)
 - Healthcheck `pg_isready` antes de levantar la API
-- Volumen persistente por servicio
 - Dockerfile multi-stage .NET 10 con usuario no-root
 - Migraciones EF aplicadas al iniciar (`MigrateAsync`)
 
-### 11.2 .NET Aspire (orquestación integrada)
+**Arranque:** ver [README.md § Opción A](../README.md#opción-a--docker-compose-recomendada-para-empezar).
+
+### 12.2 .NET Aspire (orquestación integrada)
 
 | Componente | Ubicación | Rol |
 |---|---|---|
 | AppHost | `Aspire/ShopDemo.AppHost/` | Arranque unificado de 4 APIs + infra |
-| ServiceDefaults | `Aspire/ShopDemo.ServiceDefaults/` | Telemetría y health (Analytics en Fase 1) |
-| Analytics | `Aspire/ShopDemo.Analytics.Api/` | Solo disponible vía Aspire o ejecución directa |
+| ServiceDefaults | `Aspire/ShopDemo.ServiceDefaults/` | Telemetría y health |
+| Analytics | `Aspire/ShopDemo.Analytics.Api/` | Observador Event Hubs |
 
 ```bash
 dotnet run --project Aspire/ShopDemo.AppHost
 ```
 
-**Coexistencia:** Docker Compose y Aspire son alternativas. Compose sirve para desplegar un microservicio aislado; Aspire para desarrollo integrado con dashboard y configuración centralizada.
+MCP **no** forma parte del AppHost; levántalo por separado en etapa 14.
 
-### 11.3 Despliegue en nube (Azure / AWS)
+### 12.3 Kubernetes (`k8s/`)
 
-| Plataforma | Servicio de cómputo | Documentación |
+Manifiestos compartidos para **Minikube**, **AKS** y **EKS**:
+
+| Recurso | Carpeta | Rol |
 |---|---|---|
-| **Azure** | Container Apps + ACR | [docs/despliegue/azure/](./despliegue/azure/) |
-| **AWS** | ECS Fargate + ECR | [docs/despliegue/aws/](./despliegue/aws/) |
-| **Kubernetes** | Minikube / AKS / EKS | [despliegue/kubernetes/](./despliegue/kubernetes/) + [k8s/](../k8s/) |
+| Namespace + secrets | `k8s/namespace.yaml`, `secrets.example.yaml` | Aislamiento `shopdemo` |
+| PostgreSQL | `k8s/postgres/` | StatefulSet (3 bases) |
+| Azurite | `k8s/azurite/` | Checkpoints Event Hubs |
+| APIs | `k8s/catalog/`, `orders/`, `inventory/`, `analytics/`, `mcp/` | Deployments + Services + probes |
+| HPA | `k8s/catalog/hpa.yaml` | Demo autoscaling Catalog |
+| Ingress | `k8s/ingress/` | Rutas `/catalog`, `/orders`, `/inventory`, `/analytics`, `/mcp` |
 
-Cada guía incluye pasos por **Portal/Consola** y **CLI**. Manifiestos en `k8s/`.
+Orden de apply: [k8s/README.md](../k8s/README.md)
+
+### 12.4 Despliegue en nube (Azure / AWS)
+
+| Plataforma | Cómputo | Imágenes | Guía arranque |
+|---|---|---|---|
+| **Azure ACA** | Container Apps (5 apps) | ACR | [despliegue/azure/](./despliegue/azure/) |
+| **Azure AKS** | Kubernetes | ACR + `k8s/` | [despliegue/aks/](./despliegue/aks/) |
+| **AWS ECS** | Fargate (5 services) | ECR | [despliegue/aws/](./despliegue/aws/) |
+| **Amazon EKS** | Kubernetes | ECR + `k8s/` | [despliegue/eks/](./despliegue/eks/) |
+
+Cada guía incluye pasos por **Portal/Consola** y **CLI**. CI/CD: [.github/workflows/deploy-azure.yml](../.github/workflows/deploy-azure.yml) · [deploy-aws.yml](../.github/workflows/deploy-aws.yml).
+
+**Post-despliegue:** configurar Postman con FQDN/ALB/Ingress según [README.md § Postman](../README.md#configurar-postman-según-entorno).
+
+### 12.5 Observabilidad y resiliencia (operación)
+
+| Tema | Qué aporta al arranque | Documentación |
+|---|---|---|
+| **Observabilidad** | Logs, métricas, `traceId` en errores | [observabilidad/](./observabilidad/) |
+| **Resiliencia** | Probes K8s, HPA, recuperación de pods | [resiliencia/](./resiliencia/) |
+| **Health endpoints** | `/health` (readiness), `/alive` (liveness) | Manifiestos `k8s/*/deployment.yaml` |
 
 ---
 
-## 12. Documentación por microservicio
+## 13. Documentación por microservicio
 
 | Microservicio | Requerimientos | Implementación |
 |---|---|---|
@@ -533,6 +653,11 @@ Cada guía incluye pasos por **Portal/Consola** y **CLI**. Manifiestos en `k8s/`
 | Kubernetes local | [REQUERIMIENTOS-KUBERNETES.md](./despliegue/kubernetes/REQUERIMIENTOS-KUBERNETES.md) | [IMPLEMENTACION-KUBERNETES-LOCAL.md](./despliegue/kubernetes/IMPLEMENTACION-KUBERNETES-LOCAL.md) |
 | Azure AKS | [REQUERIMIENTOS-DESPLIEGUE-AKS.md](./despliegue/aks/REQUERIMIENTOS-DESPLIEGUE-AKS.md) | [IMPLEMENTACION-DESPLIEGUE-AKS.md](./despliegue/aks/IMPLEMENTACION-DESPLIEGUE-AKS.md) |
 | Amazon EKS | [REQUERIMIENTOS-DESPLIEGUE-EKS.md](./despliegue/eks/REQUERIMIENTOS-DESPLIEGUE-EKS.md) | [IMPLEMENTACION-DESPLIEGUE-EKS.md](./despliegue/eks/IMPLEMENTACION-DESPLIEGUE-EKS.md) |
+| MCP Gateway | [REQUERIMIENTOS-DESPLIEGUE-MCP.md](./integracion-ia/REQUERIMIENTOS-DESPLIEGUE-MCP.md) | [Azure](./integracion-ia/IMPLEMENTACION-DESPLIEGUE-MCP-AZURE.md) · [AWS](./integracion-ia/IMPLEMENTACION-DESPLIEGUE-MCP-AWS.md) |
+| Observabilidad | [REQUERIMIENTOS-OBSERVABILIDAD.md](./observabilidad/REQUERIMIENTOS-OBSERVABILIDAD.md) | [Azure](./observabilidad/azure/) · [AWS](./observabilidad/aws/) |
+| Resiliencia | [REQUERIMIENTOS-RESILIENCIA.md](./resiliencia/REQUERIMIENTOS-RESILIENCIA.md) | [Azure](./resiliencia/azure/) · [AWS](./resiliencia/aws/) |
+| Integración IA | [REQUERIMIENTOS-INTEGRACION-IA.md](./integracion-ia/REQUERIMIENTOS-INTEGRACION-IA.md) | [Azure](./integracion-ia/azure/) · [AWS](./integracion-ia/aws/) |
+| Spec-driven | [REQUERIMIENTOS-SPEC-DRIVEN](../spec-driven/REQUERIMIENTOS-SPEC-DRIVEN-DEVELOPMENT.md) | [IMPLEMENTACION](../spec-driven/IMPLEMENTACION-SPEC-DRIVEN-DEVELOPMENT.md) |
 
 **Integración transversal:**
 
@@ -544,7 +669,7 @@ Cada guía incluye pasos por **Portal/Consola** y **CLI**. Manifiestos en `k8s/`
 
 ---
 
-## 13. Estado de madurez por componente
+## 14. Estado de madurez por componente
 
 | Componente | Estado | Completitud |
 |---|---|---|
@@ -560,15 +685,19 @@ Cada guía incluye pasos por **Portal/Consola** y **CLI**. Manifiestos en `k8s/`
 | Azure Event Hubs (publishers) | Implementado (Catalog, Orders, Inventory) | ~90% |
 | Event Hubs consumer Inventory | Implementado (`CatalogEventsProcessor`) | ~85% |
 | Analytics + Aspire AppHost | Implementado | ~85% |
+| MCP Gateway | Implementado | ~85% |
+| Health `/health` + `/alive` (4 APIs) | Implementado | ~95% |
 | Despliegue Docker → Azure (ACA) | Documentado | Guía en `docs/despliegue/azure/` |
 | Despliegue Docker → AWS (ECS) | Documentado | Guía en `docs/despliegue/aws/` |
-| Kubernetes (Minikube / AKS / EKS) | Implementado | Manifiestos `k8s/` + `docs/despliegue/kubernetes/` |
+| Kubernetes (Minikube / AKS / EKS) | Implementado | Manifiestos `k8s/` (5 APIs + Ingress) |
+| Observabilidad / Resiliencia | Documentado | Azure + AWS separados |
+| Integración IA + despliegue MCP | Documentado + código | `AI/`, `k8s/mcp/` |
+| Spec-driven (Cursor + Claude Code) | Plantillas en `spec-driven/` | ~90% |
 | Docker por servicio | Implementado | ~90% |
-| Azure Container Apps / `azd` (automatizado Aspire) | Documentado — pendiente | 0% |
 
 ---
 
-## 14. Observaciones técnicas
+## 15. Observaciones técnicas
 
 1. **Typo consistente:** los proyectos de infraestructura usan `Infraestructure` (con "e") en Catalog y Orders; Inventory usa `Infrastructure` (ortografía estándar).
 
@@ -584,12 +713,16 @@ Cada guía incluye pasos por **Portal/Consola** y **CLI**. Manifiestos en `k8s/`
 
 7. **Dos modos de stock inicial:** con Event Hubs habilitado, Inventory crea stock automáticamente al recibir `ProductCreated`. Sin Event Hubs, el ejercicio manual (`POST /api/inventory/stock`) sigue siendo válido.
 
+8. **MCP fuera de Aspire:** el AppHost orquesta las 4 APIs de negocio; MCP se levanta aparte porque es un adaptador para agentes, no parte del dominio e-commerce.
+
+9. **Manifiestos K8s unificados:** los mismos YAML en `k8s/` sirven para Minikube, AKS y EKS; solo cambian registry de imágenes y secretos.
+
 ---
 
-## 15. Resumen ejecutivo
+## 16. Resumen ejecutivo
 
-ShopDemo implementa **tres microservicios de negocio** que modelan un flujo de e-commerce — definición de productos (Catalog), gestión de pedidos (Orders) y control de stock (Inventory) — más un **cuarto servicio observador** (Analytics) orquestado con **.NET Aspire**. Catalog y Orders usan **Clean Architecture con CQRS**; Inventory usa **arquitectura hexagonal** para comparar enfoques en el mismo curso.
+ShopDemo implementa **tres microservicios de negocio** que modelan un flujo de e-commerce — definición de productos (Catalog), gestión de pedidos (Orders) y control de stock (Inventory) — más un **observador** (Analytics) y un **MCP Gateway** para agentes IA. Catalog y Orders usan **Clean Architecture con CQRS**; Inventory usa **arquitectura hexagonal**.
 
-La integración entre contextos combina **HTTP síncrono** (Orders → Inventory), **Azure Event Hubs** con fan-out (`inventory-service` + `analytics-service`) y orquestación local vía **AppHost** (PostgreSQL, Azurite, service discovery, dashboard). Cada microservicio de negocio mantiene **PostgreSQL dedicado** en Docker Compose, **Swagger**, documentación en `docs/` y puede ejecutarse de forma independiente, bajo Aspire o en **Azure Container Apps / AWS ECS**.
+La integración combina **HTTP síncrono** (Orders → Inventory), **Azure Event Hubs** con fan-out (`inventory-service` + `analytics-service`) y orquestación local vía **AppHost**. Cada servicio puede ejecutarse con **Docker Compose**, bajo **Aspire**, en **Kubernetes** (`k8s/`) o en **Azure Container Apps / AKS** y **AWS ECS / EKS**.
 
-**Guía de inicio para alumnos:** [README.md](../README.md)
+**Cómo levantar el sistema:** [README.md](../README.md#tabla-maestra-de-arranque) (tabla maestra) · [Inicio local](../README.md#inicio-local-desarrollo-y-pruebas) · [Release Azure](../README.md#release-azure) · [Release AWS](../README.md#release-aws)

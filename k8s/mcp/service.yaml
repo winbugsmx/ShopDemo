@@ -1,0 +1,11 @@
+apiVersion: v1
+kind: Service
+metadata:
+  name: shopdemo-mcp
+  namespace: shopdemo
+spec:
+  selector:
+    app: shopdemo-mcp
+  ports:
+    - port: 8080
+      targetPort: 8080

@@ -23,7 +23,9 @@ Al finalizar las etapas del curso, el alumno debe poder:
 4. **Observar** el bus de eventos con Analytics y orquestar todo localmente con Aspire.
 5. **Empaquetar** cada API en Docker y **desplegarla** en Azure (Container Apps, AKS) y AWS (ECS, EKS).
 6. **Desplegar** en Kubernetes (Minikube local, AKS, EKS) con manifiestos `k8s/`.
-7. **Probar** flujos de punta a punta con Swagger, Postman y la guía de endpoints.
+7. **Exponer** el MCP Gateway para agentes IA (Cursor, Claude Code) sobre Catalog, Inventory y Analytics.
+8. **Probar** flujos de punta a punta con Swagger, Postman y la guía de endpoints.
+9. **Operar** con health checks, observabilidad básica y desarrollo guiado por specs (`spec-driven/`).
 
 ---
 
@@ -39,6 +41,7 @@ flowchart TB
 
     subgraph transversal ["Transversal"]
         A[Analytics :8004\nObservador]
+        M[MCP Gateway :8005\nAgentes IA]
         AH[Aspire AppHost\nSolo dev local]
         EH[Azure Event Hubs]
     end
@@ -48,6 +51,7 @@ flowchart TB
     C & O & I -->|publican| EH
     EH -->|inventory-service| I
     EH -->|analytics-service| A
+    M -->|tools HTTP| C & I & A
     AH -.-> C & O & I & A
 ```
 
@@ -59,6 +63,7 @@ flowchart TB
 | **Infrastructure** | EF Core, HTTP clients, adaptadores Event Hubs |
 | **Shared** | Kernel DDD + `IntegrationEventEnvelope` |
 | **Aspire** | AppHost, ServiceDefaults, Analytics |
+| **AI** | MCP Gateway HTTP (`/mcp`) para herramientas de agentes |
 
 **Documentación técnica completa:** [docs/ARQUITECTURA.md](docs/ARQUITECTURA.md)
 
@@ -84,8 +89,11 @@ Cada etapa tiene un par de documentos: **requerimientos** (qué y por qué) e **
 | **11** | Amazon EKS | [REQUERIMIENTOS-DESPLIEGUE-EKS](docs/despliegue/eks/REQUERIMIENTOS-DESPLIEGUE-EKS.md) | [IMPLEMENTACION-DESPLIEGUE-EKS](docs/despliegue/eks/IMPLEMENTACION-DESPLIEGUE-EKS.md) | ShopDemo en EKS |
 | **12** | Observabilidad | [REQUERIMIENTOS-OBSERVABILIDAD](docs/observabilidad/REQUERIMIENTOS-OBSERVABILIDAD.md) | [Azure](docs/observabilidad/azure/IMPLEMENTACION-OBSERVABILIDAD-AZURE.md) · [AWS](docs/observabilidad/aws/IMPLEMENTACION-OBSERVABILIDAD-AWS.md) | Logs + alerta + traceId |
 | **13** | Resiliencia | [REQUERIMIENTOS-RESILIENCIA](docs/resiliencia/REQUERIMIENTOS-RESILIENCIA.md) | [Azure](docs/resiliencia/azure/IMPLEMENTACION-RESILIENCIA-AZURE.md) · [AWS](docs/resiliencia/aws/IMPLEMENTACION-RESILIENCIA-AWS.md) | Recuperación tras fallo de pod/tarea |
+| **14** | Integración IA | [REQUERIMIENTOS-INTEGRACION-IA](docs/integracion-ia/REQUERIMIENTOS-INTEGRACION-IA.md) | [Azure](docs/integracion-ia/azure/IMPLEMENTACION-INTEGRACION-IA-AZURE.md) · [AWS](docs/integracion-ia/aws/IMPLEMENTACION-INTEGRACION-IA-AWS.md) | MCP tool + alerta KQL/Insights |
+| **14b** | Despliegue MCP Gateway | [REQUERIMIENTOS-DESPLIEGUE-MCP](docs/integracion-ia/REQUERIMIENTOS-DESPLIEGUE-MCP.md) | [Azure ACA/AKS](docs/integracion-ia/IMPLEMENTACION-DESPLIEGUE-MCP-AZURE.md) · [AWS ECS/EKS](docs/integracion-ia/IMPLEMENTACION-DESPLIEGUE-MCP-AWS.md) | `curl .../mcp` + agente |
+| **15** | Spec-driven (Cursor + Claude Code) | [REQUERIMIENTOS-SPEC-DRIVEN](spec-driven/REQUERIMIENTOS-SPEC-DRIVEN-DEVELOPMENT.md) | [IMPLEMENTACION-SPEC-DRIVEN](spec-driven/IMPLEMENTACION-SPEC-DRIVEN-DEVELOPMENT.md) | Agente sigue `spec-driven/specs/<módulo>/SPEC.md` |
 
-**Teoría:** [Docker/K8s/AOT](docs/TEORIA-DOCKER-KUBERNETES-AOT.md) · [Observabilidad](docs/observabilidad/TEORIA-OBSERVABILIDAD.md) · [Resiliencia](docs/resiliencia/TEORIA-RESILIENCIA.md) · [AKS](docs/despliegue/aks/TEORIA-AKS.md) · [EKS](docs/despliegue/eks/TEORIA-EKS.md) · [Azure ACA](docs/despliegue/azure/TEORIA-CONTENEDORES-AZURE.md) · [AWS ECS](docs/despliegue/aws/TEORIA-CONTENEDORES-AWS.md)
+**Teoría:** [Docker/K8s/AOT](docs/TEORIA-DOCKER-KUBERNETES-AOT.md) · [Observabilidad](docs/observabilidad/TEORIA-OBSERVABILIDAD.md) · [Resiliencia](docs/resiliencia/TEORIA-RESILIENCIA.md) · [Integración IA](docs/integracion-ia/TEORIA-INTEGRACION-IA.md) · [Spec-driven](spec-driven/TEORIA-SPEC-DRIVEN-DEVELOPMENT.md) · [AKS](docs/despliegue/aks/TEORIA-AKS.md) · [EKS](docs/despliegue/eks/TEORIA-EKS.md) · [Azure ACA](docs/despliegue/azure/TEORIA-CONTENEDORES-AZURE.md) · [AWS ECS](docs/despliegue/aws/TEORIA-CONTENEDORES-AWS.md)
 
 ---
 
@@ -117,6 +125,43 @@ flowchart TD
 
 ---
 
+## Tabla maestra de arranque
+
+Referencia rápida para **levantar todos los servicios** según dónde ejecutes ShopDemo.
+
+| Servicio | Puerto | Health | Local Compose | Aspire | `dotnet run` | Minikube (`k8s/`) | Azure ACA | Azure AKS | AWS ECS | AWS EKS |
+|---|---|---|---|---|---|---|---|---|---|---|
+| **Catalog** | 8001 | `/health` | `Catalog/.../docker compose up` | AppHost | `dotnet run --project Catalog/...` | `k8s/catalog/` | Container App | Ingress `/catalog` | ALB dedicado | Ingress `/catalog` |
+| **Orders** | 8002 | `/health` | `Orders/.../docker compose up` | AppHost | `dotnet run --project Orders/...` | `k8s/orders/` | Container App | Ingress `/orders` | ALB dedicado | Ingress `/orders` |
+| **Inventory** | 8003 | `/health` | `Inventory/.../docker compose up` | AppHost | `dotnet run --project Inventory/...` | `k8s/inventory/` | Container App (interno) | Ingress `/inventory` | Cloud Map / ALB | Ingress `/inventory` |
+| **Analytics** | 8004 | `/health` | `Aspire/.../docker compose up` | AppHost | `dotnet run --project Aspire/...` | `k8s/analytics/` | Container App | Ingress `/analytics` | ALB dedicado | Ingress `/analytics` |
+| **MCP Gateway** | 8005 | `/health` | `AI/.../docker compose up` | Manual* | `dotnet run --project AI/...` | `k8s/mcp/` | Container App | Ingress `/mcp` | ALB dedicado | Ingress `/mcp` |
+| **PostgreSQL** | 5433–5435 | — | Por compose de cada API | AppHost (×3 DB) | Requiere PG local | `k8s/postgres/` | ACI / sidecar | StatefulSet | ECS + EFS | StatefulSet |
+| **Azurite** | 10000 | — | En compose Inventory/Analytics | AppHost | — | `k8s/azurite/` | Blob Azure | Blob Azure | S3/Blob | Blob Azure |
+
+\* Aspire no incluye MCP en AppHost; levántalo aparte cuando trabajes integración IA (etapa 14).
+
+### Comandos de verificación (cualquier entorno)
+
+```bash
+# Local — APIs de negocio
+curl -s http://localhost:8001/health && curl -s http://localhost:8002/health
+curl -s http://localhost:8003/health && curl -s http://localhost:8004/health
+
+# Local — MCP (requiere Catalog, Inventory, Analytics activos)
+curl -s http://localhost:8005/health
+
+# Kubernetes
+kubectl get pods -n shopdemo
+kubectl get ingress -n shopdemo
+```
+
+### Orden recomendado al arrancar (local)
+
+1. **Catalog** → 2. **Inventory** → 3. **Orders** (Orders llama a Inventory) → 4. **Analytics** (opcional, etapa 6+) → 5. **MCP** (opcional, etapa 14+, requiere 8001/8003/8004)
+
+---
+
 ## Inicio local (desarrollo y pruebas)
 
 ### Requisitos previos
@@ -134,12 +179,13 @@ docker --version            # Docker Desktop en ejecución
 
 ### URLs locales (todos los modos)
 
-| Servicio | URL | Swagger |
-|---|---|---|
-| Catalog | http://localhost:8001 | http://localhost:8001/swagger |
-| Orders | http://localhost:8002 | http://localhost:8002/swagger |
-| Inventory | http://localhost:8003 | http://localhost:8003/swagger |
-| Analytics | http://localhost:8004 | http://localhost:8004/swagger |
+| Servicio | URL base | Swagger | Health |
+|---|---|---|---|
+| Catalog | http://localhost:8001 | http://localhost:8001/swagger | http://localhost:8001/health |
+| Orders | http://localhost:8002 | http://localhost:8002/swagger | http://localhost:8002/health |
+| Inventory | http://localhost:8003 | http://localhost:8003/swagger | http://localhost:8003/health |
+| Analytics | http://localhost:8004 | http://localhost:8004/swagger | http://localhost:8004/health |
+| MCP Gateway | http://localhost:8005/mcp | — | http://localhost:8005/health |
 
 > **Postman:** importa [ShopDemo.postman_collection.json](docs/ShopDemo.postman_collection.json) — las variables ya apuntan a `localhost`. Ver [Configurar Postman](#configurar-postman-según-entorno).
 
@@ -157,13 +203,16 @@ docker --version            # Docker Desktop en ejecución
 | 2 | Inventory + PostgreSQL + Azurite | `cd Inventory/ShopDemo.Inventory.Api` → `docker compose up --build` |
 | 3 | Orders + PostgreSQL | `cd Orders/ShopDemo.Orders.Api` → `docker compose up --build` |
 | 4 | Analytics (opcional, etapa 6+) | `cd Aspire/ShopDemo.Analytics.Api` → `docker compose up --build` |
+| 5 | MCP Gateway (opcional, etapa 14+) | `cd AI/ShopDemo.Mcp.Api` → `copy .env.example .env` → `docker compose up --build` |
 
 **Verificar:**
 
 ```bash
-curl http://localhost:8001/swagger/index.html
-curl http://localhost:8003/swagger/index.html
-curl http://localhost:8002/swagger/index.html
+curl http://localhost:8001/health
+curl http://localhost:8003/health
+curl http://localhost:8002/health
+curl http://localhost:8004/health   # si Analytics está activo
+curl http://localhost:8005/health   # si MCP está activo
 ```
 
 **Event Hubs (opcional):** edita `.env` en cada API con `EVENT_HUBS_ENABLED=true` y la connection string. Guía: [INTEGRACION-AZURE-EVENT-HUBS.md](docs/INTEGRACION-AZURE-EVENT-HUBS.md).
@@ -199,7 +248,23 @@ dotnet run --project Catalog/ShopDemo.Catalog.Api
 dotnet run --project Orders/ShopDemo.Orders.Api
 dotnet run --project Inventory/ShopDemo.Inventory.Api
 dotnet run --project Aspire/ShopDemo.Analytics.Api
+dotnet run --project AI/ShopDemo.Mcp.Api    # etapa 14+; requiere 8001, 8003, 8004
 ```
+
+---
+
+### Opción E — MCP Gateway (integración IA)
+
+**Cuándo usarla:** etapa 14–14b; conectar Cursor o Claude Code al servidor MCP.
+
+| Paso | Comando |
+|---|---|
+| 1 | Asegurar Catalog (8001), Inventory (8003) y Analytics (8004) activos |
+| 2 | `cd AI/ShopDemo.Mcp.Api` → `copy .env.example .env` (URLs de APIs) |
+| 3 | `dotnet run --project AI/ShopDemo.Mcp.Api` o `docker compose up --build` |
+| 4 | Probar: `curl http://localhost:8005/health` y endpoint MCP `http://localhost:8005/mcp` |
+
+Guía: [docs/integracion-ia/README.md](docs/integracion-ia/README.md) · Despliegue nube: [Azure](docs/integracion-ia/IMPLEMENTACION-DESPLIEGUE-MCP-AZURE.md) · [AWS](docs/integracion-ia/IMPLEMENTACION-DESPLIEGUE-MCP-AWS.md)
 
 ---
 
@@ -217,16 +282,29 @@ Guía completa: [IMPLEMENTACION-KUBERNETES-LOCAL.md](docs/despliegue/kubernetes/
 
 **Postman con Ingress:** `catalogBaseUrl` = `http://shopdemo.local/catalog` (tras configurar hosts o `minikube tunnel`).
 
+Incluye **5 APIs** (Catalog, Orders, Inventory, Analytics, MCP) + PostgreSQL + Azurite. Orden de apply: [k8s/README.md](k8s/README.md).
+
 ---
 
 ## Release Azure
 
-Dos caminos de **release** en Azure. Ambos usan imágenes en **Azure Container Registry (ACR)**.
+Dos caminos de **release** en Azure. Ambos usan imágenes en **Azure Container Registry (ACR)** y despliegan **5 contenedores** (4 APIs de negocio + MCP Gateway).
 
 | Camino | Servicio Azure | Ideal para | Guía |
 |---|---|---|---|
 | **ACA** | Container Apps | Release serverless, más simple | [IMPLEMENTACION-DESPLIEGUE-AZURE](docs/despliegue/azure/IMPLEMENTACION-DESPLIEGUE-AZURE.md) |
 | **AKS** | Kubernetes Service | Release con manifiestos `k8s/` | [IMPLEMENTACION-DESPLIEGUE-AKS](docs/despliegue/aks/IMPLEMENTACION-DESPLIEGUE-AKS.md) |
+
+### Arranque en Azure (resumen)
+
+| # | Acción | ACA (Container Apps) | AKS |
+|---|---|---|---|
+| 1 | **Build y push** imágenes a ACR | `shopdemo-catalog`, `orders`, `inventory`, `analytics`, `mcp` | Igual |
+| 2 | **Infraestructura** | RG + ACR + Environment ACA | RG + ACR + cluster AKS + Ingress NGINX |
+| 3 | **Desplegar APIs** | Crear 5 Container Apps (MCP opcional etapa 14b) | `kubectl apply -f k8s/` (orden en [k8s/README.md](k8s/README.md)) |
+| 4 | **Secretos** | `EventHubs__*`, PostgreSQL, checkpoints Blob | `k8s/secrets.yaml` desde `secrets.example.yaml` |
+| 5 | **Verificar** | `curl https://<fqdn>/health` por app | `kubectl get pods -n shopdemo` + Ingress |
+| 6 | **Postman** | Actualizar variables con FQDN de cada ACA | URLs con prefijo Ingress (`/catalog`, …, `/mcp`) |
 
 ### Flujo común release Azure
 
@@ -242,10 +320,11 @@ flowchart LR
 | Paso | ACA (Container Apps) | AKS |
 |---|---|---|
 | 1 | Crear RG + ACR | Crear RG + ACR + cluster AKS |
-| 2 | `docker push` a ACR | `az aks get-credentials` + push ACR |
-| 3 | Crear 4 Container Apps | Instalar Ingress NGINX |
-| 4 | Secrets `EventHubs__*` en cada app | Editar imagen en Deployments → `kubectl apply` |
-| 5 | Copiar FQDN de cada app | Copiar IP/DNS del Ingress |
+| 2 | `docker push` 5 imágenes a ACR | `az aks get-credentials` + push ACR |
+| 3 | Crear 5 Container Apps | Instalar Ingress NGINX |
+| 4 | Secrets `EventHubs__*` en cada app | `kubectl apply -f k8s/` (postgres → APIs → mcp → ingress) |
+| 5 | Copiar FQDN de cada app | Copiar IP/DNS del Ingress (`shopdemo.local` o IP pública) |
+| 6 | MCP: [IMPLEMENTACION-DESPLIEGUE-MCP-AZURE](docs/integracion-ia/IMPLEMENTACION-DESPLIEGUE-MCP-AZURE.md) | Ruta Ingress `/mcp` en `k8s/ingress/` |
 
 ### URLs release Azure (Postman)
 
@@ -257,31 +336,45 @@ Tras desplegar, actualiza las variables de colección:
 | `ordersBaseUrl` | `https://ca-shopdemo-orders.<fqdn>` | `http://<ingress-ip>/orders` |
 | `inventoryBaseUrl` | URL **interna** o pública si expusiste | `http://<ingress-ip>/inventory` |
 | `analyticsBaseUrl` | `https://ca-shopdemo-analytics.<fqdn>` | `http://<ingress-ip>/analytics` |
+| MCP (agente) | `https://ca-shopdemo-mcp.<fqdn>/mcp` | `http://<ingress-ip>/mcp` |
 
-**Secrets obligatorios en nube:** `EventHubs__ConnectionString`, connection strings PostgreSQL, Azurite/checkpoint para Inventory y Analytics.
+**Secrets obligatorios en nube:** `EventHubs__ConnectionString`, connection strings PostgreSQL, Azurite/checkpoint para Inventory y Analytics, URLs internas de APIs para Orders y MCP.
 
-CI/CD: [.github/workflows/deploy-azure.yml](.github/workflows/deploy-azure.yml)
+**Observabilidad y resiliencia:** [docs/observabilidad/azure/](docs/observabilidad/azure/IMPLEMENTACION-OBSERVABILIDAD-AZURE.md) · [docs/resiliencia/azure/](docs/resiliencia/azure/IMPLEMENTACION-RESILIENCIA-AZURE.md)
+
+CI/CD: [.github/workflows/deploy-azure.yml](.github/workflows/deploy-azure.yml) (incluye `shopdemo-mcp`)
 
 ---
 
 ## Release AWS
 
-Dos caminos de **release** en AWS. Ambos usan **Amazon ECR**.
+Dos caminos de **release** en AWS. Ambos usan **Amazon ECR** y despliegan **5 contenedores** (4 APIs + MCP).
 
 | Camino | Servicio AWS | Ideal para | Guía |
 |---|---|---|---|
 | **ECS** | Fargate | Release sin Kubernetes | [IMPLEMENTACION-DESPLIEGUE-AWS](docs/despliegue/aws/IMPLEMENTACION-DESPLIEGUE-AWS.md) |
 | **EKS** | Elastic Kubernetes Service | Release con manifiestos `k8s/` | [IMPLEMENTACION-DESPLIEGUE-EKS](docs/despliegue/eks/IMPLEMENTACION-DESPLIEGUE-EKS.md) |
 
+### Arranque en AWS (resumen)
+
+| # | Acción | ECS Fargate | EKS |
+|---|---|---|---|
+| 1 | **Build y push** a ECR | 5 repos/imágenes | Igual |
+| 2 | **Infraestructura** | Cluster ECS + ALB por API pública | Cluster EKS + Ingress NGINX + EBS CSI |
+| 3 | **Desplegar** | Task definitions + services + Cloud Map | `kubectl apply -f k8s/` |
+| 4 | **Secretos** | SSM Parameter Store / Secrets Manager | `k8s/secrets.yaml` |
+| 5 | **Verificar** | `curl http://<alb-dns>/health` | `kubectl get pods -n shopdemo` |
+| 6 | **MCP** | [IMPLEMENTACION-DESPLIEGUE-MCP-AWS](docs/integracion-ia/IMPLEMENTACION-DESPLIEGUE-MCP-AWS.md) | Ingress `/mcp` |
+
 ### Flujo común release AWS
 
 | Paso | ECS Fargate | EKS |
 |---|---|---|
-| 1 | Crear repos ECR | `eksctl create cluster` o Consola EKS |
+| 1 | Crear repos ECR (5 imágenes) | `eksctl create cluster` o Consola EKS |
 | 2 | `docker push` a ECR | `aws eks update-kubeconfig` |
-| 3 | Task definitions + services | EBS CSI + Ingress NGINX |
-| 4 | ALB por API pública | `kubectl apply -f k8s/` |
-| 5 | Cloud Map para Orders→Inventory | Mismos secrets que Minikube |
+| 3 | Task definitions + services (5) | EBS CSI + Ingress NGINX |
+| 4 | ALB por API pública + Cloud Map Orders→Inventory | `kubectl apply -f k8s/` |
+| 5 | MCP en ALB o service interno | Ingress `/mcp` |
 
 ### URLs release AWS (Postman)
 
@@ -291,10 +384,13 @@ Dos caminos de **release** en AWS. Ambos usan **Amazon ECR**.
 | `ordersBaseUrl` | `http://<alb-orders-dns>` | `http://<ingress-host>/orders` |
 | `inventoryBaseUrl` | DNS interno Cloud Map o ALB | `http://<ingress-host>/inventory` |
 | `analyticsBaseUrl` | `http://<alb-analytics-dns>` | `http://<ingress-host>/analytics` |
+| MCP (agente) | `http://<alb-mcp-dns>/mcp` | `http://<ingress-host>/mcp` |
 
 **Nota:** el código usa **Azure Event Hubs**; los contenedores en AWS necesitan salida HTTPS a internet hacia Azure.
 
-CI/CD: [.github/workflows/deploy-aws.yml](.github/workflows/deploy-aws.yml)
+**Observabilidad y resiliencia:** [docs/observabilidad/aws/](docs/observabilidad/aws/IMPLEMENTACION-OBSERVABILIDAD-AWS.md) · [docs/resiliencia/aws/](docs/resiliencia/aws/IMPLEMENTACION-RESILIENCIA-AWS.md)
+
+CI/CD: [.github/workflows/deploy-aws.yml](.github/workflows/deploy-aws.yml) (incluye `shopdemo-mcp`)
 
 ---
 
@@ -305,14 +401,15 @@ CI/CD: [.github/workflows/deploy-aws.yml](.github/workflows/deploy-aws.yml)
 
 | Perfil | `deploymentProfile` | Qué cambiar |
 |---|---|---|
-| **Local** (default) | `local` | Ya configurado: `localhost:8001`–`8004` |
-| **Azure ACA** | `azure-aca` | Reemplazar `catalogBaseUrl`, `ordersBaseUrl`, `inventoryBaseUrl`, `analyticsBaseUrl` con FQDN de Container Apps |
-| **Azure AKS** | `azure-aks` | URLs con prefijo de Ingress (`/catalog`, `/orders`, …) |
-| **AWS ECS** | `aws-ecs` | DNS de cada ALB |
+| **Local** (default) | `local` | Ya configurado: `localhost:8001`–`8005` |
+| **Azure ACA** | `azure-aca` | `catalogBaseUrl`, `ordersBaseUrl`, `inventoryBaseUrl`, `analyticsBaseUrl`, `mcpBaseUrl` |
+| **Azure AKS** | `azure-aks` | URLs con prefijo de Ingress (`/catalog`, `/orders`, …, `/mcp`) |
+| **AWS ECS** | `aws-ecs` | DNS de cada ALB + `mcpBaseUrl` |
 | **AWS EKS** | `aws-eks` | Igual que AKS con Ingress |
 
-3. Ejecutar carpeta **Flujo integrado (E2E)** en orden
-4. Tras crear producto/pedido, copiar `id` de la respuesta a variables `productId` / `orderId`
+3. Ejecutar carpeta **Health checks** (recomendado antes del E2E)
+4. Ejecutar carpeta **Flujo integrado (E2E)** en orden
+5. Tras crear producto/pedido, copiar `id` de la respuesta a variables `productId` / `orderId`
 
 Con **Event Hubs activo**, el paso 2 del E2E (registrar stock) puede omitirse; usa **Analytics → Listar eventos** para validar.
 
@@ -322,11 +419,13 @@ Con **Event Hubs activo**, el paso 2 del E2E (registrar stock) puede omitirse; u
 
 | # | Verificación | Local Compose | Aspire | Release nube |
 |---|---|---|---|---|
-| 1 | APIs responden Swagger | ✓ 8001–8003 | ✓ 8001–8004 | ✓ FQDN/Ingress |
+| 1 | APIs responden `/health` | ✓ 8001–8004 | ✓ 8001–8004 | ✓ FQDN/Ingress |
 | 2 | Orders alcanza Inventory | `host.docker.internal:8003` | automático | URL interna configurada |
 | 3 | PostgreSQL accesible | compose por API | Aspire PG | ACI/ECS/StatefulSet |
 | 4 | Event Hubs (si aplica) | `.env` | user secrets AppHost | Secrets ACA/EKS/SSM |
 | 5 | Postman variables actualizadas | localhost | localhost | FQDN release |
+| 6 | MCP (etapa 14+) | `8005/health` | manual | `/mcp` en Ingress/ALB |
+| 7 | Analytics lista eventos | `GET /api/analytics/events` | AppHost | Ingress `/analytics` |
 
 ---
 
@@ -400,6 +499,16 @@ Archivo plantilla: `Aspire/ShopDemo.Analytics.Api/.env.example`
 
 El AppHost inyecta a cada API como `EventHubs__*` y configura `InventoryApi__BaseUrl` para Orders.
 
+### MCP Gateway — `AI/ShopDemo.Mcp.Api/`
+
+| Variable | Dónde configurarla | Ejemplo / notas |
+|---|---|---|
+| `CatalogApi__BaseUrl` | `.env`, compose, ACA, ECS | `http://localhost:8001` · K8s: `http://shopdemo-catalog:8080` |
+| `InventoryApi__BaseUrl` | `.env`, compose | `http://localhost:8003` |
+| `AnalyticsApi__BaseUrl` | `.env`, compose | `http://localhost:8004` |
+
+Archivo plantilla: `AI/ShopDemo.Mcp.Api/.env.example`
+
 ### Plataformas en nube (release)
 
 | Plataforma | Dónde poner secretos | Documentación |
@@ -432,11 +541,13 @@ ShopDemo/
 ├── Catalog/          # Clean Architecture — catálogo
 ├── Orders/           # Clean Architecture — pedidos
 ├── Inventory/        # Hexagonal — stock
+├── AI/               # MCP Gateway (ShopDemo.Mcp.Api :8005)
 ├── Aspire/           # AppHost, ServiceDefaults, Analytics
 ├── ShopDemo.Shared/  # Kernel DDD + mensajería
-├── k8s/              # Manifiestos Kubernetes (Minikube, AKS, EKS)
+├── k8s/              # Manifiestos Kubernetes (5 APIs + PG + Ingress)
+├── spec-driven/      # Specs, plantillas Cursor y Claude Code
 ├── docs/             # Toda la documentación del curso
-└── .github/workflows/  # CI/CD Azure y AWS
+└── .github/workflows/  # CI/CD Azure y AWS (incluye shopdemo-mcp)
 ```
 
 ---
@@ -452,6 +563,8 @@ ShopDemo/
 | Despliegue | [docs/despliegue/README.md](docs/despliegue/README.md) |
 | Observabilidad | [docs/observabilidad/README.md](docs/observabilidad/README.md) |
 | Resiliencia | [docs/resiliencia/README.md](docs/resiliencia/README.md) |
+| Integración IA | [docs/integracion-ia/README.md](docs/integracion-ia/README.md) |
+| Spec-driven (Cursor + Claude) | [spec-driven/README.md](spec-driven/README.md) |
 | Cheat sheets CLI | [docs/cheat-sheets/](docs/cheat-sheets/) |
 | Teoría Docker, K8s y AOT | [docs/TEORIA-DOCKER-KUBERNETES-AOT.md](docs/TEORIA-DOCKER-KUBERNETES-AOT.md) |
 | Manifiestos Kubernetes | [k8s/](k8s/) |

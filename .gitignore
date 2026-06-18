@@ -63,3 +63,9 @@ docker-compose.override.yml
 
 # Kubernetes secrets (copia local de secrets.example.yaml)
 k8s/secrets.yaml
+
+# Spec-driven — archivos locales activados por el alumno (pueden contener URLs/secretos)
+CLAUDE.local.md
+.claude/settings.local.json
+.cursor/mcp.json
+.mcp.json

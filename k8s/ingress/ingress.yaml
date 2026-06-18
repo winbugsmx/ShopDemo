@@ -39,3 +39,10 @@ spec:
                 name: shopdemo-analytics
                 port:
                   number: 8080
+          - path: /mcp(/|$)(.*)
+            pathType: ImplementationSpecific
+            backend:
+              service:
+                name: shopdemo-mcp
+                port:
+                  number: 8080

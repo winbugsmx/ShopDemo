@@ -1,0 +1,28 @@
+---
+description: ShopDemo global conventions and spec-driven workflow
+alwaysApply: true
+---
+
+# ShopDemo core
+
+- Read `spec-driven/specs/<relevant>/SPEC.md` before implementation.
+- Course documentation lives under `docs/` (Spanish). Link to it when explaining.
+- Solution file: `ShopDemo.slnx`. Target framework: net10.0.
+- Never commit secrets. Use `.env.example` patterns only in repo.
+- User communication: Spanish. Identifiers and rules: English.
+
+## Services & ports
+
+| Service | Port (local) |
+|---|---|
+| Catalog | 8001 |
+| Orders | 8002 |
+| Inventory | 8003 |
+| Analytics | 8004 |
+| MCP Gateway | 8005 |
+
+## Architecture
+
+- Catalog/Orders: Clean Architecture + CQRS + MediatR
+- Inventory: Hexagonal (ports/adapters)
+- Analytics: Aspire ServiceDefaults + Event Hubs consumer

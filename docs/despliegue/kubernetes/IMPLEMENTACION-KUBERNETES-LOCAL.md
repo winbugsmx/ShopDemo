@@ -11,7 +11,17 @@
 
 **Entorno:** Minikube · **Manifiestos:** `k8s/`  
 **Teoría:** [TEORIA-KUBERNETES-OPERACIONES.md](./TEORIA-KUBERNETES-OPERACIONES.md)  
+**Guía de desarrollo:** [GUIA-DESARROLLO-INTEGRACIONES.md](../GUIA-DESARROLLO-INTEGRACIONES.md) (etapas 9–11)  
 Cada paso incluye explicación breve. Para AKS/EKS ver guías específicas (mismos YAML).
+
+### Archivos a copiar o configurar (sin código C# nuevo)
+
+| Qué | Ruta | Para qué sirve |
+|---|---|---|
+| Manifiestos K8s | [k8s/](../../k8s/) | Deployments, Services, Ingress, HPA, probes |
+| Secretos | `k8s/secrets.example.yaml` → `k8s/secrets.yaml` | Connection strings y Event Hubs (no commitear) |
+| Dockerfiles | `Catalog/`, `Orders/`, `Inventory/`, `Analytics/`, `AI/` | Imágenes que referencian los Deployments |
+| Workflows CI/CD | `.github/workflows/` | Referencia de build/push (opcional) |
 
 ---
 

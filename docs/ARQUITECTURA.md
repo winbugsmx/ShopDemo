@@ -10,6 +10,7 @@
 | | E-mail: lcc.gilberto.juarez@gmail.com |
 
 **Índice general del curso:** [README.md](../README.md) · **Prueba de APIs:** [GUIA-ENDPOINTS.md](./GUIA-ENDPOINTS.md)  
+**Guía de desarrollo (código paso a paso):** [GUIA-DESARROLLO-INTEGRACIONES.md](./GUIA-DESARROLLO-INTEGRACIONES.md)  
 **Cómo levantar servicios:** [Tabla maestra de arranque](../README.md#tabla-maestra-de-arranque) · [Local](../README.md#inicio-local-desarrollo-y-pruebas) · [Azure](../README.md#release-azure) · [AWS](../README.md#release-aws)
 
 ---

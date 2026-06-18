@@ -73,6 +73,8 @@ flowchart TB
 
 Cada etapa tiene un par de documentos: **requerimientos** (qué y por qué) e **implementación** (cómo, con código). Se recomienda leer ambos en orden.
 
+**Guía de desarrollo con código para copiar/integrar (recomendada para alumnos):** [GUIA-DESARROLLO-INTEGRACIONES.md](docs/GUIA-DESARROLLO-INTEGRACIONES.md) — paso a paso por etapa, anexos con `.cs` completos y checklist de validación.
+
 | Etapa | Tema | Requerimientos | Implementación | Cómo validar |
 |---|---|---|---|---|
 | **0** | Visión y endpoints | — | [GUIA-ENDPOINTS](docs/GUIA-ENDPOINTS.md) | Postman E2E |
@@ -89,7 +91,7 @@ Cada etapa tiene un par de documentos: **requerimientos** (qué y por qué) e **
 | **11** | Amazon EKS | [REQUERIMIENTOS-DESPLIEGUE-EKS](docs/despliegue/eks/REQUERIMIENTOS-DESPLIEGUE-EKS.md) | [IMPLEMENTACION-DESPLIEGUE-EKS](docs/despliegue/eks/IMPLEMENTACION-DESPLIEGUE-EKS.md) | ShopDemo en EKS |
 | **12** | Observabilidad | [REQUERIMIENTOS-OBSERVABILIDAD](docs/observabilidad/REQUERIMIENTOS-OBSERVABILIDAD.md) | [Azure](docs/observabilidad/azure/IMPLEMENTACION-OBSERVABILIDAD-AZURE.md) · [AWS](docs/observabilidad/aws/IMPLEMENTACION-OBSERVABILIDAD-AWS.md) | Logs + alerta + traceId |
 | **13** | Resiliencia | [REQUERIMIENTOS-RESILIENCIA](docs/resiliencia/REQUERIMIENTOS-RESILIENCIA.md) | [Azure](docs/resiliencia/azure/IMPLEMENTACION-RESILIENCIA-AZURE.md) · [AWS](docs/resiliencia/aws/IMPLEMENTACION-RESILIENCIA-AWS.md) | Recuperación tras fallo de pod/tarea |
-| **14** | Integración IA | [REQUERIMIENTOS-INTEGRACION-IA](docs/integracion-ia/REQUERIMIENTOS-INTEGRACION-IA.md) | [Azure](docs/integracion-ia/azure/IMPLEMENTACION-INTEGRACION-IA-AZURE.md) · [AWS](docs/integracion-ia/aws/IMPLEMENTACION-INTEGRACION-IA-AWS.md) | MCP tool + alerta KQL/Insights |
+| **14** | Integración IA | [REQUERIMIENTOS-INTEGRACION-IA](docs/integracion-ia/REQUERIMIENTOS-INTEGRACION-IA.md) | [IMPLEMENTACION-MCP-GATEWAY](docs/integracion-ia/IMPLEMENTACION-MCP-GATEWAY.md) · [Azure](docs/integracion-ia/azure/IMPLEMENTACION-INTEGRACION-IA-AZURE.md) · [AWS](docs/integracion-ia/aws/IMPLEMENTACION-INTEGRACION-IA-AWS.md) | MCP tool + alerta KQL/Insights |
 | **14b** | Despliegue MCP Gateway | [REQUERIMIENTOS-DESPLIEGUE-MCP](docs/integracion-ia/REQUERIMIENTOS-DESPLIEGUE-MCP.md) | [Azure ACA/AKS](docs/integracion-ia/IMPLEMENTACION-DESPLIEGUE-MCP-AZURE.md) · [AWS ECS/EKS](docs/integracion-ia/IMPLEMENTACION-DESPLIEGUE-MCP-AWS.md) | `curl .../mcp` + agente |
 | **15** | Spec-driven (Cursor + Claude Code) | [REQUERIMIENTOS-SPEC-DRIVEN](spec-driven/REQUERIMIENTOS-SPEC-DRIVEN-DEVELOPMENT.md) | [IMPLEMENTACION-SPEC-DRIVEN](spec-driven/IMPLEMENTACION-SPEC-DRIVEN-DEVELOPMENT.md) | Agente sigue `spec-driven/specs/<módulo>/SPEC.md` |
 
@@ -556,6 +558,8 @@ ShopDemo/
 
 | Tema | Enlace |
 |---|---|
+| **Guía de desarrollo (código paso a paso)** | [docs/GUIA-DESARROLLO-INTEGRACIONES.md](docs/GUIA-DESARROLLO-INTEGRACIONES.md) |
+| Anexos de código | [Shared](docs/ANEXO-CODIGO-SHARED.md) · [Catalog](docs/catalog/ANEXO-CODIGO-CATALOG.md) · [Orders](docs/orders/ANEXO-CODIGO-ORDERS.md) · [Inventory](docs/inventory/ANEXO-CODIGO-INVENTORY.md) · [Event Hubs](docs/ANEXO-CODIGO-EVENT-HUBS.md) · [Analytics/Aspire](docs/analytics/ANEXO-CODIGO-ANALYTICS-ASPIRE.md) · [MCP](docs/integracion-ia/ANEXO-CODIGO-MCP.md) |
 | Arquitectura | [docs/ARQUITECTURA.md](docs/ARQUITECTURA.md) |
 | Endpoints y Postman | [docs/GUIA-ENDPOINTS.md](docs/GUIA-ENDPOINTS.md) |
 | Event Hubs | [docs/INTEGRACION-AZURE-EVENT-HUBS.md](docs/INTEGRACION-AZURE-EVENT-HUBS.md) |

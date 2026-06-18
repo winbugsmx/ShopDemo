@@ -15,6 +15,9 @@ Material para **detección de anomalías**, **MCP Server** y **Semantic Kernel**
 
 | Tipo | Enlace |
 |---|---|
+| **Guía de desarrollo (curso)** | [GUIA-DESARROLLO-INTEGRACIONES.md](../GUIA-DESARROLLO-INTEGRACIONES.md) |
+| **Implementación MCP (código local)** | [IMPLEMENTACION-MCP-GATEWAY.md](./IMPLEMENTACION-MCP-GATEWAY.md) |
+| **Anexo código MCP** | [ANEXO-CODIGO-MCP.md](./ANEXO-CODIGO-MCP.md) |
 | **Teoría** | [TEORIA-INTEGRACION-IA.md](./TEORIA-INTEGRACION-IA.md) |
 | **Requerimientos IA** | [REQUERIMIENTOS-INTEGRACION-IA.md](./REQUERIMIENTOS-INTEGRACION-IA.md) |
 | **Requerimientos despliegue MCP** | [REQUERIMIENTOS-DESPLIEGUE-MCP.md](./REQUERIMIENTOS-DESPLIEGUE-MCP.md) |

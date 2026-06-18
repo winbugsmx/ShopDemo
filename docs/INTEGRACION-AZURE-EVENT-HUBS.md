@@ -14,6 +14,10 @@
 
 > Esta guía incluye configuración en **Azure Portal**, **Azure CLI** y **activación mediante contenedores Docker** (`.env` + `docker-compose.yml`). El código está separado por microservicio (Catalog, Orders, Inventory).
 
+**Guía de desarrollo:** [GUIA-DESARROLLO-INTEGRACIONES.md](../GUIA-DESARROLLO-INTEGRACIONES.md) (etapa 5)  
+**Código completo para copiar/integrar:** [ANEXO-CODIGO-EVENT-HUBS.md](./ANEXO-CODIGO-EVENT-HUBS.md) — publishers, consumidor, DI, appsettings, `.env` y `docker-compose`.  
+**Contrato compartido:** [ANEXO-CODIGO-SHARED.md](./ANEXO-CODIGO-SHARED.md) (`IntegrationEventEnvelope.cs`)
+
 ---
 
 ## Índice

@@ -15,6 +15,10 @@
 
 > Los alumnos deben seguir [REQUERIMIENTOS-ANALYTICS-ASPIRE.md](./REQUERIMIENTOS-ANALYTICS-ASPIRE.md) y usar este documento para implementar o validar su solución.
 
+**Guía de desarrollo:** [GUIA-DESARROLLO-INTEGRACIONES.md](../GUIA-DESARROLLO-INTEGRACIONES.md)  
+**Código completo:** [ANEXO-CODIGO-ANALYTICS-ASPIRE.md](./ANEXO-CODIGO-ANALYTICS-ASPIRE.md) — ServiceDefaults, Analytics, AppHost y configuración.  
+**Explicación:** este documento conserva la guía paso a paso con código inline.
+
 ---
 
 ## Índice

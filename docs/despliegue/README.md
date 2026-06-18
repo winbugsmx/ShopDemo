@@ -9,7 +9,8 @@
 | | E-mail: gilberto.juarez@gmail.com |
 | | E-mail: lcc.gilberto.juarez@gmail.com |
 
-**Índice general del curso:** [README.md](../../README.md)
+**Índice general del curso:** [README.md](../../README.md)  
+**Guía de desarrollo (código a integrar):** [GUIA-DESARROLLO-INTEGRACIONES.md](../GUIA-DESARROLLO-INTEGRACIONES.md)
 
 Material del curso para llevar los microservicios Docker a la nube con enfoque **práctico y básico**.
 

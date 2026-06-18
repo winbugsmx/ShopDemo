@@ -16,6 +16,9 @@
 
 > Este documento describe paso a paso la implementación del microservicio **Inventory**. Los alumnos deben seguir `REQUERIMIENTOS-INVENTORY.md` y usar este documento para validar su solución.
 
+**Guía de desarrollo:** [GUIA-DESARROLLO-INTEGRACIONES.md](../GUIA-DESARROLLO-INTEGRACIONES.md)  
+**Código completo:** [ANEXO-CODIGO-INVENTORY.md](./ANEXO-CODIGO-INVENTORY.md) — todos los `.cs` de Inventory listos para pegar en cada ruta (excluye migraciones EF; genéralas con `dotnet ef migrations add`).
+
 ---
 
 ## Índice
@@ -139,6 +142,8 @@ En `ShopDemo.slnx`, añadir la carpeta `/Inventory/` con los cuatro proyectos.
 ## 3. Capa Domain (núcleo)
 
 El dominio no depende de ninguna otra capa. Solo usa `ShopDemo.Shared` para primitivas DDD.
+
+> **Nota para alumnos:** Las secciones de este documento explican la arquitectura hexagonal. El código **completo** (sin `/* valida */`) está en [ANEXO-CODIGO-INVENTORY.md](./ANEXO-CODIGO-INVENTORY.md).
 
 ### 3.1 `StockQuantity` — Value Object
 

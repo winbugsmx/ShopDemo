@@ -14,6 +14,9 @@
 
 > Cada paso incluye **Consola AWS** y **AWS CLI** como dos caminos equivalentes.
 
+**Guía de desarrollo:** [GUIA-DESARROLLO-INTEGRACIONES.md](../../GUIA-DESARROLLO-INTEGRACIONES.md) (etapa 8)  
+**Qué integrar:** `Dockerfile` y `docker-compose.yml` de cada API; parámetros SSM/Secrets Manager — **sin código C# nuevo**.
+
 ---
 
 ## Índice

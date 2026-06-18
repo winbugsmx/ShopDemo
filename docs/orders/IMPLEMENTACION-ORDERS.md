@@ -15,6 +15,10 @@
 
 > Este documento contiene el código completo de referencia. Los alumnos deben implementarlo siguiendo `REQUERIMIENTOS-ORDERS.md` y usar este documento para validar su solución.
 
+**Guía de desarrollo:** [GUIA-DESARROLLO-INTEGRACIONES.md](../GUIA-DESARROLLO-INTEGRACIONES.md)  
+**Código completo:** [ANEXO-CODIGO-ORDERS.md](./ANEXO-CODIGO-ORDERS.md) — todos los `.cs` de Orders listos para pegar (excluye migraciones EF).  
+**Explicación:** este documento conserva el código inline como referencia alternativa.
+
 ---
 
 ## Índice

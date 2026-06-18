@@ -14,6 +14,9 @@
 
 > Cada paso incluye **dos enfoques**: configuración por **Portal Azure** y por **Azure CLI**, para que el alumno elija el que prefiera.
 
+**Guía de desarrollo:** [GUIA-DESARROLLO-INTEGRACIONES.md](../../GUIA-DESARROLLO-INTEGRACIONES.md) (etapa 7)  
+**Qué integrar:** `Dockerfile` y `docker-compose.yml` de cada API (ya en el repo); variables de entorno y secretos en ACA — **sin código C# nuevo**.
+
 ---
 
 ## Índice

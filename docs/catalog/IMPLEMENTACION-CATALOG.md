@@ -15,6 +15,11 @@
 
 > Este documento describe paso a paso la implementación **real** del microservicio Catalog. Los alumnos deben seguir `REQUERIMIENTOS-CATALOG.md` y usar este documento para validar su solución contra el código en `Catalog/`.
 
+**Guía de desarrollo (paso a paso):** [GUIA-DESARROLLO-INTEGRACIONES.md](../GUIA-DESARROLLO-INTEGRACIONES.md)  
+**Código completo para copiar/integrar:** [ANEXO-CODIGO-CATALOG.md](./ANEXO-CODIGO-CATALOG.md) — todos los `.cs` de Catalog listos para pegar en cada ruta.
+
+> **Nota para alumnos:** Los fragmentos abreviados en este documento (p. ej. `/* validaciones */`) son solo ilustrativos. Para integrar el código **sin huecos**, usa siempre el [ANEXO-CODIGO-CATALOG.md](./ANEXO-CODIGO-CATALOG.md).
+
 ---
 
 ## Índice

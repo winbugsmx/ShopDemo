@@ -10,6 +10,7 @@
 | | E-mail: lcc.gilberto.juarez@gmail.com |
 
 **Entorno:** Minikube · **Manifiestos:** `k8s/`  
+**Teoría:** [TEORIA-KUBERNETES-OPERACIONES.md](./TEORIA-KUBERNETES-OPERACIONES.md)  
 Cada paso incluye explicación breve. Para AKS/EKS ver guías específicas (mismos YAML).
 
 ---
@@ -27,6 +28,11 @@ Cada paso incluye explicación breve. Para AKS/EKS ver guías específicas (mism
 9. [Paso 8 — Desplegar Ingress](#9-paso-8--desplegar-ingress)
 10. [Paso 9 — Testeo del despliegue](#10-paso-9--testeo-del-despliegue)
 11. [Solución de problemas](#11-solución-de-problemas)
+12. [Anexo A — Uso de kubectl](#12-anexo-a--uso-de-kubectl)
+13. [Anexo B — Kubernetes Secrets](#13-anexo-b--kubernetes-secrets)
+14. [Anexo C — Liveness y Readiness](#14-anexo-c--liveness-y-readiness)
+15. [Anexo D — Autoscaling (HPA)](#15-anexo-d--autoscaling-hpa)
+16. [Anexo E — Ingress (addon Minikube)](#16-anexo-e--ingress-addon-minikube)
 
 ---
 
@@ -157,6 +163,7 @@ kubectl apply -f k8s/catalog/
 kubectl apply -f k8s/inventory/
 kubectl apply -f k8s/orders/
 kubectl apply -f k8s/analytics/
+kubectl apply -f k8s/catalog/hpa.yaml
 
 kubectl get pods -n shopdemo -w
 ```
@@ -197,12 +204,14 @@ minikube tunnel
 | # | Prueba | Comando / URL |
 |---|---|---|
 | 1 | Pods Running | `kubectl get pods -n shopdemo` |
-| 2 | Logs Catalog | `kubectl logs -n shopdemo -l app=shopdemo-catalog` |
-| 3 | Port-forward (alternativa) | `kubectl port-forward -n shopdemo svc/shopdemo-catalog 8001:8080` |
-| 4 | Swagger Catalog | `http://shopdemo.local/catalog/swagger` o port-forward |
-| 5 | Crear producto | Postman / [GUIA-ENDPOINTS.md](../../GUIA-ENDPOINTS.md) |
-| 6 | Analytics eventos | `http://shopdemo.local/analytics/api/analytics/events` |
-| 7 | Flujo E2E | Crear producto → stock → pedido → confirmar |
+| 2 | Probes OK | `kubectl describe pod -n shopdemo -l app=shopdemo-catalog` → Readiness/Liveness |
+| 3 | Health HTTP | `kubectl port-forward -n shopdemo svc/shopdemo-catalog 8001:8080` → `curl http://localhost:8001/health` |
+| 4 | Logs Catalog | `kubectl logs -n shopdemo -l app=shopdemo-catalog` |
+| 5 | Swagger Catalog | `http://shopdemo.local/catalog/swagger` o port-forward |
+| 6 | HPA | `kubectl get hpa -n shopdemo` |
+| 7 | Crear producto | Postman / [GUIA-ENDPOINTS.md](../../GUIA-ENDPOINTS.md) |
+| 8 | Analytics eventos | `http://shopdemo.local/analytics/api/analytics/events` |
+| 9 | Flujo E2E | Crear producto → stock → pedido → confirmar |
 
 ### Comandos de diagnóstico
 
@@ -222,6 +231,8 @@ kubectl get events -n shopdemo --sort-by=.metadata.creationTimestamp
 | Ingress 404 | Host no configurado | Verificar `/etc/hosts` o `minikube tunnel` |
 | Orders falla al confirmar | Inventory URL | `kubectl get svc shopdemo-inventory -n shopdemo` |
 | Sin eventos Analytics | Event Hubs secret | Revisar `EVENT_HUBS_CONNECTION_STRING` |
+| Probes failing | Imagen antigua sin `/health` | Rebuild imágenes (paso 4) y `kubectl rollout restart` |
+| HPA `<unknown>` | metrics-server ausente | `minikube addons enable metrics-server` |
 
 ### Limpiar
 
@@ -229,6 +240,132 @@ kubectl get events -n shopdemo --sort-by=.metadata.creationTimestamp
 kubectl delete namespace shopdemo
 minikube stop
 ```
+
+---
+
+## 12. Anexo A — Uso de kubectl
+
+**Objetivo:** Familiarizarse con la CLI antes y después del despliegue.
+
+| Paso | Comando | Qué observar |
+|---|---|---|
+| 1 | `kubectl config current-context` | Debe ser `minikube` |
+| 2 | `kubectl get all -n shopdemo` | Pods, Services, Deployments |
+| 3 | `kubectl describe deployment shopdemo-catalog -n shopdemo` | Réplicas, imagen, eventos |
+| 4 | `kubectl logs -f -n shopdemo -l app=shopdemo-orders --tail=20` | Logs en tiempo real |
+| 5 | `kubectl exec -it -n shopdemo <pod-postgres> -- psql -U ShopDemo -d ShopDemoCatalog -c '\dt'` | Acceso opcional a BD |
+
+**Actualizar tras cambio de manifiesto:**
+
+```bash
+kubectl apply -f k8s/catalog/deployment.yaml
+kubectl rollout status deployment/shopdemo-catalog -n shopdemo
+```
+
+Cheat sheet: [kubernetes-cli.md](../../cheat-sheets/kubernetes-cli.md)
+
+---
+
+## 13. Anexo B — Kubernetes Secrets
+
+**Objetivo:** Centralizar credenciales en un Secret del namespace.
+
+| Paso | Acción |
+|---|---|
+| 1 | `copy k8s\secrets.example.yaml k8s\secrets.yaml` |
+| 2 | Editar `EVENT_HUBS_CONNECTION_STRING` con tu connection string Azure |
+| 3 | `kubectl apply -f k8s/secrets.yaml` |
+| 4 | Verificar: `kubectl get secret shopdemo-secrets -n shopdemo` |
+
+**Claves del Secret:**
+
+| Key | Consumidor |
+|---|---|
+| `PG_CATALOG_CONN` | Catalog Deployment |
+| `PG_ORDERS_CONN` | Orders Deployment |
+| `PG_INVENTORY_CONN` | Inventory Deployment |
+| `EVENT_HUBS_CONNECTION_STRING` | Las 4 APIs |
+| `AZURITE_CHECKPOINT_CONN` | Inventory + Analytics |
+
+**Rotar un secreto:** editar `secrets.yaml` → `kubectl apply -f k8s/secrets.yaml` → `kubectl rollout restart deployment -n shopdemo`.
+
+---
+
+## 14. Anexo C — Liveness y Readiness
+
+**Objetivo:** Kubernetes reinicia pods caídos y no envía tráfico hasta que la API responde.
+
+### Código (ya en el repo)
+
+Las 4 APIs exponen:
+
+- `GET /health` → readiness
+- `GET /alive` → liveness
+
+### Manifiestos
+
+Ver `k8s/catalog/deployment.yaml` (mismo patrón en orders, inventory, analytics).
+
+### Verificación
+
+```bash
+kubectl describe pod -n shopdemo -l app=shopdemo-catalog | findstr -i "readiness liveness"
+kubectl port-forward -n shopdemo svc/shopdemo-catalog 8001:8080
+curl http://localhost:8001/health
+curl http://localhost:8001/alive
+```
+
+| Probe | Si falla |
+|---|---|
+| Readiness | Pod no recibe tráfico del Service |
+| Liveness | Kubernetes reinicia el contenedor |
+
+---
+
+## 15. Anexo D — Autoscaling (HPA)
+
+**Objetivo:** Escalar Catalog de 1 a 3 réplicas cuando la CPU supera el 70 %.
+
+| Paso | Comando |
+|---|---|
+| 1 | Habilitar métricas: `minikube addons enable metrics-server` |
+| 2 | Esperar ~1 min; verificar: `kubectl get apiservices \| findstr metrics` |
+| 3 | Aplicar HPA: `kubectl apply -f k8s/catalog/hpa.yaml` |
+| 4 | Estado: `kubectl get hpa shopdemo-catalog-hpa -n shopdemo` |
+
+**Demostración rápida (opcional):**
+
+```bash
+kubectl run -i --tty load-generator --rm --image=busybox --restart=Never -n shopdemo -- /bin/sh -c "while true; do wget -q -O- http://shopdemo-catalog:8080/swagger/index.html; done"
+# En otra terminal: kubectl get hpa -n shopdemo -w
+```
+
+Detener el pod de carga con `Ctrl+C`. El HPA reducirá réplicas tras unos minutos.
+
+> Solo **Catalog** tiene HPA en este curso; las demás APIs mantienen 1 réplica.
+
+---
+
+## 16. Anexo E — Ingress (addon Minikube)
+
+**Objetivo:** Un punto de entrada HTTP para las 4 APIs.
+
+En **Minikube** se usa el **addon** (no Helm):
+
+```bash
+minikube addons enable ingress
+kubectl get pods -n ingress-nginx
+kubectl apply -f k8s/ingress/
+```
+
+| Ruta Ingress | Service destino |
+|---|---|
+| `/catalog` | shopdemo-catalog |
+| `/orders` | shopdemo-orders |
+| `/inventory` | shopdemo-inventory |
+| `/analytics` | shopdemo-analytics |
+
+En **AKS y EKS** el mismo `ingress.yaml` funciona tras instalar el controlador con **Helm** (ver guías de nube).
 
 ---
 

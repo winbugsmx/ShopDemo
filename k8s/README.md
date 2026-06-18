@@ -11,6 +11,9 @@ k8s/
 ├── postgres/                 → StatefulSet + Service headless
 ├── azurite/                  → Checkpoints Event Hubs
 ├── catalog/
+│   ├── deployment.yaml
+│   ├── service.yaml
+│   └── hpa.yaml              → HPA demo (Catalog)
 ├── orders/
 ├── inventory/
 ├── analytics/
@@ -29,6 +32,7 @@ kubectl apply -f k8s/catalog/
 kubectl apply -f k8s/inventory/
 kubectl apply -f k8s/orders/
 kubectl apply -f k8s/analytics/
+kubectl apply -f k8s/catalog/hpa.yaml
 kubectl apply -f k8s/ingress/
 ```
 

@@ -10,6 +10,7 @@
 | | E-mail: lcc.gilberto.juarez@gmail.com |
 
 **Prerequisito:** [IMPLEMENTACION-KUBERNETES-LOCAL.md](../kubernetes/IMPLEMENTACION-KUBERNETES-LOCAL.md) (Minikube)  
+**Teoría K8s:** [TEORIA-KUBERNETES-OPERACIONES.md](../kubernetes/TEORIA-KUBERNETES-OPERACIONES.md)  
 Cada paso: **Portal Azure** + **Azure CLI**.
 
 ---
@@ -24,8 +25,9 @@ Cada paso: **Portal Azure** + **Azure CLI**.
 6. [Paso 5 — Instalar Ingress NGINX](#6-paso-5--instalar-ingress-nginx)
 7. [Paso 6 — Ajustar manifiestos para ACR](#7-paso-6--ajustar-manifiestos-para-acr)
 8. [Paso 7 — Desplegar ShopDemo](#8-paso-7--desplegar-shopdemo)
-9. [Paso 8 — Testeo](#9-paso-8--testeo)
-10. [Paso 9 — Limpieza](#10-paso-9--limpieza)
+9. [Paso 8 — Secrets, Probes y HPA](#9-paso-8--secrets-probes-y-hpa)
+10. [Paso 9 — Testeo](#10-paso-9--testeo)
+11. [Paso 10 — Limpieza](#11-paso-10--limpieza)
 
 ---
 
@@ -120,7 +122,9 @@ docker push $ACR_LOGIN/shopdemo-catalog:v1
 
 ---
 
-## 6. Paso 5 — Instalar Ingress NGINX
+## 6. Paso 5 — Instalar Ingress NGINX (Helm)
+
+**Objetivo:** Controlador Ingress en AKS. En nube se usa **Helm**, no el addon de Minikube.
 
 ### Portal (Marketplace)
 
@@ -134,7 +138,13 @@ helm repo update
 helm install ingress-nginx ingress-nginx/ingress-nginx \
   --namespace ingress-nginx --create-namespace
 kubectl get svc -n ingress-nginx
+kubectl wait --namespace ingress-nginx \
+  --for=condition=ready pod \
+  --selector=app.kubernetes.io/component=controller \
+  --timeout=120s
 ```
+
+**Explicación:** Helm instala el chart oficial con Service tipo LoadBalancer; Azure asigna IP pública automáticamente.
 
 ---
 
@@ -167,13 +177,62 @@ kubectl apply -f k8s/azurite/
 kubectl wait --for=condition=ready pod -l app=shopdemo-postgres -n shopdemo --timeout=300s
 kubectl apply -f k8s/catalog/deployment-aks.yaml  # o deployment.yaml editado
 kubectl apply -f k8s/catalog/service.yaml
+kubectl apply -f k8s/catalog/hpa.yaml
 # inventory, orders, analytics...
 kubectl apply -f k8s/ingress/
 ```
 
 ---
 
-## 9. Paso 8 — Testeo
+## 9. Paso 8 — Secrets, Probes y HPA
+
+### 9.1 Kubernetes Secrets
+
+| Paso | Acción |
+|---|---|
+| 1 | En tu máquina: `copy k8s\secrets.example.yaml k8s\secrets.yaml` |
+| 2 | Completar `EVENT_HUBS_CONNECTION_STRING` |
+| 3 | `kubectl apply -f k8s/secrets.yaml` |
+| 4 | Verificar: `kubectl describe secret shopdemo-secrets -n shopdemo` |
+
+Los Deployments referencian el Secret con `secretKeyRef` — mismos YAML que Minikube.
+
+### 9.2 Liveness y Readiness
+
+Tras desplegar, comprobar probes HTTP:
+
+```bash
+kubectl get pods -n shopdemo
+kubectl describe pod -n shopdemo -l app=shopdemo-catalog
+```
+
+Debe aparecer `Readiness: http-get /health` y `Liveness: http-get /alive` en estado **Success**.
+
+Si fallan tras el primer deploy:
+
+```bash
+# Rebuild y push imagen con /health
+kubectl rollout restart deployment/shopdemo-catalog -n shopdemo
+```
+
+### 9.3 Autoscaling (HPA)
+
+AKS incluye **metrics-server** por defecto en versiones recientes.
+
+```bash
+kubectl apply -f k8s/catalog/hpa.yaml
+kubectl get hpa -n shopdemo
+```
+
+| Campo HPA | Valor |
+|---|---|
+| minReplicas | 1 |
+| maxReplicas | 3 |
+| CPU target | 70 % |
+
+---
+
+## 10. Paso 9 — Testeo
 
 ```bash
 $INGRESS_IP = kubectl get ingress shopdemo-ingress -n shopdemo -o jsonpath='{.status.loadBalancer.ingress[0].ip}'
@@ -188,13 +247,15 @@ Flujo E2E: [GUIA-ENDPOINTS.md](../../GUIA-ENDPOINTS.md) (ajustar URLs al Ingress
 | Prueba | Esperado |
 |---|---|
 | Pods | Todos `Running` |
+| Probes | `/health` y `/alive` Success |
+| HPA | `shopdemo-catalog-hpa` con TARGETS numérico |
 | Crear producto | `201` Catalog |
 | Analytics | Eventos en `/analytics/api/analytics/events` |
 | Confirmar pedido | `200` Orders |
 
 ---
 
-## 10. Paso 9 — Limpieza
+## 11. Paso 10 — Limpieza
 
 ### Portal
 

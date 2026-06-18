@@ -32,9 +32,11 @@ Material del curso para llevar los microservicios Docker a la nube con enfoque *
 | Documento | Contenido |
 |---|---|
 | [kubernetes/README.md](./kubernetes/README.md) | Índice K8s |
+| [kubernetes/TEORIA-KUBERNETES-OPERACIONES.md](./kubernetes/TEORIA-KUBERNETES-OPERACIONES.md) | kubectl, Secrets, Probes, HPA, Ingress |
+| [kubernetes/REQUERIMIENTOS-KUBERNETES.md](./kubernetes/REQUERIMIENTOS-KUBERNETES.md) | Justificación Minikube |
 | [kubernetes/IMPLEMENTACION-KUBERNETES-LOCAL.md](./kubernetes/IMPLEMENTACION-KUBERNETES-LOCAL.md) | Minikube + manifiestos `k8s/` |
-| [aks/](./aks/) | Teoría e implementación AKS |
-| [eks/](./eks/) | Teoría e implementación EKS |
+| [aks/](./aks/) | AKS: Helm Ingress, Secrets, Probes, HPA |
+| [eks/](./eks/) | EKS: Helm Ingress, Secrets, Probes, HPA |
 
 ### Azure (Container Apps)
 

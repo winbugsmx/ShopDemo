@@ -10,6 +10,7 @@
 | | E-mail: lcc.gilberto.juarez@gmail.com |
 
 **Prerequisito:** [IMPLEMENTACION-KUBERNETES-LOCAL.md](../kubernetes/IMPLEMENTACION-KUBERNETES-LOCAL.md)  
+**Teoría K8s:** [TEORIA-KUBERNETES-OPERACIONES.md](../kubernetes/TEORIA-KUBERNETES-OPERACIONES.md)  
 Cada paso: **Consola AWS** + **CLI**.
 
 ---
@@ -24,8 +25,9 @@ Cada paso: **Consola AWS** + **CLI**.
 6. [Paso 5 — EBS CSI + Ingress NGINX](#6-paso-5--ebs-csi--ingress-nginx)
 7. [Paso 6 — Manifiestos con imágenes ECR](#7-paso-6--manifiestos-con-imágenes-ecr)
 8. [Paso 7 — Desplegar ShopDemo](#8-paso-7--desplegar-shopdemo)
-9. [Paso 8 — Testeo](#9-paso-8--testeo)
-10. [Paso 9 — Limpieza](#10-paso-9--limpieza)
+9. [Paso 8 — Secrets, Probes y HPA](#9-paso-8--secrets-probes-y-hpa)
+10. [Paso 9 — Testeo](#10-paso-9--testeo)
+11. [Paso 10 — Limpieza](#11-paso-10--limpieza)
 
 ---
 
@@ -113,7 +115,7 @@ docker push ${ECR}/shopdemo-catalog:v1
 
 ---
 
-## 6. Paso 5 — EBS CSI + Ingress NGINX
+## 6. Paso 5 — EBS CSI + Ingress NGINX (Helm)
 
 **EBS CSI:** necesario para PVC del StatefulSet Postgres.
 
@@ -123,9 +125,17 @@ docker push ${ECR}/shopdemo-catalog:v1
 eksctl create addon --name aws-ebs-csi-driver --cluster $CLUSTER_NAME --force
 
 helm repo add ingress-nginx https://kubernetes.github.io/ingress-nginx
+helm repo update
 helm install ingress-nginx ingress-nginx/ingress-nginx \
-  --namespace ingress-nginx --create-namespace
+  --namespace ingress-nginx --create-namespace \
+  --set controller.service.type=LoadBalancer
+kubectl wait --namespace ingress-nginx \
+  --for=condition=ready pod \
+  --selector=app.kubernetes.io/component=controller \
+  --timeout=180s
 ```
+
+**Explicación:** En EKS el Ingress se instala con **Helm** (igual que AKS). Minikube usa addon en su lugar.
 
 ### Consola
 
@@ -156,12 +166,49 @@ kubectl apply -f k8s/catalog/
 kubectl apply -f k8s/inventory/
 kubectl apply -f k8s/orders/
 kubectl apply -f k8s/analytics/
+kubectl apply -f k8s/catalog/hpa.yaml
 kubectl apply -f k8s/ingress/
 ```
 
 ---
 
-## 9. Paso 8 — Testeo
+## 9. Paso 8 — Secrets, Probes y HPA
+
+### 9.1 Kubernetes Secrets
+
+| Paso | Acción |
+|---|---|
+| 1 | `copy k8s\secrets.example.yaml k8s\secrets.yaml` |
+| 2 | Completar connection strings (PG interno + Event Hubs Azure) |
+| 3 | `kubectl apply -f k8s/secrets.yaml` |
+
+> Event Hubs sigue en Azure aunque el cómputo esté en AWS; el cluster EKS necesita salida HTTPS a internet.
+
+### 9.2 Liveness y Readiness
+
+```bash
+kubectl describe pod -n shopdemo -l app=shopdemo-catalog
+curl http://<ingress-host>/catalog/health
+```
+
+Los manifiestos usan `httpGet` a `/health` (readiness) y `/alive` (liveness) en puerto 8080.
+
+### 9.3 Autoscaling (HPA)
+
+Verificar metrics-server (EKS 1.29+ suele traerlo):
+
+```bash
+kubectl get deployment metrics-server -n kube-system
+# Si no existe:
+kubectl apply -f https://github.com/kubernetes-sigs/metrics-server/releases/latest/download/components.yaml
+
+kubectl apply -f k8s/catalog/hpa.yaml
+kubectl get hpa -n shopdemo -w
+```
+
+---
+
+## 10. Paso 9 — Testeo
 
 ```bash
 kubectl get ingress -n shopdemo
@@ -176,13 +223,14 @@ kubectl get svc -n ingress-nginx
 
 | Prueba | Referencia |
 |---|---|
-| Health pods | `kubectl describe pod -n shopdemo ...` |
+| Health pods | `kubectl describe pod -n shopdemo ...` — probes Success |
+| HPA Catalog | `kubectl get hpa -n shopdemo` |
 | API Catalog | `/catalog/swagger` vía Ingress |
 | E2E | [GUIA-ENDPOINTS.md](../../GUIA-ENDPOINTS.md) |
 
 ---
 
-## 10. Paso 9 — Limpieza
+## 11. Paso 10 — Limpieza
 
 ### Consola
 

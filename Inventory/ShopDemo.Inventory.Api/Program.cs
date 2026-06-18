@@ -1,4 +1,6 @@
+using Microsoft.AspNetCore.Diagnostics.HealthChecks;
 using Microsoft.EntityFrameworkCore;
+using Microsoft.Extensions.Diagnostics.HealthChecks;
 using Microsoft.OpenApi;
 using ShopDemo.Inventory.Api.Middleware;
 using ShopDemo.Inventory.Infrastructure;
@@ -19,6 +21,8 @@ builder.Services.AddSwaggerGen(options =>
 });
 
 builder.Services.AddInventoryInfrastructure(builder.Configuration);
+builder.Services.AddHealthChecks()
+    .AddCheck("self", () => HealthCheckResult.Healthy(), ["live"]);
 
 var app = builder.Build();
 
@@ -45,6 +49,11 @@ if (app.Environment.IsDevelopment())
 
 app.UseMiddleware<ExceptionHandlingMiddleware>();
 app.UseHttpsRedirection();
+app.MapHealthChecks("/health");
+app.MapHealthChecks("/alive", new HealthCheckOptions
+{
+    Predicate = r => r.Tags.Contains("live")
+});
 app.MapControllers();
 
 app.Run();

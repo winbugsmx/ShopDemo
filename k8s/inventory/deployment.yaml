@@ -45,3 +45,24 @@ spec:
                   key: AZURITE_CHECKPOINT_CONN
             - name: EventHubs__CheckpointContainerName
               value: inventory-checkpoints
+          resources:
+            requests:
+              cpu: 100m
+              memory: 256Mi
+            limits:
+              cpu: 500m
+              memory: 512Mi
+          readinessProbe:
+            httpGet:
+              path: /health
+              port: 8080
+            initialDelaySeconds: 15
+            periodSeconds: 10
+            failureThreshold: 3
+          livenessProbe:
+            httpGet:
+              path: /alive
+              port: 8080
+            initialDelaySeconds: 30
+            periodSeconds: 15
+            failureThreshold: 3

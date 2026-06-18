@@ -31,10 +31,20 @@ Desplegar ShopDemo en **EKS** con los mismos manifiestos `k8s/` usados en Miniku
 | OBJ-EKS-05 | Aplicar manifiestos ShopDemo |
 | OBJ-EKS-06 | Validar flujo E2E |
 | OBJ-EKS-07 | Documentar errores comunes |
+| OBJ-EKS-08 | Aplicar **Secrets** K8s |
+| OBJ-EKS-09 | Validar **Liveness/Readiness** HTTP |
+| OBJ-EKS-10 | Ingress **Helm** + **HPA** Catalog |
 
 ---
 
-## 3. Criterios de aceptación
+## 3. Alcance
+
+- Cluster EKS 1 node group (lab)
+- ECR para imágenes
+- Manifiestos `k8s/` compartidos con Minikube/AKS
+- EBS CSI + Ingress Helm
+
+## 4. Criterios de aceptación
 
 | # | Criterio |
 |---|---|
@@ -42,10 +52,13 @@ Desplegar ShopDemo en **EKS** con los mismos manifiestos `k8s/` usados en Miniku
 | CA-EKS-02 | Namespace `shopdemo` con todos los Pods Running |
 | CA-EKS-03 | Ingress accesible vía DNS/IP del balanceador |
 | CA-EKS-04 | Pasos realizados en Consola y CLI |
+| CA-EKS-05 | Probes y HPA Catalog verificados |
 
 ---
 
 ## Referencias
+
+- [TEORIA-KUBERNETES-OPERACIONES.md](../kubernetes/TEORIA-KUBERNETES-OPERACIONES.md)
 
 - [TEORIA-EKS.md](./TEORIA-EKS.md)
 - [IMPLEMENTACION-DESPLIEGUE-EKS.md](./IMPLEMENTACION-DESPLIEGUE-EKS.md)

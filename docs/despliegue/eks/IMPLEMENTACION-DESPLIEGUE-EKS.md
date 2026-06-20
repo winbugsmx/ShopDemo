@@ -74,12 +74,12 @@ export ECR_PREFIX=shopdemo
 
 ### Consola AWS
 
-1. **Amazon ECR** → **Create repository** × 4: `shopdemo-catalog`, `shopdemo-orders`, `shopdemo-inventory`, `shopdemo-analytics`
+1. **Amazon ECR** → **Create repository** × 5: `shopdemo-catalog`, `shopdemo-orders`, `shopdemo-inventory`, `shopdemo-analytics`, `shopdemo-mcp`
 
 ### CLI
 
 ```bash
-for repo in shopdemo-catalog shopdemo-orders shopdemo-inventory shopdemo-analytics; do
+for repo in shopdemo-catalog shopdemo-orders shopdemo-inventory shopdemo-analytics shopdemo-mcp; do
   aws ecr create-repository --repository-name $repo --region $AWS_REGION
 done
 ```
@@ -139,7 +139,18 @@ aws ecr get-login-password --region $env:AWS_REGION | docker login --username AW
 
 docker build -f Catalog/ShopDemo.Catalog.Api/Dockerfile -t ${ECR}/shopdemo-catalog:v1 .
 docker push ${ECR}/shopdemo-catalog:v1
-# Repetir orders, inventory, analytics
+
+docker build -f Orders/ShopDemo.Orders.Api/Dockerfile -t ${ECR}/shopdemo-orders:v1 .
+docker push ${ECR}/shopdemo-orders:v1
+
+docker build -f Inventory/ShopDemo.Inventory.Api/Dockerfile -t ${ECR}/shopdemo-inventory:v1 .
+docker push ${ECR}/shopdemo-inventory:v1
+
+docker build -f Aspire/ShopDemo.Analytics.Api/Dockerfile -t ${ECR}/shopdemo-analytics:v1 .
+docker push ${ECR}/shopdemo-analytics:v1
+
+docker build -f AI/ShopDemo.Mcp.Api/Dockerfile -t ${ECR}/shopdemo-mcp:v1 .
+docker push ${ECR}/shopdemo-mcp:v1
 ```
 
 ---
@@ -195,8 +206,12 @@ kubectl apply -f k8s/catalog/
 kubectl apply -f k8s/inventory/
 kubectl apply -f k8s/orders/
 kubectl apply -f k8s/analytics/
+kubectl apply -f k8s/mcp/
 kubectl apply -f k8s/catalog/hpa.yaml
 kubectl apply -f k8s/ingress/
+
+kubectl get pods -n shopdemo
+kubectl get ingress -n shopdemo
 ```
 
 ---

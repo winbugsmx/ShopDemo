@@ -34,7 +34,7 @@ Cada paso incluye explicación breve. Para AKS/EKS ver guías específicas (mism
 5. [Paso 4 — Construir imágenes en el daemon de Minikube](#5-paso-4--construir-imágenes-en-el-daemon-de-minikube)
 6. [Paso 5 — Configurar Secrets](#6-paso-5--configurar-secrets)
 7. [Paso 6 — Desplegar infraestructura (Postgres + Azurite)](#7-paso-6--desplegar-infraestructura-postgres--azurite)
-8. [Paso 7 — Desplegar las 4 APIs](#8-paso-7--desplegar-las-4-apis)
+8. [Paso 7 — Desplegar los 5 servicios (4 APIs + MCP)](#8-paso-7--desplegar-los-5-servicios-4-apis--mcp)
 9. [Paso 8 — Desplegar Ingress](#9-paso-8--desplegar-ingress)
 10. [Paso 9 — Testeo del despliegue](#10-paso-9--testeo-del-despliegue)
 11. [Solución de problemas](#11-solución-de-problemas)
@@ -165,7 +165,7 @@ kubectl get pods -n shopdemo
 
 ---
 
-## 8. Paso 7 — Desplegar las 4 APIs
+## 8. Paso 7 — Desplegar los 5 servicios (4 APIs + MCP)
 
 **Objetivo:** Microservicios con variables desde Secrets y DNS interno.
 

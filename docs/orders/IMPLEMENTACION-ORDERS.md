@@ -36,35 +36,50 @@
 
 ## 1. Configuración inicial de proyectos
 
-### 1.1 Referencias entre proyectos
+### 1.1 Crear proyectos Orders (modo construcción guiada)
+
+Si empiezas desde cero, crea la carpeta y los cuatro proyectos (igual que Catalog):
+
+```bash
+cd I:\Curso\ShopDemo
+
+dotnet new classlib -n ShopDemo.Orders.Domain -o Orders/ShopDemo.Orders.Domain -f net10.0
+dotnet new classlib -n ShopDemo.Orders.Application -o Orders/ShopDemo.Orders.Application -f net10.0
+dotnet new classlib -n ShopDemo.Orders.Infraestructure -o Orders/ShopDemo.Orders.Infraestructure -f net10.0
+dotnet new webapi -n ShopDemo.Orders.Api -o Orders/ShopDemo.Orders.Api -f net10.0
+```
+
+En `ShopDemo.slnx`, agrega carpeta `/Orders/` con los cuatro proyectos (ver [IMPLEMENTACION-CATALOG §2.3](../catalog/IMPLEMENTACION-CATALOG.md#23-agregar-a-la-solución)).
+
+### 1.2 Referencias entre proyectos
 
 ```bash
 cd I:\Curso\ShopDemo
 
 # Domain
-dotnet add ShopDemo.Orders.Domain/ShopDemo.Orders.Domain.csproj reference ShopDemo.Shared/ShopDemo.Shared.csproj
+dotnet add Orders/ShopDemo.Orders.Domain/ShopDemo.Orders.Domain.csproj reference ShopDemo.Shared/ShopDemo.Shared.csproj
 
 # Application
-dotnet add ShopDemo.Orders.Application/ShopDemo.Orders.Application.csproj reference ShopDemo.Orders.Domain/ShopDemo.Orders.Domain.csproj
-dotnet add ShopDemo.Orders.Application/ShopDemo.Orders.Application.csproj package MediatR
-dotnet add ShopDemo.Orders.Application/ShopDemo.Orders.Application.csproj package FluentValidation
-dotnet add ShopDemo.Orders.Application/ShopDemo.Orders.Application.csproj package FluentValidation.DependencyInjectionExtensions
+dotnet add Orders/ShopDemo.Orders.Application/ShopDemo.Orders.Application.csproj reference Orders/ShopDemo.Orders.Domain/ShopDemo.Orders.Domain.csproj
+dotnet add Orders/ShopDemo.Orders.Application/ShopDemo.Orders.Application.csproj package MediatR
+dotnet add Orders/ShopDemo.Orders.Application/ShopDemo.Orders.Application.csproj package FluentValidation
+dotnet add Orders/ShopDemo.Orders.Application/ShopDemo.Orders.Application.csproj package FluentValidation.DependencyInjectionExtensions
 
 # Infrastructure
-dotnet add ShopDemo.Orders.Infraestructure/ShopDemo.Orders.Infraestructure.csproj reference ShopDemo.Orders.Application/ShopDemo.Orders.Application.csproj
-dotnet add ShopDemo.Orders.Infraestructure/ShopDemo.Orders.Infraestructure.csproj reference ShopDemo.Orders.Domain/ShopDemo.Orders.Domain.csproj
-dotnet add ShopDemo.Orders.Infraestructure/ShopDemo.Orders.Infraestructure.csproj reference ShopDemo.Shared/ShopDemo.Shared.csproj
-dotnet add ShopDemo.Orders.Infraestructure/ShopDemo.Orders.Infraestructure.csproj package Microsoft.EntityFrameworkCore
-dotnet add ShopDemo.Orders.Infraestructure/ShopDemo.Orders.Infraestructure.csproj package Npgsql.EntityFrameworkCore.PostgreSQL
+dotnet add Orders/ShopDemo.Orders.Infraestructure/ShopDemo.Orders.Infraestructure.csproj reference Orders/ShopDemo.Orders.Application/ShopDemo.Orders.Application.csproj
+dotnet add Orders/ShopDemo.Orders.Infraestructure/ShopDemo.Orders.Infraestructure.csproj reference Orders/ShopDemo.Orders.Domain/ShopDemo.Orders.Domain.csproj
+dotnet add Orders/ShopDemo.Orders.Infraestructure/ShopDemo.Orders.Infraestructure.csproj reference ShopDemo.Shared/ShopDemo.Shared.csproj
+dotnet add Orders/ShopDemo.Orders.Infraestructure/ShopDemo.Orders.Infraestructure.csproj package Microsoft.EntityFrameworkCore
+dotnet add Orders/ShopDemo.Orders.Infraestructure/ShopDemo.Orders.Infraestructure.csproj package Npgsql.EntityFrameworkCore.PostgreSQL
 
 # Api
-dotnet add ShopDemo.Orders.Api/ShopDemo.Orders.Api.csproj reference ShopDemo.Orders.Infraestructure/ShopDemo.Orders.Infraestructure.csproj
-dotnet add ShopDemo.Orders.Api/ShopDemo.Orders.Api.csproj reference ShopDemo.Orders.Application/ShopDemo.Orders.Application.csproj
-dotnet add ShopDemo.Orders.Api/ShopDemo.Orders.Api.csproj package Swashbuckle.AspNetCore
-dotnet add ShopDemo.Orders.Api/ShopDemo.Orders.Api.csproj package Microsoft.EntityFrameworkCore.Design
+dotnet add Orders/ShopDemo.Orders.Api/ShopDemo.Orders.Api.csproj reference Orders/ShopDemo.Orders.Infraestructure/ShopDemo.Orders.Infraestructure.csproj
+dotnet add Orders/ShopDemo.Orders.Api/ShopDemo.Orders.Api.csproj reference Orders/ShopDemo.Orders.Application/ShopDemo.Orders.Application.csproj
+dotnet add Orders/ShopDemo.Orders.Api/ShopDemo.Orders.Api.csproj package Swashbuckle.AspNetCore
+dotnet add Orders/ShopDemo.Orders.Api/ShopDemo.Orders.Api.csproj package Microsoft.EntityFrameworkCore.Design
 ```
 
-### 1.2 Eliminar placeholders
+### 1.3 Eliminar placeholders
 
 Eliminar los archivos `Class1.cs` de cada proyecto Orders.*
 

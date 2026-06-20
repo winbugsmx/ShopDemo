@@ -425,24 +425,77 @@ public sealed class ProductsController(IMediator mediator) : ControllerBase
 
 ## 8. Docker
 
+> **Copiar del repo:** los archivos completos están en `Catalog/ShopDemo.Catalog.Api/`. Si construyes desde cero, copia exactamente estas rutas.
+
 ### 8.1 `docker-compose.yml`
 
 **Ubicación:** `Catalog/ShopDemo.Catalog.Api/docker-compose.yml`
+
+```yaml
+services:
+  catalog-db:
+    image: postgres:16-alpine
+    container_name: shopdemo-catalog-db
+    environment:
+      POSTGRES_DB: ShopDemoCatalog
+      POSTGRES_USER: ShopDemo
+      POSTGRES_PASSWORD: ShopDemo123
+    ports:
+      - "5433:5432"
+    volumes:
+      - catalog-db-data:/var/lib/postgresql/data
+      - ./docker/postgres/init:/docker-entrypoint-initdb.d:ro
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U ShopDemo -d ShopDemoCatalog"]
+      interval: 5s
+      timeout: 5s
+      retries: 5
+
+  catalog-service:
+    build:
+      context: ..
+      dockerfile: ShopDemo.Catalog.Api/Dockerfile
+    container_name: shopdemo-catalog-api
+    ports:
+      - "8001:8080"
+    environment:
+      - ASPNETCORE_ENVIRONMENT=Development
+      - ConnectionStrings__DefaultConnection=Host=catalog-db;Port=5432;Database=ShopDemoCatalog;Username=ShopDemo;Password=ShopDemo123
+      - EventHubs__Enabled=${EVENT_HUBS_ENABLED:-false}
+      - EventHubs__ConnectionString=${EVENT_HUBS_CONNECTION_STRING:-}
+      - EventHubs__EventHubName=${EVENT_HUBS_NAME:-shopdemo-events}
+    depends_on:
+      catalog-db:
+        condition: service_healthy
+
+volumes:
+  catalog-db-data:
+```
 
 | Servicio | Puerto host | Descripción |
 |---|---|---|
 | `catalog-db` | 5433 | PostgreSQL `ShopDemoCatalog` |
 | `catalog-service` | 8001 | API Catalog |
 
-Healthcheck en PostgreSQL antes de levantar la API.
-
 ### 8.2 `Dockerfile`
 
-Build multi-stage (.NET 10) con contexto en carpeta `Catalog/`. Usuario no-root (`USER app`).
+**Ubicación:** `Catalog/ShopDemo.Catalog.Api/Dockerfile` — build multi-stage (.NET 10), contexto `Catalog/`, usuario no-root `USER app`, puerto `8080`.
+
+Código completo en el repo (copiar archivo tal cual). Estructura:
+
+```dockerfile
+FROM mcr.microsoft.com/dotnet/aspnet:10.0 AS base
+WORKDIR /app
+EXPOSE 8080
+ENV ASPNETCORE_URLS=http://+:8080
+# ... stages build + publish desde Catalog/
+USER app
+ENTRYPOINT ["dotnet", "ShopDemo.Catalog.Api.dll"]
+```
 
 ### 8.3 Script init PostgreSQL
 
-`docker/postgres/init/` — permisos en schema `public` para el usuario `ShopDemo`.
+`Catalog/ShopDemo.Catalog.Api/docker/postgres/init/` — permisos en schema `public` para el usuario `ShopDemo`.
 
 ---
 

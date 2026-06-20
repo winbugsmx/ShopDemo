@@ -37,6 +37,18 @@ Automatización del laboratorio Azure del curso Lite Thinking. Complementa la do
 | `AZURE_SUBSCRIPTION_ID` | **Subscriptions** → tu suscripción → **Subscription ID** |
 | `AZURE_LOCATION` | Región acordada (ej. `eastus`, `mexicocentral`) |
 
+### Nombres canónicos del curso (copiar de `.env.azure.example`)
+
+| Variable | Valor ejemplo |
+|---|---|
+| `RESOURCE_GROUP` | `rg-shopdemo-lab` |
+| `ACR_NAME` | `acrshopdemolab01` |
+| `EVENT_HUB_NAMESPACE` | `shopdemo-eh-ns-lab01` |
+| `STORAGE_ACCOUNT_NAME` | `shopdemochecklab01` |
+| `ACA_ENV_NAME` | `aca-env-shopdemo` |
+
+Si un nombre † está ocupado globalmente, cambia el sufijo `01` → `02` en **`.env.azure` y en toda la documentación manual**.
+
 ### Nombres que tú inventas (deben ser únicos globalmente donde aplique)
 
 | Variable | Regla |

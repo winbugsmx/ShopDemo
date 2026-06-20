@@ -42,7 +42,7 @@
 
 ```bash
 $RG = "rg-shopdemo-lab"
-$ACR_NAME = "acrshopdemolab"
+$ACR_NAME = "acrshopdemolab01"
 $ACA_ENV = "aca-env-shopdemo"
 $AKS_NAME = "aks-shopdemo"   # si usas Parte B
 ```
@@ -115,7 +115,7 @@ echo "https://$ANALYTICS_URL"
 1. **Container Apps** → **Create**
 2. **Basics:** nombre `ca-shopdemo-mcp`, mismo RG y **Container Apps Environment** que las otras APIs
 3. **Container:**
-   - Image: `acrshopdemolab.azurecr.io/shopdemo-mcp:v1`
+   - Image: `acrshopdemolab01.azurecr.io/shopdemo-mcp:v1`
    - CPU 0.5, Memory 1 Gi
    - **Environment variables:**
 

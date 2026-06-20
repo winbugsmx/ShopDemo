@@ -63,9 +63,9 @@ Los pasos manuales siguientes (§2–§11) explican cada recurso si prefieres Po
 ## 1. Variables del laboratorio
 
 ```bash
-$RG = "rg-shopdemo-aks"
+$RG = "rg-shopdemo-lab"
 $LOCATION = "eastus"
-$ACR_NAME = "acrshopdemolab"
+$ACR_NAME = "acrshopdemolab01"   # † mismo nombre que .env.azure.example
 $AKS_NAME = "aks-shopdemo"
 ```
 
@@ -77,8 +77,8 @@ $AKS_NAME = "aks-shopdemo"
 
 ### Portal Azure
 
-1. **Resource groups** → `rg-shopdemo-aks` (o usar existente)
-2. **Container Registry** → crear o seleccionar `acrshopdemolab`
+1. **Resource groups** → `rg-shopdemo-lab` (mismo RG que ACA; o crear uno dedicado si prefieres)
+2. **Container Registry** → crear o seleccionar `acrshopdemolab01` (mismo ACR del release ACA)
 
 ### CLI
 
@@ -144,9 +144,17 @@ cd I:\Curso\ShopDemo
 az acr login --name $ACR_NAME
 $ACR_LOGIN = az acr show --name $ACR_NAME --query loginServer -o tsv
 
-docker build -f Catalog/ShopDemo.Catalog.Api/Dockerfile -t $ACR_LOGIN/shopdemo-catalog:v1 .
-docker push $ACR_LOGIN/shopdemo-catalog:v1
-# Repetir orders, inventory, analytics
+$images = @(
+  @{ df = "Catalog/ShopDemo.Catalog.Api/Dockerfile"; img = "shopdemo-catalog" }
+  @{ df = "Orders/ShopDemo.Orders.Api/Dockerfile"; img = "shopdemo-orders" }
+  @{ df = "Inventory/ShopDemo.Inventory.Api/Dockerfile"; img = "shopdemo-inventory" }
+  @{ df = "Aspire/ShopDemo.Analytics.Api/Dockerfile"; img = "shopdemo-analytics" }
+  @{ df = "AI/ShopDemo.Mcp.Api/Dockerfile"; img = "shopdemo-mcp" }
+)
+foreach ($i in $images) {
+  docker build -f $i.df -t "$ACR_LOGIN/$($i.img):v1" .
+  docker push "$ACR_LOGIN/$($i.img):v1"
+}
 ```
 
 ---
@@ -181,22 +189,26 @@ kubectl wait --namespace ingress-nginx \
 
 **Objetivo:** Cambiar `image: shopdemo-catalog:latest` por ACR.
 
-Opción rápida — patch en línea al aplicar:
+Opción rápida — script para los **5 deployments**:
 
 ```bash
 $ACR_LOGIN = az acr show --name $ACR_NAME --query loginServer -o tsv
-
-# Ejemplo Catalog
-(Get-Content k8s/catalog/deployment.yaml) `
-  -replace 'shopdemo-catalog:latest', "$ACR_LOGIN/shopdemo-catalog:v1" |
-  Set-Content k8s/catalog/deployment-aks.yaml
+$tag = "v1"
+$services = @("catalog","orders","inventory","analytics","mcp")
+foreach ($svc in $services) {
+  $path = "k8s/$svc/deployment.yaml"
+  (Get-Content $path) -replace "shopdemo-${svc}:latest", "$ACR_LOGIN/shopdemo-${svc}:$tag" |
+    Set-Content "k8s/$svc/deployment-aks.yaml"
+}
 ```
 
-O editar `deployment.yaml` con la ruta completa ACR y `imagePullPolicy: Always`.
+O editar cada `k8s/*/deployment.yaml` con la ruta completa ACR y `imagePullPolicy: Always`.
 
 ---
 
 ## 8. Paso 7 — Desplegar ShopDemo
+
+Orden canónico (igual que [k8s/README.md](../../../k8s/README.md)):
 
 ```bash
 kubectl apply -f k8s/namespace.yaml
@@ -204,11 +216,18 @@ kubectl apply -f k8s/secrets.yaml
 kubectl apply -f k8s/postgres/
 kubectl apply -f k8s/azurite/
 kubectl wait --for=condition=ready pod -l app=shopdemo-postgres -n shopdemo --timeout=300s
-kubectl apply -f k8s/catalog/deployment-aks.yaml  # o deployment.yaml editado
-kubectl apply -f k8s/catalog/service.yaml
+
+# APIs + MCP (usar deployment-aks.yaml si generaste parches ACR)
+kubectl apply -f k8s/catalog/
+kubectl apply -f k8s/inventory/
+kubectl apply -f k8s/orders/
+kubectl apply -f k8s/analytics/
+kubectl apply -f k8s/mcp/
 kubectl apply -f k8s/catalog/hpa.yaml
-# inventory, orders, analytics...
 kubectl apply -f k8s/ingress/
+
+kubectl get pods -n shopdemo
+kubectl get ingress -n shopdemo
 ```
 
 ---

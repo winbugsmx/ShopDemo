@@ -42,6 +42,7 @@ Detalle en [IMPLEMENTACION-DESPLIEGUE-AZURE §0](./azure/IMPLEMENTACION-DESPLIEG
 | APIs desplegadas | Catalog, Orders, Inventory, Analytics | Igual |
 | AppHost Aspire | Solo desarrollo local — **no se despliega** | Igual |
 | PostgreSQL | Contenedor (ACI / ECS) | Contenedor (ECS + EFS) |
+| Checkpoints Event Hubs | **Storage Account** (`shopdemochecklab01`) en ACA · **Azurite** en AKS/K8s | **Azurite** (`shopdemo-azurite`) en ECS |
 | Mensajería | Azure Event Hubs (existente en código) | Conexión cross-cloud a Event Hubs |
 | Automatización | CLI + Portal + **scripts PowerShell** + GitHub Actions | CLI + Consola + **scripts PowerShell** + GitHub Actions |
 

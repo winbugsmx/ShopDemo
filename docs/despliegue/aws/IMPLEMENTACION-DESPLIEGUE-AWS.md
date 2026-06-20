@@ -18,6 +18,51 @@
 **Script automatizado (CLI):** [scripts/aws/README.md](../../../scripts/aws/README.md) — `Deploy-AwsShopDemo.ps1` / `Remove-AwsShopDemo.ps1`  
 **Qué integrar:** `Dockerfile` y `docker-compose.yml` de cada API; parámetros SSM/Secrets Manager — **sin código C# nuevo**.
 
+### Servicios AWS del release productivo (lab)
+
+| Componente ShopDemo | Servicio AWS | Notas |
+|---|---|---|
+| Imágenes Docker | **Amazon ECR** (5 repos) | `shopdemo-catalog` … `shopdemo-mcp` |
+| Cómputo APIs | **ECS Fargate** | 5 services + Postgres + Azurite |
+| Entrada HTTP pública | **Application Load Balancer** | Un ALB por API pública |
+| DNS interno Inventory | **AWS Cloud Map** | `inventory.shopdemo.local` |
+| Secretos | **SSM Parameter Store** (SecureString) | `/shopdemo/*` |
+| Red | **VPC** + Security Groups | Subnets públicas (lab) |
+| Mensajería | **Azure Event Hubs** (cross-cloud) | Connection string en SSM |
+| Checkpoints Blob | **Azurite** en Fargate | Emulador; en Azure ACA usa Storage Account |
+
+### Convención de nombres del laboratorio (prefijo `shopdemo`)
+
+> Todas las variables están en `scripts/aws/.env.aws.example`. El prefijo `LAB_PREFIX=shopdemo` se antepone a VPC, security groups, task families y ALB.
+
+| Recurso AWS | Nombre canónico | Variable `.env.aws` | Para qué sirve |
+|---|---|---|---|
+| Región | `us-east-1` | `AWS_REGION` | Región donde se crean los recursos |
+| Prefijo recursos | `shopdemo` | `LAB_PREFIX` | Prefijo común (VPC, SG, ECS family, ALB) |
+| VPC | `shopdemo-vpc` (tag Name) | `VPC_CIDR` = `10.0.0.0/16` | Red privada para Fargate y ALB |
+| Security Group ALB | `shopdemo-alb` | — | Recibe HTTP:80 desde internet |
+| Security Group apps | `shopdemo-apps` | — | Tareas ECS de las APIs |
+| Security Group datos | `shopdemo-data` | — | PostgreSQL y Azurite |
+| ECR repos | `shopdemo-catalog`, …, `shopdemo-mcp` | `IMAGE_TAG` | Registro de imágenes Docker |
+| SSM parameters | `/shopdemo/eh-connection`, `/shopdemo/pg-catalog`, … | — | Secretos fuera de task definitions |
+| ECS cluster | `shopdemo-cluster` | `ECS_CLUSTER_NAME` | Agrupa servicios Fargate |
+| Task family Postgres | `shopdemo-postgres` | — | Definición del contenedor PostgreSQL |
+| ECS service Postgres | `shopdemo-postgres` | — | Tarea Fargate de base de datos |
+| Task/Service Azurite | `shopdemo-azurite` | — | Emulador Blob para checkpoints |
+| Cloud Map namespace | `shopdemo.local` | `CLOUDMAP_NAMESPACE` | DNS privado VPC |
+| Cloud Map service | `inventory` | — | Resuelve `inventory.shopdemo.local` |
+| Task/Service Catalog | `shopdemo-catalog` | — | API catálogo + ALB público |
+| ALB Catalog | `shopdemo-catalog-alb` | — | Entrada HTTP pública Catalog |
+| Target group Catalog | `shopdemo-catalog-tg` | — | Health check hacia puerto 8080 |
+| Task/Service Inventory | `shopdemo-inventory` | — | API interna (sin ALB) |
+| Task/Service Orders | `shopdemo-orders` | — | API pedidos + ALB |
+| ALB Orders | `shopdemo-orders-alb` | — | Entrada HTTP Orders |
+| Task/Service Analytics | `shopdemo-analytics` | — | API analytics + ALB |
+| ALB Analytics | `shopdemo-analytics-alb` | — | Entrada HTTP Analytics |
+| Task/Service MCP | `shopdemo-mcp` | — | Gateway MCP + ALB |
+| ALB MCP | `shopdemo-mcp-alb` | — | Entrada HTTP MCP |
+| Event Hubs | *(Azure)* `shopdemo-eh-ns-lab01` / `shopdemo-events` | `EVENT_HUBS_CONNECTION_STRING` | Mensajería cross-cloud |
+
 ---
 
 ## Índice
@@ -39,10 +84,12 @@
 14. [Paso 12 — Desplegar Inventory (interno)](#14-paso-12--desplegar-inventory-interno)
 15. [Paso 13 — Desplegar Orders](#15-paso-13--desplegar-orders)
 16. [Paso 14 — Desplegar Analytics](#16-paso-14--desplegar-analytics)
-17. [Paso 15 — Probar el flujo](#17-paso-15--probar-el-flujo)
-18. [Paso 16 — GitHub Actions](#18-paso-16--github-actions)
-19. [Paso 17 — Limpieza](#19-paso-17--limpieza)
-20. [Solución de problemas](#20-solución-de-problemas)
+17. [Paso 15 — Desplegar MCP Gateway](#17-paso-15--desplegar-mcp-gateway)
+18. [Paso 16 — Probar el flujo](#18-paso-16--probar-el-flujo)
+19. [Paso 17 — GitHub Actions](#19-paso-17--github-actions)
+20. [Paso 18 — Limpieza](#20-paso-18--limpieza)
+21. [Solución de problemas](#21-solución-de-problemas)
+22. [Anexo — Task definitions ECS (copiar)](#22-anexo--task-definitions-ecs-copiar)
 
 ---
 
@@ -132,7 +179,7 @@ Postman: [GUIA-ENDPOINTS.md](../../GUIA-ENDPOINTS.md).
 # Confirma escribiendo: delete-<LAB_PREFIX>
 ```
 
-Ver también [§19 Limpieza](#19-paso-17--limpieza).
+Ver también [§20 Limpieza](#20-paso-18--limpieza).
 
 ### Relación script ↔ secciones manuales
 
@@ -160,18 +207,23 @@ Ver también [§19 Limpieza](#19-paso-17--limpieza).
 
 ## 2. Variables del laboratorio
 
-```bash
-# PowerShell / Bash
+Usa los nombres canónicos de la tabla superior (alineados con `Deploy-AwsShopDemo.ps1`).
+
+```powershell
 $AWS_REGION = "us-east-1"
-$CLUSTER = "shopdemo-cluster"
+$PREFIX = "shopdemo"                    # LAB_PREFIX
+$CLUSTER = "shopdemo-cluster"         # ECS_CLUSTER_NAME
 $VPC_NAME = "shopdemo-vpc"
+$CLOUDMAP_NS = "shopdemo.local"
 $PG_PASSWORD = "ShopDemo123!"
-$EH_CONN = "<EVENT_HUBS_CONNECTION_STRING>"
+$EH_CONN = "<EVENT_HUBS_CONNECTION_STRING>"   # desde Azure Portal
 ```
 
 ```bash
 export AWS_REGION=us-east-1
+export PREFIX=shopdemo
 export CLUSTER=shopdemo-cluster
+export CLOUDMAP_NS=shopdemo.local
 export PG_PASSWORD=ShopDemo123!
 export EH_CONN="<EVENT_HUBS_CONNECTION_STRING>"
 ```
@@ -204,7 +256,9 @@ aws sts get-caller-identity
 
 ## 4. Paso 2 — VPC y subnets
 
-**Objetivo:** Red donde correrán las tareas Fargate y los ALB.
+**Para qué sirve:** red aislada donde corren las tareas Fargate, los ALB y la resolución DNS interna (Cloud Map).
+
+**Nombre VPC (tag):** `shopdemo-vpc` · CIDR: `10.0.0.0/16`
 
 ### Enfoque A — Consola AWS
 
@@ -243,37 +297,41 @@ aws ec2 modify-subnet-attribute --subnet-id $SUBNET_B --map-public-ip-on-launch
 
 ## 5. Paso 3 — Security Groups
 
-**Objetivo:** Reglas mínimas entre ALB, APIs, PostgreSQL y salida a internet.
+**Para qué sirve:** firewall de la VPC; controla tráfico entre internet → ALB → APIs → Postgres/Azurite.
+
+| Security Group (nombre) | Para qué sirve |
+|---|---|
+| `shopdemo-alb` | Application Load Balancers (HTTP:80 desde internet) |
+| `shopdemo-apps` | Tareas ECS de las 5 APIs |
+| `shopdemo-data` | PostgreSQL y Azurite (solo tráfico desde `shopdemo-apps`) |
 
 ### Enfoque A — Consola AWS
 
-1. **EC2** → **Security Groups** → **Create**
+1. **EC2** → **Security Groups** → **Create security group**
 
-**SG `sg-alb-shopdemo`:**
+**SG `shopdemo-alb`:**
 - Inbound: HTTP 80 desde `0.0.0.0/0`
 - Outbound: All
 
-**SG `sg-apps-shopdemo`:**
-- Inbound: TCP 8080 desde `sg-alb-shopdemo`
-- Inbound: TCP 8080 desde `sg-apps-shopdemo` (comunicación Orders→Inventory)
-- Inbound: TCP 5432 desde `sg-apps-shopdemo` (hacia Postgres)
-- Inbound: TCP 10000 desde `sg-apps-shopdemo` (hacia Azurite)
-- Outbound: All (Event Hubs Azure por HTTPS)
+**SG `shopdemo-apps`:**
+- Inbound: TCP 8080 desde SG `shopdemo-alb`
+- Inbound: TCP 8080 desde SG `shopdemo-apps` (Orders → Inventory)
+- Outbound: All (salida HTTPS a Azure Event Hubs)
 
-**SG `sg-data-shopdemo`:**
-- Inbound: 5432 y 10000 solo desde `sg-apps-shopdemo`
+**SG `shopdemo-data`:**
+- Inbound: TCP 5432 y 10000 solo desde SG `shopdemo-apps`
 
 ### Enfoque B — AWS CLI
 
 ```bash
-$SG_ALB = aws ec2 create-security-group --group-name sg-alb-shopdemo \
+$SG_ALB = aws ec2 create-security-group --group-name shopdemo-alb \
   --description "ALB ShopDemo" --vpc-id $VPC_ID --query GroupId --output text
 
-$SG_APPS = aws ec2 create-security-group --group-name sg-apps-shopdemo \
+$SG_APPS = aws ec2 create-security-group --group-name shopdemo-apps \
   --description "ECS apps ShopDemo" --vpc-id $VPC_ID --query GroupId --output text
 
-$SG_DATA = aws ec2 create-security-group --group-name sg-data-shopdemo \
-  --description "Postgres Azurite" --vpc-id $VPC_ID --query GroupId --output text
+$SG_DATA = aws ec2 create-security-group --group-name shopdemo-data \
+  --description "Postgres Azurite ShopDemo" --vpc-id $VPC_ID --query GroupId --output text
 
 # ALB: HTTP desde internet
 aws ec2 authorize-security-group-ingress --group-id $SG_ALB --protocol tcp --port 80 --cidr 0.0.0.0/0
@@ -293,25 +351,27 @@ aws ec2 authorize-security-group-ingress --group-id $SG_DATA --protocol tcp --po
 
 ## 6. Paso 4 — Repositorios ECR
 
-**Objetivo:** Cuatro repositorios para las imágenes de las APIs.
+**Para qué sirve:** registro privado de imágenes Docker; cada API tiene su propio repositorio.
+
+**Repositorios (5):** `shopdemo-catalog`, `shopdemo-orders`, `shopdemo-inventory`, `shopdemo-analytics`, `shopdemo-mcp`
 
 ### Enfoque A — Consola AWS
 
 1. **Amazon ECR** → **Create repository**
-2. Crear: `shopdemo-catalog`, `shopdemo-orders`, `shopdemo-inventory`, `shopdemo-analytics`
+2. Crear: `shopdemo-catalog`, `shopdemo-orders`, `shopdemo-inventory`, `shopdemo-analytics`, `shopdemo-mcp`
 3. Visibility: **Private**
 
 ### Enfoque B — AWS CLI
 
 ```bash
-foreach ($repo in @("shopdemo-catalog","shopdemo-orders","shopdemo-inventory","shopdemo-analytics")) {
+foreach ($repo in @("shopdemo-catalog","shopdemo-orders","shopdemo-inventory","shopdemo-analytics","shopdemo-mcp")) {
   aws ecr create-repository --repository-name $repo --region $AWS_REGION
 }
 ```
 
 ```bash
 # Bash
-for repo in shopdemo-catalog shopdemo-orders shopdemo-inventory shopdemo-analytics; do
+for repo in shopdemo-catalog shopdemo-orders shopdemo-inventory shopdemo-analytics shopdemo-mcp; do
   aws ecr create-repository --repository-name $repo --region $AWS_REGION
 done
 ```
@@ -354,6 +414,9 @@ docker push $ECR_URI/shopdemo-inventory:latest
 
 docker build -f Aspire/ShopDemo.Analytics.Api/Dockerfile -t $ECR_URI/shopdemo-analytics:latest .
 docker push $ECR_URI/shopdemo-analytics:latest
+
+docker build -f AI/ShopDemo.Mcp.Api/Dockerfile -t $ECR_URI/shopdemo-mcp:latest .
+docker push $ECR_URI/shopdemo-mcp:latest
 ```
 
 **Verificación:**
@@ -366,20 +429,22 @@ aws ecr list-images --repository-name shopdemo-catalog --region $AWS_REGION
 
 ## 8. Paso 6 — Secrets (Parameter Store)
 
-**Objetivo:** Guardar connection strings fuera de las task definitions en texto plano.
+**Para qué sirve:** almacén central de cadenas de conexión; las task definitions las referencian sin exponer texto plano.
+
+**Prefijo:** `/shopdemo/` (coincide con `LAB_PREFIX`)
 
 ### Enfoque A — Consola AWS
 
 1. **Systems Manager** → **Parameter Store** → **Create parameter**
-2. Crear parámetros **SecureString**:
+2. Crear parámetros **SecureString** (nombre exacto):
 
-| Nombre | Valor |
+| Nombre SSM | Contenido |
 |---|---|
-| `/shopdemo/eh-connection` | Connection string Event Hubs |
-| `/shopdemo/pg-catalog` | Connection string Catalog |
+| `/shopdemo/eh-connection` | Connection string Azure Event Hubs |
+| `/shopdemo/pg-catalog` | `Host=<IP_POSTGRES>;...Database=ShopDemoCatalog;...` |
 | `/shopdemo/pg-orders` | Connection string Orders |
 | `/shopdemo/pg-inventory` | Connection string Inventory |
-| `/shopdemo/azurite-checkpoint` | Connection string Azurite |
+| `/shopdemo/azurite-checkpoint` | Connection string Azurite Blob |
 
 ### Enfoque B — AWS CLI
 
@@ -398,7 +463,9 @@ Repetir para orders, inventory y azurite.
 
 ## 9. Paso 7 — ECS Cluster
 
-**Objetivo:** Cluster Fargate vacío donde registraremos servicios.
+**Para qué sirve:** agrupador lógico de servicios Fargate; todos los `shopdemo-*` services viven aquí.
+
+**Nombre:** `shopdemo-cluster` (variable `$CLUSTER`)
 
 ### Enfoque A — Consola AWS
 
@@ -418,7 +485,14 @@ aws ecs create-cluster --cluster-name $CLUSTER --capacity-providers FARGATE FARG
 
 ## 10. Paso 8 — PostgreSQL en ECS
 
-**Objetivo:** Contenedor PostgreSQL accesible desde las APIs.
+**Para qué sirve:** base de datos PostgreSQL en Fargate; las APIs se conectan por IP privada de la tarea.
+
+| Campo | Valor |
+|---|---|
+| Task definition family | `shopdemo-postgres` |
+| ECS service name | `shopdemo-postgres` |
+| Container name | `postgres` |
+| Log group | `/ecs/shopdemo-postgres` |
 
 ### Enfoque A — Consola AWS
 
@@ -432,8 +506,9 @@ aws ecs create-cluster --cluster-name $CLUSTER --capacity-providers FARGATE FARG
    - Env: `POSTGRES_USER=ShopDemo`, `POSTGRES_PASSWORD=<password>`
 5. **Create service**:
    - Service name: `shopdemo-postgres`
+   - Cluster: `shopdemo-cluster`
    - Desired tasks: 1
-   - Subnets públicas, SG `sg-data-shopdemo`
+   - Subnets públicas, SG `shopdemo-data`
    - Sin ALB
 
 6. Tras arrancar, obtener IP privada de la tarea y crear las 3 bases con cliente SQL.
@@ -497,33 +572,92 @@ aws ecs describe-tasks --cluster $CLUSTER --tasks <TASK_ARN> \
 
 ## 11. Paso 9 — Azurite en ECS
 
-**Objetivo:** Blob emulator para checkpoints (Inventory + Analytics).
+**Para qué sirve:** emulador de Azure Blob Storage para checkpoints de Event Hubs en Inventory y Analytics.
+
+| Campo | Valor |
+|---|---|
+| Task definition family | `shopdemo-azurite` |
+| ECS service name | `shopdemo-azurite` |
+| Log group | `/ecs/shopdemo-azurite` |
 
 ### Enfoque A — Consola AWS
 
 1. Task definition `shopdemo-azurite`
 2. Image: `mcr.microsoft.com/azure-storage/azurite`
 3. Command: `azurite-blob,--blobHost,0.0.0.0,--blobPort,10000`
-4. Port 10000, service con 1 tarea, SG `sg-data-shopdemo`
+4. Port 10000, service `shopdemo-azurite`, cluster `shopdemo-cluster`, SG `shopdemo-data`
 
 ### Enfoque B — AWS CLI
 
-Similar al paso Postgres: family `shopdemo-azurite`, imagen Azurite, puerto 10000, service `shopdemo-azurite`.
+Crear archivo `ecs-azurite-task.json`:
 
-Actualizar parámetro SSM `/shopdemo/azurite-checkpoint` con `BlobEndpoint=http://<IP_AZURITE>:10000/devstoreaccount1`.
+```json
+{
+  "family": "shopdemo-azurite",
+  "networkMode": "awsvpc",
+  "requiresCompatibilities": ["FARGATE"],
+  "cpu": "256",
+  "memory": "512",
+  "containerDefinitions": [
+    {
+      "name": "azurite",
+      "image": "mcr.microsoft.com/azure-storage/azurite",
+      "essential": true,
+      "command": ["azurite-blob", "--blobHost", "0.0.0.0", "--blobPort", "10000"],
+      "portMappings": [{ "containerPort": 10000, "protocol": "tcp" }],
+      "logConfiguration": {
+        "logDriver": "awslogs",
+        "options": {
+          "awslogs-group": "/ecs/shopdemo-azurite",
+          "awslogs-region": "us-east-1",
+          "awslogs-stream-prefix": "ecs"
+        }
+      }
+    }
+  ]
+}
+```
+
+```bash
+aws logs create-log-group --log-group-name /ecs/shopdemo-azurite
+aws ecs register-task-definition --cli-input-json file://ecs-azurite-task.json
+
+aws ecs create-service \
+  --cluster $CLUSTER \
+  --service-name shopdemo-azurite \
+  --task-definition shopdemo-azurite \
+  --desired-count 1 \
+  --launch-type FARGATE \
+  --network-configuration "awsvpcConfiguration={subnets=[$SUBNET_A],securityGroups=[$SG_DATA],assignPublicIp=ENABLED}"
+
+# Obtener IP privada de la tarea Azurite
+$AZ_TASK = aws ecs list-tasks --cluster $CLUSTER --service-name shopdemo-azurite --query "taskArns[0]" --output text
+$AZ_IP = aws ecs describe-tasks --cluster $CLUSTER --tasks $AZ_TASK \
+  --query "tasks[0].attachments[0].details[?name=='privateIPv4Address'].value" --output text
+
+$AZ_CONN = "DefaultEndpointsProtocol=http;AccountName=devstoreaccount1;AccountKey=Eby8vdM02xNOcqFlqUwJPLlmEtlCDXJ1OUzFT50uSRZ6IFsuFq2UVErCz4I6tq/K1SZFPTOtr/KBHBeksoGMGw==;BlobEndpoint=http://${AZ_IP}:10000/devstoreaccount1;"
+aws ssm put-parameter --name /shopdemo/azurite-checkpoint --value "$AZ_CONN" --type SecureString --overwrite
+```
 
 ---
 
 ## 12. Paso 10 — Cloud Map (Inventory)
 
-**Objetivo:** Que Orders resuelva `inventory` por nombre DNS interno.
+**Para qué sirve:** DNS privado dentro de la VPC para que Orders resuelva Inventory sin IP fija.
+
+| Campo | Valor |
+|---|---|
+| Namespace | `shopdemo.local` |
+| Service discovery name | `inventory` |
+| FQDN resultante | `inventory.shopdemo.local` |
+| URL para Orders | `http://inventory.shopdemo.local:8080` |
 
 ### Enfoque A — Consola AWS
 
 1. **Cloud Map** → **Create namespace**
 2. Type: **DNS private** en VPC `shopdemo-vpc`
-3. Name: `shopdemo.local`
-4. Al crear el ECS service de Inventory, en **Service discovery**:
+3. Name: `shopdemo.local` → **Create**
+4. Al crear el ECS service `shopdemo-inventory`, en **Service discovery**:
    - Namespace: `shopdemo.local`
    - Service name: `inventory`
    - DNS record type: A
@@ -556,46 +690,100 @@ InventoryApi__BaseUrl=http://inventory.shopdemo.local:8080
 
 ## 13. Paso 11 — ALB + Catalog
 
-**Objetivo:** Primera API pública detrás de Application Load Balancer.
+**Para qué sirve:** Application Load Balancer expone Catalog a internet (HTTP:80 → contenedor:8080).
+
+| Campo | Valor |
+|---|---|
+| ALB name | `shopdemo-catalog-alb` |
+| Target group | `shopdemo-catalog-tg` |
+| ECS service | `shopdemo-catalog` |
+| Task family | `shopdemo-catalog` |
+| Container name | `catalog-api` |
+| Security group ALB | `shopdemo-alb` |
 
 ### Enfoque A — Consola AWS
 
 1. **EC2** → **Load Balancers** → **Create** → **Application Load Balancer**
-2. Name: `alb-shopdemo-catalog`, Scheme: internet-facing, IP: IPv4
-3. VPC + subnets públicas, SG `sg-alb-shopdemo`
-4. Listener HTTP 80 → Target Group:
+2. Name: `shopdemo-catalog-alb`, Scheme: internet-facing, IP: IPv4
+3. VPC `shopdemo-vpc` + subnets públicas, SG `shopdemo-alb`
+4. Listener HTTP 80 → Target Group `shopdemo-catalog-tg`:
    - Target type: IP
    - Port 8080, health check `/health` o `/swagger/index.html`
-5. **ECS** → Create service `shopdemo-catalog`:
+5. **ECS** → Cluster `shopdemo-cluster` → Create service `shopdemo-catalog`:
    - Task def: imagen ECR catalog, CPU 512, mem 1024
    - Load balancer: asociar target group
    - Env vars desde Parameter Store (secrets)
 
-### Enfoque B — AWS CLI (resumen)
+### Enfoque B — AWS CLI
+
+> **Recomendación lab:** Si prefieres no escribir todo el JSON a mano, ejecuta `.\Deploy-AwsShopDemo.ps1 -Mode ECS` (§0) y usa este apartado para **entender** cada recurso. Los JSON del [Anexo §22](#22-anexo--task-definitions-ecs-copiar) son copiables para ruta 100 % manual.
+
+**1. Rol de ejecución ECS** (pull ECR + leer SSM):
 
 ```bash
-# Target group
-$TG_CATALOG = aws elbv2 create-target-group --name tg-catalog --protocol HTTP --port 8080 \
+# Crear rol ecsTaskExecutionRole si no existe (una vez por cuenta)
+aws iam attach-role-policy --role-name ecsTaskExecutionRole \
+  --policy-arn arn:aws:iam::aws:policy/service-role/AmazonECSTaskExecutionRolePolicy
+$EXEC_ROLE = aws iam get-role --role-name ecsTaskExecutionRole --query Role.Arn --output text
+```
+
+**2. Task definition Catalog** — archivo `ecs-catalog-task.json` (ver [Anexo §22.1](#221-catalog)):
+
+```bash
+aws logs create-log-group --log-group-name /ecs/shopdemo-catalog
+aws ecs register-task-definition --cli-input-json file://ecs-catalog-task.json
+```
+
+**3. Target group + ALB + listener:**
+
+```bash
+$TG_CATALOG = aws elbv2 create-target-group --name shopdemo-catalog-tg --protocol HTTP --port 8080 \
   --vpc-id $VPC_ID --target-type ip --health-check-path /health \
   --query TargetGroups[0].TargetGroupArn --output text
 
-# ALB + listener (crear ALB, listener 80 → $TG_CATALOG)
-# Registrar task definition shopdemo-catalog con secrets de SSM
-# create-service con loadBalancers apuntando al TG
+$ALB_CATALOG = aws elbv2 create-load-balancer --name shopdemo-catalog-alb \
+  --subnets $SUBNET_A $SUBNET_B --security-groups $SG_ALB \
+  --scheme internet-facing --type application \
+  --query LoadBalancers[0].LoadBalancerArn --output text
+
+aws elbv2 create-listener --load-balancer-arn $ALB_CATALOG --protocol HTTP --port 80 \
+  --default-actions Type=forward,TargetGroupArn=$TG_CATALOG
 ```
 
-Variables mínimas en la task definition Catalog:
+**4. ECS service Catalog con ALB:**
 
-- `ConnectionStrings__DefaultConnection` ← SSM `/shopdemo/pg-catalog`
-- `EventHubs__Enabled=true`
-- `EventHubs__ConnectionString` ← SSM `/shopdemo/eh-connection`
-- `EventHubs__EventHubName=shopdemo-events`
+```bash
+aws ecs create-service \
+  --cluster $CLUSTER \
+  --service-name shopdemo-catalog \
+  --task-definition shopdemo-catalog \
+  --desired-count 1 \
+  --launch-type FARGATE \
+  --network-configuration "awsvpcConfiguration={subnets=[$SUBNET_A,$SUBNET_B],securityGroups=[$SG_APPS],assignPublicIp=ENABLED}" \
+  --load-balancers "targetGroupArn=$TG_CATALOG,containerName=catalog-api,containerPort=8080"
+
+$ALB_DNS = aws elbv2 describe-load-balancers --load-balancer-arns $ALB_CATALOG \
+  --query "LoadBalancers[0].DNSName" --output text
+echo "Catalog: http://$ALB_DNS/swagger"
+```
+
+Variables en la task definition Catalog (secrets SSM):
+
+- `ConnectionStrings__DefaultConnection` ← `/shopdemo/pg-catalog`
+- `EventHubs__ConnectionString` ← `/shopdemo/eh-connection`
+- `EventHubs__Enabled=true`, `EventHubs__EventHubName=shopdemo-events`
 
 ---
 
 ## 14. Paso 12 — Desplegar Inventory (interno)
 
-**Objetivo:** Servicio sin ALB público; registrado en Cloud Map.
+**Para qué sirve:** API de inventario **sin** ALB público; Orders la alcanza vía `inventory.shopdemo.local`.
+
+| Campo | Valor |
+|---|---|
+| ECS service | `shopdemo-inventory` |
+| Task family | `shopdemo-inventory` |
+| Cloud Map | `inventory` en namespace `shopdemo.local` |
 
 ### Enfoque A — Consola AWS
 
@@ -607,6 +795,9 @@ Variables mínimas en la task definition Catalog:
 ### Enfoque B — AWS CLI
 
 ```bash
+aws logs create-log-group --log-group-name /ecs/shopdemo-inventory
+aws ecs register-task-definition --cli-input-json file://ecs-inventory-task.json
+
 aws ecs create-service \
   --cluster $CLUSTER \
   --service-name shopdemo-inventory \
@@ -614,45 +805,175 @@ aws ecs create-service \
   --desired-count 1 \
   --launch-type FARGATE \
   --network-configuration "awsvpcConfiguration={subnets=[$SUBNET_A],securityGroups=[$SG_APPS],assignPublicIp=ENABLED}" \
-  --service-registries "registryArn=$INV_SD_ARN"
+  --service-registries "registryArn=$INV_SD_ARN,containerName=inventory-api"
 ```
+
+JSON de referencia: [Anexo §22.2](#222-inventory). Secrets: PG inventory, EH, `azurite-checkpoint`. Env: `EventHubs__ConsumerGroup=inventory-service`, `EventHubs__CheckpointContainerName=inventory-checkpoints`.
 
 ---
 
 ## 15. Paso 13 — Desplegar Orders
 
-**Objetivo:** ALB propio + `InventoryApi__BaseUrl` hacia Cloud Map.
+**Para qué sirve:** API de pedidos con ALB propio; usa Cloud Map para llamar a Inventory.
+
+| Campo | Valor |
+|---|---|
+| ALB | `shopdemo-orders-alb` |
+| Target group | `shopdemo-orders-tg` |
+| ECS service | `shopdemo-orders` |
+| Env var clave | `InventoryApi__BaseUrl=http://inventory.shopdemo.local:8080` |
 
 ### Enfoque A — Consola AWS
 
-1. ALB `alb-shopdemo-orders` (o reglas en ALB compartido con host `orders.lab`)
-2. ECS service `shopdemo-orders` con:
+1. ALB `shopdemo-orders-alb` + target group `shopdemo-orders-tg`
+2. ECS service `shopdemo-orders` en cluster `shopdemo-cluster` con:
    - `InventoryApi__BaseUrl=http://inventory.shopdemo.local:8080`
    - Secrets PG y Event Hubs
 
 ### Enfoque B — AWS CLI
 
-Mismo patrón que Catalog: target group + ALB + service con env var `InventoryApi__BaseUrl`.
+Registrar task definition **después** de Inventory (necesita URL Cloud Map):
+
+```bash
+# URL interna Inventory (Orders la usa)
+$INVENTORY_URL = "http://inventory.shopdemo.local:8080"
+
+aws logs create-log-group --log-group-name /ecs/shopdemo-orders
+aws ecs register-task-definition --cli-input-json file://ecs-orders-task.json
+
+$TG_ORDERS = aws elbv2 create-target-group --name shopdemo-orders-tg --protocol HTTP --port 8080 \
+  --vpc-id $VPC_ID --target-type ip --health-check-path /health \
+  --query TargetGroups[0].TargetGroupArn --output text
+
+$ALB_ORDERS = aws elbv2 create-load-balancer --name shopdemo-orders-alb \
+  --subnets $SUBNET_A $SUBNET_B --security-groups $SG_ALB \
+  --scheme internet-facing --type application \
+  --query LoadBalancers[0].LoadBalancerArn --output text
+
+aws elbv2 create-listener --load-balancer-arn $ALB_ORDERS --protocol HTTP --port 80 \
+  --default-actions Type=forward,TargetGroupArn=$TG_ORDERS
+
+aws ecs create-service \
+  --cluster $CLUSTER \
+  --service-name shopdemo-orders \
+  --task-definition shopdemo-orders \
+  --desired-count 1 \
+  --launch-type FARGATE \
+  --network-configuration "awsvpcConfiguration={subnets=[$SUBNET_A,$SUBNET_B],securityGroups=[$SG_APPS],assignPublicIp=ENABLED}" \
+  --load-balancers "targetGroupArn=$TG_ORDERS,containerName=orders-api,containerPort=8080"
+```
+
+JSON: [Anexo §22.3](#223-orders). Variable clave: `InventoryApi__BaseUrl=$INVENTORY_URL`.
 
 ---
 
 ## 16. Paso 14 — Desplegar Analytics
 
-**Objetivo:** API pública con ALB; consumer group `analytics-service`.
+**Para qué sirve:** API observador de eventos; consumer group `analytics-service` y checkpoints en Azurite.
+
+| Campo | Valor |
+|---|---|
+| ALB | `shopdemo-analytics-alb` |
+| Target group | `shopdemo-analytics-tg` |
+| ECS service | `shopdemo-analytics` |
 
 ### Enfoque A — Consola AWS
 
-1. ALB `alb-shopdemo-analytics`
+1. ALB `shopdemo-analytics-alb` + TG `shopdemo-analytics-tg`
 2. Task definition con Event Hubs + checkpoint `analytics-checkpoints`
 3. Service con desired count 1
 
 ### Enfoque B — AWS CLI
 
-Repetir patrón ALB + ECS service con imagen `shopdemo-analytics:latest`.
+```bash
+aws logs create-log-group --log-group-name /ecs/shopdemo-analytics
+aws ecs register-task-definition --cli-input-json file://ecs-analytics-task.json
+
+$TG_ANALYTICS = aws elbv2 create-target-group --name shopdemo-analytics-tg --protocol HTTP --port 8080 \
+  --vpc-id $VPC_ID --target-type ip --health-check-path /health \
+  --query TargetGroups[0].TargetGroupArn --output text
+
+$ALB_ANALYTICS = aws elbv2 create-load-balancer --name shopdemo-analytics-alb \
+  --subnets $SUBNET_A $SUBNET_B --security-groups $SG_ALB \
+  --scheme internet-facing --type application \
+  --query LoadBalancers[0].LoadBalancerArn --output text
+
+aws elbv2 create-listener --load-balancer-arn $ALB_ANALYTICS --protocol HTTP --port 80 \
+  --default-actions Type=forward,TargetGroupArn=$TG_ANALYTICS
+
+aws ecs create-service \
+  --cluster $CLUSTER \
+  --service-name shopdemo-analytics \
+  --task-definition shopdemo-analytics \
+  --desired-count 1 \
+  --launch-type FARGATE \
+  --network-configuration "awsvpcConfiguration={subnets=[$SUBNET_A,$SUBNET_B],securityGroups=[$SG_APPS],assignPublicIp=ENABLED}" \
+  --load-balancers "targetGroupArn=$TG_ANALYTICS,containerName=analytics-api,containerPort=8080"
+```
+
+JSON: [Anexo §22.4](#224-analytics).
 
 ---
 
-## 17. Paso 15 — Probar el flujo
+## 17. Paso 15 — Desplegar MCP Gateway
+
+**Para qué sirve:** quinta API pública; gateway MCP para agentes IA.
+
+| Campo | Valor |
+|---|---|
+| ALB | `shopdemo-mcp-alb` |
+| Target group | `shopdemo-mcp-tg` |
+| ECS service | `shopdemo-mcp` |
+| Container name | `mcp-api` |
+
+### Enfoque A — Consola AWS
+
+1. Task definition `shopdemo-mcp` (imagen ECR `shopdemo-mcp`, sin secrets SSM)
+2. Variables:
+   - `ShopDemo__CatalogApiBaseUrl=http://<dns-shopdemo-catalog-alb>`
+   - `ShopDemo__InventoryApiBaseUrl=http://inventory.shopdemo.local:8080`
+   - `ShopDemo__AnalyticsApiBaseUrl=http://<dns-shopdemo-analytics-alb>`
+3. ALB `shopdemo-mcp-alb` + ECS service `shopdemo-mcp`
+
+### Enfoque B — AWS CLI
+
+```bash
+$ALB_CATALOG_DNS = aws elbv2 describe-load-balancers --names shopdemo-catalog-alb \
+  --query "LoadBalancers[0].DNSName" --output text
+$ALB_ANALYTICS_DNS = aws elbv2 describe-load-balancers --names shopdemo-analytics-alb \
+  --query "LoadBalancers[0].DNSName" --output text
+
+# Editar ecs-mcp-task.json con esas URLs antes de registrar
+aws logs create-log-group --log-group-name /ecs/shopdemo-mcp
+aws ecs register-task-definition --cli-input-json file://ecs-mcp-task.json
+
+$TG_MCP = aws elbv2 create-target-group --name shopdemo-mcp-tg --protocol HTTP --port 8080 \
+  --vpc-id $VPC_ID --target-type ip --health-check-path /health \
+  --query TargetGroups[0].TargetGroupArn --output text
+
+$ALB_MCP = aws elbv2 create-load-balancer --name shopdemo-mcp-alb \
+  --subnets $SUBNET_A $SUBNET_B --security-groups $SG_ALB \
+  --scheme internet-facing --type application \
+  --query LoadBalancers[0].LoadBalancerArn --output text
+
+aws elbv2 create-listener --load-balancer-arn $ALB_MCP --protocol HTTP --port 80 \
+  --default-actions Type=forward,TargetGroupArn=$TG_MCP
+
+aws ecs create-service \
+  --cluster $CLUSTER \
+  --service-name shopdemo-mcp \
+  --task-definition shopdemo-mcp \
+  --desired-count 1 \
+  --launch-type FARGATE \
+  --network-configuration "awsvpcConfiguration={subnets=[$SUBNET_A,$SUBNET_B],securityGroups=[$SG_APPS],assignPublicIp=ENABLED}" \
+  --load-balancers "targetGroupArn=$TG_MCP,containerName=mcp-api,containerPort=8080"
+```
+
+JSON: [Anexo §22.5](#225-mcp). Detalle: [IMPLEMENTACION-DESPLIEGUE-MCP-AWS.md](../../integracion-ia/IMPLEMENTACION-DESPLIEGUE-MCP-AWS.md).
+
+---
+
+## 18. Paso 16 — Probar el flujo
 
 | # | Acción | URL |
 |---|---|---|
@@ -660,13 +981,14 @@ Repetir patrón ALB + ECS service con imagen `shopdemo-analytics:latest`.
 | 2 | Crear producto | `POST /api/products` |
 | 3 | Analytics | `http://<alb-analytics-dns>/api/analytics/events` |
 | 4 | Pedido + confirmar | Orders ALB |
-| 5 | Logs | CloudWatch → Log groups `/ecs/shopdemo-*` |
+| 5 | MCP health | `http://<alb-mcp-dns>/health` |
+| 6 | Logs | CloudWatch → Log groups `/ecs/shopdemo-*` |
 
 ---
 
-## 18. Paso 16 — GitHub Actions
+## 19. Paso 17 — GitHub Actions
 
-Archivo: `.github/workflows/deploy-aws.yml`
+Archivo de referencia: [.github/workflows/deploy-aws.yml](../../../.github/workflows/deploy-aws.yml)
 
 ### Secrets GitHub
 
@@ -675,6 +997,7 @@ Archivo: `.github/workflows/deploy-aws.yml`
 | `AWS_ROLE_ARN` | Rol IAM para OIDC (recomendado) o access key |
 | `AWS_REGION` | `us-east-1` |
 | `ECS_CLUSTER` | `shopdemo-cluster` |
+| `AWS_ACCESS_KEY_ID` / `AWS_SECRET_ACCESS_KEY` | Alternativa sin OIDC |
 
 ### Enfoque A — Consola (OIDC)
 
@@ -684,11 +1007,11 @@ Archivo: `.github/workflows/deploy-aws.yml`
 
 ### Enfoque B — CLI
 
-El workflow hace login ECR, build/push de las 4 imágenes y `aws ecs update-service --force-new-deployment` por servicio.
+El workflow hace login ECR, build/push de las **5 imágenes** y `aws ecs update-service --force-new-deployment` por servicio (`shopdemo-catalog`, `shopdemo-orders`, `shopdemo-inventory`, `shopdemo-analytics`, `shopdemo-mcp`).
 
 ---
 
-## 19. Paso 17 — Limpieza
+## 20. Paso 18 — Limpieza
 
 ### Consola
 
@@ -698,12 +1021,18 @@ Eliminar en orden: ECS services → ALB → target groups → ECR images → clu
 
 ```bash
 aws ecs delete-service --cluster $CLUSTER --service shopdemo-catalog --force
-# Repetir por cada servicio; luego eliminar ALB, TG, ECR, cluster, VPC
+aws ecs delete-service --cluster $CLUSTER --service shopdemo-orders --force
+aws ecs delete-service --cluster $CLUSTER --service shopdemo-inventory --force
+aws ecs delete-service --cluster $CLUSTER --service shopdemo-analytics --force
+aws ecs delete-service --cluster $CLUSTER --service shopdemo-mcp --force
+aws ecs delete-service --cluster $CLUSTER --service shopdemo-postgres --force
+aws ecs delete-service --cluster $CLUSTER --service shopdemo-azurite --force
+# Luego eliminar ALB, TG, ECR, cluster, VPC — o usar .\Remove-AwsShopDemo.ps1
 ```
 
 ---
 
-## 20. Solución de problemas
+## 21. Solución de problemas
 
 | Síntoma | Causa | Solución |
 |---|---|---|
@@ -712,6 +1041,116 @@ aws ecs delete-service --cluster $CLUSTER --service shopdemo-catalog --force
 | Sin eventos | Egress bloqueado | SG debe permitir salida 443 a internet |
 | Health check falla | Ruta incorrecta | Usar `/health` si existe; si no, `/swagger` |
 | Pull ECR denied | Task execution role | Asignar `AmazonECSTaskExecutionRolePolicy` |
+
+---
+
+## 22. Anexo — Task definitions ECS (copiar)
+
+Plantillas para ruta manual. Sustituye:
+
+- `<ACCOUNT_ID>`, `<AWS_REGION>`, `<ECR_URI>` (ej. `123456789.dkr.ecr.us-east-1.amazonaws.com`)
+- `<EXEC_ROLE_ARN>` — rol `ecsTaskExecutionRole`
+- En MCP: URLs reales de ALB Catalog/Analytics
+
+Patrón común de secrets SSM en `secrets`:
+
+```json
+"secrets": [
+  { "name": "ConnectionStrings__DefaultConnection", "valueFrom": "arn:aws:ssm:us-east-1:<ACCOUNT_ID>:parameter/shopdemo/pg-catalog" },
+  { "name": "EventHubs__ConnectionString", "valueFrom": "arn:aws:ssm:us-east-1:<ACCOUNT_ID>:parameter/shopdemo/eh-connection" }
+]
+```
+
+### 22.1 Catalog
+
+Archivo `ecs-catalog-task.json`:
+
+```json
+{
+  "family": "shopdemo-catalog",
+  "networkMode": "awsvpc",
+  "requiresCompatibilities": ["FARGATE"],
+  "cpu": "512",
+  "memory": "1024",
+  "executionRoleArn": "<EXEC_ROLE_ARN>",
+  "containerDefinitions": [
+    {
+      "name": "catalog-api",
+      "image": "<ECR_URI>/shopdemo-catalog:latest",
+      "essential": true,
+      "portMappings": [{ "containerPort": 8080, "protocol": "tcp" }],
+      "environment": [
+        { "name": "ASPNETCORE_ENVIRONMENT", "value": "Production" },
+        { "name": "EventHubs__Enabled", "value": "true" },
+        { "name": "EventHubs__EventHubName", "value": "shopdemo-events" }
+      ],
+      "secrets": [
+        { "name": "ConnectionStrings__DefaultConnection", "valueFrom": "arn:aws:ssm:<AWS_REGION>:<ACCOUNT_ID>:parameter/shopdemo/pg-catalog" },
+        { "name": "EventHubs__ConnectionString", "valueFrom": "arn:aws:ssm:<AWS_REGION>:<ACCOUNT_ID>:parameter/shopdemo/eh-connection" }
+      ],
+      "logConfiguration": {
+        "logDriver": "awslogs",
+        "options": {
+          "awslogs-group": "/ecs/shopdemo-catalog",
+          "awslogs-region": "<AWS_REGION>",
+          "awslogs-stream-prefix": "ecs"
+        }
+      }
+    }
+  ]
+}
+```
+
+### 22.2 Inventory
+
+Archivo `ecs-inventory-task.json` — añade secrets `pg-inventory`, `azurite-checkpoint` y env `EventHubs__ConsumerGroup`, `EventHubs__CheckpointContainerName`.
+
+### 22.3 Orders
+
+Archivo `ecs-orders-task.json` — secrets `pg-orders`, `eh-connection`; env `InventoryApi__BaseUrl` = `http://inventory.shopdemo.local:8080`.
+
+### 22.4 Analytics
+
+Archivo `ecs-analytics-task.json` — secrets `eh-connection`, `azurite-checkpoint`; env consumer `analytics-service`, container `analytics-checkpoints`.
+
+### 22.5 MCP
+
+Archivo `ecs-mcp-task.json`:
+
+```json
+{
+  "family": "shopdemo-mcp",
+  "networkMode": "awsvpc",
+  "requiresCompatibilities": ["FARGATE"],
+  "cpu": "512",
+  "memory": "1024",
+  "executionRoleArn": "<EXEC_ROLE_ARN>",
+  "containerDefinitions": [
+    {
+      "name": "mcp-api",
+      "image": "<ECR_URI>/shopdemo-mcp:latest",
+      "essential": true,
+      "portMappings": [{ "containerPort": 8080, "protocol": "tcp" }],
+      "environment": [
+        { "name": "ASPNETCORE_ENVIRONMENT", "value": "Production" },
+        { "name": "ShopDemo__CatalogApiBaseUrl", "value": "http://<ALB_CATALOG_DNS>" },
+        { "name": "ShopDemo__InventoryApiBaseUrl", "value": "http://inventory.shopdemo.local:8080" },
+        { "name": "ShopDemo__AnalyticsApiBaseUrl", "value": "http://<ALB_ANALYTICS_DNS>" }
+      ],
+      "logConfiguration": {
+        "logDriver": "awslogs",
+        "options": {
+          "awslogs-group": "/ecs/shopdemo-mcp",
+          "awslogs-region": "<AWS_REGION>",
+          "awslogs-stream-prefix": "ecs"
+        }
+      }
+    }
+  ]
+}
+```
+
+> Los JSON completos de Inventory/Orders/Analytics siguen el mismo patrón que Catalog. Fuente de verdad en el repo: `scripts/aws/Deploy-AwsShopDemo.ps1` (función `Register-EcsTaskDefinition`).
 
 ---
 

@@ -284,6 +284,19 @@ dotnet run --project Aspire/ShopDemo.AppHost
 
 No hay código C# nuevo; **integras configuración, scripts PowerShell y pipelines**.
 
+### Mapa de servicios cloud (release productivo lab)
+
+| Componente | Azure ACA | AWS ECS | Kubernetes |
+|---|---|---|---|
+| Registro imágenes | ACR `acrshopdemolab01` (5 repos) | ECR `shopdemo-*` (5) | Imagen local / ACR / ECR |
+| APIs + MCP | 5 Container Apps | 5 ECS services + ALB | `k8s/*` + `k8s/mcp/` |
+| PostgreSQL | ACI | Fargate task | StatefulSet `k8s/postgres/` |
+| Checkpoints EH | **Storage Account** | **Azurite Fargate** | **Azurite** `k8s/azurite/` |
+| Mensajería | Event Hubs (Azure) | Event Hubs cross-cloud | Event Hubs en `secrets.yaml` |
+| Secretos | ACA secrets | SSM Parameter Store | `k8s/secrets.yaml` |
+
+> Ruta **manual paso a paso** (Portal/CLI con código copiable): [IMPLEMENTACION-DESPLIEGUE-AZURE](./despliegue/azure/IMPLEMENTACION-DESPLIEGUE-AZURE.md) · [IMPLEMENTACION-DESPLIEGUE-AWS](./despliegue/aws/IMPLEMENTACION-DESPLIEGUE-AWS.md)
+
 ### Etapa 7 — Azure (script recomendado)
 
 ```powershell
@@ -321,8 +334,9 @@ aws configure
 | `Dockerfile` de cada API | Build de imagen |
 | `.env.azure` / `.env.aws` | Variables del script (no commitear) |
 | Variables en ACA / ECS / secrets | Connection strings, Event Hubs |
-| `.github/workflows/deploy-azure.yml` | CI/CD Azure (referencia) |
-| `.github/workflows/deploy-aws.yml` | CI/CD AWS (referencia) |
+| `.github/workflows/deploy-azure.yml` | CI/CD Azure — **5 imágenes** |
+| `.github/workflows/deploy-aws.yml` | CI/CD AWS — **5 imágenes** |
+| Build manual 5 servicios | Ver §8 IMPLEMENTACION Azure / §7 AWS |
 
 Docs manuales: [despliegue/azure/](./despliegue/azure/) · [despliegue/aws/](./despliegue/aws/)
 

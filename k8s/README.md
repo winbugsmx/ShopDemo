@@ -1,6 +1,6 @@
 # Manifiestos Kubernetes — ShopDemo
 
-Despliegue de **4 APIs + PostgreSQL (StatefulSet) + Azurite + Ingress NGINX** en el namespace `shopdemo`.
+Despliegue de **4 APIs + MCP + PostgreSQL (StatefulSet) + Azurite + Ingress NGINX** en el namespace `shopdemo`.
 
 ## Estructura
 

@@ -47,16 +47,25 @@ Automatización del laboratorio AWS del curso Lite Thinking. Complementa la docu
 
 Ref: [INTEGRACION-AZURE-EVENT-HUBS.md](../../docs/INTEGRACION-AZURE-EVENT-HUBS.md) §4.4
 
-### Valores que defines tú
+### Valores que defines tú (en `.env.aws`)
 
-| Variable | Notas |
+| Variable | Valor ejemplo |
 |---|---|
-| `LAB_PREFIX` | Prefijo de recursos (`shopdemo`) |
-| `ECS_CLUSTER_NAME` | Cluster Fargate |
-| `EKS_CLUSTER_NAME` | Cluster EKS (modo EKS/All) |
-| `POSTGRES_PASSWORD` | PostgreSQL en ECS Fargate |
-| `IMAGE_TAG` | Tag esperado en ECR (`latest`) |
-| `CLOUDMAP_NAMESPACE` | DNS privado (`shopdemo.local`) |
+| `LAB_PREFIX` | `shopdemo` — prefijo VPC, SG, ALB, ECS |
+| `ECS_CLUSTER_NAME` | `shopdemo-cluster` |
+| `CLOUDMAP_NAMESPACE` | `shopdemo.local` |
+| `POSTGRES_PASSWORD` | `ShopDemo123!` |
+| `IMAGE_TAG` | `latest` |
+
+### Nombres canónicos (alineados con `Deploy-AwsShopDemo.ps1`)
+
+| Recurso | Nombre |
+|---|---|
+| VPC | `shopdemo-vpc` |
+| Security groups | `shopdemo-alb`, `shopdemo-apps`, `shopdemo-data` |
+| ALB Catalog | `shopdemo-catalog-alb` / TG `shopdemo-catalog-tg` |
+| ECS services | `shopdemo-catalog`, `shopdemo-inventory`, …, `shopdemo-mcp` |
+| SSM | `/shopdemo/eh-connection`, `/shopdemo/pg-catalog`, … |
 
 ### Lo que el script obtiene o crea solo
 

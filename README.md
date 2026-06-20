@@ -340,7 +340,9 @@ az account set --subscription "<TU-SUBSCRIPTION-ID>"
 | `AKS` | Igual + `kubectl apply` | `kubectl get pods -n shopdemo` |
 | `All` | Igual para ambos entornos | Postman con [GUIA-ENDPOINTS](docs/GUIA-ENDPOINTS.md) |
 
-Documentación detallada: [IMPLEMENTACION-DESPLIEGUE-AZURE §0](docs/despliegue/azure/IMPLEMENTACION-DESPLIEGUE-AZURE.md#0-script-powershell-automatizado-recomendado) · [AKS §0](docs/despliegue/aks/IMPLEMENTACION-DESPLIEGUE-AKS.md#0-script-powershell--mode-aks)
+Documentación detallada: [IMPLEMENTACION-DESPLIEGUE-AZURE §0](docs/despliegue/azure/IMPLEMENTACION-DESPLIEGUE-AZURE.md#0-script-powershell-automatizado-recomendado) · [Guía manual completa](docs/despliegue/azure/IMPLEMENTACION-DESPLIEGUE-AZURE.md) · [AKS §0](docs/despliegue/aks/IMPLEMENTACION-DESPLIEGUE-AKS.md#0-script-powershell--mode-aks)
+
+> **Checkpoints Event Hubs:** en ACA usa **Azure Storage Account** (no Azurite). En AKS/Minikube usa Azurite in-cluster (`k8s/azurite/`).
 
 ### Arranque en Azure (resumen manual)
 
@@ -348,8 +350,8 @@ Documentación detallada: [IMPLEMENTACION-DESPLIEGUE-AZURE §0](docs/despliegue/
 |---|---|---|---|
 | 1 | **Build y push** imágenes a ACR | `shopdemo-catalog`, `orders`, `inventory`, `analytics`, `mcp` | Igual |
 | 2 | **Infraestructura** | RG + ACR + Environment ACA | RG + ACR + cluster AKS + Ingress NGINX |
-| 3 | **Desplegar APIs** | Crear 5 Container Apps (MCP opcional etapa 14b) | `kubectl apply -f k8s/` (orden en [k8s/README.md](k8s/README.md)) |
-| 4 | **Secretos** | `EventHubs__*`, PostgreSQL, checkpoints Blob | `k8s/secrets.yaml` desde `secrets.example.yaml` |
+| 3 | **Desplegar APIs** | Crear **5** Container Apps (incl. MCP) | `kubectl apply -f k8s/` incl. `mcp/` |
+| 4 | **Secretos** | `EventHubs__*`, PostgreSQL, **Storage Account** checkpoints | `k8s/secrets.yaml` + Azurite in-cluster |
 | 5 | **Verificar** | `curl https://<fqdn>/health` por app | `kubectl get pods -n shopdemo` + Ingress |
 | 6 | **Postman** | Actualizar variables con FQDN de cada ACA | URLs con prefijo Ingress (`/catalog`, …, `/mcp`) |
 
@@ -385,7 +387,7 @@ Tras desplegar, actualiza las variables de colección:
 | `analyticsBaseUrl` | `https://ca-shopdemo-analytics.<fqdn>` | `http://<ingress-ip>/analytics` |
 | MCP (agente) | `https://ca-shopdemo-mcp.<fqdn>/mcp` | `http://<ingress-ip>/mcp` |
 
-**Secrets obligatorios en nube:** `EventHubs__ConnectionString`, connection strings PostgreSQL, Azurite/checkpoint para Inventory y Analytics, URLs internas de APIs para Orders y MCP.
+**Secrets obligatorios en nube:** `EventHubs__ConnectionString`, connection strings PostgreSQL, **Storage Account** (`storage-checkpoint`) para Inventory/Analytics en ACA, URLs internas para Orders y MCP.
 
 **Observabilidad y resiliencia:** [docs/observabilidad/azure/](docs/observabilidad/azure/IMPLEMENTACION-OBSERVABILIDAD-AZURE.md) · [docs/resiliencia/azure/](docs/resiliencia/azure/IMPLEMENTACION-RESILIENCIA-AZURE.md)
 
@@ -442,7 +444,9 @@ aws sts get-caller-identity
 | `EVENT_HUBS_CONNECTION_STRING` | **Azure Portal** (Event Hubs — mensajería cross-cloud) |
 | `AWS_REGION` | Consola AWS / `aws configure` |
 
-Documentación detallada: [IMPLEMENTACION-DESPLIEGUE-AWS §0](docs/despliegue/aws/IMPLEMENTACION-DESPLIEGUE-AWS.md#0-script-powershell-automatizado-recomendado) · [EKS §0](docs/despliegue/eks/IMPLEMENTACION-DESPLIEGUE-EKS.md#0-script-powershell--mode-eks)
+Documentación detallada: [IMPLEMENTACION-DESPLIEGUE-AWS §0](docs/despliegue/aws/IMPLEMENTACION-DESPLIEGUE-AWS.md#0-script-powershell-automatizado-recomendado) · [Guía manual completa](docs/despliegue/aws/IMPLEMENTACION-DESPLIEGUE-AWS.md) · [EKS §0](docs/despliegue/eks/IMPLEMENTACION-DESPLIEGUE-EKS.md#0-script-powershell--mode-eks)
+
+> **Checkpoints Event Hubs en ECS:** Azurite en tarea Fargate (no Storage Account). **Mensajería:** Azure Event Hubs (connection string en SSM). Task definitions copiables: [Anexo §22](docs/despliegue/aws/IMPLEMENTACION-DESPLIEGUE-AWS.md#22-anexo--task-definitions-ecs-copiar).
 
 ### Arranque en AWS (resumen manual)
 

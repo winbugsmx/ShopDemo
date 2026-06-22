@@ -1,0 +1,117 @@
+# Alcance del laboratorio de release (2 días · pocas horas)
+
+| Campo | Detalle |
+|:------|:--------|
+| **Empresa** | Lite Thinking |
+| **Curso** | Microservicios con .NET en Kubernetes y Entornos Multicloud |
+
+**Objetivo:** Que el alumno complete un **release funcional** sin perderse en decenas de pasos manuales.
+
+---
+
+## Rutas recomendadas por tiempo disponible
+
+| Tiempo | Azure | AWS | Kubernetes |
+|---|---|---|---|
+| **~3 h (mínimo)** | [Script ACA](./azure/GUIA-RELEASE-SCRIPT-AZURE.md) + push ACR | [Script ECS](./aws/GUIA-RELEASE-SCRIPT-AWS.md) + push ECR | Omitir o solo [Minikube](./kubernetes/GUIA-RELEASE-KUBERNETES.md) local |
+| **~6 h (cómodo)** | Script + validación Postman | Script + validación Postman | Minikube `kubectl apply` |
+| **~12 h (completo)** | Script + leer [Portal](./azure/GUIA-RELEASE-PORTAL-AZURE.md) | Script + [Portal](./aws/GUIA-RELEASE-PORTAL-AWS.md) | Minikube + **un** cloud K8s (AKS **o** EKS, no ambos) |
+
+> **Regla del curso:** para el release en la nube, **usa primero el script**. Las guías Portal y CLI sirven para **entender** cada servicio o si el script no está disponible.
+
+---
+
+## ¿Qué servicios son obligatorios?
+
+### Azure Container Apps (release serverless)
+
+| Servicio | ¿Obligatorio? | ¿Por qué? | ¿Lo crea el script? |
+|---|---|---|---|
+| Suscripción + `az login` | Sí | Autenticación | — |
+| Resource Group | Sí | Agrupar el lab | Sí |
+| Event Hubs + hub + consumer groups | Sí | Mensajería del código | Sí |
+| Azure Container Registry (ACR) | Sí | Imágenes Docker | Sí |
+| Storage Account (Blob) | Sí | Checkpoints Inventory/Analytics en ACA | Sí |
+| Log Analytics + ACA Environment | Sí | Requisito de Container Apps | Sí |
+| PostgreSQL en ACI | Sí (lab) | 3 bases de datos | Sí |
+| 5 Container Apps (4 APIs + MCP) | Sí | Release ShopDemo | Sí |
+| **AKS** | **No** en lab corto | Avanzado; otro día | Modo `-Mode AKS` |
+| GitHub Actions | No | Alternativa: `docker push` manual | — |
+
+**No necesitas en ACA:** Azurite en ACI (solo Kubernetes/ECS usan Azurite para checkpoints).
+
+### AWS ECS Fargate
+
+| Servicio | ¿Obligatorio? | ¿Por qué? | ¿Lo crea el script? |
+|---|---|---|---|
+| Usuario IAM + política | Sí | Permisos AWS | — (ver [Script AWS §0](./aws/GUIA-RELEASE-SCRIPT-AWS.md)) |
+| `aws configure` | Sí | Credenciales CLI | — |
+| Event Hubs (Azure) | Sí | Connection string cross-cloud | — (pegar en `.env.aws`) |
+| ECR (5 repos) | Sí | Imágenes | Sí |
+| VPC + subnets + IGW | Sí | Red Fargate | Sí |
+| 3 Security Groups | Sí | ALB / apps / datos | Sí |
+| ECS cluster | Sí | Orquestación | Sí |
+| SSM Parameter Store | Sí | Secretos | Sí |
+| PostgreSQL Fargate | Sí (lab) | Bases de datos | Sí |
+| Azurite Fargate | Sí | Checkpoints EH en ECS | Sí |
+| Cloud Map | Sí | Orders → Inventory por DNS | Sí |
+| ALB × 4 APIs + MCP | Sí | APIs públicas | Sí |
+| **EKS** | **No** en lab corto | Avanzado | Modo `-Mode EKS` |
+| NAT Gateway | **No** | Lab usa subnets públicas (más barato) | — |
+
+**Simplificación real:** hacer Portal/CLI **servicio por servicio** para ECS lleva **más de un día**. El script condensa ~40 pasos en uno.
+
+### Kubernetes (local / AKS / EKS)
+
+| Enfoque | ¿Cuándo? | Esfuerzo |
+|---|---|---|
+| **Minikube** + `k8s/` | Entender manifiestos sin costo cloud | ~4 h |
+| **AKS** (`-Mode AKS`) | Azure + ya dominas ACA | +2–3 h tras script |
+| **EKS** (`-Mode EKS`) | AWS + ya dominas ECS | +2–3 h tras script |
+
+No es obligatorio desplegar **ACA + ECS + Minikube + AKS + EKS** en el mismo alumno.
+
+---
+
+## Documentación separada por plataforma
+
+### Azure
+
+| Documento | Uso |
+|---|---|
+| [GUIA-RELEASE-SCRIPT-AZURE.md](./azure/GUIA-RELEASE-SCRIPT-AZURE.md) | Ejecutar `Deploy-AzureShopDemo.ps1` |
+| [GUIA-RELEASE-CLI-AZURE.md](./azure/GUIA-RELEASE-CLI-AZURE.md) | Mismos recursos con `az` |
+| [GUIA-RELEASE-PORTAL-AZURE.md](./azure/GUIA-RELEASE-PORTAL-AZURE.md) | Portal visual + enlaces Microsoft Learn + espacio capturas |
+
+### AWS
+
+| Documento | Uso |
+|---|---|
+| [GUIA-RELEASE-SCRIPT-AWS.md](./aws/GUIA-RELEASE-SCRIPT-AWS.md) | Ejecutar `Deploy-AwsShopDemo.ps1` + IAM |
+| [GUIA-RELEASE-CLI-AWS.md](./aws/GUIA-RELEASE-CLI-AWS.md) | Mismos recursos con `aws` |
+| [GUIA-RELEASE-PORTAL-AWS.md](./aws/GUIA-RELEASE-PORTAL-AWS.md) | Consola visual + enlaces AWS Docs + capturas |
+
+### Kubernetes
+
+| Documento | Uso |
+|---|---|
+| [GUIA-RELEASE-KUBERNETES.md](./kubernetes/GUIA-RELEASE-KUBERNETES.md) | Minikube, AKS y EKS — qué elegir y en qué orden |
+
+---
+
+## Convención de nombres (no mezclar variantes)
+
+Copiar siempre de:
+
+- Azure: `scripts/azure/.env.azure.example`
+- AWS: `scripts/aws/.env.aws.example`
+
+Si un nombre global está ocupado, cambia el sufijo `01` → `02` en **todos** los documentos y en el `.env`.
+
+---
+
+## Validación final (todas las rutas)
+
+1. `GET /health` o Swagger en cada API pública
+2. Flujo Postman: [GUIA-ENDPOINTS.md](../GUIA-ENDPOINTS.md)
+3. Limpieza: `Remove-AzureShopDemo.ps1` / `Remove-AwsShopDemo.ps1` para no dejar costos

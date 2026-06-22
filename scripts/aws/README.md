@@ -6,8 +6,10 @@ Automatización del laboratorio AWS del curso Lite Thinking. Complementa la docu
 
 | Tema | Documento |
 |---|---|
-| ECS Fargate + ALB | [IMPLEMENTACION-DESPLIEGUE-AWS.md](../../docs/despliegue/aws/IMPLEMENTACION-DESPLIEGUE-AWS.md) |
-| EKS + Kubernetes | [IMPLEMENTACION-DESPLIEGUE-EKS.md](../../docs/despliegue/eks/IMPLEMENTACION-DESPLIEGUE-EKS.md) |
+| **Script + IAM (recomendado)** | [GUIA-RELEASE-SCRIPT-AWS.md](../../docs/despliegue/aws/GUIA-RELEASE-SCRIPT-AWS.md) |
+| Consola visual + IAM | [GUIA-RELEASE-PORTAL-AWS.md](../../docs/despliegue/aws/GUIA-RELEASE-PORTAL-AWS.md) |
+| AWS CLI manual | [GUIA-RELEASE-CLI-AWS.md](../../docs/despliegue/aws/GUIA-RELEASE-CLI-AWS.md) |
+| EKS + Kubernetes | [GUIA-RELEASE-KUBERNETES.md](../../docs/despliegue/kubernetes/GUIA-RELEASE-KUBERNETES.md) |
 | Event Hubs (Azure, cross-cloud) | [INTEGRACION-AZURE-EVENT-HUBS.md](../../docs/INTEGRACION-AZURE-EVENT-HUBS.md) |
 | MCP Gateway | [IMPLEMENTACION-DESPLIEGUE-MCP-AWS.md](../../docs/integracion-ia/IMPLEMENTACION-DESPLIEGUE-MCP-AWS.md) |
 | Guía de desarrollo | [GUIA-DESARROLLO-INTEGRACIONES.md](../../docs/GUIA-DESARROLLO-INTEGRACIONES.md) |
@@ -25,10 +27,21 @@ Automatización del laboratorio AWS del curso Lite Thinking. Complementa la docu
 ## Prerrequisitos
 
 1. [AWS CLI v2](https://docs.aws.amazon.com/cli/latest/userguide/getting-started-install.html) + `aws configure`
-2. Permisos de lab (ECS, EC2, ELB, SSM, IAM, ECR, Cloud Map)
+2. **Usuario IAM** con permisos del lab — ver [GUIA-RELEASE-PORTAL-AWS §0](../../docs/despliegue/aws/GUIA-RELEASE-PORTAL-AWS.md#0-usuario-iam-y-permisos)
 3. **Event Hubs en Azure** — connection string en `.env.aws` (mensajería cross-cloud)
-4. Modo **EKS**: [eksctl](https://eksctl.io/) y [kubectl](https://kubernetes.io/docs/tasks/tools/)
+4. Para modo **EKS**: [eksctl](https://eksctl.io/) y [kubectl](https://kubernetes.io/docs/tasks/tools/)
 5. **Imágenes en ECR** antes de que arranquen las tareas ECS
+
+### Resumen IAM (solo ECS) — evita el error de cuota
+
+**No adjuntes 8 políticas.** Usa **una** de estas:
+
+| Enfoque | Qué adjuntar |
+|---|---|
+| Recomendado | Política custom `ShopDemoLabECS` ([iam-policy-shopdemo-lab-ecs.json](iam-policy-shopdemo-lab-ecs.json)) |
+| Alternativa | `PowerUserAccess` + `IAMFullAccess` (2 políticas) |
+
+Detalle: [GUIA-RELEASE-SCRIPT-AWS](../../docs/despliegue/aws/GUIA-RELEASE-SCRIPT-AWS.md) · [Portal IAM](../../docs/despliegue/aws/GUIA-RELEASE-PORTAL-AWS.md#0-usuario-iam-y-permisos)
 
 ## Valores que debes obtener o definir
 
@@ -79,7 +92,7 @@ Ref: [INTEGRACION-AZURE-EVENT-HUBS.md](../../docs/INTEGRACION-AZURE-EVENT-HUBS.m
 
 ## Uso rápido
 
-> **Documentación paso a paso en el curso:** [IMPLEMENTACION-DESPLIEGUE-AWS §0](../../docs/despliegue/aws/IMPLEMENTACION-DESPLIEGUE-AWS.md#0-script-powershell-automatizado-recomendado) · [README principal](../../README.md#release-aws)
+> **Documentación:** [GUIA-RELEASE-SCRIPT-AWS](../../docs/despliegue/aws/GUIA-RELEASE-SCRIPT-AWS.md) · [README principal](../../README.md#release-aws)
 
 ```powershell
 cd I:\Curso\ShopDemo\scripts\aws

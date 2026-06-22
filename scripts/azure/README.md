@@ -6,8 +6,10 @@ Automatización del laboratorio Azure del curso Lite Thinking. Complementa la do
 
 | Tema | Documento |
 |---|---|
-| Container Apps (ACA) | [IMPLEMENTACION-DESPLIEGUE-AZURE.md](../../docs/despliegue/azure/IMPLEMENTACION-DESPLIEGUE-AZURE.md) |
-| AKS + Kubernetes | [IMPLEMENTACION-DESPLIEGUE-AKS.md](../../docs/despliegue/aks/IMPLEMENTACION-DESPLIEGUE-AKS.md) |
+| **Script (recomendado)** | [GUIA-RELEASE-SCRIPT-AZURE.md](../../docs/despliegue/azure/GUIA-RELEASE-SCRIPT-AZURE.md) |
+| Portal visual | [GUIA-RELEASE-PORTAL-AZURE.md](../../docs/despliegue/azure/GUIA-RELEASE-PORTAL-AZURE.md) |
+| Azure CLI manual | [GUIA-RELEASE-CLI-AZURE.md](../../docs/despliegue/azure/GUIA-RELEASE-CLI-AZURE.md) |
+| AKS + Kubernetes | [GUIA-RELEASE-KUBERNETES.md](../../docs/despliegue/kubernetes/GUIA-RELEASE-KUBERNETES.md) |
 | Event Hubs | [INTEGRACION-AZURE-EVENT-HUBS.md](../../docs/INTEGRACION-AZURE-EVENT-HUBS.md) |
 | MCP Gateway | [IMPLEMENTACION-DESPLIEGUE-MCP-AZURE.md](../../docs/integracion-ia/IMPLEMENTACION-DESPLIEGUE-MCP-AZURE.md) |
 | Guía de desarrollo | [GUIA-DESARROLLO-INTEGRACIONES.md](../../docs/GUIA-DESARROLLO-INTEGRACIONES.md) |
@@ -81,7 +83,7 @@ Si un nombre † está ocupado globalmente, cambia el sufijo `01` → `02` en **
 
 ## Uso rápido
 
-> **Documentación paso a paso en el curso:** [IMPLEMENTACION-DESPLIEGUE-AZURE §0](../../docs/despliegue/azure/IMPLEMENTACION-DESPLIEGUE-AZURE.md#0-script-powershell-automatizado-recomendado) · [README principal](../../README.md#release-azure)
+> **Documentación:** [GUIA-RELEASE-SCRIPT-AZURE](../../docs/despliegue/azure/GUIA-RELEASE-SCRIPT-AZURE.md) · [README principal](../../README.md#release-azure)
 
 ```powershell
 cd I:\Curso\ShopDemo\scripts\azure
@@ -101,7 +103,7 @@ az account set --subscription "<TU-SUBSCRIPTION-ID>"
 
 # 4. Publicar imágenes (obligatorio antes de probar APIs)
 #    Opción A: workflow GitHub Actions (secrets: AZURE_CREDENTIALS, ACR_NAME, AZURE_RG, ACA_ENV)
-#    Opción B: build manual — ver IMPLEMENTACION-DESPLIEGUE-AZURE.md §6
+#    Opción B: build manual — ver GUIA-RELEASE-SCRIPT-AZURE
 
 # 5. Modo AKS — aplicar manifiestos (manual)
 cd I:\Curso\ShopDemo

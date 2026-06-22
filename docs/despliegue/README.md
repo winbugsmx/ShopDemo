@@ -14,6 +14,37 @@
 
 Material del curso para llevar los microservicios Docker a la nube con enfoque **práctico y básico**.
 
+## Alcance del lab (2 días · pocas horas)
+
+**[ALCANCE-LAB-RELEASE.md](./ALCANCE-LAB-RELEASE.md)** — qué servicios son obligatorios, rutas por tiempo y cuándo usar script vs Portal vs CLI.
+
+## Guías de release separadas
+
+### Azure
+
+| Documento | Uso |
+|---|---|
+| [GUIA-RELEASE-SCRIPT-AZURE.md](./azure/GUIA-RELEASE-SCRIPT-AZURE.md) | **Recomendada** — `Deploy-AzureShopDemo.ps1` |
+| [GUIA-RELEASE-CLI-AZURE.md](./azure/GUIA-RELEASE-CLI-AZURE.md) | Mismos recursos con `az` |
+| [GUIA-RELEASE-PORTAL-AZURE.md](./azure/GUIA-RELEASE-PORTAL-AZURE.md) | Portal visual + capturas + Microsoft Learn |
+| [IMPLEMENTACION-DESPLIEGUE-AZURE.md](./azure/IMPLEMENTACION-DESPLIEGUE-AZURE.md) | Índice + nombres + troubleshooting |
+
+### AWS
+
+| Documento | Uso |
+|---|---|
+| [GUIA-RELEASE-SCRIPT-AWS.md](./aws/GUIA-RELEASE-SCRIPT-AWS.md) | **Recomendada** — `Deploy-AwsShopDemo.ps1` + IAM |
+| [GUIA-RELEASE-CLI-AWS.md](./aws/GUIA-RELEASE-CLI-AWS.md) | Mismos recursos con `aws` |
+| [GUIA-RELEASE-PORTAL-AWS.md](./aws/GUIA-RELEASE-PORTAL-AWS.md) | Consola visual + capturas + AWS Docs |
+| [IMPLEMENTACION-DESPLIEGUE-AWS.md](./aws/IMPLEMENTACION-DESPLIEGUE-AWS.md) | Índice + IAM + troubleshooting |
+| [ANEXO-TASK-DEFINITIONS-ECS.md](./aws/ANEXO-TASK-DEFINITIONS-ECS.md) | JSON task definitions (ruta manual) |
+
+### Kubernetes
+
+| Documento | Uso |
+|---|---|
+| [GUIA-RELEASE-KUBERNETES.md](./kubernetes/GUIA-RELEASE-KUBERNETES.md) | Minikube vs AKS vs EKS — qué elegir |
+
 ## Scripts PowerShell de release (automatización)
 
 | Plataforma | Carpeta | Guía | Modos |
@@ -31,7 +62,7 @@ Material del curso para llevar los microservicios Docker a la nube con enfoque *
 | 4 | Push ACR ([deploy-azure.yml](../../.github/workflows/deploy-azure.yml)) | Push ECR ([deploy-aws.yml](../../.github/workflows/deploy-aws.yml)) |
 | 5 | `.\Remove-AzureShopDemo.ps1` | `.\Remove-AwsShopDemo.ps1` |
 
-Detalle en [IMPLEMENTACION-DESPLIEGUE-AZURE §0](./azure/IMPLEMENTACION-DESPLIEGUE-AZURE.md#0-script-powershell-automatizado-recomendado) y [IMPLEMENTACION-DESPLIEGUE-AWS §0](./aws/IMPLEMENTACION-DESPLIEGUE-AWS.md#0-script-powershell-automatizado-recomendado).
+Detalle en [GUIA-RELEASE-SCRIPT-AZURE](./azure/GUIA-RELEASE-SCRIPT-AZURE.md) y [GUIA-RELEASE-SCRIPT-AWS](./aws/GUIA-RELEASE-SCRIPT-AWS.md).
 
 ## Decisiones del curso
 
@@ -74,15 +105,19 @@ Detalle en [IMPLEMENTACION-DESPLIEGUE-AZURE §0](./azure/IMPLEMENTACION-DESPLIEG
 |---|---|
 | [TEORIA-CONTENEDORES-AZURE.md](./azure/TEORIA-CONTENEDORES-AZURE.md) | ACR, Container Apps, secretos, networking |
 | [REQUERIMIENTOS-DESPLIEGUE-AZURE.md](./azure/REQUERIMIENTOS-DESPLIEGUE-AZURE.md) | Justificación y alcance |
-| [IMPLEMENTACION-DESPLIEGUE-AZURE.md](./azure/IMPLEMENTACION-DESPLIEGUE-AZURE.md) | Paso a paso **Portal + CLI** |
+| [GUIA-RELEASE-SCRIPT-AZURE.md](./azure/GUIA-RELEASE-SCRIPT-AZURE.md) | Script PowerShell (recomendado) |
+| [GUIA-RELEASE-CLI-AZURE.md](./azure/GUIA-RELEASE-CLI-AZURE.md) | Azure CLI manual |
+| [GUIA-RELEASE-PORTAL-AZURE.md](./azure/GUIA-RELEASE-PORTAL-AZURE.md) | Portal visual |
 
 ### AWS
 
 | Documento | Contenido |
 |---|---|
-| [TEORIA-CONTENEDORES-AWS.md](./aws/TEORIA-CONTENEDORES-AWS.md) | ECR, ECS Fargate, Cloud Map, EFS |
+| [TEORIA-CONTENEDORES-AWS.md](./aws/TEORIA-CONTENEDORES-AWS.md) | ECR, ECS Fargate, Cloud Map |
 | [REQUERIMIENTOS-DESPLIEGUE-AWS.md](./aws/REQUERIMIENTOS-DESPLIEGUE-AWS.md) | Justificación y alcance |
-| [IMPLEMENTACION-DESPLIEGUE-AWS.md](./aws/IMPLEMENTACION-DESPLIEGUE-AWS.md) | Paso a paso **Consola + CLI** |
+| [GUIA-RELEASE-SCRIPT-AWS.md](./aws/GUIA-RELEASE-SCRIPT-AWS.md) | Script PowerShell + IAM (recomendado) |
+| [GUIA-RELEASE-CLI-AWS.md](./aws/GUIA-RELEASE-CLI-AWS.md) | AWS CLI manual |
+| [GUIA-RELEASE-PORTAL-AWS.md](./aws/GUIA-RELEASE-PORTAL-AWS.md) | Consola visual |
 
 ## Spec-driven development (etapa 15)
 

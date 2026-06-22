@@ -11,6 +11,8 @@
 
 Material para desplegar ShopDemo en **Kubernetes**: desarrollo local (Minikube) y nube (AKS / EKS).
 
+**Guía de elección de ruta:** [GUIA-RELEASE-KUBERNETES.md](./GUIA-RELEASE-KUBERNETES.md) · **Alcance lab:** [ALCANCE-LAB-RELEASE.md](../ALCANCE-LAB-RELEASE.md)
+
 ## Documentos
 
 | Tema | Teoría | Requerimientos | Implementación |

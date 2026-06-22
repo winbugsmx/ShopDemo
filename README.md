@@ -294,8 +294,8 @@ Dos caminos de **release** en Azure. Ambos usan imágenes en **Azure Container R
 
 | Camino | Servicio Azure | Ideal para | Guía |
 |---|---|---|---|
-| **ACA** | Container Apps | Release serverless, más simple | [IMPLEMENTACION-DESPLIEGUE-AZURE](docs/despliegue/azure/IMPLEMENTACION-DESPLIEGUE-AZURE.md) |
-| **AKS** | Kubernetes Service | Release con manifiestos `k8s/` | [IMPLEMENTACION-DESPLIEGUE-AKS](docs/despliegue/aks/IMPLEMENTACION-DESPLIEGUE-AKS.md) |
+| **ACA** | Container Apps | Release serverless, más simple | [GUIA-RELEASE-SCRIPT-AZURE](docs/despliegue/azure/GUIA-RELEASE-SCRIPT-AZURE.md) |
+| **AKS** | Kubernetes Service | Release con manifiestos `k8s/` | [GUIA-RELEASE-KUBERNETES](docs/despliegue/kubernetes/GUIA-RELEASE-KUBERNETES.md) |
 
 ### Scripts PowerShell — configuración y ejecución (recomendado)
 
@@ -326,7 +326,7 @@ az account set --subscription "<TU-SUBSCRIPTION-ID>"
 
 # 4. Publicar imágenes en ACR (obligatorio — el script no hace build)
 #    GitHub Actions: .github/workflows/deploy-azure.yml
-#    O build manual: ver IMPLEMENTACION-DESPLIEGUE-AZURE §8
+#    O build manual: ver GUIA-RELEASE-SCRIPT-AZURE
 
 # 5. Validar y limpiar
 #    ACA: curl https://<fqdn-catalog>/health
@@ -340,7 +340,7 @@ az account set --subscription "<TU-SUBSCRIPTION-ID>"
 | `AKS` | Igual + `kubectl apply` | `kubectl get pods -n shopdemo` |
 | `All` | Igual para ambos entornos | Postman con [GUIA-ENDPOINTS](docs/GUIA-ENDPOINTS.md) |
 
-Documentación detallada: [IMPLEMENTACION-DESPLIEGUE-AZURE §0](docs/despliegue/azure/IMPLEMENTACION-DESPLIEGUE-AZURE.md#0-script-powershell-automatizado-recomendado) · [Guía manual completa](docs/despliegue/azure/IMPLEMENTACION-DESPLIEGUE-AZURE.md) · [AKS §0](docs/despliegue/aks/IMPLEMENTACION-DESPLIEGUE-AKS.md#0-script-powershell--mode-aks)
+Documentación: [ALCANCE-LAB-RELEASE](docs/despliegue/ALCANCE-LAB-RELEASE.md) · [Script ACA](docs/despliegue/azure/GUIA-RELEASE-SCRIPT-AZURE.md) · [Portal](docs/despliegue/azure/GUIA-RELEASE-PORTAL-AZURE.md) · [CLI](docs/despliegue/azure/GUIA-RELEASE-CLI-AZURE.md) · [AKS](docs/despliegue/kubernetes/GUIA-RELEASE-KUBERNETES.md)
 
 > **Checkpoints Event Hubs:** en ACA usa **Azure Storage Account** (no Azurite). En AKS/Minikube usa Azurite in-cluster (`k8s/azurite/`).
 
@@ -401,8 +401,8 @@ Dos caminos de **release** en AWS. Ambos usan **Amazon ECR** y despliegan **5 co
 
 | Camino | Servicio AWS | Ideal para | Guía |
 |---|---|---|---|
-| **ECS** | Fargate | Release sin Kubernetes | [IMPLEMENTACION-DESPLIEGUE-AWS](docs/despliegue/aws/IMPLEMENTACION-DESPLIEGUE-AWS.md) |
-| **EKS** | Elastic Kubernetes Service | Release con manifiestos `k8s/` | [IMPLEMENTACION-DESPLIEGUE-EKS](docs/despliegue/eks/IMPLEMENTACION-DESPLIEGUE-EKS.md) |
+| **ECS** | Fargate | Release sin Kubernetes | [GUIA-RELEASE-SCRIPT-AWS](docs/despliegue/aws/GUIA-RELEASE-SCRIPT-AWS.md) |
+| **EKS** | Elastic Kubernetes Service | Release con manifiestos `k8s/` | [GUIA-RELEASE-KUBERNETES](docs/despliegue/kubernetes/GUIA-RELEASE-KUBERNETES.md) |
 
 ### Scripts PowerShell — configuración y ejecución (recomendado)
 
@@ -431,7 +431,7 @@ aws sts get-caller-identity
 
 # 4. Publicar imágenes en ECR (obligatorio)
 #    GitHub Actions: .github/workflows/deploy-aws.yml
-#    O manual: IMPLEMENTACION-DESPLIEGUE-AWS §7
+#    O manual: GUIA-RELEASE-SCRIPT-AWS
 
 # 5. Validar y limpiar
 #    ECS: http://<alb-catalog-dns>/swagger
@@ -444,9 +444,9 @@ aws sts get-caller-identity
 | `EVENT_HUBS_CONNECTION_STRING` | **Azure Portal** (Event Hubs — mensajería cross-cloud) |
 | `AWS_REGION` | Consola AWS / `aws configure` |
 
-Documentación detallada: [IMPLEMENTACION-DESPLIEGUE-AWS §0](docs/despliegue/aws/IMPLEMENTACION-DESPLIEGUE-AWS.md#0-script-powershell-automatizado-recomendado) · [Guía manual completa](docs/despliegue/aws/IMPLEMENTACION-DESPLIEGUE-AWS.md) · [EKS §0](docs/despliegue/eks/IMPLEMENTACION-DESPLIEGUE-EKS.md#0-script-powershell--mode-eks)
+Documentación: [ALCANCE-LAB-RELEASE](docs/despliegue/ALCANCE-LAB-RELEASE.md) · [Script ECS](docs/despliegue/aws/GUIA-RELEASE-SCRIPT-AWS.md) · [Portal](docs/despliegue/aws/GUIA-RELEASE-PORTAL-AWS.md) · [CLI](docs/despliegue/aws/GUIA-RELEASE-CLI-AWS.md) · [IAM visual](docs/despliegue/aws/GUIA-RELEASE-PORTAL-AWS.md#0-usuario-iam-y-permisos)
 
-> **Checkpoints Event Hubs en ECS:** Azurite en tarea Fargate (no Storage Account). **Mensajería:** Azure Event Hubs (connection string en SSM). Task definitions copiables: [Anexo §22](docs/despliegue/aws/IMPLEMENTACION-DESPLIEGUE-AWS.md#22-anexo--task-definitions-ecs-copiar).
+> **Checkpoints Event Hubs en ECS:** Azurite en Fargate. **Mensajería:** Azure Event Hubs (SSM). Task definitions: [ANEXO-TASK-DEFINITIONS-ECS](docs/despliegue/aws/ANEXO-TASK-DEFINITIONS-ECS.md).
 
 ### Arranque en AWS (resumen manual)
 

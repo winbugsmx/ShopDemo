@@ -295,7 +295,7 @@ No hay código C# nuevo; **integras configuración, scripts PowerShell y pipelin
 | Mensajería | Event Hubs (Azure) | Event Hubs cross-cloud | Event Hubs en `secrets.yaml` |
 | Secretos | ACA secrets | SSM Parameter Store | `k8s/secrets.yaml` |
 
-> Ruta **manual paso a paso** (Portal/CLI con código copiable): [IMPLEMENTACION-DESPLIEGUE-AZURE](./despliegue/azure/IMPLEMENTACION-DESPLIEGUE-AZURE.md) · [IMPLEMENTACION-DESPLIEGUE-AWS](./despliegue/aws/IMPLEMENTACION-DESPLIEGUE-AWS.md)
+> **Alcance lab:** [ALCANCE-LAB-RELEASE](./despliegue/ALCANCE-LAB-RELEASE.md) · Guías separadas: [Script Azure](./despliegue/azure/GUIA-RELEASE-SCRIPT-AZURE.md) · [CLI](./despliegue/azure/GUIA-RELEASE-CLI-AZURE.md) · [Portal](./despliegue/azure/GUIA-RELEASE-PORTAL-AZURE.md) · [Script AWS](./despliegue/aws/GUIA-RELEASE-SCRIPT-AWS.md) · [CLI AWS](./despliegue/aws/GUIA-RELEASE-CLI-AWS.md) · [Portal AWS](./despliegue/aws/GUIA-RELEASE-PORTAL-AWS.md) · [K8s](./despliegue/kubernetes/GUIA-RELEASE-KUBERNETES.md)
 
 ### Etapa 7 — Azure (script recomendado)
 
@@ -310,8 +310,9 @@ az login
 
 | Documento | Contenido |
 |---|---|
-| [IMPLEMENTACION-DESPLIEGUE-AZURE §0](./despliegue/azure/IMPLEMENTACION-DESPLIEGUE-AZURE.md#0-script-powershell-automatizado-recomendado) | Configuración y ejecución del script |
-| [scripts/azure/README.md](../scripts/azure/README.md) | Tabla de variables Portal |
+| [GUIA-RELEASE-SCRIPT-AZURE](./despliegue/azure/GUIA-RELEASE-SCRIPT-AZURE.md) | Configuración y ejecución del script |
+| [GUIA-RELEASE-PORTAL-AZURE](./despliegue/azure/GUIA-RELEASE-PORTAL-AZURE.md) | Portal visual (capturas) |
+| [scripts/azure/README.md](../scripts/azure/README.md) | Tabla de variables |
 
 ### Etapa 8 — AWS (script recomendado)
 
@@ -326,7 +327,8 @@ aws configure
 
 | Documento | Contenido |
 |---|---|
-| [IMPLEMENTACION-DESPLIEGUE-AWS §0](./despliegue/aws/IMPLEMENTACION-DESPLIEGUE-AWS.md#0-script-powershell-automatizado-recomendado) | Configuración y ejecución del script |
+| [GUIA-RELEASE-SCRIPT-AWS](./despliegue/aws/GUIA-RELEASE-SCRIPT-AWS.md) | Script + IAM (1 política `ShopDemoLabECS`) |
+| [GUIA-RELEASE-PORTAL-AWS](./despliegue/aws/GUIA-RELEASE-PORTAL-AWS.md) | Consola visual (capturas) |
 | [scripts/aws/README.md](../scripts/aws/README.md) | Variables y modos ECS/EKS |
 
 | Qué copiar/configurar | Para qué sirve |
@@ -336,7 +338,7 @@ aws configure
 | Variables en ACA / ECS / secrets | Connection strings, Event Hubs |
 | `.github/workflows/deploy-azure.yml` | CI/CD Azure — **5 imágenes** |
 | `.github/workflows/deploy-aws.yml` | CI/CD AWS — **5 imágenes** |
-| Build manual 5 servicios | Ver §8 IMPLEMENTACION Azure / §7 AWS |
+| Build manual 5 servicios | Ver GUIA-RELEASE-SCRIPT-AZURE / GUIA-RELEASE-SCRIPT-AWS |
 
 Docs manuales: [despliegue/azure/](./despliegue/azure/) · [despliegue/aws/](./despliegue/aws/)
 

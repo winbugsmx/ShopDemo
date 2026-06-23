@@ -1,0 +1,16 @@
+{
+  "mcpServers": {
+    "shopdemo-local": {
+      "url": "http://localhost:8005/mcp",
+      "comment": "dotnet run --project AI/ShopDemo.Mcp.Api + APIs on 8001-8004"
+    },
+    "shopdemo-azure": {
+      "url": "https://REPLACE_CA_SHOPDEMO_MCP_FQDN/mcp",
+      "comment": "After IMPLEMENTACION-DESPLIEGUE-MCP-AZURE.md"
+    },
+    "shopdemo-aws": {
+      "url": "http://REPLACE_ALB_MCP_DNS/mcp",
+      "comment": "After IMPLEMENTACION-DESPLIEGUE-MCP-AWS.md"
+    }
+  }
+}

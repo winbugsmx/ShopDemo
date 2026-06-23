@@ -1,10 +1,22 @@
 # Integración de microservicios con Azure Event Hubs — Guía paso a paso (ShopDemo)
 
-**Curso:** Arquitectura Clean + DDD — Lite Thinking  
+| Campo | Detalle |
+|:------|:--------|
+| **Empresa** | Lite Thinking |
+| **Curso** | Microservicios con .NET en Kubernetes y Entornos Multicloud |
+| **Instructor** | Lcc. Gilberto Valentino Juárez Sánchez |
+| **Contacto** | WhatsApp: +52 5614206660 |
+| | E-mail: gilberto.juarez@gmail.com |
+| | E-mail: lcc.gilberto.juarez@gmail.com |
+
 **Versión:** 2.1  
 **Audiencia:** Alumnos que implementarán la integración desde cero siguiendo cada paso
 
 > Esta guía incluye configuración en **Azure Portal**, **Azure CLI** y **activación mediante contenedores Docker** (`.env` + `docker-compose.yml`). El código está separado por microservicio (Catalog, Orders, Inventory).
+
+**Guía de desarrollo:** [GUIA-DESARROLLO-INTEGRACIONES.md](../GUIA-DESARROLLO-INTEGRACIONES.md) (etapa 5)  
+**Código completo para copiar/integrar:** [ANEXO-CODIGO-EVENT-HUBS.md](./ANEXO-CODIGO-EVENT-HUBS.md) — publishers, consumidor, DI, appsettings, `.env` y `docker-compose`.  
+**Contrato compartido:** [ANEXO-CODIGO-SHARED.md](./ANEXO-CODIGO-SHARED.md) (`IntegrationEventEnvelope.cs`)
 
 ---
 

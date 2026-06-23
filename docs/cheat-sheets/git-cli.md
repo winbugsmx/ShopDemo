@@ -1,5 +1,14 @@
 # Cheat Sheet — Git CLI
 
+| Campo | Detalle |
+|:------|:--------|
+| **Empresa** | Lite Thinking |
+| **Curso** | Microservicios con .NET en Kubernetes y Entornos Multicloud |
+| **Instructor** | Lcc. Gilberto Valentino Juárez Sánchez |
+| **Contacto** | WhatsApp: +52 5614206660 |
+| | E-mail: gilberto.juarez@gmail.com |
+| | E-mail: lcc.gilberto.juarez@gmail.com |
+
 Referencia rápida de comandos `git` para trabajo colaborativo en proyectos de microservicios. Ejemplos aplicables al repositorio **ShopDemo**.
 
 ---

@@ -17,5 +17,13 @@
     <Project Path="Inventory/ShopDemo.Inventory.Domain/ShopDemo.Inventory.Domain.csproj" />
     <Project Path="Inventory/ShopDemo.Inventory.Infrastructure/ShopDemo.Inventory.Infrastructure.csproj" />
   </Folder>
+  <Folder Name="/Aspire/">
+    <Project Path="Aspire/ShopDemo.AppHost/ShopDemo.AppHost.csproj" />
+    <Project Path="Aspire/ShopDemo.ServiceDefaults/ShopDemo.ServiceDefaults.csproj" />
+    <Project Path="Aspire/ShopDemo.Analytics.Api/ShopDemo.Analytics.Api.csproj" />
+  </Folder>
+  <Folder Name="/AI/">
+    <Project Path="AI/ShopDemo.Mcp.Api/ShopDemo.Mcp.Api.csproj" />
+  </Folder>
   <Project Path="ShopDemo.Shared/ShopDemo.Shared.csproj" />
 </Solution>

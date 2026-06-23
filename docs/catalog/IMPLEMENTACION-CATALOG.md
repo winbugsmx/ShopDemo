@@ -1,11 +1,24 @@
 # Documento de Implementación — Microservicio Catalog (ShopDemo)
 
-**Curso:** Arquitectura Clean + DDD — Lite Thinking  
+| Campo | Detalle |
+|:------|:--------|
+| **Empresa** | Lite Thinking |
+| **Curso** | Microservicios con .NET en Kubernetes y Entornos Multicloud |
+| **Instructor** | Lcc. Gilberto Valentino Juárez Sánchez |
+| **Contacto** | WhatsApp: +52 5614206660 |
+| | E-mail: gilberto.juarez@gmail.com |
+| | E-mail: lcc.gilberto.juarez@gmail.com |
+
 **Tipo:** Guía de implementación con el código fuente actual del repositorio  
 **Versión:** 1.0  
 **Prerequisito:** Proyecto `ShopDemo.Shared` disponible
 
 > Este documento describe paso a paso la implementación **real** del microservicio Catalog. Los alumnos deben seguir `REQUERIMIENTOS-CATALOG.md` y usar este documento para validar su solución contra el código en `Catalog/`.
+
+**Guía de desarrollo (paso a paso):** [GUIA-DESARROLLO-INTEGRACIONES.md](../GUIA-DESARROLLO-INTEGRACIONES.md)  
+**Código completo para copiar/integrar:** [ANEXO-CODIGO-CATALOG.md](./ANEXO-CODIGO-CATALOG.md) — todos los `.cs` de Catalog listos para pegar en cada ruta.
+
+> **Nota para alumnos:** Los fragmentos abreviados en este documento (p. ej. `/* validaciones */`) son solo ilustrativos. Para integrar el código **sin huecos**, usa siempre el [ANEXO-CODIGO-CATALOG.md](./ANEXO-CODIGO-CATALOG.md).
 
 ---
 
@@ -412,24 +425,77 @@ public sealed class ProductsController(IMediator mediator) : ControllerBase
 
 ## 8. Docker
 
+> **Copiar del repo:** los archivos completos están en `Catalog/ShopDemo.Catalog.Api/`. Si construyes desde cero, copia exactamente estas rutas.
+
 ### 8.1 `docker-compose.yml`
 
 **Ubicación:** `Catalog/ShopDemo.Catalog.Api/docker-compose.yml`
+
+```yaml
+services:
+  catalog-db:
+    image: postgres:16-alpine
+    container_name: shopdemo-catalog-db
+    environment:
+      POSTGRES_DB: ShopDemoCatalog
+      POSTGRES_USER: ShopDemo
+      POSTGRES_PASSWORD: ShopDemo123
+    ports:
+      - "5433:5432"
+    volumes:
+      - catalog-db-data:/var/lib/postgresql/data
+      - ./docker/postgres/init:/docker-entrypoint-initdb.d:ro
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U ShopDemo -d ShopDemoCatalog"]
+      interval: 5s
+      timeout: 5s
+      retries: 5
+
+  catalog-service:
+    build:
+      context: ..
+      dockerfile: ShopDemo.Catalog.Api/Dockerfile
+    container_name: shopdemo-catalog-api
+    ports:
+      - "8001:8080"
+    environment:
+      - ASPNETCORE_ENVIRONMENT=Development
+      - ConnectionStrings__DefaultConnection=Host=catalog-db;Port=5432;Database=ShopDemoCatalog;Username=ShopDemo;Password=ShopDemo123
+      - EventHubs__Enabled=${EVENT_HUBS_ENABLED:-false}
+      - EventHubs__ConnectionString=${EVENT_HUBS_CONNECTION_STRING:-}
+      - EventHubs__EventHubName=${EVENT_HUBS_NAME:-shopdemo-events}
+    depends_on:
+      catalog-db:
+        condition: service_healthy
+
+volumes:
+  catalog-db-data:
+```
 
 | Servicio | Puerto host | Descripción |
 |---|---|---|
 | `catalog-db` | 5433 | PostgreSQL `ShopDemoCatalog` |
 | `catalog-service` | 8001 | API Catalog |
 
-Healthcheck en PostgreSQL antes de levantar la API.
-
 ### 8.2 `Dockerfile`
 
-Build multi-stage (.NET 10) con contexto en carpeta `Catalog/`. Usuario no-root (`USER app`).
+**Ubicación:** `Catalog/ShopDemo.Catalog.Api/Dockerfile` — build multi-stage (.NET 10), contexto `Catalog/`, usuario no-root `USER app`, puerto `8080`.
+
+Código completo en el repo (copiar archivo tal cual). Estructura:
+
+```dockerfile
+FROM mcr.microsoft.com/dotnet/aspnet:10.0 AS base
+WORKDIR /app
+EXPOSE 8080
+ENV ASPNETCORE_URLS=http://+:8080
+# ... stages build + publish desde Catalog/
+USER app
+ENTRYPOINT ["dotnet", "ShopDemo.Catalog.Api.dll"]
+```
 
 ### 8.3 Script init PostgreSQL
 
-`docker/postgres/init/` — permisos en schema `public` para el usuario `ShopDemo`.
+`Catalog/ShopDemo.Catalog.Api/docker/postgres/init/` — permisos en schema `public` para el usuario `ShopDemo`.
 
 ---
 

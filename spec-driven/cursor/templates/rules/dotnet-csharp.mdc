@@ -1,0 +1,13 @@
+---
+description: C# and ASP.NET Core conventions for ShopDemo APIs
+globs: "**/*.cs"
+alwaysApply: false
+---
+
+# .NET conventions
+
+- Use existing patterns: MediatR handlers, FluentValidation, EF Core migrations.
+- Health endpoints: `/health` and `/alive` where present.
+- Problem details include `traceId` in exception middleware — preserve format.
+- DI registration in `DependencyInjection.cs` or `Program.cs` per service style.
+- No new packages unless SPEC or user requires them.

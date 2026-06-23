@@ -1,0 +1,10 @@
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: shopdemo-postgres-init
+  namespace: shopdemo
+data:
+  init-databases.sql: |
+    CREATE DATABASE "ShopDemoCatalog";
+    CREATE DATABASE "ShopDemoOrders";
+    CREATE DATABASE "ShopDemoInventory";

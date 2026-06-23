@@ -1,12 +1,23 @@
 # Documento de Implementación — Microservicio Inventory (ShopDemo)
 
-**Curso:** Arquitectura Clean + DDD — Lite Thinking  
+| Campo | Detalle |
+|:------|:--------|
+| **Empresa** | Lite Thinking |
+| **Curso** | Microservicios con .NET en Kubernetes y Entornos Multicloud |
+| **Instructor** | Lcc. Gilberto Valentino Juárez Sánchez |
+| **Contacto** | WhatsApp: +52 5614206660 |
+| | E-mail: gilberto.juarez@gmail.com |
+| | E-mail: lcc.gilberto.juarez@gmail.com |
+
 **Tipo:** Guía de implementación con código funcional de referencia  
 **Arquitectura:** Hexagonal (Ports & Adapters)  
 **Versión:** 1.0  
 **Prerequisito:** Catalog y Orders implementados + `ShopDemo.Shared` disponible
 
 > Este documento describe paso a paso la implementación del microservicio **Inventory**. Los alumnos deben seguir `REQUERIMIENTOS-INVENTORY.md` y usar este documento para validar su solución.
+
+**Guía de desarrollo:** [GUIA-DESARROLLO-INTEGRACIONES.md](../GUIA-DESARROLLO-INTEGRACIONES.md)  
+**Código completo:** [ANEXO-CODIGO-INVENTORY.md](./ANEXO-CODIGO-INVENTORY.md) — todos los `.cs` de Inventory listos para pegar en cada ruta (excluye migraciones EF; genéralas con `dotnet ef migrations add`).
 
 ---
 
@@ -131,6 +142,8 @@ En `ShopDemo.slnx`, añadir la carpeta `/Inventory/` con los cuatro proyectos.
 ## 3. Capa Domain (núcleo)
 
 El dominio no depende de ninguna otra capa. Solo usa `ShopDemo.Shared` para primitivas DDD.
+
+> **Nota para alumnos:** Las secciones de este documento explican la arquitectura hexagonal. El código **completo** (sin `/* valida */`) está en [ANEXO-CODIGO-INVENTORY.md](./ANEXO-CODIGO-INVENTORY.md).
 
 ### 3.1 `StockQuantity` — Value Object
 
@@ -384,22 +397,52 @@ En Docker Compose de Orders, usar `InventoryApi__BaseUrl=http://host.docker.inte
 
 ## 8. Docker
 
+> **Copiar del repo:** `Inventory/ShopDemo.Inventory.Api/docker-compose.yml` incluye **Azurite** para checkpoints (local/K8s). En Azure ACA el release usa **Storage Account** — ver [IMPLEMENTACION-DESPLIEGUE-AZURE §7](../despliegue/azure/IMPLEMENTACION-DESPLIEGUE-AZURE.md#7-paso-5--storage-account-checkpoints-aca).
+
 ### 8.1 `docker-compose.yml` (Inventory)
 
-Ubicación: `Inventory/ShopDemo.Inventory.Api/docker-compose.yml`
+**Ubicación:** `Inventory/ShopDemo.Inventory.Api/docker-compose.yml`
+
+```yaml
+services:
+  inventory-db:
+    image: postgres:16-alpine
+    ports:
+      - "5435:5432"
+    # ... POSTGRES_DB ShopDemoInventory, healthcheck
+
+  azurite:
+    image: mcr.microsoft.com/azure-storage/azurite
+    ports:
+      - "10000:10000"
+    command: azurite-blob --blobHost 0.0.0.0 --blobPort 10000 --location /data
+
+  inventory-service:
+    build:
+      context: ../..
+      dockerfile: Inventory/ShopDemo.Inventory.Api/Dockerfile
+    ports:
+      - "8003:8080"
+    environment:
+      - EventHubs__CheckpointStorageConnectionString=...BlobEndpoint=http://azurite:10000/devstoreaccount1;
+      - EventHubs__CheckpointContainerName=inventory-checkpoints
+```
 
 | Servicio | Puerto host | Descripción |
 |---|---|---|
 | `inventory-db` | 5435 | PostgreSQL `ShopDemoInventory` |
+| `azurite` | 10000 | Checkpoints Event Hubs (local) |
 | `inventory-service` | 8003 | API Inventory |
+
+Código YAML completo: copiar archivo del repo (incluye `depends_on` y volúmenes).
 
 ### 8.2 `Dockerfile`
 
-Contexto de build: raíz del repositorio (`../..`). Copia proyectos de Inventory y Shared.
+**Ubicación:** `Inventory/ShopDemo.Inventory.Api/Dockerfile` — contexto de build: **raíz del repositorio** (`../..` en compose).
 
 ### 8.3 Script init PostgreSQL
 
-`docker/postgres/init/01-init-shopdemoinventory.sql` — permisos en schema `public`.
+`Inventory/ShopDemo.Inventory.Api/docker/postgres/init/01-init-shopdemoinventory.sql` — permisos en schema `public`.
 
 ---
 

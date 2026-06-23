@@ -28,6 +28,9 @@ services:
       - ASPNETCORE_ENVIRONMENT=Development
       - ConnectionStrings__DefaultConnection=Host=orders-db;Port=5432;Database=ShopDemoOrders;Username=ShopDemo;Password=ShopDemo123
       - InventoryApi__BaseUrl=http://host.docker.internal:8003
+      - EventHubs__Enabled=${EVENT_HUBS_ENABLED:-false}
+      - EventHubs__ConnectionString=${EVENT_HUBS_CONNECTION_STRING:-}
+      - EventHubs__EventHubName=${EVENT_HUBS_NAME:-shopdemo-events}
     depends_on:
       orders-db:
         condition: service_healthy

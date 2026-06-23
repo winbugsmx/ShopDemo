@@ -1,0 +1,16 @@
+{
+  "mcpServers": {
+    "shopdemo-local": {
+      "type": "http",
+      "url": "http://localhost:8005/mcp"
+    },
+    "shopdemo-azure": {
+      "type": "http",
+      "url": "https://REPLACE_CA_SHOPDEMO_MCP_FQDN/mcp"
+    },
+    "shopdemo-aws": {
+      "type": "http",
+      "url": "http://REPLACE_ALB_MCP_DNS/mcp"
+    }
+  }
+}

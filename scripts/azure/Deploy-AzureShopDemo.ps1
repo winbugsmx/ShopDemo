@@ -311,11 +311,16 @@ function New-ContainerAppIfMissing {
 
 function Get-ContainerAppFqdn {
     param([string] $AppName, [string] $ResourceGroup)
-    $fqdn = Invoke-AzCli "FQDN $AppName" @(
-        'containerapp', 'show', '--name', $AppName, '--resource-group', $ResourceGroup,
-        '--query', 'properties.configuration.ingress.fqdn', '-o', 'tsv'
-    )
-    return $fqdn.Trim()
+    $prevEap = $ErrorActionPreference
+    $ErrorActionPreference = 'Continue'
+    try {
+        $fqdn = (& az containerapp show --name $AppName --resource-group $ResourceGroup `
+            --query 'properties.configuration.ingress.fqdn' -o tsv 2>$null | Out-String).Trim()
+    }
+    finally {
+        $ErrorActionPreference = $prevEap
+    }
+    return $fqdn
 }
 
 # -----------------------------------------------------------------------------

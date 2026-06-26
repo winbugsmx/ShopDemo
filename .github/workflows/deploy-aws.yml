@@ -29,18 +29,18 @@ on:
       - '.github/scripts/sync-aws-ssm.sh'
       - '.github/scripts/deploy-ecs-service.sh'
 
-env:
-  AWS_REGION: ${{ secrets.AWS_REGION || 'us-east-2' }}
-  ECS_CLUSTER: ${{ secrets.ECS_CLUSTER || 'shopdemo-cluster' }}
-  LAB_PREFIX: ${{ secrets.LAB_PREFIX || 'shopdemo' }}
-
 permissions:
   id-token: write
   contents: read
 
 jobs:
   sync-config:
+    environment: aws
     runs-on: ubuntu-latest
+    env:
+      AWS_REGION: ${{ secrets.AWS_REGION || 'us-east-2' }}
+      ECS_CLUSTER: ${{ secrets.ECS_CLUSTER || 'shopdemo-cluster' }}
+      LAB_PREFIX: ${{ secrets.LAB_PREFIX || 'shopdemo' }}
     steps:
       - uses: actions/checkout@v4
 
@@ -72,7 +72,12 @@ jobs:
 
   build-and-deploy:
     needs: sync-config
+    environment: aws
     runs-on: ubuntu-latest
+    env:
+      AWS_REGION: ${{ secrets.AWS_REGION || 'us-east-2' }}
+      ECS_CLUSTER: ${{ secrets.ECS_CLUSTER || 'shopdemo-cluster' }}
+      LAB_PREFIX: ${{ secrets.LAB_PREFIX || 'shopdemo' }}
     strategy:
       matrix:
         include:

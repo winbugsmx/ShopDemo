@@ -265,7 +265,14 @@ function New-ContainerAppIfMissing {
 
     $secretArgs = @()
     foreach ($kv in $Secrets.GetEnumerator()) {
-        $secretArgs += "$($kv.Key)=$($kv.Value)"
+        $val = [string]$kv.Value
+        if ($val -match '[;=\s]') {
+            $escaped = $val -replace '"', '\"'
+            $secretArgs += "$($kv.Key)=`"$escaped`""
+        }
+        else {
+            $secretArgs += "$($kv.Key)=$val"
+        }
     }
 
     $envArgs = @()

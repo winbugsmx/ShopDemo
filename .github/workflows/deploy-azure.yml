@@ -26,14 +26,14 @@ on:
       - '.github/workflows/deploy-azure.yml'
       - '.github/scripts/configure-azure-containerapp.sh'
 
-env:
-  ACR_NAME: ${{ secrets.ACR_NAME }}
-  AZURE_RG: ${{ secrets.AZURE_RG }}
-  ACA_ENV: ${{ secrets.ACA_ENV }}
-
 jobs:
   build-and-deploy:
+    environment: azure
     runs-on: ubuntu-latest
+    env:
+      ACR_NAME: ${{ secrets.ACR_NAME }}
+      AZURE_RG: ${{ secrets.AZURE_RG }}
+      ACA_ENV: ${{ secrets.ACA_ENV }}
     strategy:
       matrix:
         include:

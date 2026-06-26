@@ -11,6 +11,8 @@
 
 **Versión:** 1.0 · **Alcance:** básico, configuración en plataforma (sin cambios .NET obligatorios).
 
+**Historias de usuario:** [HISTORIAS-USUARIO-RESILIENCIA.md](./HISTORIAS-USUARIO-RESILIENCIA.md)
+
 ---
 
 ## 1. Propósito

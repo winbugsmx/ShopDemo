@@ -12,6 +12,8 @@
 **Componente:** `AI/ShopDemo.Mcp.Api` · **Puerto:** 8005 (local) / 8080 (contenedor)  
 **Versión:** 1.0
 
+**Historias de usuario:** [HISTORIAS-USUARIO-DESPLIEGUE-MCP.md](./HISTORIAS-USUARIO-DESPLIEGUE-MCP.md)
+
 ---
 
 ## 1. Propósito

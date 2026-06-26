@@ -3,13 +3,13 @@
     Provisiona la infraestructura Azure de ShopDemo (ACA, AKS o ambos).
 
 .DESCRIPTION
-    Script del curso Lite Thinking — ShopDemo.
+    Script del curso Lite Thinking - ShopDemo.
     NO construye ni publica imágenes Docker (usar GitHub Actions o build manual).
 
     Modos:
-      ACA  — Event Hubs, Storage, ACR, PostgreSQL (ACI), Container Apps (5 APIs + MCP)
-      AKS  — Event Hubs, ACR, cluster AKS, Ingress NGINX, genera k8s/secrets.yaml
-      All  — ACA + AKS (laboratorio completo)
+      ACA  - Event Hubs, Storage, ACR, PostgreSQL (ACI), Container Apps (5 APIs + MCP)
+      AKS  - Event Hubs, ACR, cluster AKS, Ingress NGINX, genera k8s/secrets.yaml
+      All  - ACA + AKS (laboratorio completo)
 
     Documentación:
       - docs/despliegue/azure/IMPLEMENTACION-DESPLIEGUE-AZURE.md
@@ -99,7 +99,14 @@ function Invoke-AzCli {
         [switch] $AllowFailure
     )
     Write-Info $Label
-    $output = & az @AzArguments 2>&1
+    $prevEap = $ErrorActionPreference
+    $ErrorActionPreference = 'Continue'
+    try {
+        $output = & az @AzArguments 2>&1
+    }
+    finally {
+        $ErrorActionPreference = $prevEap
+    }
     if ($LASTEXITCODE -ne 0 -and -not $AllowFailure) {
         throw "Falló: az $($AzArguments -join ' ')`n$output"
     }
@@ -118,6 +125,31 @@ function Test-AzResourceExists {
     param([string[]] $AzArgs)
     $null = Invoke-AzCli 'Comprobar recurso' @($AzArgs + @('-o', 'none')) -AllowFailure
     return $LASTEXITCODE -eq 0
+}
+
+function Test-AcaEnvReady {
+    param([string]$Name, [string]$ResourceGroup)
+    if (-not (Test-AzResourceExists @('containerapp', 'env', 'show', '--name', $Name, '--resource-group', $ResourceGroup))) {
+        return $false
+    }
+    $prevEap = $ErrorActionPreference
+    $ErrorActionPreference = 'Continue'
+    try {
+        $json = & az containerapp env show --name $Name --resource-group $ResourceGroup -o json 2>$null | ConvertFrom-Json
+    }
+    finally {
+        $ErrorActionPreference = $prevEap
+    }
+    return ($null -ne $json -and $json.properties.provisioningState -eq 'Succeeded')
+}
+
+function Wait-AcaEnvReady {
+    param([string]$Name, [string]$ResourceGroup, [int]$MaxMinutes = 20)
+    for ($i = 0; $i -lt ($MaxMinutes * 6); $i++) {
+        if (Test-AcaEnvReady -Name $Name -ResourceGroup $ResourceGroup) { return $true }
+        Start-Sleep -Seconds 10
+    }
+    return $false
 }
 
 function Get-AcrCredentials {
@@ -186,7 +218,7 @@ function New-K8sSecretsFile {
     $outPath = Join-Path $RepoRoot 'k8s\secrets.yaml'
     $ehEscaped = $EventHubsConn -replace '"', '\"'
     $content = @"
-# GENERADO por Deploy-AzureShopDemo.ps1 — NO COMMITEAR
+# GENERADO por Deploy-AzureShopDemo.ps1 - NO COMMITEAR
 # Aplicar: kubectl apply -f k8s/secrets.yaml
 # Guía: docs/despliegue/aks/IMPLEMENTACION-DESPLIEGUE-AKS.md
 
@@ -227,7 +259,7 @@ function New-ContainerAppIfMissing {
     $image = "$($Acr.LoginServer)/${ImageName}:$tag"
 
     if (Test-AzResourceExists @('containerapp', 'show', '--name', $AppName, '--resource-group', $rg)) {
-        Write-Warn "Container App '$AppName' ya existe — omitiendo creación"
+        Write-Warn "Container App '$AppName' ya existe - omitiendo creación"
         return
     }
 
@@ -284,7 +316,7 @@ function Get-ContainerAppFqdn {
 # -----------------------------------------------------------------------------
 
 Write-Host ""
-Write-Host "ShopDemo — Provisionamiento Azure (modo: $Mode)" -ForegroundColor White
+Write-Host "ShopDemo - Provisionamiento Azure (modo: $Mode)" -ForegroundColor White
 Write-Host "Ref: docs/despliegue/azure/IMPLEMENTACION-DESPLIEGUE-AZURE.md" -ForegroundColor DarkGray
 
 $cfg = Import-EnvFile -Path $EnvFile
@@ -294,15 +326,18 @@ $deployAca = $Mode -in 'ACA', 'All'
 $deployAks = $Mode -in 'AKS', 'All'
 
 # -----------------------------------------------------------------------------
-# Paso 0 — Prerrequisitos
+# Paso 0 - Prerrequisitos
 # -----------------------------------------------------------------------------
-Write-Step "Paso 0 — Prerrequisitos (Azure CLI, login, extensiones)"
+Write-Step "Paso 0 - Prerrequisitos (Azure CLI, login, extensiones)"
 if (-not (Get-Command az -ErrorAction SilentlyContinue)) {
     throw "Instala Azure CLI: https://learn.microsoft.com/cli/azure/install-azure-cli"
 }
 
 Invoke-AzCli 'Registrar proveedor Microsoft.App' @(
     'provider', 'register', '--namespace', 'Microsoft.App', '--wait'
+) | Out-Null
+Invoke-AzCli 'Registrar proveedor Microsoft.ContainerInstance' @(
+    'provider', 'register', '--namespace', 'Microsoft.ContainerInstance', '--wait'
 ) | Out-Null
 Invoke-AzCli 'Extensión containerapp' @(
     'extension', 'add', '--name', 'containerapp', '--upgrade', '-y'
@@ -317,17 +352,17 @@ if ($cfg.AZURE_SUBSCRIPTION_ID -and $account.id -ne $cfg.AZURE_SUBSCRIPTION_ID) 
 Write-Ok "Sesión: $($account.user.name) / $($cfg.AZURE_SUBSCRIPTION_ID)"
 
 if ($deployAks -and -not (Get-Command kubectl -ErrorAction SilentlyContinue)) {
-    Write-Warn "kubectl no encontrado — necesario para aplicar manifiestos tras el script AKS"
+    Write-Warn "kubectl no encontrado - necesario para aplicar manifiestos tras el script AKS"
 }
 if ($deployAks -and -not (Get-Command helm -ErrorAction SilentlyContinue)) {
-    Write-Warn "helm no encontrado — instálalo para Ingress NGINX en AKS"
+    Write-Warn "helm no encontrado - instálalo para Ingress NGINX en AKS"
 }
 
 # -----------------------------------------------------------------------------
-# Paso 1 — Resource Group
+# Paso 1 - Resource Group
 # Ref: IMPLEMENTACION-DESPLIEGUE-AZURE.md §3
 # -----------------------------------------------------------------------------
-Write-Step "Paso 1 — Resource Group ($($cfg.RESOURCE_GROUP))"
+Write-Step "Paso 1 - Resource Group ($($cfg.RESOURCE_GROUP))"
 if (-not (Test-AzGroupExists $cfg.RESOURCE_GROUP)) {
     Invoke-AzCli 'Crear Resource Group' @(
         'group', 'create', '--name', $cfg.RESOURCE_GROUP, '--location', $cfg.AZURE_LOCATION
@@ -336,10 +371,10 @@ if (-not (Test-AzGroupExists $cfg.RESOURCE_GROUP)) {
 Write-Ok "Resource Group listo"
 
 # -----------------------------------------------------------------------------
-# Paso 2 — Event Hubs + Storage Account
+# Paso 2 - Event Hubs + Storage Account
 # Ref: INTEGRACION-AZURE-EVENT-HUBS.md §5
 # -----------------------------------------------------------------------------
-Write-Step "Paso 2 — Azure Event Hubs y Storage (checkpoints ACA)"
+Write-Step "Paso 2 - Azure Event Hubs y Storage (checkpoints ACA)"
 
 if (-not (Test-AzResourceExists @(
         'eventhubs', 'namespace', 'show',
@@ -367,7 +402,8 @@ if (-not (Test-AzResourceExists @(
         '--namespace-name', $cfg.EVENT_HUB_NAMESPACE,
         '--name', $cfg.EVENT_HUB_NAME,
         '--partition-count', '4',
-        '--message-retention', '1'
+        '--cleanup-policy', 'Delete',
+        '--retention-time', '24'
     ) | Out-Null
 }
 
@@ -418,10 +454,10 @@ if ($deployAca) {
 }
 
 # -----------------------------------------------------------------------------
-# Paso 3 — Azure Container Registry
+# Paso 3 - Azure Container Registry
 # Ref: IMPLEMENTACION-DESPLIEGUE-AZURE.md §4
 # -----------------------------------------------------------------------------
-Write-Step "Paso 3 — Azure Container Registry ($($cfg.ACR_NAME))"
+Write-Step "Paso 3 - Azure Container Registry ($($cfg.ACR_NAME))"
 if (-not (Test-AzResourceExists @('acr', 'show', '--name', $cfg.ACR_NAME))) {
     Invoke-AzCli 'Crear ACR' @(
         'acr', 'create',
@@ -438,8 +474,9 @@ Write-Ok "ACR: $($acr.LoginServer)"
 $repos = Invoke-AzCli 'Listar repositorios ACR' @(
     'acr', 'repository', 'list', '--name', $cfg.ACR_NAME, '-o', 'tsv'
 ) -AllowFailure
+$repoList = @($repos | Where-Object { -not [string]::IsNullOrWhiteSpace($_) })
 $requiredImages = @('shopdemo-catalog', 'shopdemo-orders', 'shopdemo-inventory', 'shopdemo-analytics', 'shopdemo-mcp')
-$missing = $requiredImages | Where-Object { $repos -notcontains $_ }
+$missing = @($requiredImages | Where-Object { $repoList -notcontains $_ })
 if ($missing.Count -gt 0 -and $deployAca) {
     Write-Warn "Imágenes no encontradas en ACR: $($missing -join ', ')"
     Write-Info "Publica con .github/workflows/deploy-azure.yml o build manual (doc §6)"
@@ -447,22 +484,27 @@ if ($missing.Count -gt 0 -and $deployAca) {
 }
 
 # -----------------------------------------------------------------------------
-# Paso 4 — PostgreSQL en ACI (solo ACA / All)
+# Paso 4 - PostgreSQL en ACI (solo ACA / All)
 # Ref: IMPLEMENTACION-DESPLIEGUE-AZURE.md §6
 # -----------------------------------------------------------------------------
 $pgFqdn = $null
 if ($deployAca) {
-    Write-Step "Paso 4 — PostgreSQL en Azure Container Instances"
+    Write-Step "Paso 4 - PostgreSQL en Azure Container Instances"
     if (-not (Test-AzResourceExists @(
             'container', 'show',
             '--resource-group', $cfg.RESOURCE_GROUP,
             '--name', $cfg.POSTGRES_ACI_NAME
         ))) {
+        $pgImage = "$($acr.LoginServer)/postgres:16-alpine"
         Invoke-AzCli 'Crear ACI PostgreSQL' @(
             'container', 'create',
             '--resource-group', $cfg.RESOURCE_GROUP,
             '--name', $cfg.POSTGRES_ACI_NAME,
-            '--image', 'postgres:16-alpine',
+            '--image', $pgImage,
+            '--registry-login-server', $acr.LoginServer,
+            '--registry-username', $acr.Username,
+            '--registry-password', $acr.Password,
+            '--os-type', 'Linux',
             '--cpu', '1', '--memory', '1.5',
             '--ports', '5432',
             '--ip-address', 'Public',
@@ -485,15 +527,15 @@ if ($deployAca) {
     Write-Ok "PostgreSQL ACI: $pgFqdn"
 }
 else {
-    Write-Step "Paso 4 — PostgreSQL omitido (modo AKS usa postgres in-cluster en k8s/postgres/)"
+    Write-Step "Paso 4 - PostgreSQL omitido (modo AKS usa postgres in-cluster en k8s/postgres/)"
 }
 
 # -----------------------------------------------------------------------------
-# Paso 5 — Container Apps Environment (solo ACA / All)
+# Paso 5 - Container Apps Environment (solo ACA / All)
 # Ref: IMPLEMENTACION-DESPLIEGUE-AZURE.md §5
 # -----------------------------------------------------------------------------
 if ($deployAca) {
-    Write-Step "Paso 5 — Log Analytics + Container Apps Environment"
+    Write-Step "Paso 5 - Log Analytics + Container Apps Environment"
 
     if (-not (Test-AzResourceExists @(
             'monitor', 'log-analytics', 'workspace', 'show',
@@ -520,30 +562,86 @@ if ($deployAca) {
         '--query', 'primarySharedKey', '-o', 'tsv'
     ).Trim()
 
-    if (-not (Test-AzResourceExists @(
-            'containerapp', 'env', 'show',
-            '--name', $cfg.ACA_ENV_NAME,
-            '--resource-group', $cfg.RESOURCE_GROUP
-        ))) {
-        Invoke-AzCli 'Crear Container Apps Environment' @(
-            'containerapp', 'env', 'create',
-            '--name', $cfg.ACA_ENV_NAME,
-            '--resource-group', $cfg.RESOURCE_GROUP,
-            '--location', $cfg.AZURE_LOCATION,
-            '--logs-workspace-id', $logId,
-            '--logs-workspace-key', $logKey
-        ) | Out-Null
+    if (Test-AcaEnvReady -Name $cfg.ACA_ENV_NAME -ResourceGroup $cfg.RESOURCE_GROUP) {
+        Write-Ok "Environment: $($cfg.ACA_ENV_NAME) (listo)"
+    }
+    elseif (Test-AzResourceExists @('containerapp', 'env', 'show', '--name', $cfg.ACA_ENV_NAME, '--resource-group', $cfg.RESOURCE_GROUP)) {
+        if (Wait-AcaEnvReady -Name $cfg.ACA_ENV_NAME -ResourceGroup $cfg.RESOURCE_GROUP -MaxMinutes 15) {
+            Write-Ok "Environment: $($cfg.ACA_ENV_NAME) (provisionando -> listo)"
+        }
+        else {
+            Write-Warn "ACA Environment no llego a Succeeded - eliminando para recrear"
+            Invoke-AzCli 'Eliminar ACA Environment' @(
+                'containerapp', 'env', 'delete', '--name', $cfg.ACA_ENV_NAME,
+                '--resource-group', $cfg.RESOURCE_GROUP, '--yes'
+            ) | Out-Null
+            Start-Sleep -Seconds 30
+            $acaLocations = @($cfg.AZURE_LOCATION, 'eastus2', 'centralus') | Select-Object -Unique
+            $created = $false
+            foreach ($loc in $acaLocations) {
+                Write-Info "Intentando ACA Environment en $loc"
+                Invoke-AzCli "Crear Container Apps Environment ($loc)" @(
+                    'containerapp', 'env', 'create',
+                    '--name', $cfg.ACA_ENV_NAME,
+                    '--resource-group', $cfg.RESOURCE_GROUP,
+                    '--location', $loc,
+                    '--logs-workspace-id', $logId,
+                    '--logs-workspace-key', $logKey
+                ) -AllowFailure | Out-Null
+                if (Wait-AcaEnvReady -Name $cfg.ACA_ENV_NAME -ResourceGroup $cfg.RESOURCE_GROUP) {
+                    $created = $true
+                    break
+                }
+                Write-Warn "Environment no listo en $loc"
+                Invoke-AzCli 'Eliminar ACA Environment' @(
+                    'containerapp', 'env', 'delete', '--name', $cfg.ACA_ENV_NAME,
+                    '--resource-group', $cfg.RESOURCE_GROUP, '--yes'
+                ) -AllowFailure | Out-Null
+                Start-Sleep -Seconds 15
+            }
+            if (-not $created) {
+                throw 'No se pudo provisionar Container Apps Environment. Prueba otra region (eastus2, centralus).'
+            }
+        }
+    }
+    else {
+        $acaLocations = @($cfg.AZURE_LOCATION, 'eastus2', 'centralus') | Select-Object -Unique
+        $created = $false
+        foreach ($loc in $acaLocations) {
+            Write-Info "Intentando ACA Environment en $loc"
+            Invoke-AzCli "Crear Container Apps Environment ($loc)" @(
+                'containerapp', 'env', 'create',
+                '--name', $cfg.ACA_ENV_NAME,
+                '--resource-group', $cfg.RESOURCE_GROUP,
+                '--location', $loc,
+                '--logs-workspace-id', $logId,
+                '--logs-workspace-key', $logKey
+            ) -AllowFailure | Out-Null
+            if (Wait-AcaEnvReady -Name $cfg.ACA_ENV_NAME -ResourceGroup $cfg.RESOURCE_GROUP) {
+                $created = $true
+                break
+            }
+            Write-Warn "Environment no listo en $loc"
+            Invoke-AzCli 'Eliminar ACA Environment' @(
+                'containerapp', 'env', 'delete', '--name', $cfg.ACA_ENV_NAME,
+                '--resource-group', $cfg.RESOURCE_GROUP, '--yes'
+            ) -AllowFailure | Out-Null
+            Start-Sleep -Seconds 15
+        }
+        if (-not $created) {
+            throw 'No se pudo provisionar Container Apps Environment. Prueba otra region (eastus2, centralus).'
+        }
     }
     Write-Ok "Environment: $($cfg.ACA_ENV_NAME)"
 }
 
 # -----------------------------------------------------------------------------
-# Paso 6 — Container Apps (5 servicios + MCP)
+# Paso 6 - Container Apps (5 servicios + MCP)
 # Ref: IMPLEMENTACION-DESPLIEGUE-AZURE.md §8-11, IMPLEMENTACION-DESPLIEGUE-MCP-AZURE.md
 # Checkpoints ACA: Storage Account real (no Azurite)
 # -----------------------------------------------------------------------------
 if ($deployAca) {
-    Write-Step "Paso 6 — Container Apps (Catalog, Inventory, Orders, Analytics, MCP)"
+    Write-Step "Paso 6 - Container Apps (Catalog, Inventory, Orders, Analytics, MCP)"
 
     $pgCatalog = "Host=$pgFqdn;Port=5432;Database=ShopDemoCatalog;Username=$($cfg.POSTGRES_USER);Password=$($cfg.POSTGRES_PASSWORD);Ssl Mode=Require"
     $pgOrders = "Host=$pgFqdn;Port=5432;Database=ShopDemoOrders;Username=$($cfg.POSTGRES_USER);Password=$($cfg.POSTGRES_PASSWORD);Ssl Mode=Require"
@@ -559,13 +657,13 @@ if ($deployAca) {
         'EventHubs__EventHubName'          = $cfg.EVENT_HUB_NAME
     }
 
-    # Catalog — ingress externo
+    # Catalog - ingress externo
     New-ContainerAppIfMissing -Config $cfg -Acr $acr -AppName 'ca-shopdemo-catalog' `
         -ImageName 'shopdemo-catalog' -Ingress 'external' -MinReplicas 0 -MaxReplicas 2 `
         -Secrets (Merge-Hash $commonEhSecrets, @{ 'pg-catalog-conn' = $pgCatalog }) `
         -EnvVars (Merge-Hash $commonEhEnv, @{ 'ConnectionStrings__DefaultConnection' = 'secretref:pg-catalog-conn' })
 
-    # Inventory — ingress interno + consumer Event Hubs + Storage checkpoints
+    # Inventory - ingress interno + consumer Event Hubs + Storage checkpoints
     New-ContainerAppIfMissing -Config $cfg -Acr $acr -AppName 'ca-shopdemo-inventory' `
         -ImageName 'shopdemo-inventory' -Ingress 'internal' -MinReplicas 1 -MaxReplicas 2 `
         -Secrets (Merge-Hash $commonEhSecrets, @{
@@ -581,7 +679,7 @@ if ($deployAca) {
 
     $inventoryFqdn = Get-ContainerAppFqdn -AppName 'ca-shopdemo-inventory' -ResourceGroup $cfg.RESOURCE_GROUP
 
-    # Orders — ingress externo + URL interna Inventory
+    # Orders - ingress externo + URL interna Inventory
     New-ContainerAppIfMissing -Config $cfg -Acr $acr -AppName 'ca-shopdemo-orders' `
         -ImageName 'shopdemo-orders' -Ingress 'external' -MinReplicas 0 -MaxReplicas 2 `
         -Secrets (Merge-Hash $commonEhSecrets, @{ 'pg-orders-conn' = $pgOrders }) `
@@ -590,7 +688,7 @@ if ($deployAca) {
             'InventoryApi__BaseUrl'                = "https://$inventoryFqdn"
         })
 
-    # Analytics — ingress externo + Storage checkpoints
+    # Analytics - ingress externo + Storage checkpoints
     New-ContainerAppIfMissing -Config $cfg -Acr $acr -AppName 'ca-shopdemo-analytics' `
         -ImageName 'shopdemo-analytics' -Ingress 'external' -MinReplicas 1 -MaxReplicas 1 `
         -Secrets (Merge-Hash $commonEhSecrets, @{ 'storage-checkpoint' = $storageConn }) `
@@ -603,7 +701,7 @@ if ($deployAca) {
     $catalogFqdn = Get-ContainerAppFqdn -AppName 'ca-shopdemo-catalog' -ResourceGroup $cfg.RESOURCE_GROUP
     $analyticsFqdn = Get-ContainerAppFqdn -AppName 'ca-shopdemo-analytics' -ResourceGroup $cfg.RESOURCE_GROUP
 
-    # MCP Gateway — ref: IMPLEMENTACION-DESPLIEGUE-MCP-AZURE.md §A3
+    # MCP Gateway - ref: IMPLEMENTACION-DESPLIEGUE-MCP-AZURE.md §A3
     New-ContainerAppIfMissing -Config $cfg -Acr $acr -AppName 'ca-shopdemo-mcp' `
         -ImageName 'shopdemo-mcp' -Ingress 'external' -MinReplicas 1 -MaxReplicas 2 `
         -Secrets @{} `
@@ -618,12 +716,12 @@ if ($deployAca) {
 }
 
 # -----------------------------------------------------------------------------
-# Paso 7 — AKS (cluster + Ingress + secrets.yaml)
+# Paso 7 - AKS (cluster + Ingress + secrets.yaml)
 # Ref: IMPLEMENTACION-DESPLIEGUE-AKS.md
-# Checkpoints AKS: Azurite in-cluster (k8s/azurite/) — distinto a ACA
+# Checkpoints AKS: Azurite in-cluster (k8s/azurite/) - distinto a ACA
 # -----------------------------------------------------------------------------
 if ($deployAks) {
-    Write-Step "Paso 7 — Azure Kubernetes Service ($($cfg.AKS_CLUSTER_NAME))"
+    Write-Step "Paso 7 - Azure Kubernetes Service ($($cfg.AKS_CLUSTER_NAME))"
 
     if (-not (Test-AzResourceExists @(
             'aks', 'show', '--resource-group', $cfg.RESOURCE_GROUP, '--name', $cfg.AKS_CLUSTER_NAME
@@ -658,7 +756,7 @@ if ($deployAks) {
                 Write-Ok "Ingress NGINX instalado (Helm)"
             }
             else {
-                Write-Warn "No se pudo instalar Ingress NGINX — ejecuta Helm manualmente (doc AKS §6)"
+                Write-Warn "No se pudo instalar Ingress NGINX - ejecuta Helm manualmente (doc AKS §6)"
             }
         }
         else {

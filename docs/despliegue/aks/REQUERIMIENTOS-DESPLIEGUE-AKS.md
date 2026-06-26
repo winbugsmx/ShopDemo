@@ -12,6 +12,8 @@
 **Plataforma:** Azure Kubernetes Service (AKS)  
 **Versión:** 1.0
 
+**Historias de usuario:** [HISTORIAS-USUARIO-DESPLIEGUE-AKS.md](./HISTORIAS-USUARIO-DESPLIEGUE-AKS.md)
+
 ---
 
 ## 1. Propósito

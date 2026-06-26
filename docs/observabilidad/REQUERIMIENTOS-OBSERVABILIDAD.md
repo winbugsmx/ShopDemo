@@ -11,6 +11,8 @@
 
 **Versión:** 1.0 · **Alcance:** básico, práctico, sin cambios obligatorios de código en esta etapa.
 
+**Historias de usuario:** [HISTORIAS-USUARIO-OBSERVABILIDAD.md](./HISTORIAS-USUARIO-OBSERVABILIDAD.md)
+
 ---
 
 ## 1. Propósito

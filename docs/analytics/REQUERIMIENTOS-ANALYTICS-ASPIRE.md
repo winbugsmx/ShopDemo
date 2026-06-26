@@ -13,6 +13,8 @@
 **Versión:** 1.0  
 **Estado:** Implementado
 
+**Historias de usuario:** [HISTORIAS-USUARIO-ANALYTICS-ASPIRE.md](./HISTORIAS-USUARIO-ANALYTICS-ASPIRE.md)
+
 ---
 
 ## 1. Propósito

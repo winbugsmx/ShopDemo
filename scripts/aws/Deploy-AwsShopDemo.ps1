@@ -3,15 +3,15 @@
     Provisiona la infraestructura AWS de ShopDemo (ECS Fargate, EKS o ambos).
 
 .DESCRIPTION
-    Script del curso Lite Thinking — ShopDemo.
+    Script del curso Lite Thinking - ShopDemo.
     NO construye ni publica imágenes Docker (usar GitHub Actions o build manual).
 
     Modos:
-      ECS  — VPC, ECR, SSM, ECS cluster, PostgreSQL/Azurite Fargate, 5 APIs + MCP (ALB/Cloud Map)
-      EKS  — ECR, cluster EKS (eksctl), Ingress Helm, genera k8s/secrets.yaml
-      All  — ECS + EKS
+      ECS  - VPC, ECR, SSM, ECS cluster, PostgreSQL/Azurite Fargate, 5 APIs + MCP (ALB/Cloud Map)
+      EKS  - ECR, cluster EKS (eksctl), Ingress Helm, genera k8s/secrets.yaml
+      All  - ECS + EKS
 
-    Event Hubs: connection string de Azure (cross-cloud) — ver INTEGRACION-AZURE-EVENT-HUBS.md
+    Event Hubs: connection string de Azure (cross-cloud) - ver INTEGRACION-AZURE-EVENT-HUBS.md
 
     Documentación:
       - docs/despliegue/aws/IMPLEMENTACION-DESPLIEGUE-AWS.md
@@ -66,7 +66,13 @@ function Import-EnvFile {
         if ($idx -lt 1) { return }
         $key = $line.Substring(0, $idx).Trim()
         $val = $line.Substring($idx + 1).Trim()
-        if ($val -match '^<<<.*>>>$') { throw "Completa '$key' en $Path" }
+        if ($val -match '^<<<.*>>>$') {
+            if ($key -eq 'EVENT_HUBS_CONNECTION_STRING') {
+                Write-Warn 'EVENT_HUBS_CONNECTION_STRING pendiente - infra AWS continua; actualiza SSM /shopdemo/eh-connection cuando tengas Azure Event Hubs'
+                $config[$key] = 'PENDING_AZURE_EVENT_HUBS'
+            }
+            else { throw "Completa '$key' en $Path" }
+        }
         $config[$key] = $val
     }
     return $config
@@ -79,7 +85,14 @@ function Invoke-AwsCli {
         [switch]$AllowFailure
     )
     Write-Info $Label
-    $output = & aws @script:AwsGlobalArgs @AwsArguments 2>&1
+    $prevEap = $ErrorActionPreference
+    $ErrorActionPreference = 'Continue'
+    try {
+        $output = & aws @script:AwsGlobalArgs @AwsArguments 2>&1
+    }
+    finally {
+        $ErrorActionPreference = $prevEap
+    }
     if ($LASTEXITCODE -ne 0 -and -not $AllowFailure) {
         throw "Falló: aws $($AwsArguments -join ' ')`n$output"
     }
@@ -90,6 +103,26 @@ function Save-DeployState {
     param([hashtable]$State)
     ($State | ConvertTo-Json -Depth 6) | Set-Content -Path $StatePath -Encoding UTF8
     Write-Ok "Estado guardado en $StatePath (para Remove-AwsShopDemo.ps1)"
+}
+
+function Write-JsonFileNoBom {
+    param([string]$Path, [string]$Json)
+    $utf8 = New-Object System.Text.UTF8Encoding $false
+    [System.IO.File]::WriteAllText($Path, $Json, $utf8)
+}
+
+function ConvertTo-AwsFileUri {
+    param([string]$Path)
+    $full = [System.IO.Path]::GetFullPath($Path) -replace '\\', '/'
+    return "file://$full"
+}
+
+function Test-EcsServiceExists {
+    param([string]$Cluster, [string]$ServiceName)
+    $json = Invoke-AwsCli "Comprobar servicio $ServiceName" @(
+        'ecs', 'describe-services', '--cluster', $Cluster, '--services', $ServiceName, '--output', 'json'
+    ) -AllowFailure | ConvertFrom-Json
+    return ($json.services.Count -gt 0 -and $json.services[0].status -ne 'INACTIVE')
 }
 
 function Get-SsmParameterArn {
@@ -107,7 +140,7 @@ function New-K8sSecretsFile {
     $outPath = Join-Path $RepoRoot 'k8s\secrets.yaml'
     $ehEscaped = $EventHubsConn -replace '"', '\"'
     @"
-# GENERADO por Deploy-AwsShopDemo.ps1 — NO COMMITEAR
+# GENERADO por Deploy-AwsShopDemo.ps1 - NO COMMITEAR
 # Aplicar: kubectl apply -f k8s/secrets.yaml
 # Guía: docs/despliegue/eks/IMPLEMENTACION-DESPLIEGUE-EKS.md
 
@@ -145,10 +178,10 @@ function Ensure-EcsExecutionRole {
                 })
         } | ConvertTo-Json -Depth 5 -Compress
         $trustFile = Join-Path $env:TEMP 'shopdemo-ecs-trust.json'
-        Set-Content -Path $trustFile -Value $trust -Encoding UTF8
+        Write-JsonFileNoBom -Path $trustFile -Json $trust
         Invoke-AwsCli 'Crear rol ECS execution' @(
             'iam', 'create-role', '--role-name', $roleName,
-            '--assume-role-policy-document', "file://$trustFile"
+            '--assume-role-policy-document', (ConvertTo-AwsFileUri -Path $trustFile)
         ) | Out-Null
         Invoke-AwsCli 'Adjuntar política ECS execution' @(
             'iam', 'attach-role-policy', '--role-name', $roleName,
@@ -163,11 +196,11 @@ function Ensure-EcsExecutionRole {
                 })
         } | ConvertTo-Json -Depth 5 -Compress
         $polFile = Join-Path $env:TEMP 'shopdemo-ssm-policy.json'
-        Set-Content -Path $polFile -Value $ssmPolicy -Encoding UTF8
+        Write-JsonFileNoBom -Path $polFile -Json $ssmPolicy
         Invoke-AwsCli 'Política SSM para tasks' @(
             'iam', 'put-role-policy', '--role-name', $roleName,
             '--policy-name', 'ShopDemoSsmRead',
-            '--policy-document', "file://$polFile"
+            '--policy-document', (ConvertTo-AwsFileUri -Path $polFile)
         ) | Out-Null
         Start-Sleep -Seconds 10
     }
@@ -222,9 +255,9 @@ function Register-EcsTaskDefinition {
     } | ConvertTo-Json -Depth 10 -Compress
 
     $taskFile = Join-Path $env:TEMP "shopdemo-task-$Family.json"
-    Set-Content -Path $taskFile -Value $taskDef -Encoding UTF8
+    Write-JsonFileNoBom -Path $taskFile -Json $taskDef
     Invoke-AwsCli "Registrar task definition $Family" @(
-        'ecs', 'register-task-definition', '--cli-input-json', "file://$taskFile"
+        'ecs', 'register-task-definition', '--cli-input-json', (ConvertTo-AwsFileUri -Path $taskFile)
     ) | Out-Null
 }
 
@@ -287,7 +320,16 @@ function Wait-CloudMapOperation {
             'servicediscovery', 'get-operation', '--operation-id', $OperationId, '--output', 'json'
         ) | ConvertFrom-Json
         $status = $op.Operation.Status
-        if ($status -eq 'SUCCESS') { return $op.Operation.TargetId }
+        if ($status -eq 'SUCCESS') {
+            $targets = $op.Operation.Targets
+            if ($null -ne $targets -and $targets.PSObject.Properties['NAMESPACE']) {
+                return $targets.NAMESPACE
+            }
+            if ($op.Operation.PSObject.Properties['TargetId']) {
+                return $op.Operation.TargetId
+            }
+            throw "Cloud Map SUCCESS sin namespace id en operation $OperationId"
+        }
         if ($status -eq 'FAIL') { throw "Cloud Map operation failed: $OperationId" }
         Start-Sleep -Seconds 5
     }
@@ -355,10 +397,7 @@ function New-EcsAlbService {
         ).Trim()
     }
 
-    $null = Invoke-AwsCli "Comprobar servicio $ServiceName" @(
-        'ecs', 'describe-services', '--cluster', $Cluster, '--services', $ServiceName
-    ) -AllowFailure
-    $exists = ($LASTEXITCODE -eq 0)
+    $exists = Test-EcsServiceExists -Cluster $Cluster -ServiceName $ServiceName
     if (-not $exists) {
         $net = "awsvpcConfiguration={subnets=[$($Subnets -join ',')],securityGroups=[$SgApps],assignPublicIp=ENABLED}"
         $lb = "targetGroupArn=$tgArn,containerName=$ContainerName,containerPort=8080"
@@ -385,7 +424,7 @@ function New-PostgresDatabases {
     param([string]$PostgresHost, [string]$User, [string]$Password)
     $psql = Get-Command psql -ErrorAction SilentlyContinue
     if (-not $psql) {
-        Write-Warn "psql no disponible — crea las BD manualmente contra $PostgresHost"
+        Write-Warn "psql no disponible - crea las BD manualmente contra $PostgresHost"
         return
     }
     $env:PGPASSWORD = $Password
@@ -399,7 +438,7 @@ function New-PostgresDatabases {
 # -----------------------------------------------------------------------------
 # Inicio
 # -----------------------------------------------------------------------------
-Write-Host "`nShopDemo — Provisionamiento AWS (modo: $Mode)" -ForegroundColor White
+Write-Host "`nShopDemo - Provisionamiento AWS (modo: $Mode)" -ForegroundColor White
 Write-Host "Ref: docs/despliegue/aws/IMPLEMENTACION-DESPLIEGUE-AWS.md" -ForegroundColor DarkGray
 
 $cfg = Import-EnvFile -Path $EnvFile
@@ -415,10 +454,10 @@ if ($cfg.AWS_PROFILE) {
 $script:AwsGlobalArgs += @('--region', $region)
 
 # -----------------------------------------------------------------------------
-# Paso 0 — Prerrequisitos
+# Paso 0 - Prerrequisitos
 # Ref: IMPLEMENTACION-DESPLIEGUE-AWS.md §3
 # -----------------------------------------------------------------------------
-Write-Step 'Paso 0 — Prerrequisitos (AWS CLI, credenciales)'
+Write-Step 'Paso 0 - Prerrequisitos (AWS CLI, credenciales)'
 if (-not (Get-Command aws -ErrorAction SilentlyContinue)) {
     throw 'Instala AWS CLI v2: https://docs.aws.amazon.com/cli/latest/userguide/getting-started-install.html'
 }
@@ -437,10 +476,10 @@ $state = @{
 }
 
 # -----------------------------------------------------------------------------
-# Paso 1 — Repositorios ECR (ECS y EKS)
+# Paso 1 - Repositorios ECR (ECS y EKS)
 # Ref: IMPLEMENTACION-DESPLIEGUE-AWS.md §6
 # -----------------------------------------------------------------------------
-Write-Step 'Paso 1 — Repositorios Amazon ECR'
+Write-Step 'Paso 1 - Repositorios Amazon ECR'
 $repos = @(
     'shopdemo-catalog', 'shopdemo-orders', 'shopdemo-inventory',
     'shopdemo-analytics', 'shopdemo-mcp'
@@ -466,11 +505,11 @@ if ($missing.Count -gt 0) {
 Write-Ok "ECR registry: $ecrUri"
 
 # -----------------------------------------------------------------------------
-# Paso 2 — ECS: VPC, Security Groups, Cluster
+# Paso 2 - ECS: VPC, Security Groups, Cluster
 # Ref: IMPLEMENTACION-DESPLIEGUE-AWS.md §4-9
 # -----------------------------------------------------------------------------
 if ($deployEcs) {
-    Write-Step 'Paso 2 — VPC y subnets públicas (lab sin NAT)'
+    Write-Step 'Paso 2 - VPC y subnets públicas (lab sin NAT)'
     $subnetA = $null
     $subnetB = $null
     $vpcId = (Invoke-AwsCli 'Buscar VPC existente' @(
@@ -542,7 +581,7 @@ if ($deployEcs) {
         )).Trim()
     }
 
-    Write-Step 'Paso 3 — Security Groups'
+    Write-Step 'Paso 3 - Security Groups'
     function Get-OrCreateSg {
         param([string]$Name, [string]$Desc)
         $sg = Invoke-AwsCli "SG $Name" @(
@@ -582,7 +621,7 @@ if ($deployEcs) {
         '--protocol', 'tcp', '--port', '10000', '--source-group', $sgApps
     ) -AllowFailure
 
-    Write-Step 'Paso 4 — ECS Cluster y rol de ejecución'
+    Write-Step 'Paso 4 - ECS Cluster y rol de ejecución'
     $cluster = $cfg.ECS_CLUSTER_NAME
     $null = Invoke-AwsCli 'Crear cluster ECS' @(
         'ecs', 'create-cluster', '--cluster-name', $cluster,
@@ -600,15 +639,15 @@ if ($deployEcs) {
     $state.ecsCluster = $cluster
     $state.executionRoleArn = $execRoleArn
 
-    # SSM Parameter Store — placeholders
-    Write-Step 'Paso 5 — SSM Parameter Store (secretos)'
+    # SSM Parameter Store - placeholders
+    Write-Step 'Paso 5 - SSM Parameter Store (secretos)'
     Invoke-AwsCli 'SSM eh-connection' @(
         'ssm', 'put-parameter', '--name', "/$prefix/eh-connection",
         '--value', $ehConn, '--type', 'SecureString', '--overwrite'
     ) | Out-Null
 
     # PostgreSQL + Azurite en ECS
-    Write-Step 'Paso 6 — PostgreSQL y Azurite en Fargate'
+    Write-Step 'Paso 6 - PostgreSQL y Azurite en Fargate'
     $tag = $cfg.IMAGE_TAG
     Register-EcsTaskDefinition -Family "$prefix-postgres" -ExecutionRoleArn $execRoleArn `
         -ImageUri 'postgres:16-alpine' -ContainerName 'postgres' -ContainerPort 5432 `
@@ -652,7 +691,7 @@ if ($deployEcs) {
     New-PostgresDatabases -PostgresHost $pgIp -User $cfg.POSTGRES_USER -Password $cfg.POSTGRES_PASSWORD
 
     # Cloud Map para Inventory
-    Write-Step 'Paso 7 — AWS Cloud Map (DNS privado Inventory)'
+    Write-Step 'Paso 7 - AWS Cloud Map (DNS privado Inventory)'
     $nsId = $null
     $null = Invoke-AwsCli 'Namespace existente' @(
         'servicediscovery', 'list-namespaces', '--filters', "Name=NAME,Values=$($cfg.CLOUDMAP_NAMESPACE)", '--output', 'json'
@@ -699,7 +738,7 @@ if ($deployEcs) {
         @{ name = 'EventHubs__EventHubName'; value = $cfg.EVENT_HUB_NAME }
     )
 
-    Write-Step 'Paso 8 — Task definitions APIs (Catalog, Inventory, Orders, Analytics, MCP)'
+    Write-Step 'Paso 8 - Task definitions APIs (Catalog, Inventory, Orders, Analytics, MCP)'
     $catalogSecrets = @(
         (SsmRef 'pg-catalog' 'ConnectionStrings__DefaultConnection')
         (SsmRef 'eh-connection' 'EventHubs__ConnectionString')
@@ -733,17 +772,14 @@ if ($deployEcs) {
         -ImageUri "$ecrUri/shopdemo-analytics:$tag" -ContainerName 'analytics-api' `
         -LogGroup "/ecs/$prefix-analytics" -Region $region -Environment $analyticsEnv -Secrets $analyticsSecrets
 
-    Write-Step 'Paso 9 — ECS Services + ALB (APIs públicas) y Cloud Map (Inventory)'
+    Write-Step 'Paso 9 - ECS Services + ALB (APIs públicas) y Cloud Map (Inventory)'
     $albCatalog = New-EcsAlbService -Cluster $cluster -ServiceName "$prefix-catalog" `
         -TaskFamily "$prefix-catalog" -ContainerName 'catalog-api' `
         -AlbName "$prefix-catalog-alb" -TargetGroupName "$prefix-catalog-tg" `
         -Subnets @($subnetA, $subnetB) -VpcId $vpcId -SgAlb $sgAlb -SgApps $sgApps
 
     # Inventory con service discovery (sin ALB)
-    $null = Invoke-AwsCli 'Servicio inventory' @(
-        'ecs', 'describe-services', '--cluster', $cluster, '--services', "$prefix-inventory"
-    ) -AllowFailure
-    if ($LASTEXITCODE -ne 0) {
+    if (-not (Test-EcsServiceExists -Cluster $cluster -ServiceName "$prefix-inventory")) {
         $net = "awsvpcConfiguration={subnets=[$subnetA],securityGroups=[$sgApps],assignPublicIp=ENABLED}"
         Invoke-AwsCli 'Crear inventory + Cloud Map' @(
             'ecs', 'create-service',
@@ -777,7 +813,7 @@ if ($deployEcs) {
         -AlbName "$prefix-analytics-alb" -TargetGroupName "$prefix-analytics-tg" `
         -Subnets @($subnetA, $subnetB) -VpcId $vpcId -SgAlb $sgAlb -SgApps $sgApps
 
-    # MCP — ref: IMPLEMENTACION-DESPLIEGUE-MCP-AWS.md
+    # MCP - ref: IMPLEMENTACION-DESPLIEGUE-MCP-AWS.md
     $mcpEnv = @(
         @{ name = 'ASPNETCORE_ENVIRONMENT'; value = 'Production' }
         @{ name = 'ShopDemo__CatalogApiBaseUrl'; value = "http://$($albCatalog.Dns)" }
@@ -804,13 +840,13 @@ if ($deployEcs) {
 }
 
 # -----------------------------------------------------------------------------
-# Paso EKS — cluster + secrets.yaml
+# Paso EKS - cluster + secrets.yaml
 # Ref: IMPLEMENTACION-DESPLIEGUE-EKS.md
 # -----------------------------------------------------------------------------
 if ($deployEks) {
-    Write-Step "Paso EKS — Cluster $($cfg.EKS_CLUSTER_NAME)"
+    Write-Step "Paso EKS - Cluster $($cfg.EKS_CLUSTER_NAME)"
     if (-not (Get-Command eksctl -ErrorAction SilentlyContinue)) {
-        Write-Warn 'eksctl no instalado — https://eksctl.io/installation/'
+        Write-Warn 'eksctl no instalado - https://eksctl.io/installation/'
         Write-Info "Alternativa CLI: aws eks create-cluster (ver doc EKS §3)"
     }
     else {
@@ -869,7 +905,7 @@ if ($deployEcs -and $state.albDns) {
     Write-Host "  Inventory : $($state.inventoryUrl) (Cloud Map, interno)" -ForegroundColor White
 }
 Write-Host ''
-Write-Host 'Event Hubs: Azure (cross-cloud) — connection string en SSM / k8s/secrets.yaml' -ForegroundColor DarkGray
+Write-Host 'Event Hubs: Azure (cross-cloud) - connection string en SSM / k8s/secrets.yaml' -ForegroundColor DarkGray
 Write-Host 'Validación: docs/GUIA-ENDPOINTS.md' -ForegroundColor DarkGray
 Write-Host 'Limpieza:   .\Remove-AwsShopDemo.ps1' -ForegroundColor DarkGray
 Write-Host ''

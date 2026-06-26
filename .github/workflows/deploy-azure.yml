@@ -1,5 +1,14 @@
 # Build y despliegue a Azure Container Apps (ShopDemo)
-# Requiere secrets: AZURE_CREDENTIALS, ACR_NAME, AZURE_RG, ACA_ENV
+#
+# Secrets obligatorios (infra CI/CD):
+#   AZURE_CREDENTIALS, ACR_NAME, AZURE_RG, ACA_ENV
+#
+# Secrets de configuración (runtime → env vars en Container Apps):
+#   EVENT_HUBS_CONNECTION_STRING, EVENT_HUB_NAME
+#   PG_CATALOG_CONN, PG_ORDERS_CONN, PG_INVENTORY_CONN
+#   STORAGE_CHECKPOINT_CONN (Inventory + Analytics)
+#   INVENTORY_API_BASE_URL (Orders → Inventory interno)
+#   MCP_CATALOG_URL, MCP_INVENTORY_URL, MCP_ANALYTICS_URL
 
 name: Deploy Azure
 
@@ -15,6 +24,7 @@ on:
       - 'AI/ShopDemo.Mcp.Api/**'
       - 'ShopDemo.Shared/**'
       - '.github/workflows/deploy-azure.yml'
+      - '.github/scripts/configure-azure-containerapp.sh'
 
 env:
   ACR_NAME: ${{ secrets.ACR_NAME }}
@@ -62,13 +72,26 @@ jobs:
       - name: Build and push image
         run: |
           ACR_LOGIN=$(az acr show --name ${{ env.ACR_NAME }} --query loginServer -o tsv)
-          docker build -f ${{ matrix.dockerfile }} -t $ACR_LOGIN/${{ matrix.image }}:${{ github.sha }} .
-          docker push $ACR_LOGIN/${{ matrix.image }}:${{ github.sha }}
+          docker build -f ${{ matrix.dockerfile }} -t "$ACR_LOGIN/${{ matrix.image }}:${{ github.sha }}" .
+          docker push "$ACR_LOGIN/${{ matrix.image }}:${{ github.sha }}"
+          echo "ACR_LOGIN=$ACR_LOGIN" >> "$GITHUB_ENV"
 
-      - name: Update Container App
+      - name: Configure secrets and update Container App
+        env:
+          EVENT_HUBS_CONNECTION_STRING: ${{ secrets.EVENT_HUBS_CONNECTION_STRING }}
+          EVENT_HUB_NAME: ${{ secrets.EVENT_HUB_NAME }}
+          PG_CATALOG_CONN: ${{ secrets.PG_CATALOG_CONN }}
+          PG_ORDERS_CONN: ${{ secrets.PG_ORDERS_CONN }}
+          PG_INVENTORY_CONN: ${{ secrets.PG_INVENTORY_CONN }}
+          STORAGE_CHECKPOINT_CONN: ${{ secrets.STORAGE_CHECKPOINT_CONN }}
+          INVENTORY_API_BASE_URL: ${{ secrets.INVENTORY_API_BASE_URL }}
+          MCP_CATALOG_URL: ${{ secrets.MCP_CATALOG_URL }}
+          MCP_INVENTORY_URL: ${{ secrets.MCP_INVENTORY_URL }}
+          MCP_ANALYTICS_URL: ${{ secrets.MCP_ANALYTICS_URL }}
         run: |
-          ACR_LOGIN=$(az acr show --name ${{ env.ACR_NAME }} --query loginServer -o tsv)
-          az containerapp update \
-            --name ${{ matrix.containerapp }} \
-            --resource-group ${{ env.AZURE_RG }} \
-            --image $ACR_LOGIN/${{ matrix.image }}:${{ github.sha }}
+          chmod +x .github/scripts/configure-azure-containerapp.sh
+          bash .github/scripts/configure-azure-containerapp.sh \
+            "${{ matrix.service }}" \
+            "${{ matrix.containerapp }}" \
+            "${{ env.AZURE_RG }}" \
+            "${ACR_LOGIN}/${{ matrix.image }}:${{ github.sha }}"

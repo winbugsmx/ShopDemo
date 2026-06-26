@@ -12,6 +12,8 @@
 **Plataforma:** Amazon EKS  
 **Versión:** 1.0
 
+**Historias de usuario:** [HISTORIAS-USUARIO-DESPLIEGUE-EKS.md](./HISTORIAS-USUARIO-DESPLIEGUE-EKS.md)
+
 ---
 
 ## 1. Propósito

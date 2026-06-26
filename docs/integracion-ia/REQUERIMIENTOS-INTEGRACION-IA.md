@@ -11,6 +11,8 @@
 
 **Versión:** 1.0
 
+**Historias de usuario:** [HISTORIAS-USUARIO-INTEGRACION-IA.md](./HISTORIAS-USUARIO-INTEGRACION-IA.md)
+
 ---
 
 ## 1. Propósito

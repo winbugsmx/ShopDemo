@@ -97,6 +97,10 @@ Detalle paso a paso: [GUIA-RELEASE-PORTAL-AWS §0](./GUIA-RELEASE-PORTAL-AWS.md#
 | Health check falla | Ruta incorrecta | `/health` o `/swagger` |
 | Pull ECR denied | Task execution role | `AmazonECSTaskExecutionRolePolicy` |
 | `PoliciesPerUser: 10` | Demasiadas políticas IAM | Usar `ShopDemoLabECS` (1 policy) |
+| ¿IP pública o privada en SSM Postgres? | Confusión de red VPC | Usar **IP privada** de la task — [Portal §8](./GUIA-RELEASE-PORTAL-AWS.md#8-postgresql-en-fargate) |
+| IP Postgres cambió | Task reiniciada | Actualizar `/shopdemo/pg-*` en SSM |
+| Atorado en push ECR | Push es desde PC, no Portal | [Portal §12](./GUIA-RELEASE-PORTAL-AWS.md#12-publicar-imágenes-en-ecr) |
+| Event Hubs pendiente | Azure no configurado aún | Avanzar AWS; completar `/shopdemo/eh-connection` después |
 
 ---
 

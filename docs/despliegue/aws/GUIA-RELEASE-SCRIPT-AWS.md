@@ -94,17 +94,33 @@ Estado guardado en `scripts/aws/.deploy-state.json` (no commitear).
 
 ## Paso 4 — Publicar imágenes en ECR (obligatorio)
 
+> **No se sube desde la consola AWS.** Usa Docker Desktop + AWS CLI en tu PC. Detalle Portal: [GUIA-RELEASE-PORTAL-AWS §12](./GUIA-RELEASE-PORTAL-AWS.md#12-publicar-imágenes-en-ecr).
+
 ```powershell
 cd I:\Curso\ShopDemo
+$region = "us-east-1"   # igual que AWS_REGION en .env.aws
 $account = aws sts get-caller-identity --query Account --output text
-$ecr = "$account.dkr.ecr.us-east-1.amazonaws.com"
+$ecr = "$account.dkr.ecr.$region.amazonaws.com"
 
-aws ecr get-login-password --region us-east-1 | docker login --username AWS --password-stdin $ecr
+aws ecr get-login-password --region $region | docker login --username AWS --password-stdin $ecr
 
 docker build -f Catalog/ShopDemo.Catalog.Api/Dockerfile -t $ecr/shopdemo-catalog:latest .
 docker push $ecr/shopdemo-catalog:latest
-# Repetir: orders, inventory, analytics, mcp
+
+docker build -f Orders/ShopDemo.Orders.Api/Dockerfile -t $ecr/shopdemo-orders:latest .
+docker push $ecr/shopdemo-orders:latest
+
+docker build -f Inventory/ShopDemo.Inventory.Api/Dockerfile -t $ecr/shopdemo-inventory:latest .
+docker push $ecr/shopdemo-inventory:latest
+
+docker build -f Aspire/ShopDemo.Analytics.Api/Dockerfile -t $ecr/shopdemo-analytics:latest .
+docker push $ecr/shopdemo-analytics:latest
+
+docker build -f AI/ShopDemo.Mcp.Api/Dockerfile -t $ecr/shopdemo-mcp:latest .
+docker push $ecr/shopdemo-mcp:latest
 ```
+
+Verificar: **ECR** → cada repo debe mostrar tag `latest`.
 
 O workflow: [.github/workflows/deploy-aws.yml](../../../.github/workflows/deploy-aws.yml)
 
@@ -153,7 +169,9 @@ Ver [GUIA-RELEASE-KUBERNETES.md](../kubernetes/GUIA-RELEASE-KUBERNETES.md#eks).
 |---|---|
 | `AccessDenied` | Política IAM — Paso 0 |
 | `Cannot exceed PoliciesPerUser: 10` | Una sola política `ShopDemoLabECS` |
-| Tasks en `STOPPED` | Falta push ECR — Paso 4 |
+| Tasks en `STOPPED` | Falta push ECR — Paso 4; luego **Force new deployment** |
+| ¿IP pública o privada en SSM Postgres? | **IP privada** de la task ECS — [Portal §8](./GUIA-RELEASE-PORTAL-AWS.md#8-postgresql-en-fargate) |
+| `docker push` AccessDenied | IAM `ShopDemoLabECS` o repetir `docker login` ECR |
 | Orders no llega a Inventory | Cloud Map `inventory.shopdemo.local` — re-ejecutar script |
 | Sin eventos | `EVENT_HUBS_CONNECTION_STRING` en `.env.aws` |
 

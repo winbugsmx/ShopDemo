@@ -13,6 +13,8 @@
 **Servicio de cómputo:** Azure Container Apps  
 **Versión:** 1.0
 
+**Historias de usuario:** [HISTORIAS-USUARIO-DESPLIEGUE-AZURE.md](./HISTORIAS-USUARIO-DESPLIEGUE-AZURE.md)
+
 ---
 
 ## 1. Propósito

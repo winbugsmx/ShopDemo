@@ -14,6 +14,16 @@
 
 Material del curso para llevar los microservicios Docker a la nube con enfoque **práctico y básico**.
 
+## Historias de usuario (despliegue e infra)
+
+| Módulo | Requerimientos | Historias de usuario |
+|---|---|---|
+| Azure ACA | [REQUERIMIENTOS-DESPLIEGUE-AZURE](./azure/REQUERIMIENTOS-DESPLIEGUE-AZURE.md) | [HISTORIAS-USUARIO-DESPLIEGUE-AZURE](./azure/HISTORIAS-USUARIO-DESPLIEGUE-AZURE.md) |
+| AWS ECS | [REQUERIMIENTOS-DESPLIEGUE-AWS](./aws/REQUERIMIENTOS-DESPLIEGUE-AWS.md) | [HISTORIAS-USUARIO-DESPLIEGUE-AWS](./aws/HISTORIAS-USUARIO-DESPLIEGUE-AWS.md) |
+| Kubernetes | [REQUERIMIENTOS-KUBERNETES](./kubernetes/REQUERIMIENTOS-KUBERNETES.md) | [HISTORIAS-USUARIO-KUBERNETES](./kubernetes/HISTORIAS-USUARIO-KUBERNETES.md) |
+| AKS | [REQUERIMIENTOS-DESPLIEGUE-AKS](./aks/REQUERIMIENTOS-DESPLIEGUE-AKS.md) | [HISTORIAS-USUARIO-DESPLIEGUE-AKS](./aks/HISTORIAS-USUARIO-DESPLIEGUE-AKS.md) |
+| EKS | [REQUERIMIENTOS-DESPLIEGUE-EKS](./eks/REQUERIMIENTOS-DESPLIEGUE-EKS.md) | [HISTORIAS-USUARIO-DESPLIEGUE-EKS](./eks/HISTORIAS-USUARIO-DESPLIEGUE-EKS.md) |
+
 ## Alcance del lab (2 días · pocas horas)
 
 **[ALCANCE-LAB-RELEASE.md](./ALCANCE-LAB-RELEASE.md)** — qué servicios son obligatorios, rutas por tiempo y cuándo usar script vs Portal vs CLI.

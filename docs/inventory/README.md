@@ -16,6 +16,7 @@ Documentación para el bounded context **Inventory** en **ShopDemo**, con **arqu
 | Documento | Descripción |
 |---|---|
 | [REQUERIMIENTOS-INVENTORY.md](./REQUERIMIENTOS-INVENTORY.md) | Especificación funcional y técnica |
+| [HISTORIAS-USUARIO-INVENTORY.md](./HISTORIAS-USUARIO-INVENTORY.md) | Historias de usuario, reglas, modelo hexagonal y criterios |
 | [IMPLEMENTACION-INVENTORY.md](./IMPLEMENTACION-INVENTORY.md) | Guía paso a paso con código y explicación de clases |
 
 ## Relación entre los 3 microservicios

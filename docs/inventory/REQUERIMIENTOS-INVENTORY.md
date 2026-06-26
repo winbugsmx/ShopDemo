@@ -13,6 +13,8 @@
 **Bounded Context:** Inventory  
 **Versión:** 1.0
 
+**Historias de usuario:** [HISTORIAS-USUARIO-INVENTORY.md](./HISTORIAS-USUARIO-INVENTORY.md)
+
 ---
 
 ## 1. Propósito

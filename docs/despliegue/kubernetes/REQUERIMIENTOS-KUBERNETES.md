@@ -12,6 +12,8 @@
 **Alcance:** Desarrollo y pruebas en Kubernetes (Minikube) + mismos manifiestos en AKS/EKS.  
 **Versión:** 1.0
 
+**Historias de usuario:** [HISTORIAS-USUARIO-KUBERNETES.md](./HISTORIAS-USUARIO-KUBERNETES.md)
+
 ---
 
 ## 1. Propósito

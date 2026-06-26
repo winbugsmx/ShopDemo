@@ -13,6 +13,8 @@
 **Servicio de cómputo:** Amazon ECS con Fargate  
 **Versión:** 1.0
 
+**Historias de usuario:** [HISTORIAS-USUARIO-DESPLIEGUE-AWS.md](./HISTORIAS-USUARIO-DESPLIEGUE-AWS.md)
+
 ---
 
 ## 1. Propósito

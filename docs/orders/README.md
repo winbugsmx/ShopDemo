@@ -16,6 +16,7 @@ Documentación para el desarrollo del bounded context **Orders** en la solución
 | Documento | Audiencia | Descripción |
 |---|---|---|
 | [REQUERIMIENTOS-ORDERS.md](./REQUERIMIENTOS-ORDERS.md) | Alumnos | Qué construir: reglas de negocio, endpoints, criterios de aceptación |
+| [HISTORIAS-USUARIO-ORDERS.md](./HISTORIAS-USUARIO-ORDERS.md) | Alumnos | Historias de usuario, reglas, modelo y criterios por RF |
 | [IMPLEMENTACION-ORDERS.md](./IMPLEMENTACION-ORDERS.md) | Alumnos / Instructor | Código funcional de referencia capa por capa |
 
 ## Sprints de referencia

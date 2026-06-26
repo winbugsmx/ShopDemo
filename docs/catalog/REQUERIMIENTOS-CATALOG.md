@@ -14,6 +14,8 @@
 **Versión:** 1.0  
 **Fecha:** Junio 2026
 
+**Historias de usuario:** [HISTORIAS-USUARIO-CATALOG.md](./HISTORIAS-USUARIO-CATALOG.md)
+
 ---
 
 ## 1. Propósito

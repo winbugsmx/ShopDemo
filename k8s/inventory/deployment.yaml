@@ -5,6 +5,8 @@ metadata:
   namespace: shopdemo
 spec:
   replicas: 1
+  strategy:
+    type: Recreate
   selector:
     matchLabels:
       app: shopdemo-inventory
@@ -15,20 +17,20 @@ spec:
     spec:
       containers:
         - name: inventory-api
-          image: shopdemo-inventory:latest
-          imagePullPolicy: IfNotPresent
+          image: 905221885508.dkr.ecr.us-east-2.amazonaws.com/shopdemo-inventory:latest
+          imagePullPolicy: Always
           ports:
             - containerPort: 8080
           env:
             - name: ASPNETCORE_ENVIRONMENT
-              value: Production
+              value: Development
             - name: ConnectionStrings__DefaultConnection
               valueFrom:
                 secretKeyRef:
                   name: shopdemo-secrets
                   key: PG_INVENTORY_CONN
             - name: EventHubs__Enabled
-              value: "true"
+              value: "false"
             - name: EventHubs__ConnectionString
               valueFrom:
                 secretKeyRef:

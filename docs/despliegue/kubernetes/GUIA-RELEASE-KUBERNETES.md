@@ -69,47 +69,84 @@ minikube ip   # o minikube tunnel para LoadBalancer
 
 ## Ruta 2 — AKS (Azure)
 
-**Prerequisito:** Event Hubs + imágenes en ACR (release ACA o script previo).
+**Prerequisito:** Event Hubs + imágenes en ACR.
 
-### Con script (recomendado)
+**Preparación:** [PREPARACION-AMBIENTE-AZURE.md](../azure/PREPARACION-AMBIENTE-AZURE.md)
 
-```powershell
-cd I:\Curso\ShopDemo\scripts\azure
-.\Deploy-AzureShopDemo.ps1 -Mode AKS
-# Crea cluster AKS, Ingress Helm, secrets base
+### Tres enfoques equivalentes
 
-kubectl apply -f k8s/
-```
+| Enfoque | Guía |
+|---|---|
+| Script | [GUIA-RELEASE-SCRIPT-AZURE.md](../azure/GUIA-RELEASE-SCRIPT-AZURE.md) §5 |
+| CLI | [GUIA-RELEASE-CLI-AZURE.md](../azure/GUIA-RELEASE-CLI-AZURE.md) Parte B |
+| Portal | [GUIA-RELEASE-PORTAL-AZURE.md](../azure/GUIA-RELEASE-PORTAL-AZURE.md) Parte B |
 
-**Guía detallada:** [../aks/IMPLEMENTACION-DESPLIEGUE-AKS.md](../aks/IMPLEMENTACION-DESPLIEGUE-AKS.md)
+### Pasos clave post-provisionamiento
+
+1. Consumer groups EH: `analytics-service`, `inventory-service`
+2. Helm Ingress con `health-probe-request-path=/healthz`
+3. `kubectl apply` manifiestos + imágenes ACR
+4. Archivo `hosts`: `<IP-Ingress> shopdemo.local`
+5. Swagger: `http://shopdemo.local/catalog/swagger/index.html`
+
+Reporte lab: [deploy-aks-report.json](../../../scripts/azure/deploy-aks-report.json)
 
 ### Servicios Azure que toca AKS
 
 | Servicio | ¿Script? |
 |---|---|
-| ACR (imágenes) | Sí (modo ACA/AKS) |
+| ACR (imágenes) | Sí |
 | AKS cluster | Sí (`-Mode AKS`) |
 | Event Hubs | Sí o previo |
-| Log Analytics | Sí |
-| **Container Apps** | No necesario en modo solo AKS |
+| Ingress NGINX (Helm) | Manual si script falla |
+| **Container Apps** | No en modo solo AKS |
 
 ---
 
 ## Ruta 3 — EKS (AWS)
 
-**Prerequisito:** Imágenes en ECR + Event Hubs connection string.
+**Prerequisito:** Imágenes en ECR + Event Hubs connection string + política IAM `ShopDemoLabEKS`.
+
+**Preparación:** [PREPARACION-AMBIENTE-AWS.md](../aws/PREPARACION-AMBIENTE-AWS.md)
 
 ### Con script (recomendado)
 
 ```powershell
 cd I:\Curso\ShopDemo\scripts\aws
-.\Deploy-AwsShopDemo.ps1 -Mode EKS
-# eksctl + Ingress + k8s/secrets.yaml plantilla
+copy .env.aws.example .env.aws
+# EKS_NODE_TYPE=t3.micro, EKS_NODE_COUNT=4, AWS_REGION=us-east-2
 
-kubectl apply -f k8s/
+.\Deploy-AwsShopDemo.ps1 -Mode EKS
+# eksctl + Ingress + k8s/secrets.yaml + kubectl apply base
 ```
 
-**Guía detallada:** [../eks/IMPLEMENTACION-DESPLIEGUE-EKS.md](../eks/IMPLEMENTACION-DESPLIEGUE-EKS.md)
+### Perfil free-tier lab (post-script)
+
+En cuentas con límite **8 vCPU** y **4 pods/nodo** en `t3.micro`, aplicar ajustes manuales:
+
+```powershell
+eksctl scale nodegroup --cluster shopdemo-eks --name shopdemo-ng-v2 --nodes 4 --region us-east-2
+kubectl scale deployment coredns -n kube-system --replicas=1
+kubectl delete deployment shopdemo-mcp -n shopdemo --ignore-not-found
+kubectl scale deployment shopdemo-analytics -n shopdemo --replicas=0
+kubectl delete deployment ingress-nginx-controller -n ingress-nginx --ignore-not-found
+kubectl apply -f k8s/azurite/init-checkpoints-job.yaml
+```
+
+Swagger público (LoadBalancer, puerto **8080**):
+
+```powershell
+kubectl get svc -n shopdemo shopdemo-catalog shopdemo-orders shopdemo-inventory
+# http://<EXTERNAL-IP>:8080/swagger/index.html
+```
+
+**Guías detalladas:**
+
+| Documento | Contenido |
+|---|---|
+| [GUIA-RELEASE-SCRIPT-AWS.md](../aws/GUIA-RELEASE-SCRIPT-AWS.md) | Script + perfil free-tier |
+| [GUIA-RELEASE-CLI-AWS.md](../aws/GUIA-RELEASE-CLI-AWS.md) | CLI paso a paso |
+| [IMPLEMENTACION-DESPLIEGUE-EKS.md](../eks/IMPLEMENTACION-DESPLIEGUE-EKS.md) | Arquitectura EKS |
 
 ### Servicios AWS que toca EKS
 
@@ -117,6 +154,7 @@ kubectl apply -f k8s/
 |---|---|
 | ECR | Sí |
 | EKS cluster (eksctl) | Sí (`-Mode EKS`) |
+| Classic ELB (K8s LoadBalancer) | Automático (Catalog/Orders/Inventory) |
 | **ECS / ALB / Cloud Map** | No necesario en modo solo EKS |
 
 ---

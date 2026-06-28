@@ -41,14 +41,8 @@ spec:
             initialDelaySeconds: 10
             periodSeconds: 5
       volumes:
+        - name: data
+          emptyDir: {}
         - name: init-script
           configMap:
             name: shopdemo-postgres-init
-  volumeClaimTemplates:
-    - metadata:
-        name: data
-      spec:
-        accessModes: ["ReadWriteOnce"]
-        resources:
-          requests:
-            storage: 5Gi

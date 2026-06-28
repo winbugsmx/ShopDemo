@@ -16,6 +16,6 @@ spec:
       containers:
         - name: azurite
           image: mcr.microsoft.com/azure-storage/azurite
-          args: ["azurite-blob", "--blobHost", "0.0.0.0", "--blobPort", "10000"]
+          args: ["azurite-blob", "--blobHost", "0.0.0.0", "--blobPort", "10000", "--skipApiVersionCheck"]
           ports:
             - containerPort: 10000

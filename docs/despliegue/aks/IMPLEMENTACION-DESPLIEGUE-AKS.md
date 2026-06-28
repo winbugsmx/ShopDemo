@@ -10,9 +10,10 @@
 | | E-mail: lcc.gilberto.juarez@gmail.com |
 
 **Prerequisito:** [IMPLEMENTACION-KUBERNETES-LOCAL.md](../kubernetes/IMPLEMENTACION-KUBERNETES-LOCAL.md) (Minikube)  
-**Script automatizado:** [scripts/azure/README.md](../../../scripts/azure/README.md) (`-Mode AKS` genera `k8s/secrets.yaml`)  
-**Teoría K8s:** [TEORIA-KUBERNETES-OPERACIONES.md](../kubernetes/TEORIA-KUBERNETES-OPERACIONES.md)  
-Cada paso: **Portal Azure** + **Azure CLI**.
+**Preparación:** [PREPARACION-AMBIENTE-AZURE.md](../azure/PREPARACION-AMBIENTE-AZURE.md)  
+**Guías actualizadas (recomendadas):** [GUIA-RELEASE-SCRIPT-AZURE.md](../azure/GUIA-RELEASE-SCRIPT-AZURE.md) · [GUIA-RELEASE-CLI-AZURE.md](../azure/GUIA-RELEASE-CLI-AZURE.md) · [GUIA-RELEASE-PORTAL-AZURE.md](../azure/GUIA-RELEASE-PORTAL-AZURE.md)  
+**Release AKS validado:** Ingress `shopdemo.local`, health probe `/healthz`, consumer groups EH — ver guía Script §5  
+**Script:** [scripts/azure/README.md](../../../scripts/azure/README.md) · **Reporte:** [deploy-aks-report.json](../../../scripts/azure/deploy-aks-report.json)
 
 ---
 

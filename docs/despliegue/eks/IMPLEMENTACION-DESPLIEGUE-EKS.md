@@ -10,9 +10,10 @@
 | | E-mail: lcc.gilberto.juarez@gmail.com |
 
 **Prerequisito:** [IMPLEMENTACION-KUBERNETES-LOCAL.md](../kubernetes/IMPLEMENTACION-KUBERNETES-LOCAL.md)  
-**Script automatizado:** [scripts/aws/README.md](../../../scripts/aws/README.md) (`-Mode EKS` genera `k8s/secrets.yaml`)  
-**Teoría K8s:** [TEORIA-KUBERNETES-OPERACIONES.md](../kubernetes/TEORIA-KUBERNETES-OPERACIONES.md)  
-Cada paso: **Consola AWS** + **CLI**.
+**Preparación IAM/cuotas:** [PREPARACION-AMBIENTE-AWS.md](../aws/PREPARACION-AMBIENTE-AWS.md)  
+**Guías actualizadas (recomendadas):** [GUIA-RELEASE-SCRIPT-AWS.md](../aws/GUIA-RELEASE-SCRIPT-AWS.md) · [GUIA-RELEASE-CLI-AWS.md](../aws/GUIA-RELEASE-CLI-AWS.md) · [GUIA-RELEASE-PORTAL-AWS.md](../aws/GUIA-RELEASE-PORTAL-AWS.md)  
+**Perfil lab validado:** `eks-free-tier-lab` — 4× `t3.micro`, LoadBalancer en Catalog/Orders/Inventory, Swagger en **:8080** (ver guía Script §6)  
+**Script automatizado:** [scripts/aws/README.md](../../../scripts/aws/README.md) (`-Mode EKS` genera `k8s/secrets.yaml`)
 
 ---
 

@@ -4,6 +4,7 @@ metadata:
   name: shopdemo-catalog
   namespace: shopdemo
 spec:
+  type: LoadBalancer
   selector:
     app: shopdemo-catalog
   ports:

@@ -12,13 +12,16 @@
 
 ## Guías de release (elige una ruta)
 
+> La documentación paso a paso se dividió en **tres guías equivalentes**. Elige una según tu preferencia.
+
 | Guía | Tiempo | Cuándo usarla |
 |---|---|---|
-| [**GUIA-RELEASE-SCRIPT-AWS**](./GUIA-RELEASE-SCRIPT-AWS.md) | 2–4 h | **Recomendada** — `Deploy-AwsShopDemo.ps1` + IAM |
-| [**GUIA-RELEASE-CLI-AWS**](./GUIA-RELEASE-CLI-AWS.md) | 10–16 h | Mismos recursos con `aws` |
-| [**GUIA-RELEASE-PORTAL-AWS**](./GUIA-RELEASE-PORTAL-AWS.md) | 12–20 h | Consola visual + capturas + enlaces AWS Docs |
+| [**GUIA-RELEASE-SCRIPT-AWS**](./GUIA-RELEASE-SCRIPT-AWS.md) | 2–4 h | Automatización PowerShell |
+| [**GUIA-RELEASE-CLI-AWS**](./GUIA-RELEASE-CLI-AWS.md) | 10–16 h | Aprender cada comando `aws` |
+| [**GUIA-RELEASE-PORTAL-AWS**](./GUIA-RELEASE-PORTAL-AWS.md) | 12–20 h | Consola visual paso a paso |
 
-**Scripts:** [scripts/aws/](../../../scripts/aws/) · **IAM:** [`iam-policy-shopdemo-lab-ecs.json`](../../../scripts/aws/iam-policy-shopdemo-lab-ecs.json)  
+**Scripts:** [scripts/aws/](../../../scripts/aws/) · **Preparación IAM/cuotas:** [PREPARACION-AMBIENTE-AWS.md](./PREPARACION-AMBIENTE-AWS.md)  
+**IAM ECS:** [`iam-policy-shopdemo-lab-ecs.json`](../../../scripts/aws/iam-policy-shopdemo-lab-ecs.json) · **IAM EKS:** [`iam-policy-shopdemo-lab-eks.json`](../../../scripts/aws/iam-policy-shopdemo-lab-eks.json)  
 **Task definitions:** [ANEXO-TASK-DEFINITIONS-ECS.md](./ANEXO-TASK-DEFINITIONS-ECS.md)
 
 **Kubernetes (EKS):** [GUIA-RELEASE-KUBERNETES.md](../kubernetes/GUIA-RELEASE-KUBERNETES.md)
@@ -46,7 +49,7 @@
 
 | Recurso AWS | Nombre canónico |
 |---|---|
-| Región | `us-east-1` |
+| Región | `us-east-2` (lab validado) |
 | VPC | `shopdemo-vpc` |
 | Security Groups | `shopdemo-alb`, `shopdemo-apps`, `shopdemo-data` |
 | ECR repos | `shopdemo-catalog` … `shopdemo-mcp` |

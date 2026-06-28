@@ -7,6 +7,7 @@ Automatización del laboratorio AWS del curso Lite Thinking. Complementa la docu
 | Tema | Documento |
 |---|---|
 | **Script + IAM (recomendado)** | [GUIA-RELEASE-SCRIPT-AWS.md](../../docs/despliegue/aws/GUIA-RELEASE-SCRIPT-AWS.md) |
+| Preparación IAM/cuotas | [PREPARACION-AMBIENTE-AWS.md](../../docs/despliegue/aws/PREPARACION-AMBIENTE-AWS.md) |
 | Consola visual + IAM | [GUIA-RELEASE-PORTAL-AWS.md](../../docs/despliegue/aws/GUIA-RELEASE-PORTAL-AWS.md) |
 | AWS CLI manual | [GUIA-RELEASE-CLI-AWS.md](../../docs/despliegue/aws/GUIA-RELEASE-CLI-AWS.md) |
 | EKS + Kubernetes | [GUIA-RELEASE-KUBERNETES.md](../../docs/despliegue/kubernetes/GUIA-RELEASE-KUBERNETES.md) |
@@ -32,16 +33,14 @@ Automatización del laboratorio AWS del curso Lite Thinking. Complementa la docu
 4. Para modo **EKS**: [eksctl](https://eksctl.io/) y [kubectl](https://kubernetes.io/docs/tasks/tools/)
 5. **Imágenes en ECR** antes de que arranquen las tareas ECS
 
-### Resumen IAM (solo ECS) — evita el error de cuota
+### Resumen IAM
 
-**No adjuntes 8 políticas.** Usa **una** de estas:
+| Modo | Política | Archivo JSON |
+|---|---|---|
+| ECS | `ShopDemoLabECS` | [iam-policy-shopdemo-lab-ecs.json](iam-policy-shopdemo-lab-ecs.json) |
+| EKS | `ShopDemoLabEKS` | [iam-policy-shopdemo-lab-eks.json](iam-policy-shopdemo-lab-eks.json) |
 
-| Enfoque | Qué adjuntar |
-|---|---|
-| Recomendado | Política custom `ShopDemoLabECS` ([iam-policy-shopdemo-lab-ecs.json](iam-policy-shopdemo-lab-ecs.json)) |
-| Alternativa | `PowerUserAccess` + `IAMFullAccess` (2 políticas) |
-
-Detalle: [GUIA-RELEASE-SCRIPT-AWS](../../docs/despliegue/aws/GUIA-RELEASE-SCRIPT-AWS.md) · [Portal IAM](../../docs/despliegue/aws/GUIA-RELEASE-PORTAL-AWS.md#0-usuario-iam-y-permisos)
+Detalle completo: [PREPARACION-AMBIENTE-AWS.md](../../docs/despliegue/aws/PREPARACION-AMBIENTE-AWS.md)
 
 ## Valores que debes obtener o definir
 
@@ -49,7 +48,7 @@ Detalle: [GUIA-RELEASE-SCRIPT-AWS](../../docs/despliegue/aws/GUIA-RELEASE-SCRIPT
 
 | Variable | Dónde |
 |---|---|
-| `AWS_REGION` | Barra superior Consola (ej. `us-east-1`) |
+| `AWS_REGION` | Barra superior Consola (ej. `us-east-2`) |
 | Credenciales | IAM → Users → Security credentials → Access key (para `aws configure`) |
 
 ### De Azure Portal (Event Hubs — no se crea en AWS)
@@ -117,7 +116,7 @@ aws sts get-caller-identity
 | Modo | Crea | No incluye |
 |---|---|---|
 | **ECS** | VPC, SG, ECR, SSM, cluster, Postgres/Azurite Fargate, Cloud Map, 5 APIs + MCP con ALB | Build Docker |
-| **EKS** | ECR, cluster (eksctl), Ingress Helm, `k8s/secrets.yaml` | Build, `kubectl apply` |
+| **EKS** | ECR, cluster (eksctl), Ingress Helm, `k8s/secrets.yaml`, kubectl apply base | Perfil free-tier (ajustes manuales), Build Docker |
 | **All** | ECS + EKS | Build Docker |
 
 ## Checkpoints Event Hubs
@@ -135,7 +134,7 @@ Event Hubs siempre es **Azure** (cross-cloud).
 2. `Deploy-AwsShopDemo.ps1 -Mode ECS`
 3. Publicar 5 imágenes en ECR
 4. Esperar tasks `RUNNING` → probar con Postman / GUIA-ENDPOINTS
-5. (Opcional) `-Mode EKS` + `kubectl apply -f k8s/`
+5. (Opcional) `-Mode EKS` + perfil [eks-free-tier-lab](../../docs/despliegue/aws/GUIA-RELEASE-SCRIPT-AWS.md#6-perfil-eks-eks-free-tier-lab-ajustes-post-script)
 
 ## Solución de problemas
 
@@ -145,6 +144,9 @@ Event Hubs siempre es **Azure** (cross-cloud).
 | Image pull error | Publica imagen con tag `IMAGE_TAG` en ECR |
 | Orders no llega a Inventory | Verificar Cloud Map `inventory.shopdemo.local` |
 | Sin eventos Analytics | SG debe permitir salida HTTPS; revisar connection string EH |
+| EKS: pods Pending | Límite 16 pods (4× t3.micro); quitar MCP/Ingress/Analytics |
+| EKS: Swagger timeout | Usar puerto **:8080** en URL del Classic ELB |
+| EKS: Free Tier instance | Usar `t3.micro`, no `t3.medium` |
 | `Completa EVENT_HUBS...` | Pegar connection string de Azure en `.env.aws` |
 
 ## Seguridad

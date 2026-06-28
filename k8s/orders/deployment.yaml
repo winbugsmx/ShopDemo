@@ -5,6 +5,8 @@ metadata:
   namespace: shopdemo
 spec:
   replicas: 1
+  strategy:
+    type: Recreate
   selector:
     matchLabels:
       app: shopdemo-orders
@@ -15,13 +17,13 @@ spec:
     spec:
       containers:
         - name: orders-api
-          image: shopdemo-orders:latest
-          imagePullPolicy: IfNotPresent
+          image: 905221885508.dkr.ecr.us-east-2.amazonaws.com/shopdemo-orders:latest
+          imagePullPolicy: Always
           ports:
             - containerPort: 8080
           env:
             - name: ASPNETCORE_ENVIRONMENT
-              value: Production
+              value: Development
             - name: ConnectionStrings__DefaultConnection
               valueFrom:
                 secretKeyRef:

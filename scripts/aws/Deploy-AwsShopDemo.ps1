@@ -130,6 +130,187 @@ function Get-SsmParameterArn {
     return "arn:aws:ssm:${Region}:${AccountId}:parameter${Name}"
 }
 
+function Ensure-EksToolchain {
+    $eksctlLocal = Join-Path $env:LOCALAPPDATA 'eksctl\eksctl.exe'
+    if ((Test-Path $eksctlLocal) -and -not (Get-Command eksctl -ErrorAction SilentlyContinue)) {
+        $env:Path = "$(Split-Path $eksctlLocal -Parent);$env:Path"
+    }
+    $helmLinks = Join-Path $env:LOCALAPPDATA 'Microsoft\WinGet\Links'
+    if ((Test-Path $helmLinks) -and -not (Get-Command helm -ErrorAction SilentlyContinue)) {
+        $env:Path = "$helmLinks;$env:Path"
+    }
+}
+
+function Test-EksClusterExists {
+    param([string]$ClusterName, [string]$Region)
+    $null = Invoke-AwsCli 'Comprobar cluster EKS' @(
+        'eks', 'describe-cluster', '--name', $ClusterName, '--region', $Region, '--output', 'json'
+    ) -AllowFailure
+    return ($LASTEXITCODE -eq 0)
+}
+
+function Deploy-K8sWorkloads {
+    param(
+        [string]$RepoRoot,
+        [string]$Registry,
+        [string]$Tag
+    )
+    $k8s = Join-Path $RepoRoot 'k8s'
+    kubectl apply -f (Join-Path $k8s 'namespace.yaml') | Out-Null
+    kubectl apply -f (Join-Path $k8s 'secrets.yaml') | Out-Null
+    kubectl apply -f (Join-Path $k8s 'postgres\') | Out-Null
+    kubectl apply -f (Join-Path $k8s 'azurite\') | Out-Null
+    kubectl apply -f (Join-Path $k8s 'catalog\') | Out-Null
+    kubectl apply -f (Join-Path $k8s 'orders\') | Out-Null
+    kubectl apply -f (Join-Path $k8s 'inventory\') | Out-Null
+    kubectl apply -f (Join-Path $k8s 'analytics\') | Out-Null
+    kubectl apply -f (Join-Path $k8s 'mcp\') | Out-Null
+    kubectl apply -f (Join-Path $k8s 'ingress\') | Out-Null
+
+    $images = @(
+        @{ Deploy = 'shopdemo-catalog'; Container = 'catalog-api'; Repo = 'shopdemo-catalog' }
+        @{ Deploy = 'shopdemo-orders'; Container = 'orders-api'; Repo = 'shopdemo-orders' }
+        @{ Deploy = 'shopdemo-inventory'; Container = 'inventory-api'; Repo = 'shopdemo-inventory' }
+        @{ Deploy = 'shopdemo-analytics'; Container = 'analytics-api'; Repo = 'shopdemo-analytics' }
+        @{ Deploy = 'shopdemo-mcp'; Container = 'mcp-api'; Repo = 'shopdemo-mcp' }
+    )
+    foreach ($img in $images) {
+        kubectl set image "deployment/$($img.Deploy)" "$($img.Container)=$Registry/$($img.Repo):$Tag" -n shopdemo | Out-Null
+    }
+    Write-Ok 'Manifiestos k8s aplicados e imagenes ECR configuradas'
+}
+
+function Get-EksReleaseReport {
+    param(
+        [string]$ClusterName,
+        [string]$Region,
+        [string]$AccountId,
+        [string]$EcrUri,
+        [hashtable]$State
+    )
+    $report = @{
+        generatedAt = (Get-Date).ToString('o')
+        accountId   = $AccountId
+        region      = $Region
+        mode        = 'EKS'
+        clusterName = $ClusterName
+        ecrUri      = $EcrUri
+        cluster     = $null
+        nodegroups  = @()
+        ingress     = $null
+        workloads   = @()
+        privateDns  = @{}
+        publicUrls  = @{}
+        eventHubs   = @{
+            provider = 'Azure Event Hubs (cross-cloud)'
+            hubName  = $State.eventHubName
+            note     = 'Connection string en k8s/secrets.yaml (EVENT_HUBS_CONNECTION_STRING)'
+        }
+        ecrRepositories = @()
+    }
+
+    foreach ($repo in @('shopdemo-catalog', 'shopdemo-orders', 'shopdemo-inventory', 'shopdemo-analytics', 'shopdemo-mcp', 'postgres', 'azurite')) {
+        $repoOut = Invoke-AwsCli "ECR repo $repo" @(
+            'ecr', 'describe-repositories', '--repository-names', $repo, '--region', $Region, '--output', 'json'
+        ) -AllowFailure
+        if ($LASTEXITCODE -eq 0 -and -not [string]::IsNullOrWhiteSpace($repoOut)) {
+            $repoJson = $repoOut | ConvertFrom-Json
+            if ($repoJson -and $repoJson.repositories) {
+                $r = $repoJson.repositories[0]
+                $report.ecrRepositories += @{
+                    name = $r.repositoryName
+                    arn  = $r.repositoryArn
+                    uri  = $r.repositoryUri
+                }
+            }
+        }
+    }
+
+    if (Test-EksClusterExists -ClusterName $ClusterName -Region $Region) {
+        $clusterJson = Invoke-AwsCli 'Detalle cluster EKS' @(
+            'eks', 'describe-cluster', '--name', $ClusterName, '--region', $Region, '--output', 'json'
+        ) | ConvertFrom-Json
+        $c = $clusterJson.cluster
+        $report.cluster = @{
+            arn                  = $c.arn
+            endpoint             = $c.endpoint
+            version              = $c.version
+            status               = $c.status
+            vpcId                = $c.resourcesVpcConfig.vpcId
+            subnetIds            = @($c.resourcesVpcConfig.subnetIds)
+            securityGroupIds     = @($c.resourcesVpcConfig.securityGroupIds)
+            clusterSecurityGroup = $c.resourcesVpcConfig.clusterSecurityGroupId
+            publicAccess         = $c.resourcesVpcConfig.endpointPublicAccess
+            privateAccess        = $c.resourcesVpcConfig.endpointPrivateAccess
+        }
+        $ngJson = Invoke-AwsCli 'Nodegroups EKS' @(
+            'eks', 'list-nodegroups', '--cluster-name', $ClusterName, '--region', $Region, '--output', 'json'
+        ) -AllowFailure | ConvertFrom-Json
+        if ($ngJson.nodegroups) {
+            foreach ($ngName in $ngJson.nodegroups) {
+                $ng = Invoke-AwsCli "Nodegroup $ngName" @(
+                    'eks', 'describe-nodegroup', '--cluster-name', $ClusterName,
+                    '--nodegroup-name', $ngName, '--region', $Region, '--output', 'json'
+                ) | ConvertFrom-Json
+                $report.nodegroups += @{
+                    name          = $ngName
+                    arn           = $ng.nodegroup.nodegroupArn
+                    status        = $ng.nodegroup.status
+                    instanceTypes = @($ng.nodegroup.instanceTypes)
+                    scaling       = $ng.nodegroup.scalingConfig
+                    subnets       = @($ng.nodegroup.subnets)
+                }
+            }
+        }
+    }
+
+    $prevEap = $ErrorActionPreference
+    $ErrorActionPreference = 'Continue'
+    try {
+        $ingSvc = kubectl get svc -n ingress-nginx ingress-nginx-controller -o json 2>$null | ConvertFrom-Json
+        if ($ingSvc) {
+            $lbHost = ($ingSvc.status.loadBalancer.ingress | Select-Object -First 1).hostname
+            $report.ingress = @{
+                namespace    = 'ingress-nginx'
+                service      = 'ingress-nginx-controller'
+                loadBalancer = $lbHost
+            }
+            if ($lbHost) {
+                $base = "http://$lbHost"
+                $report.publicUrls = @{
+                    catalog   = "$base/catalog/swagger"
+                    orders    = "$base/orders/swagger"
+                    inventory = "$base/inventory/health"
+                    analytics = "$base/analytics/api/analytics/events"
+                    mcp       = "$base/mcp/health"
+                }
+            }
+        }
+        $svcs = kubectl get svc -n shopdemo -o json 2>$null | ConvertFrom-Json
+        if ($svcs) {
+            foreach ($item in $svcs.items) {
+                $port = $item.spec.ports[0].port
+                $report.privateDns[$item.metadata.name] = "$($item.metadata.name).shopdemo.svc.cluster.local:$port"
+                $report.workloads += @{
+                    kind      = 'Service'
+                    name      = $item.metadata.name
+                    clusterIp = $item.spec.clusterIP
+                    dns       = "$($item.metadata.name).shopdemo.svc.cluster.local"
+                    port      = $port
+                }
+            }
+        }
+    }
+    finally {
+        $ErrorActionPreference = $prevEap
+    }
+
+    $reportPath = Join-Path $PSScriptRoot 'deploy-eks-report.json'
+    ($report | ConvertTo-Json -Depth 8) | Set-Content -Path $reportPath -Encoding UTF8
+    Write-Ok "Reporte EKS: $reportPath"
+    return $report
+}
+
 function New-K8sSecretsFile {
     param(
         [string]$RepoRoot,
@@ -845,50 +1026,125 @@ if ($deployEcs) {
 # -----------------------------------------------------------------------------
 if ($deployEks) {
     Write-Step "Paso EKS - Cluster $($cfg.EKS_CLUSTER_NAME)"
+    Ensure-EksToolchain
+
     if (-not (Get-Command eksctl -ErrorAction SilentlyContinue)) {
         Write-Warn 'eksctl no instalado - https://eksctl.io/installation/'
-        Write-Info "Alternativa CLI: aws eks create-cluster (ver doc EKS §3)"
+        Write-Info 'Coloca eksctl.exe en PATH o en %LOCALAPPDATA%\eksctl\'
     }
-    else {
-        $null = Invoke-AwsCli 'Comprobar cluster EKS' @(
-            'eks', 'describe-cluster', '--name', $cfg.EKS_CLUSTER_NAME, '-o', 'json'
-        ) -AllowFailure
-        if ($LASTEXITCODE -ne 0) {
-            & eksctl create cluster `
-                --name $cfg.EKS_CLUSTER_NAME `
+
+    $clusterExists = Test-EksClusterExists -ClusterName $cfg.EKS_CLUSTER_NAME -Region $region
+    if (-not $clusterExists) {
+        if (-not (Get-Command eksctl -ErrorAction SilentlyContinue)) {
+            throw 'No se puede crear EKS sin eksctl. Instala eksctl o adjunta iam-policy-shopdemo-lab-eks.json al usuario IAM.'
+        }
+        Write-Info 'Creando cluster EKS (eksctl, ~15 min)...'
+        $prevEap = $ErrorActionPreference
+        $ErrorActionPreference = 'Continue'
+        & eksctl create cluster `
+            --name $cfg.EKS_CLUSTER_NAME `
+            --region $region `
+            --nodegroup-name "$prefix-ng" `
+            --node-type $cfg.EKS_NODE_TYPE `
+            --nodes $cfg.EKS_NODE_COUNT `
+            --managed
+        $eksExit = $LASTEXITCODE
+        $ErrorActionPreference = $prevEap
+        if ($eksExit -ne 0 -and -not (Test-EksClusterExists -ClusterName $cfg.EKS_CLUSTER_NAME -Region $region)) {
+            Write-Warn 'Fallo la creacion del cluster. Verifica permisos IAM: scripts/aws/iam-policy-shopdemo-lab-eks.json'
+            Write-Warn "eksctl exit $eksExit - se genera reporte parcial con ECR y recursos existentes"
+        }
+    }
+
+    $clusterExists = Test-EksClusterExists -ClusterName $cfg.EKS_CLUSTER_NAME -Region $region
+    if ($clusterExists) {
+        Write-Ok "Cluster EKS: $($cfg.EKS_CLUSTER_NAME)"
+
+        $ngJson = Invoke-AwsCli 'Listar nodegroups' @(
+            'eks', 'list-nodegroups', '--cluster-name', $cfg.EKS_CLUSTER_NAME, '--region', $region, '--output', 'json'
+        ) -AllowFailure | ConvertFrom-Json
+        $hasNg = ($ngJson -and $ngJson.nodegroups -and $ngJson.nodegroups.Count -gt 0)
+        if (-not $hasNg -and (Get-Command eksctl -ErrorAction SilentlyContinue)) {
+            Write-Info "Creando nodegroup ${prefix}-ng ($($cfg.EKS_NODE_TYPE))..."
+            $prevEap = $ErrorActionPreference
+            $ErrorActionPreference = 'Continue'
+            & eksctl create nodegroup `
+                --cluster $cfg.EKS_CLUSTER_NAME `
                 --region $region `
-                --nodegroup-name "$prefix-ng" `
+                --name "$prefix-ng" `
                 --node-type $cfg.EKS_NODE_TYPE `
                 --nodes $cfg.EKS_NODE_COUNT `
                 --managed
+            $ngExit = $LASTEXITCODE
+            $ErrorActionPreference = $prevEap
+            if ($ngExit -ne 0) {
+                Write-Warn "Nodegroup fallo (exit $ngExit). Verifica tipo de instancia Free Tier en .env.aws (EKS_NODE_TYPE=t3.micro)"
+            }
         }
-        Write-Ok "Cluster EKS: $($cfg.EKS_CLUSTER_NAME)"
-    }
 
-    Invoke-AwsCli 'kubeconfig' @(
-        'eks', 'update-kubeconfig', '--name', $cfg.EKS_CLUSTER_NAME, '--region', $region
-    ) | Out-Null
+        Invoke-AwsCli 'kubeconfig' @(
+            'eks', 'update-kubeconfig', '--name', $cfg.EKS_CLUSTER_NAME, '--region', $region
+        ) | Out-Null
 
-    if (Get-Command helm -ErrorAction SilentlyContinue) {
-        $ingressNs = kubectl get namespace ingress-nginx -o name 2>$null
-        if (-not $ingressNs) {
-            & helm repo add ingress-nginx https://kubernetes.github.io/ingress-nginx 2>$null
-            & helm repo update 2>$null
-            & helm install ingress-nginx ingress-nginx/ingress-nginx `
-                --namespace ingress-nginx --create-namespace
-            if ($LASTEXITCODE -eq 0) { Write-Ok 'Ingress NGINX (Helm)' }
+        if (Get-Command helm -ErrorAction SilentlyContinue) {
+            $prevEapIng = $ErrorActionPreference
+            $ErrorActionPreference = 'SilentlyContinue'
+            $ingressNs = kubectl get namespace ingress-nginx -o name 2>$null
+            $ErrorActionPreference = $prevEapIng
+            if (-not $ingressNs) {
+                helm repo add ingress-nginx https://kubernetes.github.io/ingress-nginx 2>$null
+                helm repo update 2>$null
+                helm install ingress-nginx ingress-nginx/ingress-nginx `
+                    --namespace ingress-nginx --create-namespace `
+                    --set controller.admissionWebhooks.enabled=false `
+                    --set controller.resources.requests.cpu=100m `
+                    --set controller.resources.requests.memory=128Mi
+                if ($LASTEXITCODE -eq 0) { Write-Ok 'Ingress NGINX (Helm)' }
+                else { Write-Warn 'Helm ingress-nginx fallo - instala manualmente (doc EKS §6)' }
+            }
+            else { Write-Ok 'Ingress NGINX ya instalado' }
+        }
+        else {
+            Write-Warn 'helm no encontrado - instala Helm para Ingress NGINX'
+        }
+
+        New-K8sSecretsFile -RepoRoot $repoRoot `
+            -EventHubsConn $ehConn `
+            -PostgresPassword $cfg.POSTGRES_PASSWORD `
+            -PostgresUser $cfg.POSTGRES_USER
+
+        $tag = $cfg.IMAGE_TAG
+        $missingEcr = @()
+        foreach ($repo in @('shopdemo-catalog', 'shopdemo-orders', 'shopdemo-inventory', 'shopdemo-analytics', 'shopdemo-mcp')) {
+            $imgCheck = Invoke-AwsCli "Imagen ECR $repo" @(
+                'ecr', 'list-images', '--repository-name', $repo,
+                '--query', 'imageIds[0].imageTag', '--output', 'text'
+            ) -AllowFailure
+            if ($LASTEXITCODE -ne 0 -or [string]::IsNullOrWhiteSpace($imgCheck) -or $imgCheck.Trim() -eq 'None') {
+                $missingEcr += $repo
+            }
+        }
+        if ($missingEcr.Count -gt 0) {
+            Write-Warn "Imagenes faltantes en ECR: $($missingEcr -join ', ')"
+        }
+        else {
+            Deploy-K8sWorkloads -RepoRoot $repoRoot -Registry $ecrUri -Tag $tag
         }
     }
-
-    New-K8sSecretsFile -RepoRoot $repoRoot `
-        -EventHubsConn $ehConn `
-        -PostgresPassword $cfg.POSTGRES_PASSWORD `
-        -PostgresUser $cfg.POSTGRES_USER
+    else {
+        Write-Warn "Cluster EKS $($cfg.EKS_CLUSTER_NAME) no disponible - omitiendo kubeconfig, Helm y workloads"
+        New-K8sSecretsFile -RepoRoot $repoRoot `
+            -EventHubsConn $ehConn `
+            -PostgresPassword $cfg.POSTGRES_PASSWORD `
+            -PostgresUser $cfg.POSTGRES_USER
+    }
 
     $state.eksCluster = $cfg.EKS_CLUSTER_NAME
-    Write-Info 'Siguiente (manual): imágenes en ECR + kubectl apply -f k8s/'
-    Write-Info "  image: $ecrUri/shopdemo-catalog:$($cfg.IMAGE_TAG)"
-    Write-Info 'Guía: docs/despliegue/eks/IMPLEMENTACION-DESPLIEGUE-EKS.md §7-8'
+    $state.eventHubName = $cfg.EVENT_HUB_NAME
+    $state.mode = $Mode
+    $eksReport = Get-EksReleaseReport -ClusterName $cfg.EKS_CLUSTER_NAME -Region $region `
+        -AccountId $accountId -EcrUri $ecrUri -State $state
+    $state.eksReportPath = (Join-Path $PSScriptRoot 'deploy-eks-report.json')
 }
 
 Save-DeployState -State $state
@@ -904,8 +1160,13 @@ if ($deployEcs -and $state.albDns) {
     Write-Host "  MCP       : http://$($state.albDns.mcp)/health" -ForegroundColor White
     Write-Host "  Inventory : $($state.inventoryUrl) (Cloud Map, interno)" -ForegroundColor White
 }
-Write-Host ''
-Write-Host 'Event Hubs: Azure (cross-cloud) - connection string en SSM / k8s/secrets.yaml' -ForegroundColor DarkGray
+if ($deployEks -and $state.eksCluster) {
+    Write-Host "  EKS cluster: $($state.eksCluster) ($region)" -ForegroundColor White
+    if ($state.eksReportPath -and (Test-Path $state.eksReportPath)) {
+        Write-Host "  Reporte:     $($state.eksReportPath)" -ForegroundColor White
+    }
+}
+Write-Host 'Event Hubs: Azure (cross-cloud) - connection string en k8s/secrets.yaml' -ForegroundColor DarkGray
 Write-Host 'Validación: docs/GUIA-ENDPOINTS.md' -ForegroundColor DarkGray
 Write-Host 'Limpieza:   .\Remove-AwsShopDemo.ps1' -ForegroundColor DarkGray
 Write-Host ''

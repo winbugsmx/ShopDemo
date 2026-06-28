@@ -1,0 +1,146 @@
+﻿{
+  "generatedAt": "2026-06-26T18:50:00-06:00",
+  "mode": "EKS",
+  "accountId": "905221885508",
+  "region": "us-east-2",
+  "iamUser": "arn:aws:iam::905221885508:user/valentinomx2026",
+  "status": "PARCIAL - cluster y nodegroup activos; workloads ShopDemo pendientes por limite de pods en t3.micro",
+  "awsServicesUsed": [
+    "Amazon EKS",
+    "Amazon EC2 (managed nodegroup)",
+    "Amazon VPC",
+    "AWS CloudFormation (eksctl stacks)",
+    "Amazon ECR",
+    "AWS IAM (roles eksctl)",
+    "Elastic Load Balancing (pendiente - Ingress NLB no programado)",
+    "AWS Systems Manager Parameter Store (desde release ECS)",
+    "Azure Event Hubs (cross-cloud, mensajeria)"
+  ],
+  "cluster": {
+    "name": "shopdemo-eks",
+    "arn": "arn:aws:eks:us-east-2:905221885508:cluster/shopdemo-eks",
+    "status": "ACTIVE",
+    "version": "1.34",
+    "platformVersion": "eks.27",
+    "endpoint": "https://2E34905308964FF61F14554679E6204D.gr7.us-east-2.eks.amazonaws.com",
+    "serviceIpv4Cidr": "10.100.0.0/16",
+    "oidcIssuer": "https://oidc.eks.us-east-2.amazonaws.com/id/2E34905308964FF61F14554679E6204D",
+    "roleArn": "arn:aws:iam::905221885508:role/eksctl-shopdemo-eks-cluster-ServiceRole-S7PwKRSPna0S",
+    "vpcId": "vpc-0a30649d6085c320c",
+    "subnetIds": [
+      "subnet-0fe111c157b5759dc",
+      "subnet-022c846b7f7f3db46",
+      "subnet-05e2e413b05e7905d",
+      "subnet-02b8494a070f360a2",
+      "subnet-087c1068cba0179cb",
+      "subnet-0e29f58bae526735c"
+    ],
+    "securityGroupIds": ["sg-0b3cc48917c54808c"],
+    "clusterSecurityGroupId": "sg-07cbd4dc4fda3f64a",
+    "endpointPublicAccess": true,
+    "endpointPrivateAccess": false,
+    "publicAccessCidrs": ["0.0.0.0/0"],
+    "cloudFormationStack": "eksctl-shopdemo-eks-cluster"
+  },
+  "subnets": [
+    { "id": "subnet-0fe111c157b5759dc", "cidr": "192.168.0.0/19", "az": "us-east-2c", "public": true },
+    { "id": "subnet-022c846b7f7f3db46", "cidr": "192.168.32.0/19", "az": "us-east-2a", "public": true },
+    { "id": "subnet-05e2e413b05e7905d", "cidr": "192.168.64.0/19", "az": "us-east-2b", "public": true },
+    { "id": "subnet-02b8494a070f360a2", "cidr": "192.168.96.0/19", "az": "us-east-2c", "public": false },
+    { "id": "subnet-087c1068cba0179cb", "cidr": "192.168.128.0/19", "az": "us-east-2a", "public": false },
+    { "id": "subnet-0e29f58bae526735c", "cidr": "192.168.160.0/19", "az": "us-east-2b", "public": false }
+  ],
+  "nodegroups": [
+    {
+      "name": "shopdemo-ng-v2",
+      "arn": "arn:aws:eks:us-east-2:905221885508:nodegroup/shopdemo-eks/shopdemo-ng-v2/42cf8294-bed3-e4de-5932-364bf9650110",
+      "status": "ACTIVE",
+      "instanceTypes": ["t3.micro"],
+      "scaling": { "minSize": 1, "maxSize": 1, "desiredSize": 1 },
+      "subnets": ["subnet-0fe111c157b5759dc", "subnet-022c846b7f7f3db46", "subnet-05e2e413b05e7905d"],
+      "nodeRoleArn": "arn:aws:iam::905221885508:role/eksctl-shopdemo-eks-nodegroup-shop-NodeInstanceRole-FaKVlEgDxLrL",
+      "autoScalingGroup": "eks-shopdemo-ng-v2-42cf8294-bed3-e4de-5932-364bf9650110",
+      "launchTemplateId": "lt-05ba4fec56d9e35cb",
+      "cloudFormationStack": "eksctl-shopdemo-eks-nodegroup-shopdemo-ng-v2"
+    }
+  ],
+  "ec2Workers": [
+    {
+      "instanceId": "i-0f7ffeee022fe0494",
+      "instanceType": "t3.micro",
+      "privateIp": "192.168.8.15",
+      "publicIp": "18.225.174.46",
+      "nodeName": "ip-192-168-8-15.us-east-2.compute.internal",
+      "state": "running",
+      "maxPodsPerNode": 4
+    }
+  ],
+  "ecrUri": "905221885508.dkr.ecr.us-east-2.amazonaws.com",
+  "ecrRepositories": [
+    { "name": "shopdemo-catalog", "arn": "arn:aws:ecr:us-east-2:905221885508:repository/shopdemo-catalog", "uri": "905221885508.dkr.ecr.us-east-2.amazonaws.com/shopdemo-catalog", "tag": "latest" },
+    { "name": "shopdemo-orders", "arn": "arn:aws:ecr:us-east-2:905221885508:repository/shopdemo-orders", "uri": "905221885508.dkr.ecr.us-east-2.amazonaws.com/shopdemo-orders", "tag": "latest" },
+    { "name": "shopdemo-inventory", "arn": "arn:aws:ecr:us-east-2:905221885508:repository/shopdemo-inventory", "uri": "905221885508.dkr.ecr.us-east-2.amazonaws.com/shopdemo-inventory", "tag": "latest" },
+    { "name": "shopdemo-analytics", "arn": "arn:aws:ecr:us-east-2:905221885508:repository/shopdemo-analytics", "uri": "905221885508.dkr.ecr.us-east-2.amazonaws.com/shopdemo-analytics", "tag": "latest" },
+    { "name": "shopdemo-mcp", "arn": "arn:aws:ecr:us-east-2:905221885508:repository/shopdemo-mcp", "uri": "905221885508.dkr.ecr.us-east-2.amazonaws.com/shopdemo-mcp", "tag": "latest" }
+  ],
+  "iamPoliciesAttached": [
+    "arn:aws:iam::905221885508:policy/ShopDemoLabECS",
+    "arn:aws:iam::905221885508:policy/ShopDemoLabEKS"
+  ],
+  "ssmParameters": [
+    {
+      "name": "/shopdemo/eh-connection",
+      "arn": "arn:aws:ssm:us-east-2:905221885508:parameter/shopdemo/eh-connection",
+      "type": "SecureString"
+    }
+  ],
+  "eventHubs": {
+    "provider": "Azure Event Hubs (cross-cloud)",
+    "namespace": "shopdemo-eh-ns-lab01.servicebus.windows.net",
+    "hubName": "shopdemo-events",
+    "k8sSecret": "k8s/secrets.yaml (EVENT_HUBS_CONNECTION_STRING)"
+  },
+  "kubernetes": {
+    "namespaceShopdemo": "shopdemo (manifiestos listos, no aplicados por capacidad)",
+    "namespaceIngress": "ingress-nginx",
+    "ingressController": {
+      "status": "Pending - Too many pods (t3.micro max 4 pods/nodo)",
+      "service": "ingress-nginx-controller",
+      "loadBalancerHostname": null
+    },
+    "plannedPrivateDns": {
+      "shopdemo-catalog": "shopdemo-catalog.shopdemo.svc.cluster.local:8080",
+      "shopdemo-orders": "shopdemo-orders.shopdemo.svc.cluster.local:8080",
+      "shopdemo-inventory": "shopdemo-inventory.shopdemo.svc.cluster.local:8080",
+      "shopdemo-analytics": "shopdemo-analytics.shopdemo.svc.cluster.local:8080",
+      "shopdemo-mcp": "shopdemo-mcp.shopdemo.svc.cluster.local:8080",
+      "shopdemo-postgres": "shopdemo-postgres.shopdemo.svc.cluster.local:5432",
+      "shopdemo-azurite": "shopdemo-azurite.shopdemo.svc.cluster.local:10000"
+    },
+    "plannedPublicUrls": {
+      "note": "Via Ingress NLB cuando el controller este Running",
+      "catalog": "http://<NLB>/catalog/swagger",
+      "orders": "http://<NLB>/orders/swagger",
+      "inventory": "http://<NLB>/inventory/health",
+      "analytics": "http://<NLB>/analytics/api/analytics/events",
+      "mcp": "http://<NLB>/mcp/health"
+    }
+  },
+  "blockers": [
+    "Cuenta AWS Free Tier: t3.medium rechazado al crear nodegroup shopdemo-ng",
+    "t3.micro limita a 4 pods por nodo; addons EKS (coredns x2, aws-node, kube-proxy) ocupan el cupo",
+    "Stack fallido eksctl-shopdemo-eks-nodegroup-shopdemo-ng en ROLLBACK_COMPLETE con termination protection"
+  ],
+  "recommendedNextSteps": [
+    "Escalar nodegroup a t3.small (requiere salir de restriccion Free Tier) o agregar un segundo nodo t3.micro",
+    "Ejecutar: .\\Deploy-AwsShopDemo.ps1 -Mode EKS (omitira cluster existente)",
+    "Alternativa lab: usar release ECS ya operativo en la misma cuenta"
+  ],
+  "scriptAdjustments": [
+    "EKS_NODE_TYPE=t3.micro en .env.aws",
+    "Creacion automatica de nodegroup si cluster existe sin nodos",
+    "Helm ingress-nginx sin admission webhooks y recursos reducidos",
+    "Politica IAM ShopDemoLabEKS creada y adjuntada",
+    "Funciones Get-EksReleaseReport, Deploy-K8sWorkloads restauradas"
+  ]
+}

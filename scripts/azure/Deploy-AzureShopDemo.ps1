@@ -351,6 +351,9 @@ Invoke-AzCli 'Registrar proveedor Microsoft.App' @(
 Invoke-AzCli 'Registrar proveedor Microsoft.ContainerInstance' @(
     'provider', 'register', '--namespace', 'Microsoft.ContainerInstance', '--wait'
 ) | Out-Null
+Invoke-AzCli 'Registrar proveedor Microsoft.ContainerService' @(
+    'provider', 'register', '--namespace', 'Microsoft.ContainerService', '--wait'
+) | Out-Null
 Invoke-AzCli 'Extensión containerapp' @(
     'extension', 'add', '--name', 'containerapp', '--upgrade', '-y'
 ) | Out-Null
@@ -738,15 +741,29 @@ if ($deployAks) {
     if (-not (Test-AzResourceExists @(
             'aks', 'show', '--resource-group', $cfg.RESOURCE_GROUP, '--name', $cfg.AKS_CLUSTER_NAME
         ))) {
-        Invoke-AzCli 'Crear cluster AKS' @(
-            'aks', 'create',
-            '--resource-group', $cfg.RESOURCE_GROUP,
-            '--name', $cfg.AKS_CLUSTER_NAME,
-            '--node-count', $cfg.AKS_NODE_COUNT,
-            '--node-vm-size', $cfg.AKS_NODE_VM_SIZE,
-            '--attach-acr', $cfg.ACR_NAME,
-            '--generate-ssh-keys'
-        ) | Out-Null
+        $aksLocations = @($cfg.AZURE_LOCATION, 'eastus2', 'centralus') | Select-Object -Unique
+        $aksCreated = $false
+        foreach ($aksLoc in $aksLocations) {
+            Write-Info "Intentando AKS en $aksLoc"
+            Invoke-AzCli "Crear cluster AKS ($aksLoc)" @(
+                'aks', 'create',
+                '--resource-group', $cfg.RESOURCE_GROUP,
+                '--name', $cfg.AKS_CLUSTER_NAME,
+                '--location', $aksLoc,
+                '--node-count', $cfg.AKS_NODE_COUNT,
+                '--node-vm-size', $cfg.AKS_NODE_VM_SIZE,
+                '--attach-acr', $cfg.ACR_NAME,
+                '--generate-ssh-keys'
+            ) -AllowFailure | Out-Null
+            if (Test-AzResourceExists @('aks', 'show', '--resource-group', $cfg.RESOURCE_GROUP, '--name', $cfg.AKS_CLUSTER_NAME)) {
+                $aksCreated = $true
+                break
+            }
+            Write-Warn "AKS no creado en $aksLoc"
+        }
+        if (-not $aksCreated) {
+            throw 'No se pudo crear el cluster AKS. Prueba otra region (eastus2, centralus).'
+        }
     }
     Write-Ok "Cluster AKS listo"
 

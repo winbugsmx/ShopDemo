@@ -4,6 +4,7 @@ metadata:
   name: shopdemo-mcp
   namespace: shopdemo
 spec:
+  type: LoadBalancer
   selector:
     app: shopdemo-mcp
   ports:

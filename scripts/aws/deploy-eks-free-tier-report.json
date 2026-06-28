@@ -1,0 +1,35 @@
+{
+  "generatedAt": "2026-06-27T09:15:00-06:00",
+  "profile": "eks-free-tier-lab",
+  "cluster": "shopdemo-eks",
+  "region": "us-east-2",
+  "nodes": { "count": 4, "type": "t3.micro", "maxPodsTotal": 16 },
+  "activeServices": [
+    "shopdemo-postgres",
+    "shopdemo-azurite",
+    "shopdemo-catalog",
+    "shopdemo-orders",
+    "shopdemo-inventory"
+  ],
+  "inactiveServices": [
+    "shopdemo-mcp (omitido por limite de pods)",
+    "shopdemo-analytics (Event Hubs cross-cloud + bug: ignora EventHubs__Enabled en Program.cs)",
+    "ingress-nginx (omitido por limite de pods)"
+  ],
+  "publicSwaggerUrls": {
+    "catalog": "http://ae7979de69fb54a8da783bb42c8f0635-1223894467.us-east-2.elb.amazonaws.com:8080/swagger/index.html",
+    "orders": "http://a11afab0e01b9472fac3a955e7f64518-1336164684.us-east-2.elb.amazonaws.com:8080/swagger/index.html",
+    "inventory": "http://af5f79d8cff7e4c9fbd7b33a1bd2c544-2090473525.us-east-2.elb.amazonaws.com:8080/swagger/index.html"
+  },
+  "internalDns": {
+    "orders": "shopdemo-orders.shopdemo.svc.cluster.local:8080",
+    "inventory": "shopdemo-inventory.shopdemo.svc.cluster.local:8080",
+    "postgres": "shopdemo-postgres.shopdemo.svc.cluster.local:5432",
+    "azurite": "shopdemo-azurite.shopdemo.svc.cluster.local:10000"
+  },
+  "notes": [
+    "MCP disponible en release ECS/ACA",
+    "Analytics requiere rebuild con guard EventHubs__Enabled o conectividad estable a Azure Event Hubs",
+    "Inventory: EventHubs deshabilitado en EKS (EventHubs__Enabled=false)"
+  ]
+}

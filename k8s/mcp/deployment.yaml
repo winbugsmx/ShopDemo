@@ -5,6 +5,8 @@ metadata:
   namespace: shopdemo
 spec:
   replicas: 1
+  strategy:
+    type: Recreate
   selector:
     matchLabels:
       app: shopdemo-mcp
@@ -15,8 +17,8 @@ spec:
     spec:
       containers:
         - name: mcp-api
-          image: shopdemo-mcp:latest
-          imagePullPolicy: IfNotPresent
+          image: 905221885508.dkr.ecr.us-east-2.amazonaws.com/shopdemo-mcp:latest
+          imagePullPolicy: Always
           ports:
             - containerPort: 8080
           env:

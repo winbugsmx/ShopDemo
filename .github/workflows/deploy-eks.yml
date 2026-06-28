@@ -76,15 +76,26 @@ jobs:
           REGION="${{ secrets.AWS_REGION }}"
           echo "AWS_REGION=${REGION:-us-east-2}" >> "$GITHUB_ENV"
 
+      - name: Determine AWS auth mode
+        id: aws_auth
+        env:
+          AWS_ROLE_ARN: ${{ secrets.AWS_ROLE_ARN }}
+        run: |
+          if [ -n "$AWS_ROLE_ARN" ]; then
+            echo "mode=oidc" >> "$GITHUB_OUTPUT"
+          else
+            echo "mode=key" >> "$GITHUB_OUTPUT"
+          fi
+
       - name: Configure AWS credentials (OIDC)
-        if: ${{ secrets.AWS_ROLE_ARN != '' }}
+        if: steps.aws_auth.outputs.mode == 'oidc'
         uses: aws-actions/configure-aws-credentials@v4
         with:
           role-to-assume: ${{ secrets.AWS_ROLE_ARN }}
           aws-region: ${{ env.AWS_REGION }}
 
       - name: Configure AWS credentials (access key)
-        if: ${{ secrets.AWS_ROLE_ARN == '' }}
+        if: steps.aws_auth.outputs.mode == 'key'
         uses: aws-actions/configure-aws-credentials@v4
         with:
           aws-access-key-id: ${{ secrets.AWS_ACCESS_KEY_ID }}
@@ -126,15 +137,26 @@ jobs:
           REGION="${{ secrets.AWS_REGION }}"
           echo "AWS_REGION=${REGION:-us-east-2}" >> "$GITHUB_ENV"
 
+      - name: Determine AWS auth mode
+        id: aws_auth
+        env:
+          AWS_ROLE_ARN: ${{ secrets.AWS_ROLE_ARN }}
+        run: |
+          if [ -n "$AWS_ROLE_ARN" ]; then
+            echo "mode=oidc" >> "$GITHUB_OUTPUT"
+          else
+            echo "mode=key" >> "$GITHUB_OUTPUT"
+          fi
+
       - name: Configure AWS credentials (OIDC)
-        if: ${{ secrets.AWS_ROLE_ARN != '' }}
+        if: steps.aws_auth.outputs.mode == 'oidc'
         uses: aws-actions/configure-aws-credentials@v4
         with:
           role-to-assume: ${{ secrets.AWS_ROLE_ARN }}
           aws-region: ${{ env.AWS_REGION }}
 
       - name: Configure AWS credentials (access key)
-        if: ${{ secrets.AWS_ROLE_ARN == '' }}
+        if: steps.aws_auth.outputs.mode == 'key'
         uses: aws-actions/configure-aws-credentials@v4
         with:
           aws-access-key-id: ${{ secrets.AWS_ACCESS_KEY_ID }}
@@ -195,15 +217,26 @@ jobs:
           REGION="${{ secrets.AWS_REGION }}"
           echo "AWS_REGION=${REGION:-us-east-2}" >> "$GITHUB_ENV"
 
+      - name: Determine AWS auth mode
+        id: aws_auth
+        env:
+          AWS_ROLE_ARN: ${{ secrets.AWS_ROLE_ARN }}
+        run: |
+          if [ -n "$AWS_ROLE_ARN" ]; then
+            echo "mode=oidc" >> "$GITHUB_OUTPUT"
+          else
+            echo "mode=key" >> "$GITHUB_OUTPUT"
+          fi
+
       - name: Configure AWS credentials (OIDC)
-        if: ${{ secrets.AWS_ROLE_ARN != '' }}
+        if: steps.aws_auth.outputs.mode == 'oidc'
         uses: aws-actions/configure-aws-credentials@v4
         with:
           role-to-assume: ${{ secrets.AWS_ROLE_ARN }}
           aws-region: ${{ env.AWS_REGION }}
 
       - name: Configure AWS credentials (access key)
-        if: ${{ secrets.AWS_ROLE_ARN == '' }}
+        if: steps.aws_auth.outputs.mode == 'key'
         uses: aws-actions/configure-aws-credentials@v4
         with:
           aws-access-key-id: ${{ secrets.AWS_ACCESS_KEY_ID }}

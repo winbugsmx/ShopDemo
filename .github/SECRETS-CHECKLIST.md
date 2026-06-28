@@ -3,6 +3,8 @@
 Configura estos valores en **Settings → Secrets and variables → Actions** del repositorio GitHub.  
 Usa **Environments** separados para aprobar despliegues por plataforma.
 
+**Guía paso a paso en portal:** [SETUP-GITHUB-PORTAL.md](SETUP-GITHUB-PORTAL.md) · **GitHub CLI:** [GH-CLI-COMMANDS.md](GH-CLI-COMMANDS.md)
+
 | Environment | Workflow | Cuándo crear |
 |---|---|---|
 | `azure` | deploy-azure.yml | Release ACA |
@@ -170,7 +172,9 @@ Después, los pushes a `main` con cambios de código solo ejecutan **build → p
 ## Referencias
 
 - [README.md](README.md) — índice workflows
+- [GH-CLI-COMMANDS.md](GH-CLI-COMMANDS.md) — comandos `gh secret set` por environment (lab)
 - [SETUP-GITHUB.md](SETUP-GITHUB.md) — configuración paso a paso en GitHub
+- [SETUP-GITHUB-PORTAL.md](SETUP-GITHUB-PORTAL.md) — portal web (environments, secrets, Actions)
 - [docs/despliegue/ALCANCE-LAB-RELEASE.md](../docs/despliegue/ALCANCE-LAB-RELEASE.md)
 - [scripts/azure/.env.azure.example](../scripts/azure/.env.azure.example)
 - [scripts/aws/.env.aws.example](../scripts/aws/.env.aws.example)

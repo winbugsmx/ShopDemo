@@ -9,7 +9,7 @@ Despliegue automático tras **merge a `main`** (no en apertura de PR). También 
 | [deploy-aks.yml](workflows/deploy-aks.yml) | Azure AKS | `azure-aks` | 5 APIs + MCP + Ingress |
 | [deploy-eks.yml](workflows/deploy-eks.yml) | Amazon EKS | `aws-eks` | 5 APIs + MCP + Ingress |
 
-**Checklist de secrets y prerequisitos:** [SECRETS-CHECKLIST.md](SECRETS-CHECKLIST.md) · **Guía de configuración:** [SETUP-GITHUB.md](SETUP-GITHUB.md)
+**Checklist de secrets y prerequisitos:** [SECRETS-CHECKLIST.md](SECRETS-CHECKLIST.md) · **Guía de configuración:** [SETUP-GITHUB.md](SETUP-GITHUB.md) · **Portal web (alumnos):** [SETUP-GITHUB-PORTAL.md](SETUP-GITHUB-PORTAL.md) · **Comandos `gh` CLI:** [GH-CLI-COMMANDS.md](GH-CLI-COMMANDS.md)
 
 ## Scripts auxiliares
 
@@ -21,6 +21,7 @@ Despliegue automático tras **merge a `main`** (no en apertura de PR). También 
 | [deploy-k8s-image.sh](scripts/deploy-k8s-image.sh) | AKS/EKS — `kubectl set image` + rollout |
 | [apply-k8s-manifests.sh](scripts/apply-k8s-manifests.sh) | AKS/EKS — apply deployments/ingress |
 | [sync-k8s-secrets.sh](scripts/sync-k8s-secrets.sh) | AKS/EKS — Secret `shopdemo-secrets` |
+| [sync-github-environments.ps1](scripts/sync-github-environments.ps1) | Bootstrap — environments + secrets vía `gh` |
 
 ## Infraestructura previa (una vez)
 

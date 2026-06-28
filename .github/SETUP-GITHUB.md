@@ -2,10 +2,16 @@
 
 Pasos para activar los **4 workflows** tras clonar el repo. Checklist de secrets: [SECRETS-CHECKLIST.md](SECRETS-CHECKLIST.md).
 
+**Elige tu camino:**
+
+| Guía | Para quién |
+|---|---|
+| **[SETUP-GITHUB-PORTAL.md](SETUP-GITHUB-PORTAL.md)** | Alumnos que configuran desde el **portal web** de GitHub |
+| **[GH-CLI-COMMANDS.md](GH-CLI-COMMANDS.md)** | Quienes prefieren **GitHub CLI** (`gh`) o automatizar con script |
+
 ## 1. Crear environments
 
-En **Settings → Environments**, crear:
-
+En **Settings → Environments**, crear los cuatro nombres. **Paso a paso con capturas de ruta en portal:** [SETUP-GITHUB-PORTAL.md §3](SETUP-GITHUB-PORTAL.md#3-crear-environments).
 | Environment | Protección recomendada (lab) |
 |---|---|
 | `azure` | Opcional: reviewers |
@@ -13,13 +19,21 @@ En **Settings → Environments**, crear:
 | `aws` | Opcional |
 | `aws-eks` | Opcional |
 
-Con [GitHub CLI](https://cli.github.com/) (`gh auth login`):
+Con [GitHub CLI](https://cli.github.com/) (`gh auth login`) — **comandos completos y listado de secrets:** [GH-CLI-COMMANDS.md](GH-CLI-COMMANDS.md)
 
 ```bash
-gh api repos/{owner}/{repo}/environments/azure -X PUT
-gh api repos/{owner}/{repo}/environments/azure-aks -X PUT
-gh api repos/{owner}/{repo}/environments/aws -X PUT
-gh api repos/{owner}/{repo}/environments/aws-eks -X PUT
+REPO="winbugsmx/ShopDemo"
+gh api --method PUT "repos/${REPO}/environments/azure"
+gh api --method PUT "repos/${REPO}/environments/azure-aks"
+gh api --method PUT "repos/${REPO}/environments/aws"
+gh api --method PUT "repos/${REPO}/environments/aws-eks"
+```
+
+O con PowerShell (lee `.env.azure`, `.env.aws` y `k8s/secrets.example.yaml`):
+
+```powershell
+.\.github\scripts\sync-github-environments.ps1 -WhatIf
+.\.github\scripts\sync-github-environments.ps1
 ```
 
 ## 2. Provisionar infra (una vez, local)
@@ -40,10 +54,15 @@ Completar post-script AKS/EKS según [GUIA-RELEASE-SCRIPT-AZURE](../docs/desplie
 
 ## 3. Cargar secrets
 
-Copia valores de `.env.azure`, `.env.aws` y consolas cloud a **Settings → Secrets and variables → Actions**.
+Copia valores de `.env.azure`, `.env.aws` y consolas cloud.
+
+| Método | Documento |
+|---|---|
+| **Portal GitHub** (Settings → Secrets) | [SETUP-GITHUB-PORTAL.md §4–§5](SETUP-GITHUB-PORTAL.md#4-secrets-a-nivel-repositorio) |
+| **GitHub CLI** | [GH-CLI-COMMANDS.md](GH-CLI-COMMANDS.md) |
+| **Script PowerShell** | `sync-github-environments.ps1` (ver GH-CLI-COMMANDS §4) |
 
 Mínimo por environment — ver tablas en [SECRETS-CHECKLIST.md](SECRETS-CHECKLIST.md).
-
 Ejemplo con `gh` (repository secret; repetir por environment en la UI):
 
 ```bash
@@ -95,5 +114,7 @@ Secret `AWS_ROLE_ARN` en environments `aws` y `aws-eks`.
 ## Referencias
 
 - [README.md](README.md) — índice workflows
+- [SETUP-GITHUB-PORTAL.md](SETUP-GITHUB-PORTAL.md) — configuración desde el portal web (alumnos)
+- [GH-CLI-COMMANDS.md](GH-CLI-COMMANDS.md) — comandos `gh` por environment y secrets del lab
 - [SECRETS-CHECKLIST.md](SECRETS-CHECKLIST.md) — checklist completo
 - [ALCANCE-LAB-RELEASE.md](../docs/despliegue/ALCANCE-LAB-RELEASE.md) — CI/CD § merge a main

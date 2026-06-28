@@ -709,7 +709,7 @@ ShopDemo/
 | Anexos de código | [Shared](docs/ANEXO-CODIGO-SHARED.md) · [Catalog](docs/catalog/ANEXO-CODIGO-CATALOG.md) · [Orders](docs/orders/ANEXO-CODIGO-ORDERS.md) · [Inventory](docs/inventory/ANEXO-CODIGO-INVENTORY.md) · [Event Hubs](docs/ANEXO-CODIGO-EVENT-HUBS.md) · [Analytics/Aspire](docs/analytics/ANEXO-CODIGO-ANALYTICS-ASPIRE.md) · [MCP](docs/integracion-ia/ANEXO-CODIGO-MCP.md) |
 | Scripts Azure (PowerShell) | [scripts/azure/README.md](scripts/azure/README.md) |
 | Scripts AWS (PowerShell) | [scripts/aws/README.md](scripts/aws/README.md) |
-| **CI/CD GitHub Actions** | [.github/README.md](.github/README.md) · [SETUP-GITHUB](.github/SETUP-GITHUB.md) · [SECRETS-CHECKLIST](.github/SECRETS-CHECKLIST.md) |
+| **CI/CD GitHub Actions** | [.github/README.md](.github/README.md) · [Portal web](.github/SETUP-GITHUB-PORTAL.md) · [SETUP-GITHUB](.github/SETUP-GITHUB.md) · [GH-CLI](.github/GH-CLI-COMMANDS.md) · [SECRETS-CHECKLIST](.github/SECRETS-CHECKLIST.md) |
 | Preparación Azure / AWS | [PREPARACION-AZURE](docs/despliegue/azure/PREPARACION-AMBIENTE-AZURE.md) · [PREPARACION-AWS](docs/despliegue/aws/PREPARACION-AMBIENTE-AWS.md) |
 | Reportes release lab | [AKS](scripts/azure/deploy-aks-report.json) · [EKS free-tier](scripts/aws/deploy-eks-free-tier-report.json) |
 | Arquitectura | [docs/ARQUITECTURA.md](docs/ARQUITECTURA.md) |

@@ -131,7 +131,7 @@ Tras configurar secrets ([.github/SECRETS-CHECKLIST.md](../../.github/SECRETS-CH
 - Infra inicial sigue siendo con scripts PowerShell (una vez).
 - Cambios solo en `k8s/**` actualizan manifiestos en AKS/EKS (no ACA/ECS).
 
-Índice completo: [.github/README.md](../../.github/README.md) · Configuración paso a paso: [SETUP-GITHUB.md](../../.github/SETUP-GITHUB.md)
+Índice completo: [.github/README.md](../../.github/README.md) · Configuración: [SETUP-GITHUB.md](../../.github/SETUP-GITHUB.md) · **Portal web (alumnos):** [SETUP-GITHUB-PORTAL.md](../../.github/SETUP-GITHUB-PORTAL.md) · CLI: [GH-CLI-COMMANDS.md](../../.github/GH-CLI-COMMANDS.md)
 
 ---
 

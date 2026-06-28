@@ -13,7 +13,8 @@
 **Preparación IAM/cuotas:** [PREPARACION-AMBIENTE-AWS.md](../aws/PREPARACION-AMBIENTE-AWS.md)  
 **Guías actualizadas (recomendadas):** [GUIA-RELEASE-SCRIPT-AWS.md](../aws/GUIA-RELEASE-SCRIPT-AWS.md) · [GUIA-RELEASE-CLI-AWS.md](../aws/GUIA-RELEASE-CLI-AWS.md) · [GUIA-RELEASE-PORTAL-AWS.md](../aws/GUIA-RELEASE-PORTAL-AWS.md)  
 **Perfil lab validado:** `eks-free-tier-lab` — 4× `t3.micro`, LoadBalancer en Catalog/Orders/Inventory, Swagger en **:8080** (ver guía Script §6)  
-**Script automatizado:** [scripts/aws/README.md](../../../scripts/aws/README.md) (`-Mode EKS` genera `k8s/secrets.yaml`)
+**Script automatizado:** [scripts/aws/README.md](../../../scripts/aws/README.md) (`-Mode EKS` genera `k8s/secrets.yaml`)  
+**CI/CD:** [deploy-eks.yml](../../../.github/workflows/deploy-eks.yml) · [SETUP-GITHUB.md](../../../.github/SETUP-GITHUB.md)
 
 ---
 
@@ -58,6 +59,20 @@ Guía: [scripts/aws/README.md](../../../scripts/aws/README.md).
 ECS + EKS: `.\Deploy-AwsShopDemo.ps1 -Mode All`.
 
 Los pasos manuales (§2–§11) complementan el script para aprendizaje o despliegue 100 % manual.
+
+---
+
+## 0b. CI/CD GitHub Actions (`deploy-eks.yml`)
+
+Configura [SETUP-GITHUB.md](../../../.github/SETUP-GITHUB.md) (environment `aws-eks` + secrets).
+
+| Evento | Acción |
+|---|---|
+| Merge a `main` (apps) | build → push ECR → `kubectl set image` |
+| Merge a `main` (`k8s/**`) | apply manifiestos |
+| Manual | `sync_secrets`, `apply_manifests`, `apply_infra` |
+
+Checklist: [SECRETS-CHECKLIST.md](../../../.github/SECRETS-CHECKLIST.md)
 
 ---
 

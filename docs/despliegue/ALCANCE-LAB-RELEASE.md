@@ -36,7 +36,7 @@
 | PostgreSQL en ACI | Sí (lab) | 3 bases de datos | Sí |
 | 5 Container Apps (4 APIs + MCP) | Sí | Release ShopDemo | Sí |
 | **AKS** | **No** en lab corto | Avanzado; otro día | Modo `-Mode AKS` |
-| GitHub Actions | No | Alternativa: `docker push` manual | — |
+| **GitHub Actions** | Opcional | Automatizar build/deploy tras merge a `main` | No crea infra — [SECRETS-CHECKLIST](../../.github/SECRETS-CHECKLIST.md) |
 
 **No necesitas en ACA:** Azurite en ACI (solo Kubernetes/ECS usan Azurite para checkpoints).
 
@@ -113,6 +113,25 @@ Si un nombre global está ocupado, cambia el sufijo `01` → `02` en **todos** l
 ## Convención: alcance del curso
 
 En los documentos de **requerimientos**, la sección **«No incluido en el curso»** delimita límites permanentes del laboratorio (enterprise, `azd`, multi-región, etc.). No indica etapas pendientes: integraciones ya cubiertas (Event Hubs, Aspire local, `k8s/`, ACA, ECS, AKS, EKS, MCP) están en el [README](../../README.md#etapas-del-curso-roadmap).
+
+---
+
+## CI/CD — merge a `main`
+
+Tras configurar secrets ([.github/SECRETS-CHECKLIST.md](../../.github/SECRETS-CHECKLIST.md)), un **merge a `main`** dispara automáticamente:
+
+| Workflow | Destino |
+|---|---|
+| `deploy-azure.yml` | Azure Container Apps (5 servicios) |
+| `deploy-aws.yml` | AWS ECS Fargate (5 servicios) |
+| `deploy-aks.yml` | Azure AKS — build ACR + `kubectl set image` |
+| `deploy-eks.yml` | Amazon EKS — build ECR + `kubectl set image` |
+
+- **No** despliega al abrir el PR; solo al integrar en `main`.
+- Infra inicial sigue siendo con scripts PowerShell (una vez).
+- Cambios solo en `k8s/**` actualizan manifiestos en AKS/EKS (no ACA/ECS).
+
+Índice completo: [.github/README.md](../../.github/README.md) · Configuración paso a paso: [SETUP-GITHUB.md](../../.github/SETUP-GITHUB.md)
 
 ---
 

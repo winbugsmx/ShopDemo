@@ -13,7 +13,8 @@
 **Preparación:** [PREPARACION-AMBIENTE-AZURE.md](../azure/PREPARACION-AMBIENTE-AZURE.md)  
 **Guías actualizadas (recomendadas):** [GUIA-RELEASE-SCRIPT-AZURE.md](../azure/GUIA-RELEASE-SCRIPT-AZURE.md) · [GUIA-RELEASE-CLI-AZURE.md](../azure/GUIA-RELEASE-CLI-AZURE.md) · [GUIA-RELEASE-PORTAL-AZURE.md](../azure/GUIA-RELEASE-PORTAL-AZURE.md)  
 **Release AKS validado:** Ingress `shopdemo.local`, health probe `/healthz`, consumer groups EH — ver guía Script §5  
-**Script:** [scripts/azure/README.md](../../../scripts/azure/README.md) · **Reporte:** [deploy-aks-report.json](../../../scripts/azure/deploy-aks-report.json)
+**Script:** [scripts/azure/README.md](../../../scripts/azure/README.md) · **Reporte:** [deploy-aks-report.json](../../../scripts/azure/deploy-aks-report.json)  
+**CI/CD:** [deploy-aks.yml](../../../.github/workflows/deploy-aks.yml) · [SETUP-GITHUB.md](../../../.github/SETUP-GITHUB.md)
 
 ---
 
@@ -58,6 +59,20 @@ Guía completa del script: [scripts/azure/README.md](../../../scripts/azure/READ
 Release ACA + AKS juntos: `.\Deploy-AzureShopDemo.ps1 -Mode All`.
 
 Los pasos manuales siguientes (§2–§11) explican cada recurso si prefieres Portal/CLI paso a paso.
+
+---
+
+## 0b. CI/CD GitHub Actions (`deploy-aks.yml`)
+
+Tras el primer despliegue manual, configura [SETUP-GITHUB.md](../../../.github/SETUP-GITHUB.md) (environment `azure-aks` + secrets).
+
+| Evento | Acción del workflow |
+|---|---|
+| Merge a `main` (código apps) | build → push ACR → `kubectl set image` (5 servicios) |
+| Merge a `main` (`k8s/**`) | `kubectl apply` deployments + ingress |
+| Manual | `sync_secrets`, `apply_manifests`, `apply_infra` |
+
+Checklist: [SECRETS-CHECKLIST.md](../../../.github/SECRETS-CHECKLIST.md)
 
 ---
 

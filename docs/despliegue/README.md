@@ -65,10 +65,12 @@ Cada plataforma ofrece **tres enfoques equivalentes** (Script, CLI, Portal). El 
 
 ## Scripts PowerShell de release (automatización)
 
-| Plataforma | Carpeta | Guía | Modos |
-|---|---|---|---|
-| **Azure** | [scripts/azure/](../../scripts/azure/) | [README](../../scripts/azure/README.md) | `ACA` · `AKS` · `All` |
-| **AWS** | [scripts/aws/](../../scripts/aws/) | [README](../../scripts/aws/README.md) | `ECS` · `EKS` · `All` |
+| Plataforma | Carpeta | Guía | Modos | CI/CD (merge `main`) |
+|---|---|---|---|---|
+| **Azure** | [scripts/azure/](../../scripts/azure/) | [README](../../scripts/azure/README.md) | `ACA` · `AKS` · `All` | [deploy-azure.yml](../../.github/workflows/deploy-azure.yml) · [deploy-aks.yml](../../.github/workflows/deploy-aks.yml) |
+| **AWS** | [scripts/aws/](../../scripts/aws/) | [README](../../scripts/aws/README.md) | `ECS` · `EKS` · `All` | [deploy-aws.yml](../../.github/workflows/deploy-aws.yml) · [deploy-eks.yml](../../.github/workflows/deploy-eks.yml) |
+
+**Checklist secrets:** [.github/SECRETS-CHECKLIST.md](../../.github/SECRETS-CHECKLIST.md) · **Setup:** [.github/SETUP-GITHUB.md](../../.github/SETUP-GITHUB.md)
 
 **No incluyen build Docker** — tras ejecutar el script, publica imágenes con GitHub Actions o build manual.
 

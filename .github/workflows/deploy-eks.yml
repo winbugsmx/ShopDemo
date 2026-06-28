@@ -1,0 +1,237 @@
+# Build → push ECR → kubectl set image en Amazon EKS (ShopDemo)
+# Checklist secrets: .github/SECRETS-CHECKLIST.md
+#
+# Infra previa: Deploy-AwsShopDemo.ps1 -Mode EKS + kubectl apply inicial
+# Trigger: push a main (apps o k8s) o workflow_dispatch
+
+name: Deploy EKS
+
+on:
+  workflow_dispatch:
+    inputs:
+      apply_manifests:
+        description: Apply k8s manifests (deployments, ingress, HPA)
+        type: boolean
+        default: false
+      apply_infra:
+        description: Include postgres/azurite (first-time cluster only)
+        type: boolean
+        default: false
+      sync_secrets:
+        description: Sync GitHub secrets to shopdemo-secrets
+        type: boolean
+        default: false
+  push:
+    branches: [main]
+    paths:
+      - 'Catalog/**'
+      - 'Orders/**'
+      - 'Inventory/**'
+      - 'Aspire/ShopDemo.Analytics.Api/**'
+      - 'AI/ShopDemo.Mcp.Api/**'
+      - 'ShopDemo.Shared/**'
+      - 'k8s/**'
+      - '.github/workflows/deploy-eks.yml'
+      - '.github/scripts/**'
+
+permissions:
+  id-token: write
+  contents: read
+
+jobs:
+  changes:
+    runs-on: ubuntu-latest
+    outputs:
+      apps: ${{ steps.filter.outputs.apps }}
+      k8s: ${{ steps.filter.outputs.k8s }}
+    steps:
+      - uses: actions/checkout@v4
+      - uses: dorny/paths-filter@v3
+        id: filter
+        with:
+          filters: |
+            apps:
+              - 'Catalog/**'
+              - 'Orders/**'
+              - 'Inventory/**'
+              - 'Aspire/ShopDemo.Analytics.Api/**'
+              - 'AI/ShopDemo.Mcp.Api/**'
+              - 'ShopDemo.Shared/**'
+            k8s:
+              - 'k8s/**'
+
+  sync-secrets:
+    if: github.event_name == 'workflow_dispatch' && inputs.sync_secrets == true
+    environment: aws-eks
+    runs-on: ubuntu-latest
+    env:
+      AWS_REGION: ${{ secrets.AWS_REGION }}
+      EKS_CLUSTER_NAME: ${{ secrets.EKS_CLUSTER_NAME }}
+      K8S_NAMESPACE: ${{ secrets.K8S_NAMESPACE || 'shopdemo' }}
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Resolve AWS region
+        run: |
+          REGION="${{ secrets.AWS_REGION }}"
+          echo "AWS_REGION=${REGION:-us-east-2}" >> "$GITHUB_ENV"
+
+      - name: Configure AWS credentials (OIDC)
+        if: ${{ secrets.AWS_ROLE_ARN != '' }}
+        uses: aws-actions/configure-aws-credentials@v4
+        with:
+          role-to-assume: ${{ secrets.AWS_ROLE_ARN }}
+          aws-region: ${{ env.AWS_REGION }}
+
+      - name: Configure AWS credentials (access key)
+        if: ${{ secrets.AWS_ROLE_ARN == '' }}
+        uses: aws-actions/configure-aws-credentials@v4
+        with:
+          aws-access-key-id: ${{ secrets.AWS_ACCESS_KEY_ID }}
+          aws-secret-access-key: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
+          aws-region: ${{ env.AWS_REGION }}
+
+      - name: Configure kubectl
+        run: aws eks update-kubeconfig --name "$EKS_CLUSTER_NAME" --region "$AWS_REGION"
+
+      - name: Sync Kubernetes secrets
+        env:
+          EVENT_HUBS_CONNECTION_STRING: ${{ secrets.EVENT_HUBS_CONNECTION_STRING }}
+          PG_CATALOG_CONN: ${{ secrets.PG_CATALOG_CONN }}
+          PG_ORDERS_CONN: ${{ secrets.PG_ORDERS_CONN }}
+          PG_INVENTORY_CONN: ${{ secrets.PG_INVENTORY_CONN }}
+          AZURITE_CHECKPOINT_CONN: ${{ secrets.AZURITE_CHECKPOINT_CONN }}
+          POSTGRES_USER: ${{ secrets.POSTGRES_USER }}
+          POSTGRES_PASSWORD: ${{ secrets.POSTGRES_PASSWORD }}
+        run: |
+          chmod +x .github/scripts/sync-k8s-secrets.sh
+          bash .github/scripts/sync-k8s-secrets.sh
+
+  apply-manifests:
+    needs: changes
+    if: |
+      (needs.changes.outputs.k8s == 'true' && github.event_name == 'push') ||
+      (github.event_name == 'workflow_dispatch' && inputs.apply_manifests == true)
+    environment: aws-eks
+    runs-on: ubuntu-latest
+    env:
+      AWS_REGION: ${{ secrets.AWS_REGION }}
+      EKS_CLUSTER_NAME: ${{ secrets.EKS_CLUSTER_NAME }}
+      APPLY_INFRA: ${{ github.event_name == 'workflow_dispatch' && inputs.apply_infra == true && 'true' || 'false' }}
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Resolve AWS region
+        run: |
+          REGION="${{ secrets.AWS_REGION }}"
+          echo "AWS_REGION=${REGION:-us-east-2}" >> "$GITHUB_ENV"
+
+      - name: Configure AWS credentials (OIDC)
+        if: ${{ secrets.AWS_ROLE_ARN != '' }}
+        uses: aws-actions/configure-aws-credentials@v4
+        with:
+          role-to-assume: ${{ secrets.AWS_ROLE_ARN }}
+          aws-region: ${{ env.AWS_REGION }}
+
+      - name: Configure AWS credentials (access key)
+        if: ${{ secrets.AWS_ROLE_ARN == '' }}
+        uses: aws-actions/configure-aws-credentials@v4
+        with:
+          aws-access-key-id: ${{ secrets.AWS_ACCESS_KEY_ID }}
+          aws-secret-access-key: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
+          aws-region: ${{ env.AWS_REGION }}
+
+      - name: Configure kubectl
+        run: aws eks update-kubeconfig --name "$EKS_CLUSTER_NAME" --region "$AWS_REGION"
+
+      - name: Apply manifests
+        run: |
+          chmod +x .github/scripts/apply-k8s-manifests.sh
+          bash .github/scripts/apply-k8s-manifests.sh k8s
+
+  build-and-deploy:
+    needs: changes
+    if: needs.changes.outputs.apps == 'true' || github.event_name == 'workflow_dispatch'
+    environment: aws-eks
+    runs-on: ubuntu-latest
+    env:
+      AWS_REGION: ${{ secrets.AWS_REGION }}
+      EKS_CLUSTER_NAME: ${{ secrets.EKS_CLUSTER_NAME }}
+      K8S_NAMESPACE: ${{ secrets.K8S_NAMESPACE || 'shopdemo' }}
+    strategy:
+      matrix:
+        include:
+          - service: catalog
+            dockerfile: Catalog/ShopDemo.Catalog.Api/Dockerfile
+            repository: shopdemo-catalog
+            deployment: shopdemo-catalog
+            container: catalog-api
+          - service: orders
+            dockerfile: Orders/ShopDemo.Orders.Api/Dockerfile
+            repository: shopdemo-orders
+            deployment: shopdemo-orders
+            container: orders-api
+          - service: inventory
+            dockerfile: Inventory/ShopDemo.Inventory.Api/Dockerfile
+            repository: shopdemo-inventory
+            deployment: shopdemo-inventory
+            container: inventory-api
+          - service: analytics
+            dockerfile: Aspire/ShopDemo.Analytics.Api/Dockerfile
+            repository: shopdemo-analytics
+            deployment: shopdemo-analytics
+            container: analytics-api
+          - service: mcp
+            dockerfile: AI/ShopDemo.Mcp.Api/Dockerfile
+            repository: shopdemo-mcp
+            deployment: shopdemo-mcp
+            container: mcp-api
+
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Resolve AWS region
+        run: |
+          REGION="${{ secrets.AWS_REGION }}"
+          echo "AWS_REGION=${REGION:-us-east-2}" >> "$GITHUB_ENV"
+
+      - name: Configure AWS credentials (OIDC)
+        if: ${{ secrets.AWS_ROLE_ARN != '' }}
+        uses: aws-actions/configure-aws-credentials@v4
+        with:
+          role-to-assume: ${{ secrets.AWS_ROLE_ARN }}
+          aws-region: ${{ env.AWS_REGION }}
+
+      - name: Configure AWS credentials (access key)
+        if: ${{ secrets.AWS_ROLE_ARN == '' }}
+        uses: aws-actions/configure-aws-credentials@v4
+        with:
+          aws-access-key-id: ${{ secrets.AWS_ACCESS_KEY_ID }}
+          aws-secret-access-key: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
+          aws-region: ${{ env.AWS_REGION }}
+
+      - name: Login to Amazon ECR
+        id: ecr
+        uses: aws-actions/amazon-ecr-login@v2
+
+      - name: Build and push image
+        env:
+          ECR_REGISTRY: ${{ steps.ecr.outputs.registry }}
+        run: |
+          IMAGE="$ECR_REGISTRY/${{ matrix.repository }}:${{ github.sha }}"
+          docker build -f ${{ matrix.dockerfile }} -t "$IMAGE" -t "$ECR_REGISTRY/${{ matrix.repository }}:latest" .
+          docker push "$IMAGE"
+          docker push "$ECR_REGISTRY/${{ matrix.repository }}:latest"
+          echo "IMAGE=$IMAGE" >> "$GITHUB_ENV"
+
+      - name: Configure kubectl
+        run: aws eks update-kubeconfig --name "$EKS_CLUSTER_NAME" --region "$AWS_REGION"
+
+      - name: Rollout deployment
+        run: |
+          chmod +x .github/scripts/deploy-k8s-image.sh
+          bash .github/scripts/deploy-k8s-image.sh \
+            "${{ matrix.deployment }}" \
+            "${{ matrix.container }}" \
+            "$IMAGE" \
+            "${{ env.K8S_NAMESPACE }}"

@@ -13,6 +13,7 @@ Automatización del laboratorio Azure del curso Lite Thinking. Complementa la do
 | AKS + Kubernetes | [GUIA-RELEASE-KUBERNETES.md](../../docs/despliegue/kubernetes/GUIA-RELEASE-KUBERNETES.md) |
 | Event Hubs | [INTEGRACION-AZURE-EVENT-HUBS.md](../../docs/INTEGRACION-AZURE-EVENT-HUBS.md) |
 | Reporte AKS lab | [deploy-aks-report.json](./deploy-aks-report.json) |
+| CI/CD GitHub | [.github/workflows/deploy-azure.yml](../../.github/workflows/deploy-azure.yml) · [deploy-aks.yml](../../.github/workflows/deploy-aks.yml) · [SETUP-GITHUB.md](../../.github/SETUP-GITHUB.md) |
 
 ## Archivos
 

@@ -627,7 +627,7 @@ Orden de apply: [k8s/README.md](../k8s/README.md)
 | **AWS ECS** | Fargate (5 services) | ECR | [despliegue/aws/](./despliegue/aws/) |
 | **Amazon EKS** | Kubernetes | ECR + `k8s/` | [despliegue/eks/](./despliegue/eks/) |
 
-Cada guía incluye pasos por **Portal/Consola** y **CLI**. CI/CD: [.github/workflows/deploy-azure.yml](../.github/workflows/deploy-azure.yml) · [deploy-aws.yml](../.github/workflows/deploy-aws.yml).
+Cada guía incluye pasos por **Portal/Consola** y **CLI**. CI/CD (merge a `main`): [.github/README.md](../.github/README.md) — workflows `deploy-azure`, `deploy-aws`, `deploy-aks`, `deploy-eks` · [SETUP-GITHUB.md](../.github/SETUP-GITHUB.md).
 
 **Post-despliegue:** configurar Postman con FQDN/ALB/Ingress según [README.md § Postman](../README.md#configurar-postman-según-entorno).
 

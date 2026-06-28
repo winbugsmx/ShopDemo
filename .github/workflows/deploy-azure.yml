@@ -1,14 +1,9 @@
 # Build y despliegue a Azure Container Apps (ShopDemo)
 #
-# Secrets obligatorios (infra CI/CD):
-#   AZURE_CREDENTIALS, ACR_NAME, AZURE_RG, ACA_ENV
+# Trigger: push a rama main (merge de PR) o workflow_dispatch
+# Checklist completo: .github/SECRETS-CHECKLIST.md
 #
-# Secrets de configuración (runtime → env vars en Container Apps):
-#   EVENT_HUBS_CONNECTION_STRING, EVENT_HUB_NAME
-#   PG_CATALOG_CONN, PG_ORDERS_CONN, PG_INVENTORY_CONN
-#   STORAGE_CHECKPOINT_CONN (Inventory + Analytics)
-#   INVENTORY_API_BASE_URL (Orders → Inventory interno)
-#   MCP_CATALOG_URL, MCP_INVENTORY_URL, MCP_ANALYTICS_URL
+# GitHub environment: azure
 
 name: Deploy Azure
 
@@ -24,7 +19,7 @@ on:
       - 'AI/ShopDemo.Mcp.Api/**'
       - 'ShopDemo.Shared/**'
       - '.github/workflows/deploy-azure.yml'
-      - '.github/scripts/configure-azure-containerapp.sh'
+      - '.github/scripts/**'
 
 jobs:
   build-and-deploy:

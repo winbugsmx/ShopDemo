@@ -336,8 +336,11 @@ aws configure
 | `Dockerfile` de cada API | Build de imagen |
 | `.env.azure` / `.env.aws` | Variables del script (no commitear) |
 | Variables en ACA / ECS / secrets | Connection strings, Event Hubs |
-| `.github/workflows/deploy-azure.yml` | CI/CD Azure — **5 imágenes** |
-| `.github/workflows/deploy-aws.yml` | CI/CD AWS — **5 imágenes** |
+| `.github/workflows/deploy-azure.yml` | CI/CD Azure ACA — **5 imágenes** |
+| `.github/workflows/deploy-aws.yml` | CI/CD AWS ECS — **5 imágenes** |
+| `.github/workflows/deploy-aks.yml` | CI/CD Azure AKS — build + `kubectl set image` |
+| `.github/workflows/deploy-eks.yml` | CI/CD Amazon EKS — build + `kubectl set image` |
+| [.github/SECRETS-CHECKLIST.md](../.github/SECRETS-CHECKLIST.md) | Secrets y environments GitHub |
 | Build manual 5 servicios | Ver GUIA-RELEASE-SCRIPT-AZURE / GUIA-RELEASE-SCRIPT-AWS |
 
 Docs manuales: [despliegue/azure/](./despliegue/azure/) · [despliegue/aws/](./despliegue/aws/)

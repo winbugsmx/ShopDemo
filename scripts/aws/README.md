@@ -14,7 +14,7 @@ Automatización del laboratorio AWS del curso Lite Thinking. Complementa la docu
 | Event Hubs (Azure, cross-cloud) | [INTEGRACION-AZURE-EVENT-HUBS.md](../../docs/INTEGRACION-AZURE-EVENT-HUBS.md) |
 | MCP Gateway | [IMPLEMENTACION-DESPLIEGUE-MCP-AWS.md](../../docs/integracion-ia/IMPLEMENTACION-DESPLIEGUE-MCP-AWS.md) |
 | Guía de desarrollo | [GUIA-DESARROLLO-INTEGRACIONES.md](../../docs/GUIA-DESARROLLO-INTEGRACIONES.md) |
-| CI/CD GitHub | [.github/workflows/deploy-aws.yml](../../.github/workflows/deploy-aws.yml) |
+| CI/CD GitHub | [.github/workflows/deploy-aws.yml](../../.github/workflows/deploy-aws.yml) · [deploy-eks.yml](../../.github/workflows/deploy-eks.yml) · [SETUP-GITHUB.md](../../.github/SETUP-GITHUB.md) · [SECRETS-CHECKLIST.md](../../.github/SECRETS-CHECKLIST.md) |
 
 ## Archivos
 

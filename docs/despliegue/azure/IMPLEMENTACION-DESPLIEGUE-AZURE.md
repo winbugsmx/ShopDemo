@@ -15,7 +15,8 @@
 | [**GUIA-RELEASE-PORTAL-AZURE**](./GUIA-RELEASE-PORTAL-AZURE.md) | 8–12 h | Consola visual paso a paso |
 
 **Preparación:** [PREPARACION-AMBIENTE-AZURE.md](./PREPARACION-AMBIENTE-AZURE.md)  
-**Scripts:** [scripts/azure/](../../../scripts/azure/) · **Reporte AKS lab:** [deploy-aks-report.json](../../../scripts/azure/deploy-aks-report.json)
+**Scripts:** [scripts/azure/](../../../scripts/azure/) · **Reporte AKS lab:** [deploy-aks-report.json](../../../scripts/azure/deploy-aks-report.json)  
+**CI/CD:** [deploy-azure.yml](../../../.github/workflows/deploy-azure.yml) · [deploy-aks.yml](../../../.github/workflows/deploy-aks.yml) · [SETUP-GITHUB.md](../../../.github/SETUP-GITHUB.md)
 
 **Kubernetes (AKS):** [GUIA-RELEASE-KUBERNETES.md](../kubernetes/GUIA-RELEASE-KUBERNETES.md)
 
@@ -68,7 +69,7 @@ En ACA **no** uses Azurite en ACI.
 | PostgreSQL ACI | No (lab) |
 | 5 Container Apps | No |
 | AKS | Sí en lab corto |
-| GitHub Actions | Sí (push manual a ACR) |
+| GitHub Actions | Opcional | Automatiza build/deploy tras merge a `main` — [SETUP-GITHUB.md](../../../.github/SETUP-GITHUB.md) |
 
 ---
 

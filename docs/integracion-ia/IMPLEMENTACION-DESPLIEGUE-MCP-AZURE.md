@@ -302,7 +302,14 @@ curl "http://$INGRESS_IP/mcp/health"
 
 ## Paso C1 — CI/CD GitHub Actions
 
-El workflow `.github/workflows/deploy-azure.yml` incluye MCP:
+| Workflow | MCP en |
+|---|---|
+| [deploy-azure.yml](../../.github/workflows/deploy-azure.yml) | Container App `ca-shopdemo-mcp` |
+| [deploy-aks.yml](../../.github/workflows/deploy-aks.yml) | Deployment `shopdemo-mcp` + Ingress `/mcp` |
+
+Configuración GitHub: [SETUP-GITHUB.md](../../.github/SETUP-GITHUB.md) · Secrets: [SECRETS-CHECKLIST.md](../../.github/SECRETS-CHECKLIST.md)
+
+Fragmento ACA (`deploy-azure.yml`):
 
 ```yaml
 - service: mcp
@@ -311,13 +318,9 @@ El workflow `.github/workflows/deploy-azure.yml` incluye MCP:
   containerapp: ca-shopdemo-mcp
 ```
 
-### Portal — Service Principal (si falta)
-
-Ver [IMPLEMENTACION-DESPLIEGUE-AZURE.md §15](../despliegue/azure/IMPLEMENTACION-DESPLIEGUE-AZURE.md).
-
 ### Crear Container App MCP antes del primer CI run
 
-El workflow **actualiza** `ca-shopdemo-mcp`; debe existir previamente (Pasos A3–A4).
+El workflow **actualiza** `ca-shopdemo-mcp`; debe existir previamente (Pasos A3–A4 o script `-Mode ACA`).
 
 ---
 
@@ -341,7 +344,7 @@ El workflow **actualiza** `ca-shopdemo-mcp`; debe existir previamente (Pasos A3�
 | 2 | `/health` 200 | ✓ | ✓ |
 | 3 | Agente conecta a `/mcp` | ✓ | ✓ |
 | 4 | `GetShopDemoStatus` OK | ✓ | ✓ |
-| 5 | CI/CD incluye mcp | ✓ | N/A (apply manual o pipeline K8s) |
+| 5 | CI/CD incluye mcp | ✓ | ✓ ([deploy-aks.yml](../../.github/workflows/deploy-aks.yml)) |
 
 ---
 

@@ -341,7 +341,7 @@ az account set --subscription "<TU-SUBSCRIPTION-ID>"
 .\Deploy-AzureShopDemo.ps1 -Mode All  # ACA + AKS
 
 # 4. Publicar imágenes en ACR (obligatorio — el script no hace build)
-#    GitHub Actions: .github/workflows/deploy-azure.yml
+#    GitHub Actions: .github/workflows/ (ver .github/SECRETS-CHECKLIST.md)
 #    O build manual: ver GUIA-RELEASE-SCRIPT-AZURE
 
 # 5. Validar y limpiar
@@ -427,7 +427,7 @@ Tras desplegar, actualiza las variables de colección:
 
 **Observabilidad y resiliencia:** [docs/observabilidad/azure/](docs/observabilidad/azure/IMPLEMENTACION-OBSERVABILIDAD-AZURE.md) · [docs/resiliencia/azure/](docs/resiliencia/azure/IMPLEMENTACION-RESILIENCIA-AZURE.md)
 
-CI/CD: [.github/workflows/deploy-azure.yml](.github/workflows/deploy-azure.yml) (incluye `shopdemo-mcp`)
+CI/CD: [.github/workflows/](.github/workflows/) — **4 workflows** (ACA, ECS, AKS, EKS) · Checklist secrets: [.github/SECRETS-CHECKLIST.md](.github/SECRETS-CHECKLIST.md)
 
 ---
 
@@ -470,7 +470,7 @@ aws sts get-caller-identity
 .\Deploy-AwsShopDemo.ps1 -Mode All
 
 # 4. Publicar imágenes en ECR (obligatorio)
-#    GitHub Actions: .github/workflows/deploy-aws.yml
+#    GitHub Actions: .github/workflows/ (ver .github/SECRETS-CHECKLIST.md)
 #    O manual: GUIA-RELEASE-SCRIPT-AWS
 
 # 5. Validar y limpiar
@@ -539,7 +539,7 @@ Con 4× `t3.micro` (máx. ~16 pods) el cluster no cabe con los 5 servicios + Ing
 
 **Observabilidad y resiliencia:** [docs/observabilidad/aws/](docs/observabilidad/aws/IMPLEMENTACION-OBSERVABILIDAD-AWS.md) · [docs/resiliencia/aws/](docs/resiliencia/aws/IMPLEMENTACION-RESILIENCIA-AWS.md)
 
-CI/CD: [.github/workflows/deploy-aws.yml](.github/workflows/deploy-aws.yml) (incluye `shopdemo-mcp`)
+CI/CD: [.github/workflows/](.github/workflows/) — **4 workflows** (ACA, ECS, AKS, EKS) · Checklist: [.github/SECRETS-CHECKLIST.md](.github/SECRETS-CHECKLIST.md)
 
 ---
 
@@ -666,7 +666,7 @@ Archivo plantilla: `AI/ShopDemo.Mcp.Api/.env.example`
 | **Azure AKS** | Secrets K8s / Key Vault | [despliegue/aks](docs/despliegue/aks/) |
 | **AWS ECS** | SSM Parameter Store / Secrets Manager | [despliegue/aws](docs/despliegue/aws/) |
 | **Amazon EKS** | Secrets K8s / Parameter Store | [despliegue/eks](docs/despliegue/eks/) |
-| **GitHub Actions** | Repository secrets | [.github/workflows/](.github/workflows/) |
+| **GitHub Actions** | Repository secrets | [.github/SECRETS-CHECKLIST.md](.github/SECRETS-CHECKLIST.md) |
 
 > **Regla:** nunca commitear connection strings reales. Usa `.env` local (gitignored), user secrets o secretos de la plataforma.
 
@@ -696,7 +696,7 @@ ShopDemo/
 ├── k8s/              # Manifiestos Kubernetes (5 APIs + PG + Ingress)
 ├── spec-driven/      # Specs, plantillas Cursor y Claude Code
 ├── docs/             # Toda la documentación del curso
-└── .github/workflows/  # CI/CD Azure y AWS (incluye shopdemo-mcp)
+└── .github/workflows/  # CI/CD: deploy-azure, deploy-aws, deploy-aks, deploy-eks
 ```
 
 ---
@@ -709,6 +709,7 @@ ShopDemo/
 | Anexos de código | [Shared](docs/ANEXO-CODIGO-SHARED.md) · [Catalog](docs/catalog/ANEXO-CODIGO-CATALOG.md) · [Orders](docs/orders/ANEXO-CODIGO-ORDERS.md) · [Inventory](docs/inventory/ANEXO-CODIGO-INVENTORY.md) · [Event Hubs](docs/ANEXO-CODIGO-EVENT-HUBS.md) · [Analytics/Aspire](docs/analytics/ANEXO-CODIGO-ANALYTICS-ASPIRE.md) · [MCP](docs/integracion-ia/ANEXO-CODIGO-MCP.md) |
 | Scripts Azure (PowerShell) | [scripts/azure/README.md](scripts/azure/README.md) |
 | Scripts AWS (PowerShell) | [scripts/aws/README.md](scripts/aws/README.md) |
+| **CI/CD GitHub Actions** | [.github/README.md](.github/README.md) · [SETUP-GITHUB](.github/SETUP-GITHUB.md) · [SECRETS-CHECKLIST](.github/SECRETS-CHECKLIST.md) |
 | Preparación Azure / AWS | [PREPARACION-AZURE](docs/despliegue/azure/PREPARACION-AMBIENTE-AZURE.md) · [PREPARACION-AWS](docs/despliegue/aws/PREPARACION-AMBIENTE-AWS.md) |
 | Reportes release lab | [AKS](scripts/azure/deploy-aks-report.json) · [EKS free-tier](scripts/aws/deploy-eks-free-tier-report.json) |
 | Arquitectura | [docs/ARQUITECTURA.md](docs/ARQUITECTURA.md) |

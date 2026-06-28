@@ -1,16 +1,9 @@
 # Build y despliegue a Amazon ECS Fargate (ShopDemo)
 #
-# Secrets obligatorios (infra CI/CD):
-#   AWS_ROLE_ARN (OIDC) o AWS_ACCESS_KEY_ID + AWS_SECRET_ACCESS_KEY
-#   AWS_REGION, ECS_CLUSTER (opcionales con defaults)
+# Trigger: push a rama main (merge de PR) o workflow_dispatch
+# Checklist completo: .github/SECRETS-CHECKLIST.md
 #
-# Secrets de configuración (runtime → SSM + env vars en task definitions):
-#   EVENT_HUBS_CONNECTION_STRING, EVENT_HUB_NAME
-#   PG_CATALOG_CONN, PG_ORDERS_CONN, PG_INVENTORY_CONN
-#   AZURITE_CHECKPOINT_CONN (Inventory + Analytics)
-#   INVENTORY_API_BASE_URL (Orders → Inventory vía Cloud Map)
-#   MCP_CATALOG_URL, MCP_INVENTORY_URL, MCP_ANALYTICS_URL
-#   LAB_PREFIX (opcional, default shopdemo)
+# GitHub environment: aws
 
 name: Deploy AWS
 
@@ -26,8 +19,7 @@ on:
       - 'AI/ShopDemo.Mcp.Api/**'
       - 'ShopDemo.Shared/**'
       - '.github/workflows/deploy-aws.yml'
-      - '.github/scripts/sync-aws-ssm.sh'
-      - '.github/scripts/deploy-ecs-service.sh'
+      - '.github/scripts/**'
 
 permissions:
   id-token: write

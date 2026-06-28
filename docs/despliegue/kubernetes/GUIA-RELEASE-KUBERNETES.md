@@ -91,6 +91,17 @@ minikube ip   # o minikube tunnel para LoadBalancer
 
 Reporte lab: [deploy-aks-report.json](../../../scripts/azure/deploy-aks-report.json)
 
+### CI/CD — merge a `main`
+
+Tras [SETUP-GITHUB.md](../../../.github/SETUP-GITHUB.md) y [SECRETS-CHECKLIST.md](../../../.github/SECRETS-CHECKLIST.md):
+
+| Workflow | Acción |
+|---|---|
+| [deploy-aks.yml](../../../.github/workflows/deploy-aks.yml) | build ACR → `kubectl set image` (5 servicios) |
+| Cambios en `k8s/**` | apply automático de manifiestos |
+
+Primer run manual: `sync_secrets` + `apply_manifests` (+ `apply_infra` si cluster nuevo).
+
 ### Servicios Azure que toca AKS
 
 | Servicio | ¿Script? |
@@ -147,6 +158,15 @@ kubectl get svc -n shopdemo shopdemo-catalog shopdemo-orders shopdemo-inventory
 | [GUIA-RELEASE-SCRIPT-AWS.md](../aws/GUIA-RELEASE-SCRIPT-AWS.md) | Script + perfil free-tier |
 | [GUIA-RELEASE-CLI-AWS.md](../aws/GUIA-RELEASE-CLI-AWS.md) | CLI paso a paso |
 | [IMPLEMENTACION-DESPLIEGUE-EKS.md](../eks/IMPLEMENTACION-DESPLIEGUE-EKS.md) | Arquitectura EKS |
+
+### CI/CD — merge a `main`
+
+| Workflow | Acción |
+|---|---|
+| [deploy-eks.yml](../../../.github/workflows/deploy-eks.yml) | build ECR → `kubectl set image` (5 servicios) |
+| Cambios en `k8s/**` | apply automático de manifiestos |
+
+Configuración: [SETUP-GITHUB.md](../../../.github/SETUP-GITHUB.md)
 
 ### Servicios AWS que toca EKS
 

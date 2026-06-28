@@ -104,13 +104,15 @@ flowchart LR
 | RF-14 | Desactivar producto (`Deactivate`) | Dominio listo |
 | RF-15 | Consultar productos (queries CQRS) | Carpeta `Queries/` preparada |
 
-### 4.3 Fuera de alcance (fases futuras)
+### 4.3 No incluido en el curso
 
-- Azure Event Hubs real
-- Outbox Pattern completo
-- .NET Aspire AppHost
-- Kubernetes manifests
-- Sincronización automática Catalog → Inventory vía eventos
+Delimitación permanente del laboratorio (no son etapas pendientes del mismo curso):
+
+- Outbox Pattern completo y garantías exactly-once
+- Endpoints CQRS de lectura/actualización avanzada (RF-10–RF-15: dominio listo, API no expuesta)
+- Pagos, facturación y catálogo multi-tenant
+
+> Event Hubs, Aspire AppHost, manifiestos `k8s/` y sincronización Catalog→Inventory vía eventos se cubren en las **etapas 5–11**. Ver [README.md](../../README.md#etapas-del-curso-roadmap).
 
 ---
 

@@ -39,7 +39,7 @@ Los alumnos pueden ejecutar `docker compose` en local, pero:
 | ID | Objetivo |
 |---|---|
 | OBJ-AW-01 | Publicar imágenes ShopDemo en **Amazon ECR** |
-| OBJ-AW-02 | Ejecutar Catalog, Orders, Inventory y Analytics en **ECS Fargate** |
+| OBJ-AW-02 | Ejecutar Catalog, Orders, Inventory, Analytics y MCP en **ECS Fargate** |
 | OBJ-AW-03 | PostgreSQL y Azurite en **contenedores ECS** (enfoque lab) |
 | OBJ-AW-04 | Orders descubre Inventory vía **Cloud Map** |
 | OBJ-AW-05 | APIs se conectan a **Azure Event Hubs** (código actual sin cambios) |
@@ -53,22 +53,23 @@ Los alumnos pueden ejecutar `docker compose` en local, pero:
 ### Incluido
 
 - VPC básica, subnets, security groups
-- ECR (4 repositorios)
+- ECR (**5** repositorios, incl. MCP)
 - ECS cluster Fargate
-- Task definitions y services por API
-- ALB para APIs públicas (Catalog, Orders, Analytics)
+- Task definitions y services por API + MCP
+- ALB para APIs públicas (Catalog, Orders, Analytics, MCP)
 - Service discovery para Inventory
 - PostgreSQL + Azurite como ECS services
 - Secrets en Parameter Store / Secrets Manager (lab)
 
-### Excluido
+### No incluido en el lab (este documento)
 
 - Amazon RDS / Aurora (BD gestionada)
 - MSK / Kinesis (sustituto de Event Hubs)
-- EKS (Kubernetes)
 - App Runner
 - Despliegue de Aspire AppHost
 - Multi-región y DR
+
+> **EKS** (etapa 11) tiene documento propio: [REQUERIMIENTOS-DESPLIEGUE-EKS](../eks/REQUERIMIENTOS-DESPLIEGUE-EKS.md).
 
 ---
 

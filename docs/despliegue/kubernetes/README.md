@@ -25,6 +25,23 @@ Material para desplegar ShopDemo en **Kubernetes**: desarrollo local (Minikube) 
 
 Carpeta [`k8s/`](../../k8s/) — mismos YAML para Minikube, AKS y EKS (cambia solo el origen de las imágenes).
 
+Guía operativa de manifiestos: [k8s/README.md](../../k8s/README.md)
+
+## Reportes de release (lab)
+
+| Entorno | Archivo |
+|---|---|
+| Azure AKS (completo: 5 APIs + MCP + Ingress) | [scripts/azure/deploy-aks-report.json](../../scripts/azure/deploy-aks-report.json) |
+| AWS EKS free-tier (3 APIs + LB) | [scripts/aws/deploy-eks-free-tier-report.json](../../scripts/aws/deploy-eks-free-tier-report.json) |
+| AWS EKS completo | [scripts/aws/deploy-eks-report.json](../../scripts/aws/deploy-eks-report.json) |
+
+## Scripts de automatización
+
+| Plataforma | Modo | Script |
+|---|---|---|
+| Azure | ACA / AKS / All | [Deploy-AzureShopDemo.ps1](../../scripts/azure/Deploy-AzureShopDemo.ps1) |
+| AWS | ECS / EKS / All | [Deploy-AwsShopDemo.ps1](../../scripts/aws/Deploy-AwsShopDemo.ps1) |
+
 ## Relación con otros despliegues
 
 | Enfoque | Documentación | Uso |

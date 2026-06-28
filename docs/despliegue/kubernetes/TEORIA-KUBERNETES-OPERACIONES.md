@@ -108,7 +108,7 @@ env:
         key: PG_CATALOG_CONN
 ```
 
-**Regla del curso:** nunca commitear `secrets.yaml` con valores reales. En AKS/EKS se aplican los mismos YAML; en producción avanzada se integraría Azure Key Vault o AWS Secrets Manager (fuera del alcance básico).
+**Regla del curso:** nunca commitear `secrets.yaml` con valores reales. En AKS/EKS se aplican los mismos YAML; integración con Azure Key Vault o AWS Secrets Manager **no forma parte** del lab básico.
 
 ---
 

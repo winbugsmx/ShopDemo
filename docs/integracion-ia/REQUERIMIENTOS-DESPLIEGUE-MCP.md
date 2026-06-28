@@ -58,7 +58,7 @@ El gateway no sustituye Catalog/Orders/Inventory/Analytics; expone **tools MCP**
 - Build context desde raíz del repo (`AI/ShopDemo.Mcp.Api/Dockerfile`)
 - Prerequisito: las 4 APIs de negocio ya desplegadas y alcanzables
 
-## 5. Fuera de alcance
+## 5. No incluido en el lab
 
 | Tema | Motivo |
 |---|---|

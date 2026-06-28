@@ -118,7 +118,7 @@ ContainerAppConsoleLogs_CL
 
 **Explicación:** `ExceptionHandlingMiddleware` incluye `traceId = context.TraceIdentifier` en respuestas de error. Es la correlación básica del curso.
 
-**Analytics (OpenTelemetry):** si en local usas Aspire con `OTEL_EXPORTER_OTLP_ENDPOINT`, las trazas aparecen en Aspire Dashboard. En ACA, la exportación a Application Insights es **etapa futura** de código.
+**Analytics (OpenTelemetry):** si en local usas Aspire con `OTEL_EXPORTER_OTLP_ENDPOINT`, las trazas aparecen en Aspire Dashboard. Exportar OTel desde Analytics hacia Application Insights en ACA **no forma parte** del lab (observabilidad vía logs de plataforma).
 
 ---
 

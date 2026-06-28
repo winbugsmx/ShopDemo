@@ -35,7 +35,7 @@ Aspire centraliza el arranque de los 4 APIs, PostgreSQL, Azurite y la configurac
 | D-01 | Nombre del 4.º servicio | `ShopDemo.Analytics.Api` |
 | D-02 | Fase 1 en APIs existentes | **No** modificar `Program.cs` de Catalog, Orders ni Inventory |
 | D-03 | Event Hubs en desarrollo Aspire | **Habilitado desde el inicio** con connection string real en AppHost |
-| D-04 | Azure Container Apps / `azd up` | **Fuera de alcance** — solo documentar para fase posterior |
+| D-04 | Despliegue en nube (ACA/AKS/ECS/EKS) | **Etapa 7+** — [despliegue/README](../despliegue/README.md); AppHost Aspire solo en dev local |
 | D-05 | Puerto Analytics | `8004` |
 | D-06 | Consumer group Analytics | `analytics-service` (distinto de `inventory-service`) |
 
@@ -134,12 +134,12 @@ flowchart TB
 | RF-AN-07 | Swagger en Development |
 | RF-AN-08 | **No** ejecutar lógica de negocio ni modificar otros servicios |
 
-### Fuera de alcance (fase actual)
+### No incluido en el curso
 
-- Modificar `Program.cs` de Catalog, Orders, Inventory con `AddServiceDefaults()`
-- Azure Container Apps, `azd up`, publicación a Kubernetes
-- Persistencia durable de eventos (solo memoria en MVP)
+- Modificar `Program.cs` de Catalog, Orders e Inventory con `AddServiceDefaults()` (decisión D-02)
+- Persistencia durable de eventos (solo ring buffer en memoria en el MVP)
 - Autenticación / autorización en Analytics
+- `azd up` / publicación automática desde AppHost (el release usa Docker + scripts del curso)
 
 ---
 

@@ -12,7 +12,7 @@
 **Versión:** 2.0 — **Implementado**  
 **Estado del código:** Aspire + Analytics.Api en `Aspire/` — ver [docs/analytics/](./analytics/)
 
-> **Implementado según decisiones del instructor:** Analytics.Api, Fase 1 sin tocar `Program.cs` de los 3 APIs, Event Hubs habilitado desde AppHost, Azure Container Apps documentado para fase posterior.
+> **Implementado según decisiones del instructor:** Analytics.Api, Fase 1 sin tocar `Program.cs` de los 3 APIs, Event Hubs habilitado desde AppHost. Despliegue en nube (ACA/AKS/ECS/EKS): [despliegue/README.md](./despliegue/README.md).
 
 ---
 
@@ -359,34 +359,27 @@ dotnet publish Aspire/ShopDemo.AppHost -p:PublishProfile=DefaultContainer
 
 ## 8. Integración con Azure y Kubernetes
 
-### 8.1 Azure (Container Apps + recursos existentes)
+El AppHost **no se despliega** a nube. Cada API se publica como contenedor independiente con las guías del curso:
 
-| Recurso | Origen |
+| Destino | Guía |
 |---|---|
-| Event Hubs | Ya creado en [INTEGRACION-AZURE-EVENT-HUBS.md](./INTEGRACION-AZURE-EVENT-HUBS.md) |
-| PostgreSQL | Azure Database for PostgreSQL (producción) o contenedores (dev) |
-| Container Apps | `azd up` o manifiesto generado por Aspire |
+| Azure Container Apps | [GUIA-RELEASE-SCRIPT-AZURE](./despliegue/azure/GUIA-RELEASE-SCRIPT-AZURE.md) |
+| Azure AKS | [IMPLEMENTACION-DESPLIEGUE-AKS](./despliegue/aks/IMPLEMENTACION-DESPLIEGUE-AKS.md) |
+| AWS ECS | [GUIA-RELEASE-SCRIPT-AWS](./despliegue/aws/GUIA-RELEASE-SCRIPT-AWS.md) |
+| Amazon EKS | [IMPLEMENTACION-DESPLIEGUE-EKS](./despliegue/eks/IMPLEMENTACION-DESPLIEGUE-EKS.md) |
+| Manifiestos compartidos | [k8s/README.md](../k8s/README.md) |
+
+Build de imagen por servicio (ejemplo Analytics):
 
 ```bash
-# Flujo típico post-implementación
-azd init
-azd up
+docker build -f Aspire/ShopDemo.Analytics.Api/Dockerfile -t shopdemo-analytics:latest .
 ```
 
-**Explicación:** Aspire genera Bicep/ARM para Azure; Event Hubs se enlaza como connection string en configuración.
+**Referencia opcional:** Aspire puede generar manifiestos o imágenes con `PublishProfile=DefaultContainer` o `azd up`; el lab del curso usa **scripts PowerShell + push ACR/ECR**, no `azd`.
 
-### 8.2 Kubernetes (AKS)
+### 8.1 Equivalencia AWS (referencia)
 
-```bash
-dotnet publish Aspire/ShopDemo.AppHost --output-path ./aspire-manifest
-# Aplicar manifiestos K8s generados o usar aspirate (herramienta comunidad)
-```
-
-**Explicación:** Para el curso, basta demostrar generación de manifiestos; despliegue AKS completo puede ser lectura opcional.
-
-### 8.3 Equivalencia AWS (referencia)
-
-Si el entorno fuera AWS en lugar de Azure Event Hubs, el rol de Analytics sería el mismo consumiendo **Kinesis** o **MSK**. Ver comparación en conversación de arquitectura — fuera de alcance MVP.
+Si el entorno fuera AWS en lugar de Azure Event Hubs, el rol de Analytics sería el mismo consumiendo **Kinesis** o **MSK**. Eso **no forma parte** del lab (mensajería cross-cloud a Event Hubs).
 
 ---
 
@@ -400,7 +393,7 @@ dotnet run --project Aspire/ShopDemo.AppHost
 
 Reemplaza 3–4 terminales con `docker compose`.
 
-### 9.2 Prueba automatizada sugerida (fase posterior)
+### 9.2 Checklist de prueba manual (Aspire local)
 
 | # | Acción | Verificación |
 |---|---|---|
@@ -427,7 +420,7 @@ Los `docker-compose.yml` en cada API **siguen válidos** para:
 | 2 | ¿Modificar `Program.cs` de los 3 APIs con `ServiceDefaults`? | ✅ **No** en fase 1 |
 | 3 | ¿PostgreSQL: 3 contenedores o 1 servidor con 3 DBs? | ✅ 1 servidor Aspire con 3 bases |
 | 4 | ¿Event Hubs en Aspire dev: Azure real o deshabilitado? | ✅ Azure real — connection string en AppHost |
-| 5 | ¿Implementar `azd` / Azure Container Apps en el curso? | ✅ Solo documentar — fase posterior |
+| 5 | ¿Implementar `azd` / Azure Container Apps en el curso? | ✅ Release con scripts + guías etapa 7+ (no `azd up` obligatorio) |
 | 6 | ¿Puerto Analytics 8004? | ✅ Sí |
 
 ---

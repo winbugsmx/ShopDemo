@@ -44,7 +44,7 @@ Justificar el despliegue de ShopDemo en **Kubernetes** como paso natural despué
 ## 3. Alcance incluido
 
 - Namespace `shopdemo`
-- Deployments: Catalog, Orders, Inventory, Analytics
+- Deployments: Catalog, Orders, Inventory, Analytics, **MCP Gateway**
 - StatefulSet: PostgreSQL (3 bases de datos)
 - Deployment: Azurite (checkpoints)
 - Services ClusterIP internos
@@ -54,12 +54,14 @@ Justificar el despliegue de ShopDemo en **Kubernetes** como paso natural despué
 - HPA de ejemplo en Catalog (`k8s/catalog/hpa.yaml`)
 - metrics-server (addon Minikube)
 
-## 4. Fuera de alcance
+## 4. No incluido en el curso
 
-- Helm charts completos de ShopDemo
-- HPA en las 4 APIs (solo Catalog como demo)
+Límites deliberados del lab (no son etapas pendientes):
+
+- Helm charts empaquetados de ShopDemo (se usa `kubectl apply` + Helm solo para Ingress NGINX en AKS/EKS)
+- HPA en las 5 APIs (solo Catalog como demo)
 - Service mesh (Istio/Linkerd)
-- CI/CD GitOps (ArgoCD) — solo referencia
+- CI/CD GitOps (ArgoCD) — solo referencia en documentación
 - Native AOT en imágenes (documentado en TEORIA-DOCKER-KUBERNETES-AOT)
 
 ---

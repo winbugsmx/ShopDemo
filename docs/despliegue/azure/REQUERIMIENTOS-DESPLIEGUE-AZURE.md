@@ -31,7 +31,7 @@ Justificar y delimitar el trabajo necesario para desplegar los microservicios Sh
 | URLs `localhost` y `host.docker.internal` | No válidas en la nube |
 | Secretos en `.env` local | No deben copiarse tal cual a producción |
 | Sin registro de imágenes central | Cada alumno construye en local sin estándar |
-| Aspire AppHost | Orquesta en dev; **no** es el artefacto de despliegue a nube en Fase 1 |
+| Aspire AppHost | Orquesta en dev local; en nube cada API se despliega como contenedor independiente (etapa 7+) |
 
 **Necesidad:** un camino documentado para subir las **mismas imágenes Docker** a Azure y ejecutarlas en **Container Apps**, configurando red, secretos y dependencias.
 
@@ -41,9 +41,9 @@ Justificar y delimitar el trabajo necesario para desplegar los microservicios Sh
 
 | ID | Objetivo |
 |---|---|
-| OBJ-AZ-01 | Publicar imágenes de Catalog, Orders, Inventory y Analytics en **ACR** |
-| OBJ-AZ-02 | Ejecutar las 4 APIs en **Azure Container Apps** |
-| OBJ-AZ-03 | Ejecutar PostgreSQL (y Azurite) en **contenedores** (ACI) según enfoque lab |
+| OBJ-AZ-01 | Publicar imágenes de Catalog, Orders, Inventory, Analytics y MCP en **ACR** |
+| OBJ-AZ-02 | Ejecutar **5** Container Apps (4 APIs + MCP Gateway) |
+| OBJ-AZ-03 | PostgreSQL en ACI; checkpoints Event Hubs vía **Storage Account** (ACA) o Azurite (AKS) |
 | OBJ-AZ-04 | Conectar APIs a **Azure Event Hubs** existente vía secretos |
 | OBJ-AZ-05 | Permitir que Orders invoque Inventory por **URL interna** de ACA |
 | OBJ-AZ-06 | Documentar cada paso en **Portal Azure** y **Azure CLI** |
@@ -57,20 +57,19 @@ Justificar y delimitar el trabajo necesario para desplegar los microservicios Sh
 
 - Ajustes Docker: Dockerfile de Analytics, variables de entorno cloud
 - Creación de Resource Group, ACR, Log Analytics, Container Apps Environment
-- Despliegue de 4 Container Apps
+- Despliegue de **5** Container Apps (4 APIs + MCP Gateway)
 - PostgreSQL en ACI (3 bases o 3 instancias)
-- Azurite en ACI para checkpoints de Inventory y Analytics
+- Storage Account para checkpoints de Inventory/Analytics en ACA
 - Configuración de secretos Event Hubs
-- Guía dual: Portal + CLI
+- Guías Script, CLI y Portal (+ AKS opcional, etapa 10)
 
-### Excluido (fases posteriores)
+### No incluido en el lab
 
-- `azd up` / Aspire publishing automático
+- `azd up` / publicación automática desde Aspire AppHost
 - Azure Database for PostgreSQL gestionado
-- Azure Storage real para checkpoints (se usa Azurite en contenedor)
 - Alta disponibilidad multi-región
 - WAF, API Management, certificados custom avanzados
-- Despliegue del AppHost Aspire
+- Despliegue del AppHost Aspire como servicio en nube
 
 ---
 

@@ -27,7 +27,7 @@
 | Logs | Log Analytics | **CloudWatch Logs** |
 | Mensajería en ShopDemo | Event Hubs | **Mismo Event Hubs** (cross-cloud en lab) |
 
-> El código ShopDemo usa **Azure Event Hubs**. En la pista AWS del curso los contenedores en ECS se conectan al mismo namespace de Event Hubs en Azure. En producción multi-cloud real se evaluaría MSK/Kinesis; eso queda fuera del alcance básico.
+> El código ShopDemo usa **Azure Event Hubs**. En la pista AWS del curso los contenedores en ECS/EKS se conectan al mismo namespace de Event Hubs en Azure. MSK/Kinesis **no forma parte** del lab.
 
 ---
 

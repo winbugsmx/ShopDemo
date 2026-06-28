@@ -43,13 +43,13 @@ Justificar prácticas de **resiliencia** para ShopDemo en multicloud: los micros
 - Event Hubs como patrón de resiliencia asíncrona
 - Rolling updates / revisiones sin downtime total
 
-## 4. Fuera de alcance
+## 4. No incluido en el curso
 
 | Tema | Motivo |
 |---|---|
-| Implementar Polly/retry en `InventoryHttpClient` | Etapa de código futura |
+| Implementar Polly/retry en `InventoryHttpClient` | Patrón documentado; cambio de código opcional avanzado |
 | Multi-AZ / multi-region DR | Complejidad enterprise |
-| **IA para predicción de fallos** | Etapa futura (ver teoría §7) |
+| IA para predicción de fallos | No forma parte del lab (ver teoría §7 como referencia) |
 | Chaos Engineering (Chaos Mesh, FIS) | Opcional avanzado |
 
 ---

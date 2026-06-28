@@ -84,11 +84,11 @@ Cada etapa tiene un par de documentos: **requerimientos** (qué y por qué) e **
 | **4** | Integración E2E | [GUIA-ENDPOINTS](docs/GUIA-ENDPOINTS.md) | [ARQUITECTURA §4](docs/ARQUITECTURA.md#4-integración-entre-bounded-contexts) | Flujo compra completo |
 | **5** | Azure Event Hubs | [INTEGRACION-AZURE-EVENT-HUBS](docs/INTEGRACION-AZURE-EVENT-HUBS.md) | Mismo doc (paso a paso) | Auto-stock + eventos en log |
 | **6** | Aspire + Analytics | [REQUERIMIENTOS-ANALYTICS-ASPIRE](docs/analytics/REQUERIMIENTOS-ANALYTICS-ASPIRE.md) | [IMPLEMENTACION-ANALYTICS-ASPIRE](docs/analytics/IMPLEMENTACION-ANALYTICS-ASPIRE.md) | `GET /api/analytics/events` |
-| **7** | Docker → Azure | [REQUERIMIENTOS-DESPLIEGUE-AZURE](docs/despliegue/azure/REQUERIMIENTOS-DESPLIEGUE-AZURE.md) | [IMPLEMENTACION-DESPLIEGUE-AZURE](docs/despliegue/azure/IMPLEMENTACION-DESPLIEGUE-AZURE.md) · [Script PS](scripts/azure/README.md) | APIs en Container Apps |
-| **8** | Docker → AWS | [REQUERIMIENTOS-DESPLIEGUE-AWS](docs/despliegue/aws/REQUERIMIENTOS-DESPLIEGUE-AWS.md) | [IMPLEMENTACION-DESPLIEGUE-AWS](docs/despliegue/aws/IMPLEMENTACION-DESPLIEGUE-AWS.md) · [Script PS](scripts/aws/README.md) | APIs en ECS Fargate |
+| **7** | Docker → Azure | [REQUERIMIENTOS-DESPLIEGUE-AZURE](docs/despliegue/azure/REQUERIMIENTOS-DESPLIEGUE-AZURE.md) | [IMPLEMENTACION-DESPLIEGUE-AZURE](docs/despliegue/azure/IMPLEMENTACION-DESPLIEGUE-AZURE.md) · [Script/CLI/Portal](docs/despliegue/azure/GUIA-RELEASE-SCRIPT-AZURE.md) | Swagger en 5 Container Apps |
+| **8** | Docker → AWS | [REQUERIMIENTOS-DESPLIEGUE-AWS](docs/despliegue/aws/REQUERIMIENTOS-DESPLIEGUE-AWS.md) | [IMPLEMENTACION-DESPLIEGUE-AWS](docs/despliegue/aws/IMPLEMENTACION-DESPLIEGUE-AWS.md) · [Script/CLI/Portal](docs/despliegue/aws/GUIA-RELEASE-SCRIPT-AWS.md) | Swagger en ALB ECS |
 | **9** | Kubernetes local (Minikube) | [REQUERIMIENTOS-KUBERNETES](docs/despliegue/kubernetes/REQUERIMIENTOS-KUBERNETES.md) | [IMPLEMENTACION-KUBERNETES-LOCAL](docs/despliegue/kubernetes/IMPLEMENTACION-KUBERNETES-LOCAL.md) · [Teoría K8s](docs/despliegue/kubernetes/TEORIA-KUBERNETES-OPERACIONES.md) | `kubectl get hpa -n shopdemo` |
-| **10** | Azure AKS | [REQUERIMIENTOS-DESPLIEGUE-AKS](docs/despliegue/aks/REQUERIMIENTOS-DESPLIEGUE-AKS.md) | [IMPLEMENTACION-DESPLIEGUE-AKS](docs/despliegue/aks/IMPLEMENTACION-DESPLIEGUE-AKS.md) · [Script `-Mode AKS`](scripts/azure/README.md) | ShopDemo en AKS |
-| **11** | Amazon EKS | [REQUERIMIENTOS-DESPLIEGUE-EKS](docs/despliegue/eks/REQUERIMIENTOS-DESPLIEGUE-EKS.md) | [IMPLEMENTACION-DESPLIEGUE-EKS](docs/despliegue/eks/IMPLEMENTACION-DESPLIEGUE-EKS.md) · [Script `-Mode EKS`](scripts/aws/README.md) | ShopDemo en EKS |
+| **10** | Azure AKS | [REQUERIMIENTOS-DESPLIEGUE-AKS](docs/despliegue/aks/REQUERIMIENTOS-DESPLIEGUE-AKS.md) | [IMPLEMENTACION-DESPLIEGUE-AKS](docs/despliegue/aks/IMPLEMENTACION-DESPLIEGUE-AKS.md) · [Script `-Mode AKS`](scripts/azure/README.md) | Swagger vía Ingress o LB `:8080` |
+| **11** | Amazon EKS | [REQUERIMIENTOS-DESPLIEGUE-EKS](docs/despliegue/eks/REQUERIMIENTOS-DESPLIEGUE-EKS.md) | [IMPLEMENTACION-DESPLIEGUE-EKS](docs/despliegue/eks/IMPLEMENTACION-DESPLIEGUE-EKS.md) · [Script `-Mode EKS`](scripts/aws/README.md) | Swagger vía LB `:8080` (perfil free-tier) |
 | **12** | Observabilidad | [REQUERIMIENTOS-OBSERVABILIDAD](docs/observabilidad/REQUERIMIENTOS-OBSERVABILIDAD.md) | [Azure](docs/observabilidad/azure/IMPLEMENTACION-OBSERVABILIDAD-AZURE.md) · [AWS](docs/observabilidad/aws/IMPLEMENTACION-OBSERVABILIDAD-AWS.md) | Logs + alerta + traceId |
 | **13** | Resiliencia | [REQUERIMIENTOS-RESILIENCIA](docs/resiliencia/REQUERIMIENTOS-RESILIENCIA.md) | [Azure](docs/resiliencia/azure/IMPLEMENTACION-RESILIENCIA-AZURE.md) · [AWS](docs/resiliencia/aws/IMPLEMENTACION-RESILIENCIA-AWS.md) | Recuperación tras fallo de pod/tarea |
 | **14** | Integración IA | [REQUERIMIENTOS-INTEGRACION-IA](docs/integracion-ia/REQUERIMIENTOS-INTEGRACION-IA.md) | [IMPLEMENTACION-MCP-GATEWAY](docs/integracion-ia/IMPLEMENTACION-MCP-GATEWAY.md) · [Azure](docs/integracion-ia/azure/IMPLEMENTACION-INTEGRACION-IA-AZURE.md) · [AWS](docs/integracion-ia/aws/IMPLEMENTACION-INTEGRACION-IA-AWS.md) | MCP tool + alerta KQL/Insights |
@@ -106,6 +106,18 @@ Cada etapa tiene un par de documentos: **requerimientos** (qué y por qué) e **
 | Desarrollar o probar **en tu PC** sin nube | **Local** | [Inicio local](#inicio-local-desarrollo-y-pruebas) |
 | Publicar a **Azure** (release) | **Azure** | [Release Azure](#release-azure) |
 | Publicar a **AWS** (release) | **AWS** | [Release AWS](#release-aws) |
+
+### Tres enfoques equivalentes por nube (elige uno)
+
+Cada plataforma tiene **Script**, **CLI** y **Portal** con el mismo alcance. El script es el camino más rápido; CLI y Portal sirven para aprender la consola paso a paso.
+
+| Nube | Preparación | Script (recomendado) | CLI manual | Portal visual |
+|---|---|---|---|---|
+| **Azure** | [PREPARACION-AMBIENTE-AZURE](docs/despliegue/azure/PREPARACION-AMBIENTE-AZURE.md) | [GUIA-RELEASE-SCRIPT-AZURE](docs/despliegue/azure/GUIA-RELEASE-SCRIPT-AZURE.md) | [GUIA-RELEASE-CLI-AZURE](docs/despliegue/azure/GUIA-RELEASE-CLI-AZURE.md) | [GUIA-RELEASE-PORTAL-AZURE](docs/despliegue/azure/GUIA-RELEASE-PORTAL-AZURE.md) |
+| **AWS** | [PREPARACION-AMBIENTE-AWS](docs/despliegue/aws/PREPARACION-AMBIENTE-AWS.md) | [GUIA-RELEASE-SCRIPT-AWS](docs/despliegue/aws/GUIA-RELEASE-SCRIPT-AWS.md) | [GUIA-RELEASE-CLI-AWS](docs/despliegue/aws/GUIA-RELEASE-CLI-AWS.md) | [GUIA-RELEASE-PORTAL-AWS](docs/despliegue/aws/GUIA-RELEASE-PORTAL-AWS.md) |
+| **Kubernetes** | Manifiestos `k8s/` | Script `-Mode AKS` / `-Mode EKS` | Secciones AKS/EKS en guías CLI | Secciones AKS/EKS en guías Portal |
+
+**Reportes de release validados (lab):** [AKS](scripts/azure/deploy-aks-report.json) · [EKS free-tier](scripts/aws/deploy-eks-free-tier-report.json) · [EKS completo](scripts/aws/deploy-eks-report.json)
 
 ```mermaid
 flowchart TD
@@ -297,6 +309,10 @@ Dos caminos de **release** en Azure. Ambos usan imágenes en **Azure Container R
 | **ACA** | Container Apps | Release serverless, más simple | [GUIA-RELEASE-SCRIPT-AZURE](docs/despliegue/azure/GUIA-RELEASE-SCRIPT-AZURE.md) |
 | **AKS** | Kubernetes Service | Release con manifiestos `k8s/` | [GUIA-RELEASE-KUBERNETES](docs/despliegue/kubernetes/GUIA-RELEASE-KUBERNETES.md) |
 
+**Preparación previa:** [PREPARACION-AMBIENTE-AZURE](docs/despliegue/azure/PREPARACION-AMBIENTE-AZURE.md) (suscripción, cuotas, permisos Contributor).
+
+**Release AKS validado en lab:** cluster `aks-shopdemo`, 2 nodos `Standard_B2s`, 5 APIs + MCP + Ingress. Reporte con URLs: [scripts/azure/deploy-aks-report.json](scripts/azure/deploy-aks-report.json).
+
 ### Scripts PowerShell — configuración y ejecución (recomendado)
 
 Automatizan la infraestructura Azure (Portal/CLI manual sigue disponible en las guías §0).
@@ -340,9 +356,29 @@ az account set --subscription "<TU-SUBSCRIPTION-ID>"
 | `AKS` | Igual + `kubectl apply` | `kubectl get pods -n shopdemo` |
 | `All` | Igual para ambos entornos | Postman con [GUIA-ENDPOINTS](docs/GUIA-ENDPOINTS.md) |
 
-Documentación: [ALCANCE-LAB-RELEASE](docs/despliegue/ALCANCE-LAB-RELEASE.md) · [Script ACA](docs/despliegue/azure/GUIA-RELEASE-SCRIPT-AZURE.md) · [Portal](docs/despliegue/azure/GUIA-RELEASE-PORTAL-AZURE.md) · [CLI](docs/despliegue/azure/GUIA-RELEASE-CLI-AZURE.md) · [AKS](docs/despliegue/kubernetes/GUIA-RELEASE-KUBERNETES.md)
+Documentación: [ALCANCE-LAB-RELEASE](docs/despliegue/ALCANCE-LAB-RELEASE.md) · [Script](docs/despliegue/azure/GUIA-RELEASE-SCRIPT-AZURE.md) · [CLI](docs/despliegue/azure/GUIA-RELEASE-CLI-AZURE.md) · [Portal](docs/despliegue/azure/GUIA-RELEASE-PORTAL-AZURE.md) · [AKS](docs/despliegue/kubernetes/GUIA-RELEASE-KUBERNETES.md) · [Script PS](scripts/azure/README.md)
 
 > **Checkpoints Event Hubs:** en ACA usa **Azure Storage Account** (no Azurite). En AKS/Minikube usa Azurite in-cluster (`k8s/azurite/`).
+
+### Post-script AKS (pasos manuales frecuentes)
+
+El script crea RG, Event Hubs, ACR, cluster y `k8s/secrets.yaml`. Tras el script, completa:
+
+| Paso | Acción |
+|---|---|
+| 1 | Push de 5 imágenes a ACR y `kubectl set image` con `acr<tu-nombre>.azurecr.io/...` |
+| 2 | `kubectl apply -f k8s/` (postgres → azurite → APIs → mcp → ingress) |
+| 3 | Helm Ingress NGINX si el script falla en este paso (ver [Script §5.2](docs/despliegue/azure/GUIA-RELEASE-SCRIPT-AZURE.md)) |
+| 4 | Anotación health probe Azure: `service.beta.kubernetes.io/azure-load-balancer-health-probe-request-path=/healthz` |
+| 5 | Consumer groups en Event Hubs: `analytics-service`, `inventory-service` |
+| 6 | Entrada en archivo **hosts**: `<IP-ingress> shopdemo.local` |
+| 7 | Swagger: `ASPNETCORE_ENVIRONMENT=Development` en deployments; alternativa LB directo **`:8080/swagger`** |
+
+| Problema | Solución |
+|---|---|
+| Analytics CrashLoopBackOff | Crear consumer group `analytics-service` en Event Hubs |
+| Ingress timeout externo | Health probe `/healthz` + `externalTrafficPolicy: Local` |
+| Swagger 404 | Variable `ASPNETCORE_ENVIRONMENT=Development` |
 
 ### Arranque en Azure (resumen manual)
 
@@ -404,6 +440,10 @@ Dos caminos de **release** en AWS. Ambos usan **Amazon ECR** y despliegan **5 co
 | **ECS** | Fargate | Release sin Kubernetes | [GUIA-RELEASE-SCRIPT-AWS](docs/despliegue/aws/GUIA-RELEASE-SCRIPT-AWS.md) |
 | **EKS** | Elastic Kubernetes Service | Release con manifiestos `k8s/` | [GUIA-RELEASE-KUBERNETES](docs/despliegue/kubernetes/GUIA-RELEASE-KUBERNETES.md) |
 
+**Preparación previa:** [PREPARACION-AMBIENTE-AWS](docs/despliegue/aws/PREPARACION-AMBIENTE-AWS.md) (IAM `ShopDemoLabECS` / `ShopDemoLabEKS`, región recomendada `us-east-2`).
+
+**Release EKS validado en lab (free-tier):** 4 nodos `t3.micro`, Catalog/Orders/Inventory con LoadBalancer, Swagger en **`:8080`**. Reporte: [scripts/aws/deploy-eks-free-tier-report.json](scripts/aws/deploy-eks-free-tier-report.json).
+
 ### Scripts PowerShell — configuración y ejecución (recomendado)
 
 | Recurso | Ruta |
@@ -444,9 +484,25 @@ aws sts get-caller-identity
 | `EVENT_HUBS_CONNECTION_STRING` | **Azure Portal** (Event Hubs — mensajería cross-cloud) |
 | `AWS_REGION` | Consola AWS / `aws configure` |
 
-Documentación: [ALCANCE-LAB-RELEASE](docs/despliegue/ALCANCE-LAB-RELEASE.md) · [Script ECS](docs/despliegue/aws/GUIA-RELEASE-SCRIPT-AWS.md) · [Portal](docs/despliegue/aws/GUIA-RELEASE-PORTAL-AWS.md) · [CLI](docs/despliegue/aws/GUIA-RELEASE-CLI-AWS.md) · [IAM visual](docs/despliegue/aws/GUIA-RELEASE-PORTAL-AWS.md#0-usuario-iam-y-permisos)
+Documentación: [ALCANCE-LAB-RELEASE](docs/despliegue/ALCANCE-LAB-RELEASE.md) · [Script](docs/despliegue/aws/GUIA-RELEASE-SCRIPT-AWS.md) · [CLI](docs/despliegue/aws/GUIA-RELEASE-CLI-AWS.md) · [Portal](docs/despliegue/aws/GUIA-RELEASE-PORTAL-AWS.md) · [Task definitions ECS](docs/despliegue/aws/ANEXO-TASK-DEFINITIONS-ECS.md) · [Script PS](scripts/aws/README.md)
 
 > **Checkpoints Event Hubs en ECS:** Azurite en Fargate. **Mensajería:** Azure Event Hubs (SSM). Task definitions: [ANEXO-TASK-DEFINITIONS-ECS](docs/despliegue/aws/ANEXO-TASK-DEFINITIONS-ECS.md).
+
+### Perfil EKS free-tier (ajustes post-script)
+
+Con 4× `t3.micro` (máx. ~16 pods) el cluster no cabe con los 5 servicios + Ingress + Analytics. Perfil validado:
+
+| Servicio | Estado en free-tier |
+|---|---|
+| Catalog, Orders, Inventory | LoadBalancer + Swagger `:8080` |
+| MCP, Analytics, Ingress NGINX | Omitidos o 0 réplicas (ver [Script §6](docs/despliegue/aws/GUIA-RELEASE-SCRIPT-AWS.md)) |
+| CoreDNS | Reducir a 1 réplica si hay presión de pods |
+
+| Problema | Solución |
+|---|---|
+| Swagger timeout en ELB | Usar puerto **`:8080`** (no `:80`) |
+| Pods Pending | Quitar MCP/Ingress/Analytics o subir nodos |
+| Sin eventos Analytics | Requiere conectividad HTTPS a Azure Event Hubs |
 
 ### Arranque en AWS (resumen manual)
 
@@ -653,6 +709,8 @@ ShopDemo/
 | Anexos de código | [Shared](docs/ANEXO-CODIGO-SHARED.md) · [Catalog](docs/catalog/ANEXO-CODIGO-CATALOG.md) · [Orders](docs/orders/ANEXO-CODIGO-ORDERS.md) · [Inventory](docs/inventory/ANEXO-CODIGO-INVENTORY.md) · [Event Hubs](docs/ANEXO-CODIGO-EVENT-HUBS.md) · [Analytics/Aspire](docs/analytics/ANEXO-CODIGO-ANALYTICS-ASPIRE.md) · [MCP](docs/integracion-ia/ANEXO-CODIGO-MCP.md) |
 | Scripts Azure (PowerShell) | [scripts/azure/README.md](scripts/azure/README.md) |
 | Scripts AWS (PowerShell) | [scripts/aws/README.md](scripts/aws/README.md) |
+| Preparación Azure / AWS | [PREPARACION-AZURE](docs/despliegue/azure/PREPARACION-AMBIENTE-AZURE.md) · [PREPARACION-AWS](docs/despliegue/aws/PREPARACION-AMBIENTE-AWS.md) |
+| Reportes release lab | [AKS](scripts/azure/deploy-aks-report.json) · [EKS free-tier](scripts/aws/deploy-eks-free-tier-report.json) |
 | Arquitectura | [docs/ARQUITECTURA.md](docs/ARQUITECTURA.md) |
 | Endpoints y Postman | [docs/GUIA-ENDPOINTS.md](docs/GUIA-ENDPOINTS.md) |
 | Event Hubs | [docs/INTEGRACION-AZURE-EVENT-HUBS.md](docs/INTEGRACION-AZURE-EVENT-HUBS.md) |

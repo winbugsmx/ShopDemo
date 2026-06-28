@@ -110,6 +110,12 @@ Si un nombre global está ocupado, cambia el sufijo `01` → `02` en **todos** l
 
 ---
 
+## Convención: alcance del curso
+
+En los documentos de **requerimientos**, la sección **«No incluido en el curso»** delimita límites permanentes del laboratorio (enterprise, `azd`, multi-región, etc.). No indica etapas pendientes: integraciones ya cubiertas (Event Hubs, Aspire local, `k8s/`, ACA, ECS, AKS, EKS, MCP) están en el [README](../../README.md#etapas-del-curso-roadmap).
+
+---
+
 ## Validación final (todas las rutas)
 
 1. `GET /health` o Swagger en cada API pública

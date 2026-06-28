@@ -43,13 +43,13 @@ Cerrar el ciclo **operar → observar → actuar con IA** en ShopDemo: detectar 
 - Pasos de despliegue MCP en 4 plataformas
 - Diseño del worker SK (pseudocódigo + paquetes NuGet)
 
-## 4. Fuera de alcance
+## 4. No incluido en el curso
 
 | Tema | Motivo |
 |---|---|
-| Predicción de fallos con IA / ML custom | Etapa futura (omitida por decisión del curso) |
-| Worker SK en producción en repo | Solo documentación en esta entrega |
-| Fine-tuning de modelos | Complejidad enterprise |
+| Predicción de fallos con IA / ML custom | Complejidad enterprise; no forma parte del lab |
+| Worker SK en producción en repo | Solo documentación de diseño |
+| Fine-tuning de modelos | No incluido en el curso introductorio |
 | Azure OpenAI / Bedrock nativos | Lab unificado con OpenAI API |
 
 ---

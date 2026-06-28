@@ -81,14 +81,13 @@ Al completar esta implementación, el alumno será capaz de:
 | RF-09 | Desplegar con Docker Compose (API + PostgreSQL) |
 | RF-10 | Aplicar migraciones EF Core al iniciar en Development |
 
-### 4.2 Fuera del alcance (fases futuras)
+### 4.2 No incluido en el curso
 
-- Integración real con Azure Event Hubs
 - Outbox Pattern completo
-- .NET Aspire AppHost
-- Llamada HTTP síncrona a Catalog para validar stock (opcional como extensión)
-- Kubernetes manifests
 - Pagos, envíos y notificaciones
+- Validación síncrona de stock contra Catalog (la integración activa es Orders→Inventory por HTTP)
+
+> Event Hubs, Aspire AppHost y despliegue en Kubernetes/nube se cubren en las **etapas 5–11**.
 
 ---
 

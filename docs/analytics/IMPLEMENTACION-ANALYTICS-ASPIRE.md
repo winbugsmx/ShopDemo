@@ -31,7 +31,7 @@
 6. [Paso 5 — Configurar Event Hubs en AppHost](#6-paso-5--configurar-event-hubs-en-apphost)
 7. [Paso 6 — Ejecutar y probar](#7-paso-6--ejecutar-y-probar)
 8. [Qué NO se modifica (Fase 1)](#8-qué-no-se-modifica-fase-1)
-9. [Fase posterior — Azure Container Apps](#9-fase-posterior--azure-container-apps)
+9. [Despliegue en nube (etapa 7+)](#9-despliegue-en-nube-etapa-7)
 
 ---
 
@@ -71,7 +71,7 @@ flowchart LR
 - Health checks (`/health`, `/alive`)
 - Service discovery para `HttpClient`
 
-En Fase 1 **solo Analytics** lo usa. Los 3 microservicios existentes pueden adoptarlo en una fase posterior.
+En Fase 1 **solo Analytics** lo usa. Los 3 microservicios existentes **no** adoptan `ServiceDefaults` por decisión de diseño (D-02); no es una etapa pendiente del curso.
 
 ### 2.2 Crear el proyecto
 
@@ -872,34 +872,24 @@ Los adaptadores Event Hubs existentes en Catalog, Orders e Inventory **no cambia
 
 ---
 
-## 9. Fase posterior — Azure Container Apps
+## 9. Despliegue en nube (etapa 7+)
 
-> **Fuera de alcance de esta implementación.** Documentado para referencia futura.
+El AppHost Aspire **orquesta solo en desarrollo local**. Para release en Azure o AWS usa las guías de despliegue del curso (mismas imágenes Docker que en Compose):
 
-Cuando el curso avance a despliegue en Azure:
+| Plataforma | Guía |
+|---|---|
+| Azure Container Apps | [GUIA-RELEASE-SCRIPT-AZURE](../despliegue/azure/GUIA-RELEASE-SCRIPT-AZURE.md) |
+| Azure AKS | [IMPLEMENTACION-DESPLIEGUE-AKS](../despliegue/aks/IMPLEMENTACION-DESPLIEGUE-AKS.md) |
+| AWS ECS | [GUIA-RELEASE-SCRIPT-AWS](../despliegue/aws/GUIA-RELEASE-SCRIPT-AWS.md) |
+| Amazon EKS | [IMPLEMENTACION-DESPLIEGUE-EKS](../despliegue/eks/IMPLEMENTACION-DESPLIEGUE-EKS.md) |
 
-```bash
-# Inicializar Azure Developer CLI (una vez)
-azd init
-
-# Publicar manifiestos / desplegar
-azd up
-```
-
-Aspire puede generar imágenes de contenedor:
+Build de imagen Analytics:
 
 ```bash
-dotnet publish Aspire/ShopDemo.AppHost -p:PublishProfile=DefaultContainer
+docker build -f Aspire/ShopDemo.Analytics.Api/Dockerfile -t shopdemo-analytics:latest .
 ```
 
-Requisitos adicionales en Azure:
-
-- Azure Container Apps Environment
-- Azure Database for PostgreSQL (o mantener contenedores)
-- Event Hubs y Storage Account (checkpoints en producción)
-- Connection strings en Azure App Configuration o Key Vault
-
-Ver [INTEGRACION-ASPIRE.md](../INTEGRACION-ASPIRE.md) sección 8 para más detalle.
+Aspire puede generar contenedores con `dotnet publish Aspire/ShopDemo.AppHost -p:PublishProfile=DefaultContainer` para exploración; el release del curso **no** depende de `azd up`.
 
 ---
 

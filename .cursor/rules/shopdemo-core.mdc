@@ -1,0 +1,40 @@
+---
+description: Principios globales ShopDemo — alcance, idioma, calidad, secretos
+alwaysApply: true
+---
+
+# ShopDemo — Core
+
+Consultar [AGENTS.md](../../AGENTS.md) para mapa del repo.
+
+## Comportamiento
+
+- Respuestas al usuario en **español**; código y comentarios en **inglés**, mínimos.
+- **Diff mínimo**: no tocar archivos ajenos a la tarea; no over-engineer.
+- **Ejecutar** comandos y verificar; no limitarse a sugerir pasos.
+- Commits y push **solo** si el usuario lo pide.
+
+## Arquitectura por servicio
+
+- Catalog / Orders: Clean Architecture + CQRS + MediatR.
+- Inventory: Hexagonal (ports/adapters).
+- Analytics: observador Event Hubs.
+- MCP: gateway HTTP; no modificar `Program.cs` de APIs de negocio salvo SPEC explícito.
+
+## Prohibido commitear
+
+`.env.azure`, `.env.aws`, `k8s/secrets.yaml`, PATs, connection strings, `bin/`, `obj/`, `.vs/`.
+
+## Antes de implementar
+
+1. Leer `spec-driven/specs/<área>/SPEC.md` si existe para el módulo.
+2. Leer `REQUERIMIENTOS` + `IMPLEMENTACION` en `docs/` enlazados.
+3. Una nube por tarea (Azure **o** AWS) salvo comparación explícita.
+
+## Validación habitual
+
+```powershell
+dotnet build ShopDemo.slnx
+```
+
+Release: `/health` · Postman E2E · [docs/GUIA-ENDPOINTS.md](../../docs/GUIA-ENDPOINTS.md)

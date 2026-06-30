@@ -1,0 +1,39 @@
+---
+description: GitHub Actions — workflows, environments, secrets y restricciones YAML
+globs: .github/**
+alwaysApply: false
+---
+
+# CI/CD — GitHub Actions
+
+## Workflows (4)
+
+| Archivo | Environment | Aplica K8s |
+|---|---|---|
+| `deploy-azure.yml` | `azure` | — |
+| `deploy-aws.yml` | `aws` | — |
+| `deploy-aks.yml` | `azure-aks` | `k8s/azure/` vía `apply-k8s-manifests.sh k8s azure` |
+| `deploy-eks.yml` | `aws-eks` | `k8s/aws/` vía `apply-k8s-manifests.sh k8s aws` |
+
+Trigger: push a **`main`** con path filters. No despliega en PR.
+
+## YAML — evitar errores conocidos
+
+```yaml
+# ❌ Inválido en workflow_dispatch
+if: ${{ secrets.AWS_ROLE_ARN != '' }}
+
+# ✅ Usar step intermedio que escriba output
+```
+
+No referenciar `secrets.*` directamente en `if:` de jobs/steps.
+
+## Primer despliegue K8s (manual)
+
+Inputs: `sync_secrets` + `apply_manifests` (+ `apply_infra` bootstrap).
+
+## Al cambiar workflows
+
+Sincronizar: [SECRETS-CHECKLIST.md](../../.github/SECRETS-CHECKLIST.md), [SETUP-GITHUB-PORTAL.md](../../.github/SETUP-GITHUB-PORTAL.md), [.github/README.md](../../.github/README.md).
+
+Infra inicial **no** la crean los workflows — scripts `Deploy-*ShopDemo.ps1`.

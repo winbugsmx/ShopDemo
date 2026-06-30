@@ -106,7 +106,7 @@ Detalle en [GUIA-RELEASE-SCRIPT-AZURE](./azure/GUIA-RELEASE-SCRIPT-AZURE.md) y [
 | [kubernetes/README.md](./kubernetes/README.md) | Índice K8s |
 | [kubernetes/TEORIA-KUBERNETES-OPERACIONES.md](./kubernetes/TEORIA-KUBERNETES-OPERACIONES.md) | kubectl, Secrets, Probes, HPA, Ingress |
 | [kubernetes/REQUERIMIENTOS-KUBERNETES.md](./kubernetes/REQUERIMIENTOS-KUBERNETES.md) | Justificación Minikube |
-| [kubernetes/IMPLEMENTACION-KUBERNETES-LOCAL.md](./kubernetes/IMPLEMENTACION-KUBERNETES-LOCAL.md) | Minikube + manifiestos `k8s/` |
+| [kubernetes/IMPLEMENTACION-KUBERNETES-LOCAL.md](./kubernetes/IMPLEMENTACION-KUBERNETES-LOCAL.md) | Minikube — compartidos `k8s/` + `k8s/local/` |
 | [aks/](./aks/) | AKS: Helm Ingress, Secrets, Probes, HPA |
 | [eks/](./eks/) | EKS: Helm Ingress, Secrets, Probes, HPA |
 

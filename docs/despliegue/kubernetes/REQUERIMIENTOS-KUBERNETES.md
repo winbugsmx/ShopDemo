@@ -9,7 +9,7 @@
 | | E-mail: gilberto.juarez@gmail.com |
 | | E-mail: lcc.gilberto.juarez@gmail.com |
 
-**Alcance:** Desarrollo y pruebas en Kubernetes (Minikube) + mismos manifiestos en AKS/EKS.  
+**Alcance:** Desarrollo y pruebas en Kubernetes (Minikube) con `k8s/local/`; en AKS/EKS se reutilizan recursos compartidos (`k8s/postgres/`, Services, Ingress…) y deployments en `k8s/azure/` o `k8s/aws/`.  
 **Versión:** 1.0
 
 **Historias de usuario:** [HISTORIAS-USUARIO-KUBERNETES.md](./HISTORIAS-USUARIO-KUBERNETES.md)
@@ -28,7 +28,7 @@ Justificar el despliegue de ShopDemo en **Kubernetes** como paso natural despué
 |---|---|
 | OBJ-K8-01 | Construir imágenes Docker de las 4 APIs |
 | OBJ-K8-02 | Validar stack con **Docker Compose** en local |
-| OBJ-K8-03 | Desplegar en **Minikube** con manifiestos `k8s/` |
+| OBJ-K8-03 | Desplegar en **Minikube** con compartidos `k8s/` + deployments **`k8s/local/`** |
 | OBJ-K8-04 | Incluir **PostgreSQL** (StatefulSet) y **Azurite** en el cluster |
 | OBJ-K8-05 | Exponer APIs vía **Ingress NGINX** |
 | OBJ-K8-06 | Probar flujo E2E post-despliegue |

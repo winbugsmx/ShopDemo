@@ -452,10 +452,14 @@ $ECR = "$ACCOUNT.dkr.ecr.$REGION.amazonaws.com"
 kubectl apply -f k8s/postgres/
 kubectl apply -f k8s/azurite/deployment.yaml
 kubectl apply -f k8s/azurite/service.yaml
-kubectl apply -f k8s/catalog/
-kubectl apply -f k8s/orders/
-kubectl apply -f k8s/inventory/
+kubectl apply -f k8s/catalog/service.yaml
+kubectl apply -f k8s/orders/service.yaml
+kubectl apply -f k8s/inventory/service.yaml
+kubectl apply -f k8s/aws/catalog/deployment.yaml
+kubectl apply -f k8s/aws/orders/deployment.yaml
+kubectl apply -f k8s/aws/inventory/deployment.yaml
 
+# Imágenes ECR ya en k8s/aws/*.yaml; set-image solo si cambias tag:
 kubectl set image deployment/shopdemo-catalog catalog-api="${ECR}/shopdemo-catalog:latest" -n shopdemo
 kubectl set image deployment/shopdemo-orders orders-api="${ECR}/shopdemo-orders:latest" -n shopdemo
 kubectl set image deployment/shopdemo-inventory inventory-api="${ECR}/shopdemo-inventory:latest" -n shopdemo

@@ -80,16 +80,19 @@ kubectl get pods -l app=catalog-api
 
 | Comando | Descripción | Ejemplo |
 |---|---|---|
-| `kubectl apply -f` | Crea o actualiza recursos | `kubectl apply -f k8s/catalog/` |
-| `kubectl delete -f` | Elimina recursos de un manifiesto | `kubectl delete -f k8s/catalog/deployment.yaml` |
+| `kubectl apply -f` | Crea o actualiza recursos | `kubectl apply -f k8s/local/catalog/deployment.yaml` |
+| `kubectl delete -f` | Elimina recursos de un manifiesto | `kubectl delete -f k8s/local/catalog/deployment.yaml` |
 | `kubectl delete` | Elimina un recurso por nombre | `kubectl delete deploy catalog-api` |
 
 **Desplegar el microservicio Catalog:**
 
 ```bash
 kubectl apply -f k8s/namespace.yaml
-kubectl apply -f k8s/catalog/
-kubectl apply -f k8s/orders/
+kubectl apply -f k8s/catalog/service.yaml
+kubectl apply -f k8s/local/catalog/deployment.yaml   # Minikube
+# AKS: k8s/azure/...  |  EKS: k8s/aws/...
+kubectl apply -f k8s/orders/service.yaml
+kubectl apply -f k8s/local/orders/deployment.yaml
 ```
 
 ---
@@ -338,9 +341,11 @@ kubectl apply -f k8s/configmaps/
 # 3. Base de datos
 kubectl apply -f k8s/postgres/
 
-# 4. Microservicios
-kubectl apply -f k8s/catalog/
-kubectl apply -f k8s/orders/
+# 4. Microservicios (Minikube: k8s/local/; AKS: k8s/azure/; EKS: k8s/aws/)
+kubectl apply -f k8s/catalog/service.yaml
+kubectl apply -f k8s/local/catalog/deployment.yaml
+kubectl apply -f k8s/orders/service.yaml
+kubectl apply -f k8s/local/orders/deployment.yaml
 
 # 5. Ingress
 kubectl apply -f k8s/ingress/
@@ -385,7 +390,7 @@ kubectl delete namespace shopdemo
 ```bash
 eval $(minikube docker-env)
 docker build -t shopdemo-catalog:1.0 -f ShopDemo.Catalog.Api/Dockerfile .
-kubectl apply -f k8s/catalog/deployment.yaml
+kubectl apply -f k8s/local/catalog/deployment.yaml
 ```
 
 ---

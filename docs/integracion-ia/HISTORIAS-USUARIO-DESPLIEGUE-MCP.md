@@ -34,7 +34,7 @@
 
 | **Objetivos** | OBJ-MCP-04, OBJ-MCP-05 |
 
-**Reglas:** ALB MCP en ECS; manifiestos `k8s/mcp/` en EKS.
+**Reglas:** ALB MCP en ECS; en EKS: `k8s/aws/mcp/deployment.yaml` + `k8s/mcp/service.yaml`.
 
 **Criterios (CA-MCP-02):** Agente lista tools contra URL pública.
 

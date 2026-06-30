@@ -289,7 +289,7 @@ No hay código C# nuevo; **integras configuración, scripts PowerShell y pipelin
 | Componente | Azure ACA | AWS ECS | Kubernetes |
 |---|---|---|---|
 | Registro imágenes | ACR `acrshopdemolab01` (5 repos) | ECR `shopdemo-*` (5) | Imagen local / ACR / ECR |
-| APIs + MCP | 5 Container Apps | 5 ECS services + ALB | `k8s/*` + `k8s/mcp/` |
+| APIs + MCP | 5 Container Apps | 5 ECS services + ALB | Compartidos + `k8s/{local,azure,aws}/` |
 | PostgreSQL | ACI | Fargate task | StatefulSet `k8s/postgres/` |
 | Checkpoints EH | **Storage Account** | **Azurite Fargate** | **Azurite** `k8s/azurite/` |
 | Mensajería | Event Hubs (Azure) | Event Hubs cross-cloud | Event Hubs en `secrets.yaml` |
@@ -382,7 +382,7 @@ No hay código C# nuevo en el repositorio; **integras configuración en la nube*
 | 12 Observabilidad | Log Analytics / CloudWatch, alertas, `traceId` en middleware | Detectar fallos y correlacionar requests | [observabilidad/azure](./observabilidad/azure/IMPLEMENTACION-OBSERVABILIDAD-AZURE.md) · [aws](./observabilidad/aws/IMPLEMENTACION-OBSERVABILIDAD-AWS.md) |
 | 13 Resiliencia | Probes K8s, HPA, políticas de reinicio ACA/ECS | Recuperación tras caída de pod/tarea | [resiliencia/azure](./resiliencia/azure/IMPLEMENTACION-RESILIENCIA-AZURE.md) · [aws](./resiliencia/aws/IMPLEMENTACION-RESILIENCIA-AWS.md) |
 
-**Código ya presente en el repo (no copiar de nuevo):** endpoints `/health` y `/alive` en las APIs; manifiestos `k8s/*/deployment.yaml` con `livenessProbe` y `readinessProbe`.
+**Código ya presente en el repo (no copiar de nuevo):** endpoints `/health` y `/alive` en las APIs; deployments en `k8s/local/`, `k8s/azure/` o `k8s/aws/` con `livenessProbe` y `readinessProbe`.
 
 ---
 

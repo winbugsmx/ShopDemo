@@ -22,7 +22,7 @@ Al finalizar las etapas del curso, el alumno debe poder:
 3. **Integrar** servicios por HTTP síncrono (Orders → Inventory) y por mensajería asíncrona (Azure Event Hubs).
 4. **Observar** el bus de eventos con Analytics y orquestar todo localmente con Aspire.
 5. **Empaquetar** cada API en Docker y **desplegarla** en Azure (Container Apps, AKS) y AWS (ECS, EKS).
-6. **Desplegar** en Kubernetes (Minikube local, AKS, EKS) con manifiestos `k8s/`.
+6. **Desplegar** en Kubernetes (Minikube, AKS, EKS) con manifiestos compartidos `k8s/` y deployments en `k8s/local/`, `k8s/azure/` o `k8s/aws/`.
 7. **Exponer** el MCP Gateway para agentes IA (Cursor, Claude Code) sobre Catalog, Inventory y Analytics.
 8. **Probar** flujos de punta a punta con Swagger, Postman y la guía de endpoints.
 9. **Operar** con health checks, observabilidad básica y desarrollo guiado por specs (`spec-driven/`).
@@ -145,11 +145,11 @@ Referencia rápida para **levantar todos los servicios** según dónde ejecutes 
 
 | Servicio | Puerto | Health | Local Compose | Aspire | `dotnet run` | Minikube (`k8s/`) | Azure ACA | Azure AKS | AWS ECS | AWS EKS |
 |---|---|---|---|---|---|---|---|---|---|---|
-| **Catalog** | 8001 | `/health` | `Catalog/.../docker compose up` | AppHost | `dotnet run --project Catalog/...` | `k8s/catalog/` | Container App | Ingress `/catalog` | ALB dedicado | Ingress `/catalog` |
-| **Orders** | 8002 | `/health` | `Orders/.../docker compose up` | AppHost | `dotnet run --project Orders/...` | `k8s/orders/` | Container App | Ingress `/orders` | ALB dedicado | Ingress `/orders` |
-| **Inventory** | 8003 | `/health` | `Inventory/.../docker compose up` | AppHost | `dotnet run --project Inventory/...` | `k8s/inventory/` | Container App (interno) | Ingress `/inventory` | Cloud Map / ALB | Ingress `/inventory` |
-| **Analytics** | 8004 | `/health` | `Aspire/.../docker compose up` | AppHost | `dotnet run --project Aspire/...` | `k8s/analytics/` | Container App | Ingress `/analytics` | ALB dedicado | Ingress `/analytics` |
-| **MCP Gateway** | 8005 | `/health` | `AI/.../docker compose up` | Manual* | `dotnet run --project AI/...` | `k8s/mcp/` | Container App | Ingress `/mcp` | ALB dedicado | Ingress `/mcp` |
+| **Catalog** | 8001 | `/health` | `Catalog/.../docker compose up` | AppHost | `dotnet run --project Catalog/...` | `k8s/local/catalog/` | Container App | Ingress `/catalog` (`k8s/azure/`) | ALB dedicado | Ingress `/catalog` (`k8s/aws/`) |
+| **Orders** | 8002 | `/health` | `Orders/.../docker compose up` | AppHost | `dotnet run --project Orders/...` | `k8s/local/orders/` | Container App | Ingress `/orders` | ALB dedicado | Ingress `/orders` |
+| **Inventory** | 8003 | `/health` | `Inventory/.../docker compose up` | AppHost | `dotnet run --project Inventory/...` | `k8s/local/inventory/` | Container App (interno) | Ingress `/inventory` | Cloud Map / ALB | Ingress `/inventory` |
+| **Analytics** | 8004 | `/health` | `Aspire/.../docker compose up` | AppHost | `dotnet run --project Aspire/...` | `k8s/local/analytics/` | Container App | Ingress `/analytics` | ALB dedicado | Ingress `/analytics` |
+| **MCP Gateway** | 8005 | `/health` | `AI/.../docker compose up` | Manual* | `dotnet run --project AI/...` | `k8s/local/mcp/` | Container App | Ingress `/mcp` | ALB dedicado | Ingress `/mcp` |
 | **PostgreSQL** | 5433–5435 | — | Por compose de cada API | AppHost (×3 DB) | Requiere PG local | `k8s/postgres/` | ACI / sidecar | StatefulSet | ECS + EFS | StatefulSet |
 | **Azurite** | 10000 | — | En compose Inventory/Analytics | AppHost | — | `k8s/azurite/` | Blob Azure | Blob Azure | S3/Blob | Blob Azure |
 
@@ -290,7 +290,7 @@ Guía: [docs/integracion-ia/README.md](docs/integracion-ia/README.md) · Desplie
 |---|---|
 | 1 | `minikube start` + `minikube addons enable ingress` |
 | 2 | Build imágenes en daemon Minikube (`minikube docker-env`) |
-| 3 | `kubectl apply -f k8s/` (ver orden en [k8s/README.md](k8s/README.md)) |
+| 3 | `apply-k8s-manifests.sh k8s local` o pasos en [k8s/README.md](k8s/README.md) |
 
 Guía completa: [IMPLEMENTACION-KUBERNETES-LOCAL.md](docs/despliegue/kubernetes/IMPLEMENTACION-KUBERNETES-LOCAL.md)
 
@@ -307,7 +307,7 @@ Dos caminos de **release** en Azure. Ambos usan imágenes en **Azure Container R
 | Camino | Servicio Azure | Ideal para | Guía |
 |---|---|---|---|
 | **ACA** | Container Apps | Release serverless, más simple | [GUIA-RELEASE-SCRIPT-AZURE](docs/despliegue/azure/GUIA-RELEASE-SCRIPT-AZURE.md) |
-| **AKS** | Kubernetes Service | Release con manifiestos `k8s/` | [GUIA-RELEASE-KUBERNETES](docs/despliegue/kubernetes/GUIA-RELEASE-KUBERNETES.md) |
+| **AKS** | Kubernetes Service | Compartidos `k8s/` + deployments `k8s/azure/` | [GUIA-RELEASE-KUBERNETES](docs/despliegue/kubernetes/GUIA-RELEASE-KUBERNETES.md) |
 
 **Preparación previa:** [PREPARACION-AMBIENTE-AZURE](docs/despliegue/azure/PREPARACION-AMBIENTE-AZURE.md) (suscripción, cuotas, permisos Contributor).
 
@@ -346,7 +346,7 @@ az account set --subscription "<TU-SUBSCRIPTION-ID>"
 
 # 5. Validar y limpiar
 #    ACA: curl https://<fqdn-catalog>/health
-#    AKS: kubectl apply -f k8s/ (tras editar imágenes ACR)
+#    AKS: apply-k8s-manifests.sh k8s azure (ver k8s/README.md)
 .\Remove-AzureShopDemo.ps1
 ```
 
@@ -366,8 +366,8 @@ El script crea RG, Event Hubs, ACR, cluster y `k8s/secrets.yaml`. Tras el script
 
 | Paso | Acción |
 |---|---|
-| 1 | Push de 5 imágenes a ACR y `kubectl set image` con `acr<tu-nombre>.azurecr.io/...` |
-| 2 | `kubectl apply -f k8s/` (postgres → azurite → APIs → mcp → ingress) |
+| 1 | Push de 5 imágenes a ACR (las imágenes ACR ya están en `k8s/azure/*/deployment.yaml`; `kubectl set image` solo si cambias tag) |
+| 2 | `kubectl apply` compartidos + **`k8s/azure/`** (ver [k8s/README.md](k8s/README.md)) |
 | 3 | Helm Ingress NGINX si el script falla en este paso (ver [Script §5.2](docs/despliegue/azure/GUIA-RELEASE-SCRIPT-AZURE.md)) |
 | 4 | Anotación health probe Azure: `service.beta.kubernetes.io/azure-load-balancer-health-probe-request-path=/healthz` |
 | 5 | Consumer groups en Event Hubs: `analytics-service`, `inventory-service` |
@@ -386,7 +386,7 @@ El script crea RG, Event Hubs, ACR, cluster y `k8s/secrets.yaml`. Tras el script
 |---|---|---|---|
 | 1 | **Build y push** imágenes a ACR | `shopdemo-catalog`, `orders`, `inventory`, `analytics`, `mcp` | Igual |
 | 2 | **Infraestructura** | RG + ACR + Environment ACA | RG + ACR + cluster AKS + Ingress NGINX |
-| 3 | **Desplegar APIs** | Crear **5** Container Apps (incl. MCP) | `kubectl apply -f k8s/` incl. `mcp/` |
+| 3 | **Desplegar APIs** | Crear **5** Container Apps (incl. MCP) | Compartidos + **`k8s/azure/`** (ver [k8s/README.md](k8s/README.md)) |
 | 4 | **Secretos** | `EventHubs__*`, PostgreSQL, **Storage Account** checkpoints | `k8s/secrets.yaml` + Azurite in-cluster |
 | 5 | **Verificar** | `curl https://<fqdn>/health` por app | `kubectl get pods -n shopdemo` + Ingress |
 | 6 | **Postman** | Actualizar variables con FQDN de cada ACA | URLs con prefijo Ingress (`/catalog`, …, `/mcp`) |
@@ -398,7 +398,7 @@ flowchart LR
     A[docker build] --> B[docker push ACR]
     B --> C{Destino}
     C -->|ACA| D[Container Apps]
-    C -->|AKS| E[kubectl apply k8s/]
+    C -->|AKS| E[apply-k8s-manifests.sh k8s azure]
     D & E --> F[Probar con Postman]
 ```
 
@@ -407,7 +407,7 @@ flowchart LR
 | 1 | Crear RG + ACR | Crear RG + ACR + cluster AKS |
 | 2 | `docker push` 5 imágenes a ACR | `az aks get-credentials` + push ACR |
 | 3 | Crear 5 Container Apps | Instalar Ingress NGINX |
-| 4 | Secrets `EventHubs__*` en cada app | `kubectl apply -f k8s/` (postgres → APIs → mcp → ingress) |
+| 4 | Secrets `EventHubs__*` en cada app | Compartidos + `k8s/azure/` + ingress (orden en [k8s/README.md](k8s/README.md)) |
 | 5 | Copiar FQDN de cada app | Copiar IP/DNS del Ingress (`shopdemo.local` o IP pública) |
 | 6 | MCP: [IMPLEMENTACION-DESPLIEGUE-MCP-AZURE](docs/integracion-ia/IMPLEMENTACION-DESPLIEGUE-MCP-AZURE.md) | Ruta Ingress `/mcp` en `k8s/ingress/` |
 
@@ -438,7 +438,7 @@ Dos caminos de **release** en AWS. Ambos usan **Amazon ECR** y despliegan **5 co
 | Camino | Servicio AWS | Ideal para | Guía |
 |---|---|---|---|
 | **ECS** | Fargate | Release sin Kubernetes | [GUIA-RELEASE-SCRIPT-AWS](docs/despliegue/aws/GUIA-RELEASE-SCRIPT-AWS.md) |
-| **EKS** | Elastic Kubernetes Service | Release con manifiestos `k8s/` | [GUIA-RELEASE-KUBERNETES](docs/despliegue/kubernetes/GUIA-RELEASE-KUBERNETES.md) |
+| **EKS** | Elastic Kubernetes Service | Compartidos `k8s/` + deployments `k8s/aws/` | [GUIA-RELEASE-KUBERNETES](docs/despliegue/kubernetes/GUIA-RELEASE-KUBERNETES.md) |
 
 **Preparación previa:** [PREPARACION-AMBIENTE-AWS](docs/despliegue/aws/PREPARACION-AMBIENTE-AWS.md) (IAM `ShopDemoLabECS` / `ShopDemoLabEKS`, región recomendada `us-east-2`).
 
@@ -475,7 +475,7 @@ aws sts get-caller-identity
 
 # 5. Validar y limpiar
 #    ECS: http://<alb-catalog-dns>/swagger
-#    EKS: kubectl apply -f k8s/
+#    EKS: apply-k8s-manifests.sh k8s aws (ver k8s/README.md)
 .\Remove-AwsShopDemo.ps1   # confirmar: delete-shopdemo
 ```
 
@@ -510,7 +510,7 @@ Con 4× `t3.micro` (máx. ~16 pods) el cluster no cabe con los 5 servicios + Ing
 |---|---|---|---|
 | 1 | **Build y push** a ECR | 5 repos/imágenes | Igual |
 | 2 | **Infraestructura** | Cluster ECS + ALB por API pública | Cluster EKS + Ingress NGINX + EBS CSI |
-| 3 | **Desplegar** | Task definitions + services + Cloud Map | `kubectl apply -f k8s/` |
+| 3 | **Desplegar** | Task definitions + services + Cloud Map | Compartidos + **`k8s/aws/`** (ver [k8s/README.md](k8s/README.md)) |
 | 4 | **Secretos** | SSM Parameter Store / Secrets Manager | `k8s/secrets.yaml` |
 | 5 | **Verificar** | `curl http://<alb-dns>/health` | `kubectl get pods -n shopdemo` |
 | 6 | **MCP** | [IMPLEMENTACION-DESPLIEGUE-MCP-AWS](docs/integracion-ia/IMPLEMENTACION-DESPLIEGUE-MCP-AWS.md) | Ingress `/mcp` |
@@ -522,7 +522,7 @@ Con 4× `t3.micro` (máx. ~16 pods) el cluster no cabe con los 5 servicios + Ing
 | 1 | Crear repos ECR (5 imágenes) | `eksctl create cluster` o Consola EKS |
 | 2 | `docker push` a ECR | `aws eks update-kubeconfig` |
 | 3 | Task definitions + services (5) | EBS CSI + Ingress NGINX |
-| 4 | ALB por API pública + Cloud Map Orders→Inventory | `kubectl apply -f k8s/` |
+| 4 | ALB por API pública + Cloud Map Orders→Inventory | Compartidos + `k8s/aws/` + ingress |
 | 5 | MCP en ALB o service interno | Ingress `/mcp` |
 
 ### URLs release AWS (Postman)
@@ -693,7 +693,7 @@ ShopDemo/
 ├── AI/               # MCP Gateway (ShopDemo.Mcp.Api :8005)
 ├── Aspire/           # AppHost, ServiceDefaults, Analytics
 ├── ShopDemo.Shared/  # Kernel DDD + mensajería
-├── k8s/              # Manifiestos Kubernetes (5 APIs + PG + Ingress)
+├── k8s/              # Manifiestos K8s: compartidos + local/ azure/ aws/
 ├── spec-driven/      # Specs, plantillas Cursor y Claude Code
 ├── docs/             # Toda la documentación del curso
 └── .github/workflows/  # CI/CD: deploy-azure, deploy-aws, deploy-aks, deploy-eks

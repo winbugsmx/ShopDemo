@@ -56,10 +56,11 @@ $auth = & gh auth status 2>&1
 if ($LASTEXITCODE -ne 0) { throw "Ejecuta: gh auth login`n$auth" }
 Write-Ok "Autenticado en GitHub"
 
-Write-Step 'Crear environments azure y aws'
-& gh api --method PUT "repos/$Repo/environments/azure" | Out-Null
-& gh api --method PUT "repos/$Repo/environments/aws" | Out-Null
-Write-Ok 'Environments azure, aws'
+Write-Step 'Crear environments azure, azure-aks, aws, aws-eks'
+foreach ($envName in @('azure', 'azure-aks', 'aws', 'aws-eks')) {
+    & gh api --method PUT "repos/$Repo/environments/$envName" | Out-Null
+}
+Write-Ok 'Environments azure, azure-aks, aws, aws-eks'
 
 # --- Shared repo secrets ---
 $awsEnv = Join-Path $RepoRoot 'scripts\aws\.env.aws'
@@ -85,6 +86,7 @@ Set-GhSecret -Environment 'azure' -Name 'ACA_ENV' -Value 'aca-env-shopdemo'
 if ($AzureCredentialsFile -and (Test-Path $AzureCredentialsFile)) {
     $creds = Get-Content -Raw -Path $AzureCredentialsFile
     Set-GhSecret -Environment 'azure' -Name 'AZURE_CREDENTIALS' -Value $creds
+    Set-GhSecret -Environment 'azure-aks' -Name 'AZURE_CREDENTIALS' -Value $creds
 }
 else {
     Write-Warn 'AZURE_CREDENTIALS omitido. Pásalo con -AzureCredentialsFile path\to\sp.json'

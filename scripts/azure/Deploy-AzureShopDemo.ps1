@@ -32,7 +32,7 @@
 
 .EXAMPLE
     .\Deploy-AzureShopDemo.ps1 -Mode AKS
-    # Luego: publicar imágenes en ACR, kubectl apply -f k8s/ (ver README)
+    # Luego: publicar imágenes en ACR, apply compartidos + k8s/azure/ (ver k8s/README.md)
 #>
 [CmdletBinding()]
 param(
@@ -800,11 +800,9 @@ if ($deployAks) {
 
     Write-Info "Siguiente (manual): publicar imágenes en ACR y aplicar manifiestos"
     Write-Info "  cd $repoRoot"
-    Write-Info "  # Editar k8s/*/deployment.yaml → image: $($acr.LoginServer)/shopdemo-catalog:$($cfg.IMAGE_TAG)"
-    Write-Info "  kubectl apply -f k8s/namespace.yaml"
-    Write-Info "  kubectl apply -f k8s/secrets.yaml"
-    Write-Info "  kubectl apply -f k8s/postgres/ && kubectl apply -f k8s/azurite/"
-    Write-Info "  kubectl apply -f k8s/catalog/ k8s/orders/ k8s/inventory/ k8s/analytics/ k8s/mcp/ k8s/ingress/"
+    Write-Info "  # Imágenes ACR ya en k8s/azure/*/deployment.yaml; set-image solo si cambias tag"
+    Write-Info "  APPLY_INFRA=true bash .github/scripts/apply-k8s-manifests.sh k8s azure"
+    Write-Info "  # O paso a paso: ver k8s/README.md (compartidos + k8s/azure/)"
     Write-Info "Guía: docs/despliegue/aks/IMPLEMENTACION-DESPLIEGUE-AKS.md §7-8"
 }
 

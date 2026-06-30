@@ -22,7 +22,7 @@
 
 | **Objetivos** | OBJ-K8-03, OBJ-K8-04, OBJ-K8-05 |
 
-**Como** alumno, **quiero** `kubectl apply -f k8s/`, **para** ejecutar 5 APIs + Postgres + Azurite + Ingress.
+**Como** alumno, **quiero** aplicar manifiestos compartidos + **`k8s/local/`**, **para** ejecutar 5 APIs + Postgres + Azurite + Ingress.
 
 **Modelo:** Manifiestos YAML; **Secret** `k8s/secrets.yaml` (no commitear).
 
@@ -66,7 +66,7 @@
 
 | **Objetivos** | OBJ-K8-06, OBJ-K8-07 |
 
-**Criterios (CA-K8-03, CA-K8-04):** Flujo producto→pedido→confirmar; mismos YAML en AKS/EKS cambiando imagen.
+**Criterios (CA-K8-03, CA-K8-04):** Flujo producto→pedido→confirmar; carpeta de deployments según entorno (`local/`, `azure/`, `aws/`).
 
 ---
 

@@ -240,11 +240,8 @@ aws eks update-kubeconfig --name $EKS_CLUSTER --region $AWS_REGION
 $ACCOUNT = aws sts get-caller-identity --query Account --output text
 $ECR_IMAGE = "$ACCOUNT.dkr.ecr.$env:AWS_REGION.amazonaws.com/shopdemo-mcp:v1"
 
-(Get-Content k8s/mcp/deployment.yaml) `
-  -replace 'shopdemo-mcp:latest', $ECR_IMAGE |
-  Set-Content k8s/mcp/deployment-eks.yaml
-
-kubectl apply -f k8s/mcp/deployment-eks.yaml
+```bash
+kubectl apply -f k8s/aws/mcp/deployment.yaml
 kubectl apply -f k8s/mcp/service.yaml
 kubectl wait --for=condition=ready pod -l app=shopdemo-mcp -n shopdemo --timeout=120s
 ```

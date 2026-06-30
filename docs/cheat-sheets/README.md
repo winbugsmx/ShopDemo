@@ -48,9 +48,10 @@ git push -u origin feature/catalog-api
 docker build -t shopdemo-catalog:1.0 -f ShopDemo.Catalog.Api/Dockerfile .
 docker compose up -d
 
-# 4. Desplegar en Kubernetes
-kubectl apply -f k8s/catalog/
-kubectl rollout status deployment/catalog-api
+# 4. Desplegar en Kubernetes (Minikube)
+APPLY_INFRA=true bash .github/scripts/apply-k8s-manifests.sh k8s local
+# O paso a paso: ver k8s/README.md (compartidos + k8s/local/)
+kubectl rollout status deployment/catalog-api -n shopdemo
 ```
 
 ---

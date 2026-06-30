@@ -131,6 +131,7 @@ function Sync-AzureAca {
     if (-not $SkipSensitive -and $AzureCredentialsFile -and (Test-Path $AzureCredentialsFile)) {
         $json = Get-Content $AzureCredentialsFile -Raw
         Set-GhSecret -Name 'AZURE_CREDENTIALS' -Value $json -Environment 'azure'
+        Set-GhSecret -Name 'AZURE_CREDENTIALS' -Value $json -Environment 'azure-aks'
     }
 
     # FQDNs vía Azure CLI (no secretos de GitHub)

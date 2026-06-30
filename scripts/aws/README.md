@@ -116,7 +116,7 @@ aws sts get-caller-identity
 | Modo | Crea | No incluye |
 |---|---|---|
 | **ECS** | VPC, SG, ECR, SSM, cluster, Postgres/Azurite Fargate, Cloud Map, 5 APIs + MCP con ALB | Build Docker |
-| **EKS** | ECR, cluster (eksctl), Ingress Helm, `k8s/secrets.yaml`, kubectl apply base | Perfil free-tier (ajustes manuales), Build Docker |
+| **EKS** | ECR, cluster (eksctl), Ingress Helm, `k8s/secrets.yaml`, apply compartidos + `k8s/aws/` | Perfil free-tier (ajustes manuales), Build Docker |
 | **All** | ECS + EKS | Build Docker |
 
 ## Checkpoints Event Hubs

@@ -96,6 +96,9 @@ No es obligatorio desplegar **ACA + ECS + Minikube + AKS + EKS** en el mismo alu
 | Documento | Uso |
 |---|---|
 | [GUIA-RELEASE-KUBERNETES.md](./kubernetes/GUIA-RELEASE-KUBERNETES.md) | Minikube, AKS y EKS — qué elegir y en qué orden |
+| [k8s/README.md](../../k8s/README.md) | Estructura: compartidos + `local/` / `azure/` / `aws/` |
+
+> **Regla transversal:** Services, Postgres, Azurite e Ingress son **compartidos** en `k8s/`. Los **Deployments** van en la carpeta del cloud: `k8s/local/` (Minikube), `k8s/azure/` (ACR/AKS) o `k8s/aws/` (ECR/EKS). **No apliques `k8s/aws/` en AKS** ni `k8s/azure/` en EKS — provoca `ImagePullBackOff`.
 
 ---
 
@@ -129,7 +132,7 @@ Tras configurar secrets ([.github/SECRETS-CHECKLIST.md](../../.github/SECRETS-CH
 
 - **No** despliega al abrir el PR; solo al integrar en `main`.
 - Infra inicial sigue siendo con scripts PowerShell (una vez).
-- Cambios solo en `k8s/**` actualizan manifiestos en AKS/EKS (no ACA/ECS).
+- Cambios en `k8s/**` actualizan manifiestos en AKS (`k8s/azure/`) y EKS (`k8s/aws/`) vía CI/CD (no ACA/ECS).
 
 Índice completo: [.github/README.md](../../.github/README.md) · Configuración: [SETUP-GITHUB.md](../../.github/SETUP-GITHUB.md) · **Portal web (alumnos):** [SETUP-GITHUB-PORTAL.md](../../.github/SETUP-GITHUB-PORTAL.md) · CLI: [GH-CLI-COMMANDS.md](../../.github/GH-CLI-COMMANDS.md)
 

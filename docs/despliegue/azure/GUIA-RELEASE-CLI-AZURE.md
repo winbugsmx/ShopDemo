@@ -297,19 +297,27 @@ kubectl apply -f k8s\namespace.yaml
 kubectl apply -f k8s\secrets.yaml
 ```
 
-## B.7 Aplicar manifiestos (orden)
+## B.7 Aplicar manifiestos (orden) — AKS
+
+Deployments en **`k8s/azure/`** (ACR). Services compartidos en `k8s/*/service.yaml`.
 
 ```powershell
 kubectl apply -f k8s/postgres/
 kubectl apply -f k8s/azurite/deployment.yaml
 kubectl apply -f k8s/azurite/service.yaml
-kubectl apply -f k8s/catalog/
-kubectl apply -f k8s/orders/
-kubectl apply -f k8s/inventory/
-kubectl apply -f k8s/analytics/
-kubectl apply -f k8s/mcp/
+kubectl apply -f k8s/catalog/service.yaml
+kubectl apply -f k8s/orders/service.yaml
+kubectl apply -f k8s/inventory/service.yaml
+kubectl apply -f k8s/analytics/service.yaml
+kubectl apply -f k8s/mcp/service.yaml
+kubectl apply -f k8s/azure/catalog/deployment.yaml
+kubectl apply -f k8s/azure/orders/deployment.yaml
+kubectl apply -f k8s/azure/inventory/deployment.yaml
+kubectl apply -f k8s/azure/analytics/deployment.yaml
+kubectl apply -f k8s/azure/mcp/deployment.yaml
 kubectl apply -f k8s/ingress/
 
+# Solo si el tag del push difiere del YAML:
 kubectl set image deployment/shopdemo-catalog catalog-api="${ACR_LOGIN}/shopdemo-catalog:${TAG}" -n shopdemo
 kubectl set image deployment/shopdemo-orders orders-api="${ACR_LOGIN}/shopdemo-orders:${TAG}" -n shopdemo
 kubectl set image deployment/shopdemo-inventory inventory-api="${ACR_LOGIN}/shopdemo-inventory:${TAG}" -n shopdemo

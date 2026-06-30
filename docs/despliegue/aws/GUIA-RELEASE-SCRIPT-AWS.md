@@ -299,9 +299,12 @@ kubectl delete hpa shopdemo-catalog-hpa -n shopdemo --ignore-not-found
 cd I:\Curso\ShopDemo
 kubectl apply -f k8s/postgres/
 kubectl apply -f k8s/azurite/
-kubectl apply -f k8s/catalog/
-kubectl apply -f k8s/orders/
-kubectl apply -f k8s/inventory/
+kubectl apply -f k8s/catalog/service.yaml
+kubectl apply -f k8s/orders/service.yaml
+kubectl apply -f k8s/inventory/service.yaml
+kubectl apply -f k8s/aws/catalog/deployment.yaml
+kubectl apply -f k8s/aws/orders/deployment.yaml
+kubectl apply -f k8s/aws/inventory/deployment.yaml
 kubectl apply -f k8s/azurite/init-checkpoints-job.yaml
 ```
 

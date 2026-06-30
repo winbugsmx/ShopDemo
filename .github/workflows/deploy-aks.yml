@@ -114,7 +114,7 @@ jobs:
       - name: Apply manifests
         run: |
           chmod +x .github/scripts/apply-k8s-manifests.sh
-          bash .github/scripts/apply-k8s-manifests.sh k8s
+          bash .github/scripts/apply-k8s-manifests.sh k8s azure
 
   build-and-deploy:
     needs: changes

@@ -1,0 +1,53 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: shopdemo-mcp
+  namespace: shopdemo
+spec:
+  replicas: 1
+  strategy:
+    type: Recreate
+  selector:
+    matchLabels:
+      app: shopdemo-mcp
+  template:
+    metadata:
+      labels:
+        app: shopdemo-mcp
+    spec:
+      containers:
+        - name: mcp-api
+          image: shopdemo-mcp:latest
+          imagePullPolicy: IfNotPresent
+          ports:
+            - containerPort: 8080
+          env:
+            - name: ASPNETCORE_ENVIRONMENT
+              value: Production
+            - name: ShopDemo__CatalogApiBaseUrl
+              value: "http://shopdemo-catalog:8080"
+            - name: ShopDemo__InventoryApiBaseUrl
+              value: "http://shopdemo-inventory:8080"
+            - name: ShopDemo__AnalyticsApiBaseUrl
+              value: "http://shopdemo-analytics:8080"
+          resources:
+            requests:
+              cpu: 100m
+              memory: 256Mi
+            limits:
+              cpu: 500m
+              memory: 512Mi
+          readinessProbe:
+            httpGet:
+              path: /health
+              port: 8080
+            initialDelaySeconds: 10
+            periodSeconds: 10
+            failureThreshold: 3
+          livenessProbe:
+            httpGet:
+              path: /health
+              port: 8080
+            initialDelaySeconds: 20
+            periodSeconds: 15
+            failureThreshold: 3

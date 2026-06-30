@@ -36,7 +36,7 @@ Automatización del laboratorio Azure del curso Lite Thinking. Complementa la do
 | Modo | Crea | Post-manual (AKS) |
 |---|---|---|
 | **ACA** | RG, EH, Storage, ACR, ACI Postgres, 5 Container Apps + MCP | Consumer groups EH |
-| **AKS** | RG, EH, ACR, AKS, `k8s/secrets.yaml` | Helm Ingress + health probe, `kubectl apply`, consumer groups |
+| **AKS** | RG, EH, ACR, AKS, `k8s/secrets.yaml` | Helm Ingress + health probe, apply compartidos + `k8s/azure/`, consumer groups |
 | **All** | ACA + AKS | Todo lo anterior |
 
 ## Uso rápido

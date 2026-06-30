@@ -206,6 +206,8 @@ helm upgrade --install ingress-nginx ingress-nginx/ingress-nginx `
 
 #### 5.2.3 Aplicar manifiestos Kubernetes
 
+Los **Deployments** de AKS están en `k8s/azure/` (imágenes ACR). Los **Services** son compartidos en `k8s/*/service.yaml`.
+
 ```powershell
 $ACR = "acrshopdemolab01.azurecr.io"
 $TAG = "latest"
@@ -216,13 +218,24 @@ kubectl apply -f k8s/secrets.yaml
 kubectl apply -f k8s/postgres/
 kubectl apply -f k8s/azurite/deployment.yaml
 kubectl apply -f k8s/azurite/service.yaml
-kubectl apply -f k8s/catalog/
-kubectl apply -f k8s/orders/
-kubectl apply -f k8s/inventory/
-kubectl apply -f k8s/analytics/
-kubectl apply -f k8s/mcp/
+
+# Services compartidos
+kubectl apply -f k8s/catalog/service.yaml
+kubectl apply -f k8s/orders/service.yaml
+kubectl apply -f k8s/inventory/service.yaml
+kubectl apply -f k8s/analytics/service.yaml
+kubectl apply -f k8s/mcp/service.yaml
+
+# Deployments AKS (ACR — ya referencian $ACR en YAML)
+kubectl apply -f k8s/azure/catalog/deployment.yaml
+kubectl apply -f k8s/azure/orders/deployment.yaml
+kubectl apply -f k8s/azure/inventory/deployment.yaml
+kubectl apply -f k8s/azure/analytics/deployment.yaml
+kubectl apply -f k8s/azure/mcp/deployment.yaml
+
 kubectl apply -f k8s/ingress/
 
+# Solo si el tag del push difiere del YAML (ej. v1 vs latest):
 kubectl set image deployment/shopdemo-catalog catalog-api="${ACR}/shopdemo-catalog:${TAG}" -n shopdemo
 kubectl set image deployment/shopdemo-orders orders-api="${ACR}/shopdemo-orders:${TAG}" -n shopdemo
 kubectl set image deployment/shopdemo-inventory inventory-api="${ACR}/shopdemo-inventory:${TAG}" -n shopdemo
@@ -233,6 +246,8 @@ kubectl delete hpa shopdemo-catalog-hpa -n shopdemo --ignore-not-found
 kubectl apply -f k8s/azurite/init-checkpoints-job.yaml
 kubectl wait --for=condition=complete job/shopdemo-azurite-init -n shopdemo --timeout=120s
 ```
+
+**Alternativa:** `APPLY_INFRA=true bash .github/scripts/apply-k8s-manifests.sh k8s azure` (Git Bash) + `kubectl apply -f k8s/secrets.yaml` + ingress.
 
 #### 5.2.4 Analytics — variables de entorno
 

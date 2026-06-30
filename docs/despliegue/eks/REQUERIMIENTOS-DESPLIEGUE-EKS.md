@@ -18,7 +18,7 @@
 
 ## 1. Propósito
 
-Desplegar ShopDemo en **EKS** con los mismos manifiestos `k8s/` usados en Minikube y AKS, imágenes en **ECR** e **Ingress NGINX**.
+Desplegar ShopDemo en **EKS** con manifiestos **compartidos** en `k8s/` y **deployments** en `k8s/aws/` (imágenes **ECR**) e **Ingress NGINX**.
 
 ---
 
@@ -30,7 +30,7 @@ Desplegar ShopDemo en **EKS** con los mismos manifiestos `k8s/` usados en Miniku
 | OBJ-EKS-02 | Publicar imágenes en ECR |
 | OBJ-EKS-03 | Configurar `kubectl` contra EKS |
 | OBJ-EKS-04 | Instalar Ingress NGINX y EBS CSI (PVC) |
-| OBJ-EKS-05 | Aplicar manifiestos ShopDemo |
+| OBJ-EKS-05 | Aplicar manifiestos compartidos + **`k8s/aws/`** (imágenes ECR) |
 | OBJ-EKS-06 | Validar flujo E2E |
 | OBJ-EKS-07 | Documentar errores comunes |
 | OBJ-EKS-08 | Aplicar **Secrets** K8s |

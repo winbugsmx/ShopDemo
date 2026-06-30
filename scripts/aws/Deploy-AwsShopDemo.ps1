@@ -149,23 +149,46 @@ function Test-EksClusterExists {
     return ($LASTEXITCODE -eq 0)
 }
 
+function Invoke-KubectlApplyPath {
+    param(
+        [Parameter(Mandatory = $true)]
+        [string] $Path,
+        [string] $Label = $Path
+    )
+    if (-not (Test-Path $Path)) {
+        return $false
+    }
+    kubectl apply -f $Path | Out-Null
+    if ($LASTEXITCODE -ne 0) {
+        Write-Warn "kubectl apply fallo: $Label"
+        return $false
+    }
+    return $true
+}
+
 function Deploy-K8sWorkloads {
     param(
         [string]$RepoRoot,
         [string]$Registry,
         [string]$Tag
     )
+    # Mismo orden que .github/scripts/apply-k8s-manifests.sh k8s aws (+ secrets.yaml generado aquí)
     $k8s = Join-Path $RepoRoot 'k8s'
-    kubectl apply -f (Join-Path $k8s 'namespace.yaml') | Out-Null
-    kubectl apply -f (Join-Path $k8s 'secrets.yaml') | Out-Null
-    kubectl apply -f (Join-Path $k8s 'postgres\') | Out-Null
-    kubectl apply -f (Join-Path $k8s 'azurite\') | Out-Null
-    kubectl apply -f (Join-Path $k8s 'catalog\') | Out-Null
-    kubectl apply -f (Join-Path $k8s 'orders\') | Out-Null
-    kubectl apply -f (Join-Path $k8s 'inventory\') | Out-Null
-    kubectl apply -f (Join-Path $k8s 'analytics\') | Out-Null
-    kubectl apply -f (Join-Path $k8s 'mcp\') | Out-Null
-    kubectl apply -f (Join-Path $k8s 'ingress\') | Out-Null
+    $cloud = 'aws'
+
+    Invoke-KubectlApplyPath -Path (Join-Path $k8s 'namespace.yaml') -Label 'namespace' | Out-Null
+    Invoke-KubectlApplyPath -Path (Join-Path $k8s 'secrets.yaml') -Label 'secrets' | Out-Null
+    Invoke-KubectlApplyPath -Path (Join-Path $k8s 'postgres') -Label 'postgres' | Out-Null
+    Invoke-KubectlApplyPath -Path (Join-Path $k8s 'azurite') -Label 'azurite' | Out-Null
+
+    foreach ($svc in @('catalog', 'inventory', 'orders', 'analytics', 'mcp')) {
+        Invoke-KubectlApplyPath -Path (Join-Path $k8s $svc) -Label "service-$svc" | Out-Null
+        $deployment = Join-Path $k8s "$cloud\$svc\deployment.yaml"
+        Invoke-KubectlApplyPath -Path $deployment -Label "deployment-$svc" | Out-Null
+    }
+
+    Invoke-KubectlApplyPath -Path (Join-Path $k8s 'catalog\hpa.yaml') -Label 'hpa-catalog' | Out-Null
+    Invoke-KubectlApplyPath -Path (Join-Path $k8s 'ingress') -Label 'ingress' | Out-Null
 
     $images = @(
         @{ Deploy = 'shopdemo-catalog'; Container = 'catalog-api'; Repo = 'shopdemo-catalog' }
@@ -177,7 +200,7 @@ function Deploy-K8sWorkloads {
     foreach ($img in $images) {
         kubectl set image "deployment/$($img.Deploy)" "$($img.Container)=$Registry/$($img.Repo):$Tag" -n shopdemo | Out-Null
     }
-    Write-Ok 'Manifiestos k8s aplicados e imagenes ECR configuradas'
+    Write-Ok 'Manifiestos k8s aplicados (compartidos + k8s/aws/) e imagenes ECR configuradas'
 }
 
 function Get-EksReleaseReport {

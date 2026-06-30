@@ -112,7 +112,9 @@ Mismo escenario que Azure: Inventory detenido → crear producto → evento en A
 ### Paso B1 — Probes
 
 ```bash
-kubectl apply -f k8s/
+# Compartidos + deployments EKS (k8s/aws/)
+APPLY_INFRA=true bash .github/scripts/apply-k8s-manifests.sh k8s aws
+# O ver orden en k8s/README.md
 kubectl describe pod -n shopdemo -l app=shopdemo-orders
 ```
 

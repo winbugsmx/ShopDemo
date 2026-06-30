@@ -232,7 +232,7 @@ Igual que [Paso A1](#paso-a1--build-y-push-imagen-mcp). En AKS la imagen debe es
 
 | Archivo | Contenido |
 |---|---|
-| `k8s/mcp/deployment.yaml` | Imagen, env DNS interno, probes |
+| `k8s/azure/mcp/deployment.yaml` (AKS) o `k8s/aws/mcp/deployment.yaml` (EKS) | Imagen registry, env DNS interno, probes |
 | `k8s/mcp/service.yaml` | ClusterIP puerto 8080 |
 
 **DNS interno (ya en manifiesto):**
@@ -243,19 +243,17 @@ Igual que [Paso A1](#paso-a1--build-y-push-imagen-mcp). En AKS la imagen debe es
 | `ShopDemo__InventoryApiBaseUrl` | `http://shopdemo-inventory:8080` |
 | `ShopDemo__AnalyticsApiBaseUrl` | `http://shopdemo-analytics:8080` |
 
-### CLI — patch imagen ACR
+### CLI — aplicar MCP en AKS
 
 ```bash
 az aks get-credentials --resource-group $RG --name $AKS_NAME
-$ACR_LOGIN = az acr show --name $ACR_NAME --query loginServer -o tsv
 
-(Get-Content k8s/mcp/deployment.yaml) `
-  -replace 'shopdemo-mcp:latest', "$ACR_LOGIN/shopdemo-mcp:v1" |
-  Set-Content k8s/mcp/deployment-aks.yaml
-
-kubectl apply -f k8s/mcp/deployment-aks.yaml
+# Deployment ACR (k8s/azure/mcp/deployment.yaml)
+kubectl apply -f k8s/azure/mcp/deployment.yaml
 kubectl apply -f k8s/mcp/service.yaml
 ```
+
+Si el tag push no es `latest`, ajusta la línea `image:` en `k8s/azure/mcp/deployment.yaml` o usa `kubectl set image`.
 
 **Explicación:** Las APIs deben estar Running antes; MCP las resuelve por Service DNS.
 

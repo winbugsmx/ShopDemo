@@ -145,7 +145,7 @@ Diana desplegó ShopDemo en Minikube usando la carpeta `k8s/`. Más adelante el 
 
 **¿Qué combinación de acciones es la más adecuada según el ejercicio?**
 
-- A) Usar los mismos manifiestos `k8s/` ajustando imágenes y secretos; verificar `/health` y luego la carpeta **Flujo integrado (E2E)** en Postman  
+- A) Usar recursos compartidos `k8s/` + deployments en `k8s/azure/` o `k8s/aws/`; verificar `/health` y luego la carpeta **Flujo integrado (E2E)** en Postman  
 - B) Crear manifiestos nuevos desde cero; no usar Postman en nube  
 - C) Desplegar solo MCP y omitir Catalog, Orders e Inventory  
 - D) Probar únicamente Swagger; Ingress y health no aplican  

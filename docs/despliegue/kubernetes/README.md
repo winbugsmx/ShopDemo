@@ -23,9 +23,9 @@ Material para desplegar ShopDemo en **Kubernetes**: desarrollo local (Minikube) 
 
 ## Manifiestos en el repositorio
 
-Carpeta [`k8s/`](../../k8s/) — mismos YAML para Minikube, AKS y EKS (cambia solo el origen de las imágenes).
+Carpeta [`k8s/`](../../k8s/) — recursos **compartidos** + deployments por cloud (`local/`, `azure/`, `aws/`).
 
-Guía operativa de manifiestos: [k8s/README.md](../../k8s/README.md)
+Guía operativa: [k8s/README.md](../../k8s/README.md)
 
 ## Reportes de release (lab)
 

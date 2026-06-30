@@ -19,7 +19,7 @@ Despliegue automático tras **merge a `main`** (no en apertura de PR). También 
 | [sync-aws-ssm.sh](scripts/sync-aws-ssm.sh) | ECS — SSM Parameter Store |
 | [deploy-ecs-service.sh](scripts/deploy-ecs-service.sh) | ECS — nueva task definition |
 | [deploy-k8s-image.sh](scripts/deploy-k8s-image.sh) | AKS/EKS — `kubectl set image` + rollout |
-| [apply-k8s-manifests.sh](scripts/apply-k8s-manifests.sh) | AKS/EKS — apply deployments/ingress |
+| [apply-k8s-manifests.sh](scripts/apply-k8s-manifests.sh) | AKS/EKS — apply compartidos + `k8s/azure/` o `k8s/aws/` (2.º arg) |
 | [sync-k8s-secrets.sh](scripts/sync-k8s-secrets.sh) | AKS/EKS — Secret `shopdemo-secrets` |
 | [sync-github-environments.ps1](scripts/sync-github-environments.ps1) | Bootstrap — environments + secrets vía `gh` |
 
@@ -37,5 +37,5 @@ Los workflows **actualizan imágenes y configuración**; no crean VPC, clusters 
 | Cambios en… | Workflows que pueden ejecutarse |
 |---|---|
 | `Catalog/`, `Orders/`, `Inventory/`, `Analytics`, `MCP`, `Shared` | Los 4 (según secrets/environments configurados) |
-| `k8s/**` | Solo `deploy-aks`, `deploy-eks` (job apply-manifests + imágenes si apps también cambiaron) |
+| `k8s/**` | Solo `deploy-aks` (`k8s/azure/`), `deploy-eks` (`k8s/aws/`) |
 | Solo docs | Ninguno |

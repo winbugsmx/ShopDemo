@@ -21,16 +21,18 @@
 
 ---
 
-## Manifiestos comunes (`k8s/`)
+## Manifiestos por cloud (`k8s/`)
 
 | Carpeta | Contenido |
 |---|---|
-| `k8s/postgres/` | PostgreSQL |
-| `k8s/azurite/` | Checkpoints Event Hubs |
-| `k8s/catalog/`, `orders/`, `inventory/`, `analytics/` | APIs |
-| `k8s/mcp/` | MCP Gateway |
-| `k8s/ingress/` | Ingress NGINX |
-| `k8s/secrets.example.yaml` | Plantilla → copiar a `secrets.yaml` (no commitear) |
+| `k8s/postgres/`, `k8s/azurite/`, `k8s/ingress/` | Infra compartida |
+| `k8s/*/service.yaml`, `k8s/catalog/hpa.yaml` | Services + HPA |
+| `k8s/local/` | Deployments **Minikube** (imagen local) |
+| `k8s/azure/` | Deployments **AKS** (ACR) |
+| `k8s/aws/` | Deployments **EKS** (ECR) |
+| `k8s/secrets.example.yaml` | Plantilla → `secrets.yaml` (no commitear) |
+
+Detalle: [k8s/README.md](../../../k8s/README.md)
 
 Checkpoints en K8s: **Azurite** (no Storage Account de Azure).
 
@@ -57,7 +59,9 @@ copy k8s\secrets.example.yaml k8s\secrets.yaml
 
 kubectl apply -f k8s/postgres/
 kubectl apply -f k8s/azurite/
-kubectl apply -f k8s/catalog/ -f k8s/inventory/ -f k8s/orders/ -f k8s/analytics/ -f k8s/mcp/
+kubectl apply -f k8s/catalog/service.yaml -f k8s/inventory/service.yaml -f k8s/orders/service.yaml -f k8s/analytics/service.yaml -f k8s/mcp/service.yaml
+kubectl apply -f k8s/local/catalog/deployment.yaml -f k8s/local/inventory/deployment.yaml -f k8s/local/orders/deployment.yaml -f k8s/local/analytics/deployment.yaml -f k8s/local/mcp/deployment.yaml
+kubectl apply -f k8s/catalog/hpa.yaml
 kubectl apply -f k8s/ingress/
 
 minikube ip   # o minikube tunnel para LoadBalancer
@@ -85,7 +89,7 @@ minikube ip   # o minikube tunnel para LoadBalancer
 
 1. Consumer groups EH: `analytics-service`, `inventory-service`
 2. Helm Ingress con `health-probe-request-path=/healthz`
-3. `kubectl apply` manifiestos + imágenes ACR
+3. `kubectl apply` manifiestos **`k8s/azure/`** (ACR) + compartidos — ver [k8s/README.md](../../../k8s/README.md)
 4. Archivo `hosts`: `<IP-Ingress> shopdemo.local`
 5. Swagger: `http://shopdemo.local/catalog/swagger/index.html`
 
@@ -98,7 +102,7 @@ Tras [SETUP-GITHUB.md](../../../.github/SETUP-GITHUB.md) y [SECRETS-CHECKLIST.md
 | Workflow | Acción |
 |---|---|
 | [deploy-aks.yml](../../../.github/workflows/deploy-aks.yml) | build ACR → `kubectl set image` (5 servicios) |
-| Cambios en `k8s/**` | apply automático de manifiestos |
+| Cambios en `k8s/**` | apply automático (`k8s/azure/` vía `deploy-aks.yml`) |
 
 Primer run manual: `sync_secrets` + `apply_manifests` (+ `apply_infra` si cluster nuevo).
 
@@ -164,7 +168,7 @@ kubectl get svc -n shopdemo shopdemo-catalog shopdemo-orders shopdemo-inventory
 | Workflow | Acción |
 |---|---|
 | [deploy-eks.yml](../../../.github/workflows/deploy-eks.yml) | build ECR → `kubectl set image` (5 servicios) |
-| Cambios en `k8s/**` | apply automático de manifiestos |
+| Cambios en `k8s/**` | apply automático (`k8s/azure/` vía `deploy-aks.yml`) |
 
 Configuración: [SETUP-GITHUB.md](../../../.github/SETUP-GITHUB.md)
 

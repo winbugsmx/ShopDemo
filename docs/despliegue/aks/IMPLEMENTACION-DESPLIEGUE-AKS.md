@@ -51,8 +51,8 @@ az login
 | Qué hace el script | Qué debes hacer tú después |
 |---|---|
 | Resource Group, Event Hubs, Storage, ACR | `docker push` 5 imágenes a ACR |
-| Cluster AKS + `az aks get-credentials` | Editar `k8s/*/deployment.yaml` → imagen ACR |
-| Helm Ingress NGINX | `kubectl apply -f k8s/` (orden en [k8s/README.md](../../../k8s/README.md)) |
+| Cluster AKS + `az aks get-credentials` | Aplicar manifiestos **`k8s/azure/`** (imágenes ACR ya en YAML) |
+| Helm Ingress NGINX | `kubectl apply` orden en [k8s/README.md](../../../k8s/README.md) |
 | Genera `k8s/secrets.yaml` | **No commitear** secrets |
 
 Guía completa del script: [scripts/azure/README.md](../../../scripts/azure/README.md).  
@@ -69,7 +69,7 @@ Tras el primer despliegue manual, configura [SETUP-GITHUB.md](../../../.github/S
 | Evento | Acción del workflow |
 |---|---|
 | Merge a `main` (código apps) | build → push ACR → `kubectl set image` (5 servicios) |
-| Merge a `main` (`k8s/**`) | `kubectl apply` deployments + ingress |
+| Merge a `main` (`k8s/**`) | `kubectl apply` compartidos + **`k8s/azure/`** (script `apply-k8s-manifests.sh k8s azure`) |
 | Manual | `sync_secrets`, `apply_manifests`, `apply_infra` |
 
 Checklist: [SECRETS-CHECKLIST.md](../../../.github/SECRETS-CHECKLIST.md)
@@ -201,24 +201,25 @@ kubectl wait --namespace ingress-nginx \
 
 ---
 
-## 7. Paso 6 — Ajustar manifiestos para ACR
+## 7. Paso 6 — Manifiestos AKS (`k8s/azure/`)
 
-**Objetivo:** Cambiar `image: shopdemo-catalog:latest` por ACR.
+**Objetivo:** Usar deployments con imágenes **ACR** sin editar YAML manualmente.
 
-Opción rápida — script para los **5 deployments**:
+| Carpeta | Contenido |
+|---|---|
+| `k8s/catalog/service.yaml`, … | Services compartidos (todos los entornos) |
+| `k8s/azure/catalog/deployment.yaml`, … | Deployments con `acrshopdemolab01.azurecr.io/shopdemo-*:latest` |
+| `k8s/aws/` | **No usar en AKS** (imágenes ECR → `ImagePullBackOff`) |
+
+Verifica que el **tag** en YAML coincida con el push (ej. `v1` vs `latest`):
 
 ```bash
 $ACR_LOGIN = az acr show --name $ACR_NAME --query loginServer -o tsv
-$tag = "v1"
-$services = @("catalog","orders","inventory","analytics","mcp")
-foreach ($svc in $services) {
-  $path = "k8s/$svc/deployment.yaml"
-  (Get-Content $path) -replace "shopdemo-${svc}:latest", "$ACR_LOGIN/shopdemo-${svc}:$tag" |
-    Set-Content "k8s/$svc/deployment-aks.yaml"
-}
+# Ejemplo: acrshopdemolab01.azurecr.io/shopdemo-catalog:latest
+grep image: k8s/azure/catalog/deployment.yaml
 ```
 
-O editar cada `k8s/*/deployment.yaml` con la ruta completa ACR y `imagePullPolicy: Always`.
+Si usas tag `v1` en el push, actualiza la línea `image:` en `k8s/azure/*/deployment.yaml` o deja que CI/CD haga `kubectl set image` tras merge a `main`.
 
 ---
 
@@ -233,17 +234,33 @@ kubectl apply -f k8s/postgres/
 kubectl apply -f k8s/azurite/
 kubectl wait --for=condition=ready pod -l app=shopdemo-postgres -n shopdemo --timeout=300s
 
-# APIs + MCP (usar deployment-aks.yaml si generaste parches ACR)
-kubectl apply -f k8s/catalog/
-kubectl apply -f k8s/inventory/
-kubectl apply -f k8s/orders/
-kubectl apply -f k8s/analytics/
-kubectl apply -f k8s/mcp/
+# Services (compartidos)
+kubectl apply -f k8s/catalog/service.yaml
+kubectl apply -f k8s/inventory/service.yaml
+kubectl apply -f k8s/orders/service.yaml
+kubectl apply -f k8s/analytics/service.yaml
+kubectl apply -f k8s/mcp/service.yaml
+
+# Deployments AKS (ACR)
+kubectl apply -f k8s/azure/catalog/deployment.yaml
+kubectl apply -f k8s/azure/inventory/deployment.yaml
+kubectl apply -f k8s/azure/orders/deployment.yaml
+kubectl apply -f k8s/azure/analytics/deployment.yaml
+kubectl apply -f k8s/azure/mcp/deployment.yaml
+
 kubectl apply -f k8s/catalog/hpa.yaml
 kubectl apply -f k8s/ingress/
 
 kubectl get pods -n shopdemo
 kubectl get ingress -n shopdemo
+```
+
+**Alternativa (script CI/CD local):**
+
+```bash
+APPLY_INFRA=true bash .github/scripts/apply-k8s-manifests.sh k8s azure
+kubectl apply -f k8s/secrets.yaml   # si aún no aplicaste secrets
+kubectl apply -f k8s/ingress/
 ```
 
 ---
@@ -259,7 +276,7 @@ kubectl get ingress -n shopdemo
 | 3 | `kubectl apply -f k8s/secrets.yaml` |
 | 4 | Verificar: `kubectl describe secret shopdemo-secrets -n shopdemo` |
 
-Los Deployments referencian el Secret con `secretKeyRef` — mismos YAML que Minikube.
+Los Deployments en `k8s/azure/` referencian el Secret con `secretKeyRef` — misma estructura que Minikube (`k8s/local/`).
 
 ### 9.2 Liveness y Readiness
 

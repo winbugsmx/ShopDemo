@@ -2,7 +2,7 @@
 
 Despliegue de **4 APIs + MCP + PostgreSQL (StatefulSet) + Azurite + Ingress NGINX** en el namespace `shopdemo`.
 
-Mismos YAML para **Minikube**, **AKS** y **EKS**; cambia el origen de las imágenes y algunos ajustes de plataforma.
+Recursos **compartidos** (todos los entornos) + **deployments por cloud** (imagen del registro correcto).
 
 ## Estructura
 
@@ -13,47 +13,74 @@ k8s/
 ├── postgres/                 → StatefulSet + Service headless
 ├── azurite/                  → Checkpoints Event Hubs + init-checkpoints job
 ├── catalog/
-│   ├── deployment.yaml
 │   ├── service.yaml
 │   └── hpa.yaml              → HPA demo (Catalog)
-├── orders/
-├── inventory/
-├── analytics/
-├── mcp/                      → MCP Gateway (agentes IA)
-└── ingress/                  → NGINX Ingress (shopdemo.local)
+├── orders/service.yaml
+├── inventory/service.yaml
+├── analytics/service.yaml
+├── mcp/service.yaml
+├── ingress/                  → NGINX Ingress (shopdemo.local)
+├── azure/                    → Deployments AKS (ACR)
+│   ├── catalog/deployment.yaml
+│   ├── orders/deployment.yaml
+│   ├── inventory/deployment.yaml
+│   ├── analytics/deployment.yaml
+│   └── mcp/deployment.yaml
+├── aws/                      → Deployments EKS (ECR)
+│   └── … (misma estructura)
+└── local/                    → Deployments Minikube (imagen local)
+    └── … (misma estructura)
 ```
 
 ## Orden de aplicación
+
+### Minikube (local)
 
 ```bash
 kubectl apply -f k8s/namespace.yaml
 kubectl apply -f k8s/secrets.yaml
 kubectl apply -f k8s/postgres/
 kubectl apply -f k8s/azurite/
-# Esperar postgres ready
-kubectl apply -f k8s/catalog/
-kubectl apply -f k8s/inventory/
-kubectl apply -f k8s/orders/
-kubectl apply -f k8s/analytics/
-kubectl apply -f k8s/mcp/
+kubectl apply -f k8s/catalog/service.yaml
+kubectl apply -f k8s/inventory/service.yaml
+kubectl apply -f k8s/orders/service.yaml
+kubectl apply -f k8s/analytics/service.yaml
+kubectl apply -f k8s/mcp/service.yaml
+kubectl apply -f k8s/local/catalog/deployment.yaml
+kubectl apply -f k8s/local/inventory/deployment.yaml
+kubectl apply -f k8s/local/orders/deployment.yaml
+kubectl apply -f k8s/local/analytics/deployment.yaml
+kubectl apply -f k8s/local/mcp/deployment.yaml
 kubectl apply -f k8s/catalog/hpa.yaml
 kubectl apply -f k8s/ingress/
 ```
 
-## Imágenes por entorno
-
-Los manifiestos pueden referenciar ECR por defecto. Antes de aplicar en nube, apunta al registro correcto:
-
-| Entorno | Registro | Ejemplo |
-|---|---|---|
-| Minikube | Imágenes locales (`minikube docker-env`) | `shopdemo-catalog:latest` |
-| AKS | ACR | `acrshopdemolab01.azurecr.io/shopdemo-catalog:latest` |
-| EKS | ECR | `<account>.dkr.ecr.<region>.amazonaws.com/shopdemo-catalog:latest` |
+O con el script del repo:
 
 ```bash
-# AKS — tras push a ACR
-kubectl set image deployment/shopdemo-catalog catalog=acrshopdemolab01.azurecr.io/shopdemo-catalog:latest -n shopdemo
+APPLY_INFRA=true bash .github/scripts/apply-k8s-manifests.sh k8s local
 ```
+
+### AKS / EKS (CI/CD o manual)
+
+| Cloud | Script | Registro de imágenes |
+|---|---|---|
+| **AKS** | `apply-k8s-manifests.sh k8s azure` | `acrshopdemolab01.azurecr.io/shopdemo-*:latest` |
+| **EKS** | `apply-k8s-manifests.sh k8s aws` | `905221885508.dkr.ecr.us-east-2.amazonaws.com/shopdemo-*:latest` |
+
+Workflows: [deploy-aks.yml](../.github/workflows/deploy-aks.yml) · [deploy-eks.yml](../.github/workflows/deploy-eks.yml)
+
+> **Importante:** no mezclar deployments de `k8s/azure/` en AKS con los de `k8s/aws/` — el apply en AKS con manifiestos ECR provoca `ImagePullBackOff`.
+
+## Imágenes por entorno
+
+| Entorno | Carpeta | Ejemplo imagen Catalog |
+|---|---|---|
+| Minikube | `k8s/local/` | `shopdemo-catalog:latest` |
+| AKS | `k8s/azure/` | `acrshopdemolab01.azurecr.io/shopdemo-catalog:latest` |
+| EKS | `k8s/aws/` | `905221885508.dkr.ecr.us-east-2.amazonaws.com/shopdemo-catalog:latest` |
+
+Tras el primer `apply`, CI/CD actualiza tags con `kubectl set image` (build → push registry → rollout).
 
 ## Swagger y variables en nube
 

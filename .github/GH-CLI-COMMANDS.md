@@ -136,7 +136,7 @@ az ad sp create-for-rbac --name "github-shopdemo" \
 
 \* Usados por job `sync_secrets` (manual).
 
-**Pendiente manual:** `AZURE_CREDENTIALS` (mismo JSON que `azure`) — ver §4 con `-AzureCredentialsFile`.
+**Pendiente manual:** `AZURE_CREDENTIALS` — mismo JSON en `azure` y `azure-aks` (Service Principal `github-shopdemo`).
 
 ```bash
 ENV=azure-aks

@@ -51,8 +51,8 @@ aws configure
 | Qué hace el script | Qué debes hacer tú después |
 |---|---|
 | Repositorios ECR (5) | `docker push` a ECR |
-| `eksctl create cluster` + kubeconfig | Actualizar imágenes en manifiestos `k8s/` |
-| Helm Ingress NGINX | `kubectl apply -f k8s/` |
+| `eksctl create cluster` + kubeconfig | Aplicar compartidos + **`k8s/aws/`** (imágenes ECR ya en YAML) |
+| Helm Ingress NGINX | `apply-k8s-manifests.sh k8s aws` o apply manual — ver [k8s/README.md](../../../k8s/README.md) |
 | Genera `k8s/secrets.yaml` (Event Hubs cross-cloud) | No commitear secrets |
 
 Guía: [scripts/aws/README.md](../../../scripts/aws/README.md).  
@@ -69,7 +69,7 @@ Configura [SETUP-GITHUB.md](../../../.github/SETUP-GITHUB.md) (environment `aws-
 | Evento | Acción |
 |---|---|
 | Merge a `main` (apps) | build → push ECR → `kubectl set image` |
-| Merge a `main` (`k8s/**`) | apply manifiestos |
+| Merge a `main` (`k8s/**`) | apply compartidos + **`k8s/aws/`** (`apply-k8s-manifests.sh k8s aws`) |
 | Manual | `sync_secrets`, `apply_manifests`, `apply_infra` |
 
 Checklist: [SECRETS-CHECKLIST.md](../../../.github/SECRETS-CHECKLIST.md)
@@ -199,13 +199,19 @@ kubectl wait --namespace ingress-nginx \
 
 ---
 
-## 7. Paso 6 — Manifiestos con imágenes ECR
+## 7. Paso 6 — Manifiestos EKS (`k8s/aws/`)
 
-Editar Deployments o crear variantes `deployment-eks.yaml`:
+Los deployments EKS referencian **ECR** directamente. **No uses `k8s/azure/`** en un cluster AWS.
 
-```yaml
-image: <ACCOUNT>.dkr.ecr.us-east-1.amazonaws.com/shopdemo-catalog:v1
-imagePullPolicy: Always
+| Carpeta | Contenido |
+|---|---|
+| `k8s/aws/catalog/deployment.yaml`, … | Imagen `905221885508.dkr.ecr.us-east-2.amazonaws.com/shopdemo-*:latest` |
+| `k8s/catalog/service.yaml`, … | Services compartidos |
+
+Verifica tag tras push:
+
+```bash
+grep image: k8s/aws/catalog/deployment.yaml
 ```
 
 ---
@@ -218,17 +224,27 @@ kubectl apply -f k8s/secrets.yaml
 kubectl apply -f k8s/postgres/
 kubectl apply -f k8s/azurite/
 kubectl wait --for=condition=ready pod -l app=shopdemo-postgres -n shopdemo --timeout=300s
-kubectl apply -f k8s/catalog/
-kubectl apply -f k8s/inventory/
-kubectl apply -f k8s/orders/
-kubectl apply -f k8s/analytics/
-kubectl apply -f k8s/mcp/
+
+kubectl apply -f k8s/catalog/service.yaml
+kubectl apply -f k8s/inventory/service.yaml
+kubectl apply -f k8s/orders/service.yaml
+kubectl apply -f k8s/analytics/service.yaml
+kubectl apply -f k8s/mcp/service.yaml
+
+kubectl apply -f k8s/aws/catalog/deployment.yaml
+kubectl apply -f k8s/aws/inventory/deployment.yaml
+kubectl apply -f k8s/aws/orders/deployment.yaml
+kubectl apply -f k8s/aws/analytics/deployment.yaml
+kubectl apply -f k8s/aws/mcp/deployment.yaml
+
 kubectl apply -f k8s/catalog/hpa.yaml
 kubectl apply -f k8s/ingress/
 
 kubectl get pods -n shopdemo
 kubectl get ingress -n shopdemo
 ```
+
+**Alternativa:** `APPLY_INFRA=true bash .github/scripts/apply-k8s-manifests.sh k8s aws`
 
 ---
 

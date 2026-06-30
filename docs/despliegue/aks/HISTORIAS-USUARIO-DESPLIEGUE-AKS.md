@@ -30,7 +30,7 @@
 
 | **Objetivos** | OBJ-AKS-05, OBJ-AKS-08 |
 
-**Como** alumno, **quiero** `kubectl apply -f k8s/` con secrets y probes, **para** mismo stack que Minikube en nube.
+**Como** alumno, **quiero** aplicar manifiestos compartidos + **`k8s/azure/`** con secrets y probes, **para** mismo stack que Minikube en nube.
 
 **Criterios (CA-AKS-02, CA-AKS-05):** 4 Deployments + Postgres Running; probes OK.
 

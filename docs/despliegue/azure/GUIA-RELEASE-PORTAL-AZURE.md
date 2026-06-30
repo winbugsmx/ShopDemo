@@ -303,14 +303,20 @@ kubectl apply -f k8s\secrets.yaml
 kubectl apply -f k8s\postgres\
 kubectl apply -f k8s\azurite\deployment.yaml
 kubectl apply -f k8s\azurite\service.yaml
-kubectl apply -f k8s\catalog\
-kubectl apply -f k8s\orders\
-kubectl apply -f k8s\inventory\
-kubectl apply -f k8s\analytics\
-kubectl apply -f k8s\mcp\
+kubectl apply -f k8s\catalog\service.yaml
+kubectl apply -f k8s\orders\service.yaml
+kubectl apply -f k8s\inventory\service.yaml
+kubectl apply -f k8s\analytics\service.yaml
+kubectl apply -f k8s\mcp\service.yaml
+kubectl apply -f k8s\azure\catalog\deployment.yaml
+kubectl apply -f k8s\azure\orders\deployment.yaml
+kubectl apply -f k8s\azure\inventory\deployment.yaml
+kubectl apply -f k8s\azure\analytics\deployment.yaml
+kubectl apply -f k8s\azure\mcp\deployment.yaml
 kubectl apply -f k8s\ingress\
 
 $ACR = "acrshopdemolab01.azurecr.io"
+# Solo si el tag del push difiere del YAML (latest vs v1):
 kubectl set image deployment/shopdemo-catalog catalog-api="${ACR}/shopdemo-catalog:latest" -n shopdemo
 kubectl set image deployment/shopdemo-orders orders-api="${ACR}/shopdemo-orders:latest" -n shopdemo
 kubectl set image deployment/shopdemo-inventory inventory-api="${ACR}/shopdemo-inventory:latest" -n shopdemo

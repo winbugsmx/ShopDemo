@@ -498,17 +498,25 @@ kubectl apply -f I:\Curso\ShopDemo\k8s\secrets.yaml
 
 > **No commitees** `k8s/secrets.yaml`.
 
-### B.7 Actualizar imágenes ECR en manifiestos
+### B.7 Imágenes ECR en manifiestos (`k8s/aws/`)
+
+Los deployments EKS están en **`k8s/aws/`** con URI ECR completa. Verifica el tag tras el push:
 
 ```powershell
 cd I:\Curso\ShopDemo
+grep image: k8s/aws/catalog/deployment.yaml
+# Esperado: 905221885508.dkr.ecr.us-east-2.amazonaws.com/shopdemo-catalog:latest
+```
 
+Si el tag difiere (`v1`), actualiza el YAML o usa `kubectl set image`:
+
+```powershell
 kubectl set image deployment/shopdemo-catalog catalog-api="${ECR}/shopdemo-catalog:${IMAGE_TAG}" -n shopdemo
 kubectl set image deployment/shopdemo-orders orders-api="${ECR}/shopdemo-orders:${IMAGE_TAG}" -n shopdemo
 kubectl set image deployment/shopdemo-inventory inventory-api="${ECR}/shopdemo-inventory:${IMAGE_TAG}" -n shopdemo
 ```
 
-O verifica que `k8s/catalog/deployment.yaml` (y orders/inventory) ya referencian `${ECR}/shopdemo-*:latest`.
+> **No uses `k8s/azure/` en EKS** — provoca `ImagePullBackOff`.
 
 ### B.8 Aplicar manifiestos (orden)
 
@@ -518,11 +526,21 @@ cd I:\Curso\ShopDemo
 kubectl apply -f k8s/postgres/
 kubectl apply -f k8s/azurite/deployment.yaml
 kubectl apply -f k8s/azurite/service.yaml
-kubectl apply -f k8s/catalog/
-kubectl apply -f k8s/orders/
-kubectl apply -f k8s/inventory/
-# NO aplicar mcp/ ni ingress/ en perfil free-tier
-# kubectl apply -f k8s/analytics/   # opcional; escalar a 0 después
+
+kubectl apply -f k8s/catalog/service.yaml
+kubectl apply -f k8s/orders/service.yaml
+kubectl apply -f k8s/inventory/service.yaml
+
+kubectl apply -f k8s/aws/catalog/deployment.yaml
+kubectl apply -f k8s/aws/orders/deployment.yaml
+kubectl apply -f k8s/aws/inventory/deployment.yaml
+
+# Perfil free-tier: omitir analytics/mcp/ingress o escalar después
+# kubectl apply -f k8s/analytics/service.yaml
+# kubectl apply -f k8s/aws/analytics/deployment.yaml
+# kubectl apply -f k8s/mcp/service.yaml
+# kubectl apply -f k8s/aws/mcp/deployment.yaml
+# kubectl apply -f k8s/ingress/
 ```
 
 ### B.9 Job init checkpoints Azurite

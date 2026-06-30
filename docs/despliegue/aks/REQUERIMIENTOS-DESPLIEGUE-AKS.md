@@ -18,7 +18,7 @@
 
 ## 1. Propósito
 
-Desplegar ShopDemo en **AKS** reutilizando manifiestos `k8s/`, imágenes en **ACR** e **Ingress NGINX**, como extensión natural del laboratorio Minikube y complemento de Container Apps.
+Desplegar ShopDemo en **AKS** reutilizando recursos compartidos en `k8s/` y deployments en **`k8s/azure/`** (ACR), con **Ingress NGINX**, como extensión del laboratorio Minikube y complemento de Container Apps.
 
 ---
 
@@ -30,7 +30,7 @@ Desplegar ShopDemo en **AKS** reutilizando manifiestos `k8s/`, imágenes en **AC
 | OBJ-AKS-02 | Publicar 4 imágenes en ACR |
 | OBJ-AKS-03 | Vincular AKS con ACR |
 | OBJ-AKS-04 | Instalar Ingress NGINX |
-| OBJ-AKS-05 | Aplicar manifiestos `k8s/` con imágenes ACR |
+| OBJ-AKS-05 | Aplicar manifiestos compartidos + **`k8s/azure/`** (imágenes ACR) |
 | OBJ-AKS-06 | Probar flujo E2E vía Ingress |
 | OBJ-AKS-07 | Documentar errores comunes y mitigación |
 | OBJ-AKS-08 | Aplicar **Secrets** K8s (`shopdemo-secrets`) |

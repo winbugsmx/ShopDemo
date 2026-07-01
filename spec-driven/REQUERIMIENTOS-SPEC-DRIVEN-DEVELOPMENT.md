@@ -8,6 +8,8 @@
 
 **Versión:** 1.0
 
+**Historias de usuario:** [HISTORIAS-USUARIO-SPEC-DRIVEN-DEVELOPMENT.md](./HISTORIAS-USUARIO-SPEC-DRIVEN-DEVELOPMENT.md)
+
 ---
 
 ## 1. Propósito

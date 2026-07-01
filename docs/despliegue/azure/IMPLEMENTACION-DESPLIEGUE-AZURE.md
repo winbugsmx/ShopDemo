@@ -6,19 +6,17 @@
 | **Plataforma** | Azure Container Apps + ACR + ACI |
 | **Alcance lab** | [ALCANCE-LAB-RELEASE.md](../ALCANCE-LAB-RELEASE.md) |
 
-> La documentación paso a paso se dividió en **tres guías**. Para el release en 2–3 h usa la guía **Script**.
-
----
-
-## Guías de release (elige una ruta)
+> La documentación paso a paso se dividió en **tres guías equivalentes**. Elige una según tu preferencia.
 
 | Guía | Tiempo | Cuándo usarla |
 |---|---|---|
-| [**GUIA-RELEASE-SCRIPT-AZURE**](./GUIA-RELEASE-SCRIPT-AZURE.md) | 2–4 h | **Recomendada** — `Deploy-AzureShopDemo.ps1` |
-| [**GUIA-RELEASE-CLI-AZURE**](./GUIA-RELEASE-CLI-AZURE.md) | 6–10 h | Mismos recursos con `az` |
-| [**GUIA-RELEASE-PORTAL-AZURE**](./GUIA-RELEASE-PORTAL-AZURE.md) | 8–12 h | Portal visual + capturas + enlaces Microsoft Learn |
+| [**GUIA-RELEASE-SCRIPT-AZURE**](./GUIA-RELEASE-SCRIPT-AZURE.md) | 2–4 h | Automatización PowerShell |
+| [**GUIA-RELEASE-CLI-AZURE**](./GUIA-RELEASE-CLI-AZURE.md) | 6–10 h | Aprender cada comando `az` |
+| [**GUIA-RELEASE-PORTAL-AZURE**](./GUIA-RELEASE-PORTAL-AZURE.md) | 8–12 h | Consola visual paso a paso |
 
-**Scripts:** [scripts/azure/](../../../scripts/azure/) · **Variables:** [`.env.azure.example`](../../../scripts/azure/.env.azure.example)
+**Preparación:** [PREPARACION-AMBIENTE-AZURE.md](./PREPARACION-AMBIENTE-AZURE.md)  
+**Scripts:** [scripts/azure/](../../../scripts/azure/) · **Reporte AKS lab:** [deploy-aks-report.json](../../../scripts/azure/deploy-aks-report.json)  
+**CI/CD:** [deploy-azure.yml](../../../.github/workflows/deploy-azure.yml) · [deploy-aks.yml](../../../.github/workflows/deploy-aks.yml) · [SETUP-GITHUB.md](../../../.github/SETUP-GITHUB.md)
 
 **Kubernetes (AKS):** [GUIA-RELEASE-KUBERNETES.md](../kubernetes/GUIA-RELEASE-KUBERNETES.md)
 
@@ -71,7 +69,7 @@ En ACA **no** uses Azurite en ACI.
 | PostgreSQL ACI | No (lab) |
 | 5 Container Apps | No |
 | AKS | Sí en lab corto |
-| GitHub Actions | Sí (push manual a ACR) |
+| GitHub Actions | Opcional | Automatiza build/deploy tras merge a `main` — [SETUP-GITHUB.md](../../../.github/SETUP-GITHUB.md) |
 
 ---
 

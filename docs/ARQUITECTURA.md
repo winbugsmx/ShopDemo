@@ -107,7 +107,7 @@ flowchart LR
 | **Aspire AppHost** | Etapa 6; stack integrado | `dotnet run --project Aspire/ShopDemo.AppHost` | Catalog, Orders, Inventory, Analytics + PG + Azurite |
 | **dotnet run** | Depuración unitaria | `dotnet run --project <Api>.csproj` | 1 API (requiere BD/dependencias manuales) |
 | **MCP Gateway** | Etapa 14+; agentes IA | `dotnet run --project AI/ShopDemo.Mcp.Api` | MCP :8005 (requiere Catalog, Inventory, Analytics) |
-| **Minikube + k8s/** | Etapa 9; practicar K8s | `kubectl apply -f k8s/` | 5 APIs + PostgreSQL + Azurite + Ingress |
+| **Minikube + k8s/local/** | Etapa 9; practicar K8s | `apply-k8s-manifests.sh k8s local` | 5 APIs + PostgreSQL + Azurite + Ingress |
 | **Azure ACA** | Release serverless | [despliegue/azure/](./despliegue/azure/) | 5 Container Apps + ACR |
 | **Azure AKS** | Release Kubernetes | [despliegue/aks/](./despliegue/aks/) + [k8s/](../k8s/) | Manifiestos `k8s/` en cluster AKS |
 | **AWS ECS** | Release sin K8s | [despliegue/aws/](./despliegue/aws/) | 5 task definitions + ALB |
@@ -123,7 +123,7 @@ Orders depende de Inventory por HTTP. MCP depende de Catalog, Inventory y Analyt
 
 ### Verificación de salud
 
-Todas las APIs de negocio exponen **`GET /health`** y **`GET /alive`** (liveness). En Kubernetes, los manifiestos `k8s/*/deployment.yaml` usan estas rutas en probes HTTP.
+Todas las APIs de negocio exponen **`GET /health`** y **`GET /alive`** (liveness). En Kubernetes, los deployments en `k8s/local/`, `k8s/azure/` y `k8s/aws/` usan estas rutas en probes HTTP.
 
 ```bash
 curl http://localhost:8001/health   # Catalog
@@ -462,7 +462,7 @@ Analytics **no es un bounded context de negocio** con dominio propio; es un **ob
 | `ShopDemo.Mcp.Api` (HTTP transport `/mcp`) | ✅ Completo |
 | Tools: `CreateProduct`, `GetProductStock`, `ListAnalyticsEvents`, `GetShopDemoStatus` | ✅ Completo |
 | Docker + `docker-compose.yml` | ✅ Completo |
-| Manifiestos K8s (`k8s/mcp/`) + Ingress `/mcp` | ✅ Completo |
+| Manifiestos K8s (`k8s/{local,azure,aws}/mcp/` + `k8s/mcp/service.yaml`) + Ingress `/mcp` | ✅ Completo |
 | Despliegue ACA/AKS y ECS/EKS | ✅ Documentado |
 
 ### 10.2 Rol arquitectónico
@@ -612,7 +612,7 @@ Manifiestos compartidos para **Minikube**, **AKS** y **EKS**:
 | Namespace + secrets | `k8s/namespace.yaml`, `secrets.example.yaml` | Aislamiento `shopdemo` |
 | PostgreSQL | `k8s/postgres/` | StatefulSet (3 bases) |
 | Azurite | `k8s/azurite/` | Checkpoints Event Hubs |
-| APIs | `k8s/catalog/`, `orders/`, `inventory/`, `analytics/`, `mcp/` | Deployments + Services + probes |
+| APIs | `k8s/*/service.yaml` + `k8s/local|azure|aws/*/deployment.yaml` | Services + Deployments + probes |
 | HPA | `k8s/catalog/hpa.yaml` | Demo autoscaling Catalog |
 | Ingress | `k8s/ingress/` | Rutas `/catalog`, `/orders`, `/inventory`, `/analytics`, `/mcp` |
 
@@ -627,7 +627,7 @@ Orden de apply: [k8s/README.md](../k8s/README.md)
 | **AWS ECS** | Fargate (5 services) | ECR | [despliegue/aws/](./despliegue/aws/) |
 | **Amazon EKS** | Kubernetes | ECR + `k8s/` | [despliegue/eks/](./despliegue/eks/) |
 
-Cada guía incluye pasos por **Portal/Consola** y **CLI**. CI/CD: [.github/workflows/deploy-azure.yml](../.github/workflows/deploy-azure.yml) · [deploy-aws.yml](../.github/workflows/deploy-aws.yml).
+Cada guía incluye pasos por **Portal/Consola** y **CLI**. CI/CD (merge a `main`): [.github/README.md](../.github/README.md) — workflows `deploy-azure`, `deploy-aws`, `deploy-aks`, `deploy-eks` · [SETUP-GITHUB.md](../.github/SETUP-GITHUB.md).
 
 **Post-despliegue:** configurar Postman con FQDN/ALB/Ingress según [README.md § Postman](../README.md#configurar-postman-según-entorno).
 
@@ -637,7 +637,7 @@ Cada guía incluye pasos por **Portal/Consola** y **CLI**. CI/CD: [.github/workf
 |---|---|---|
 | **Observabilidad** | Logs, métricas, `traceId` en errores | [observabilidad/](./observabilidad/) |
 | **Resiliencia** | Probes K8s, HPA, recuperación de pods | [resiliencia/](./resiliencia/) |
-| **Health endpoints** | `/health` (readiness), `/alive` (liveness) | Manifiestos `k8s/*/deployment.yaml` |
+| **Health endpoints** | `/health` (readiness), `/alive` (liveness) | Deployments `k8s/{local,azure,aws}/*/deployment.yaml` |
 
 ---
 
@@ -692,7 +692,7 @@ Cada guía incluye pasos por **Portal/Consola** y **CLI**. CI/CD: [.github/workf
 | Despliegue Docker → AWS (ECS) | Documentado | Guía en `docs/despliegue/aws/` |
 | Kubernetes (Minikube / AKS / EKS) | Implementado | Manifiestos `k8s/` (5 APIs + Ingress) |
 | Observabilidad / Resiliencia | Documentado | Azure + AWS separados |
-| Integración IA + despliegue MCP | Documentado + código | `AI/`, `k8s/mcp/` |
+| Integración IA + despliegue MCP | Documentado + código | `AI/`, `k8s/{local,azure,aws}/mcp/` |
 | Spec-driven (Cursor + Claude Code) | Plantillas en `spec-driven/` | ~90% |
 | Docker por servicio | Implementado | ~90% |
 
@@ -716,7 +716,7 @@ Cada guía incluye pasos por **Portal/Consola** y **CLI**. CI/CD: [.github/workf
 
 8. **MCP fuera de Aspire:** el AppHost orquesta las 4 APIs de negocio; MCP se levanta aparte porque es un adaptador para agentes, no parte del dominio e-commerce.
 
-9. **Manifiestos K8s unificados:** los mismos YAML en `k8s/` sirven para Minikube, AKS y EKS; solo cambian registry de imágenes y secretos.
+9. **Manifiestos K8s por cloud:** recursos compartidos en `k8s/` + deployments en `k8s/local/` (Minikube), `k8s/azure/` (ACR/AKS) y `k8s/aws/` (ECR/EKS).
 
 ---
 

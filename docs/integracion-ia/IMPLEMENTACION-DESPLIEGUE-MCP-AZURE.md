@@ -232,7 +232,7 @@ Igual que [Paso A1](#paso-a1--build-y-push-imagen-mcp). En AKS la imagen debe es
 
 | Archivo | Contenido |
 |---|---|
-| `k8s/mcp/deployment.yaml` | Imagen, env DNS interno, probes |
+| `k8s/azure/mcp/deployment.yaml` (AKS) o `k8s/aws/mcp/deployment.yaml` (EKS) | Imagen registry, env DNS interno, probes |
 | `k8s/mcp/service.yaml` | ClusterIP puerto 8080 |
 
 **DNS interno (ya en manifiesto):**
@@ -243,19 +243,17 @@ Igual que [Paso A1](#paso-a1--build-y-push-imagen-mcp). En AKS la imagen debe es
 | `ShopDemo__InventoryApiBaseUrl` | `http://shopdemo-inventory:8080` |
 | `ShopDemo__AnalyticsApiBaseUrl` | `http://shopdemo-analytics:8080` |
 
-### CLI — patch imagen ACR
+### CLI — aplicar MCP en AKS
 
 ```bash
 az aks get-credentials --resource-group $RG --name $AKS_NAME
-$ACR_LOGIN = az acr show --name $ACR_NAME --query loginServer -o tsv
 
-(Get-Content k8s/mcp/deployment.yaml) `
-  -replace 'shopdemo-mcp:latest', "$ACR_LOGIN/shopdemo-mcp:v1" |
-  Set-Content k8s/mcp/deployment-aks.yaml
-
-kubectl apply -f k8s/mcp/deployment-aks.yaml
+# Deployment ACR (k8s/azure/mcp/deployment.yaml)
+kubectl apply -f k8s/azure/mcp/deployment.yaml
 kubectl apply -f k8s/mcp/service.yaml
 ```
+
+Si el tag push no es `latest`, ajusta la línea `image:` en `k8s/azure/mcp/deployment.yaml` o usa `kubectl set image`.
 
 **Explicación:** Las APIs deben estar Running antes; MCP las resuelve por Service DNS.
 
@@ -302,7 +300,14 @@ curl "http://$INGRESS_IP/mcp/health"
 
 ## Paso C1 — CI/CD GitHub Actions
 
-El workflow `.github/workflows/deploy-azure.yml` incluye MCP:
+| Workflow | MCP en |
+|---|---|
+| [deploy-azure.yml](../../.github/workflows/deploy-azure.yml) | Container App `ca-shopdemo-mcp` |
+| [deploy-aks.yml](../../.github/workflows/deploy-aks.yml) | Deployment `shopdemo-mcp` + Ingress `/mcp` |
+
+Configuración GitHub: [SETUP-GITHUB.md](../../.github/SETUP-GITHUB.md) · Secrets: [SECRETS-CHECKLIST.md](../../.github/SECRETS-CHECKLIST.md)
+
+Fragmento ACA (`deploy-azure.yml`):
 
 ```yaml
 - service: mcp
@@ -311,13 +316,9 @@ El workflow `.github/workflows/deploy-azure.yml` incluye MCP:
   containerapp: ca-shopdemo-mcp
 ```
 
-### Portal — Service Principal (si falta)
-
-Ver [IMPLEMENTACION-DESPLIEGUE-AZURE.md §15](../despliegue/azure/IMPLEMENTACION-DESPLIEGUE-AZURE.md).
-
 ### Crear Container App MCP antes del primer CI run
 
-El workflow **actualiza** `ca-shopdemo-mcp`; debe existir previamente (Pasos A3–A4).
+El workflow **actualiza** `ca-shopdemo-mcp`; debe existir previamente (Pasos A3–A4 o script `-Mode ACA`).
 
 ---
 
@@ -341,7 +342,7 @@ El workflow **actualiza** `ca-shopdemo-mcp`; debe existir previamente (Pasos A3�
 | 2 | `/health` 200 | ✓ | ✓ |
 | 3 | Agente conecta a `/mcp` | ✓ | ✓ |
 | 4 | `GetShopDemoStatus` OK | ✓ | ✓ |
-| 5 | CI/CD incluye mcp | ✓ | N/A (apply manual o pipeline K8s) |
+| 5 | CI/CD incluye mcp | ✓ | ✓ ([deploy-aks.yml](../../.github/workflows/deploy-aks.yml)) |
 
 ---
 

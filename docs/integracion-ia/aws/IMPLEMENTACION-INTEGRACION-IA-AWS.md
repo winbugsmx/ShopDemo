@@ -141,7 +141,7 @@ Guía detallada (Consola + CLI): [IMPLEMENTACION-DESPLIEGUE-MCP-AWS.md](../IMPLE
 
 Guía detallada: [IMPLEMENTACION-DESPLIEGUE-MCP-AWS.md](../IMPLEMENTACION-DESPLIEGUE-MCP-AWS.md) — Parte B.
 
-Manifiestos: `k8s/mcp/`, `kubectl apply -f k8s/mcp/`.
+Manifiestos: `k8s/aws/mcp/deployment.yaml` + `k8s/mcp/service.yaml` (ver [k8s/README.md](../../../k8s/README.md)).
 
 ---
 

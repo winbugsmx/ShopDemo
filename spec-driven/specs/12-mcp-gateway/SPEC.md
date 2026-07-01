@@ -16,7 +16,7 @@ Desplegar y consumir el MCP Server que expone tools sobre Catalog, Inventory y A
 - [ ] `GET /health` → 200
 - [ ] Endpoint `/mcp` accesible al agente
 - [ ] `GetShopDemoStatus` reporta APIs alcanzables
-- [ ] `k8s/mcp/` aplicado si despliegue es K8s
+- [ ] Deployment MCP en `k8s/local/`, `k8s/azure/` o `k8s/aws/` + `k8s/mcp/service.yaml` si despliegue es K8s
 
 ## Variables MCP
 

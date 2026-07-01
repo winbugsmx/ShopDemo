@@ -9,8 +9,10 @@
 | | E-mail: gilberto.juarez@gmail.com |
 | | E-mail: lcc.gilberto.juarez@gmail.com |
 
-**Alcance:** Desarrollo y pruebas en Kubernetes (Minikube) + mismos manifiestos en AKS/EKS.  
+**Alcance:** Desarrollo y pruebas en Kubernetes (Minikube) con `k8s/local/`; en AKS/EKS se reutilizan recursos compartidos (`k8s/postgres/`, Services, Ingress…) y deployments en `k8s/azure/` o `k8s/aws/`.  
 **Versión:** 1.0
+
+**Historias de usuario:** [HISTORIAS-USUARIO-KUBERNETES.md](./HISTORIAS-USUARIO-KUBERNETES.md)
 
 ---
 
@@ -26,7 +28,7 @@ Justificar el despliegue de ShopDemo en **Kubernetes** como paso natural despué
 |---|---|
 | OBJ-K8-01 | Construir imágenes Docker de las 4 APIs |
 | OBJ-K8-02 | Validar stack con **Docker Compose** en local |
-| OBJ-K8-03 | Desplegar en **Minikube** con manifiestos `k8s/` |
+| OBJ-K8-03 | Desplegar en **Minikube** con compartidos `k8s/` + deployments **`k8s/local/`** |
 | OBJ-K8-04 | Incluir **PostgreSQL** (StatefulSet) y **Azurite** en el cluster |
 | OBJ-K8-05 | Exponer APIs vía **Ingress NGINX** |
 | OBJ-K8-06 | Probar flujo E2E post-despliegue |
@@ -42,7 +44,7 @@ Justificar el despliegue de ShopDemo en **Kubernetes** como paso natural despué
 ## 3. Alcance incluido
 
 - Namespace `shopdemo`
-- Deployments: Catalog, Orders, Inventory, Analytics
+- Deployments: Catalog, Orders, Inventory, Analytics, **MCP Gateway**
 - StatefulSet: PostgreSQL (3 bases de datos)
 - Deployment: Azurite (checkpoints)
 - Services ClusterIP internos
@@ -52,12 +54,14 @@ Justificar el despliegue de ShopDemo en **Kubernetes** como paso natural despué
 - HPA de ejemplo en Catalog (`k8s/catalog/hpa.yaml`)
 - metrics-server (addon Minikube)
 
-## 4. Fuera de alcance
+## 4. No incluido en el curso
 
-- Helm charts completos de ShopDemo
-- HPA en las 4 APIs (solo Catalog como demo)
+Límites deliberados del lab (no son etapas pendientes):
+
+- Helm charts empaquetados de ShopDemo (se usa `kubectl apply` + Helm solo para Ingress NGINX en AKS/EKS)
+- HPA en las 5 APIs (solo Catalog como demo)
 - Service mesh (Istio/Linkerd)
-- CI/CD GitOps (ArgoCD) — solo referencia
+- CI/CD GitOps (ArgoCD) — solo referencia en documentación
 - Native AOT en imágenes (documentado en TEORIA-DOCKER-KUBERNETES-AOT)
 
 ---

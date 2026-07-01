@@ -38,7 +38,8 @@
 | `kubectl get pods -n shopdemo` | Ver estado de los pods |
 | `kubectl describe pod <nombre> -n shopdemo` | Eventos, probes, errores |
 | `kubectl logs -n shopdemo -l app=shopdemo-catalog` | Logs de una API |
-| `kubectl apply -f k8s/catalog/` | Crear o actualizar recursos |
+| `kubectl apply -f k8s/local/catalog/deployment.yaml` | Minikube — deployment local |
+| `bash .github/scripts/apply-k8s-manifests.sh k8s azure` | AKS — script CI/CD |
 | `kubectl delete -f k8s/namespace.yaml` | Eliminar recursos declarados |
 | `kubectl get hpa -n shopdemo` | Ver autoscaling |
 
@@ -108,7 +109,7 @@ env:
         key: PG_CATALOG_CONN
 ```
 
-**Regla del curso:** nunca commitear `secrets.yaml` con valores reales. En AKS/EKS se aplican los mismos YAML; en producción avanzada se integraría Azure Key Vault o AWS Secrets Manager (fuera del alcance básico).
+**Regla del curso:** nunca commitear `secrets.yaml` con valores reales. Deployments por entorno: `k8s/local/`, `k8s/azure/`, `k8s/aws/`. Integración con Azure Key Vault o AWS Secrets Manager **no forma parte** del lab básico.
 
 ---
 
@@ -149,7 +150,7 @@ El **Horizontal Pod Autoscaler (HPA)** aumenta o reduce réplicas de un Deployme
 
 | Requisito | ShopDemo |
 |---|---|
-| `resources.requests.cpu` en el contenedor | Definido en `catalog/deployment.yaml` |
+| `resources.requests.cpu` en el contenedor | Definido en `k8s/local/catalog/deployment.yaml` (o `azure/` / `aws/`) |
 | **metrics-server** en el cluster | Addon en Minikube; incluido en AKS/EKS |
 | Manifiesto HPA | `k8s/catalog/hpa.yaml` (1–3 réplicas, 70 % CPU) |
 

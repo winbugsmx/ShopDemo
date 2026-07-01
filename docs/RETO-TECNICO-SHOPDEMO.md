@@ -109,14 +109,14 @@ Orden recomendado al arrancar: **Catalog → Inventory → Orders → Analytics 
 ### En Azure (release)
 
 - **Container Apps (ACA):** camino más directo; imágenes en ACR.
-- **AKS:** mismos manifiestos `k8s/` que en Minikube, con Ingress y secretos en el cluster.
+- **AKS:** recursos compartidos `k8s/` + deployments `k8s/azure/` (ACR); Ingress y secretos en el cluster.
 
 Se despliegan **cinco contenedores**: Catalog, Orders, Inventory, Analytics y MCP Gateway.
 
 ### En AWS (release)
 
 - **ECS Fargate:** sin Kubernetes; ALB por API pública.
-- **EKS:** mismos manifiestos `k8s/` que en AKS.
+- **EKS:** misma estructura compartida; deployments en `k8s/aws/` (ECR).
 
 Los contenedores en AWS siguen usando **Azure Event Hubs** para mensajería (conexión cross-cloud).
 

@@ -16,6 +16,7 @@ Documentación para el bounded context **Catalog** en **ShopDemo**, con **Clean 
 | Documento | Descripción |
 |---|---|
 | [REQUERIMIENTOS-CATALOG.md](./REQUERIMIENTOS-CATALOG.md) | Especificación funcional y técnica |
+| [HISTORIAS-USUARIO-CATALOG.md](./HISTORIAS-USUARIO-CATALOG.md) | Requerimientos en formato historia de usuario + criterios de aceptación |
 | [IMPLEMENTACION-CATALOG.md](./IMPLEMENTACION-CATALOG.md) | Guía paso a paso con código actual y explicación de clases |
 
 ## Relación con otros microservicios

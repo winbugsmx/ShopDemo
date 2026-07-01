@@ -14,30 +14,48 @@
 
 Material del curso para llevar los microservicios Docker a la nube con enfoque **práctico y básico**.
 
+## Historias de usuario (despliegue e infra)
+
+| Módulo | Requerimientos | Historias de usuario |
+|---|---|---|
+| Azure ACA | [REQUERIMIENTOS-DESPLIEGUE-AZURE](./azure/REQUERIMIENTOS-DESPLIEGUE-AZURE.md) | [HISTORIAS-USUARIO-DESPLIEGUE-AZURE](./azure/HISTORIAS-USUARIO-DESPLIEGUE-AZURE.md) |
+| AWS ECS | [REQUERIMIENTOS-DESPLIEGUE-AWS](./aws/REQUERIMIENTOS-DESPLIEGUE-AWS.md) | [HISTORIAS-USUARIO-DESPLIEGUE-AWS](./aws/HISTORIAS-USUARIO-DESPLIEGUE-AWS.md) |
+| Kubernetes | [REQUERIMIENTOS-KUBERNETES](./kubernetes/REQUERIMIENTOS-KUBERNETES.md) | [HISTORIAS-USUARIO-KUBERNETES](./kubernetes/HISTORIAS-USUARIO-KUBERNETES.md) |
+| AKS | [REQUERIMIENTOS-DESPLIEGUE-AKS](./aks/REQUERIMIENTOS-DESPLIEGUE-AKS.md) | [HISTORIAS-USUARIO-DESPLIEGUE-AKS](./aks/HISTORIAS-USUARIO-DESPLIEGUE-AKS.md) |
+| EKS | [REQUERIMIENTOS-DESPLIEGUE-EKS](./eks/REQUERIMIENTOS-DESPLIEGUE-EKS.md) | [HISTORIAS-USUARIO-DESPLIEGUE-EKS](./eks/HISTORIAS-USUARIO-DESPLIEGUE-EKS.md) |
+
 ## Alcance del lab (2 días · pocas horas)
 
 **[ALCANCE-LAB-RELEASE.md](./ALCANCE-LAB-RELEASE.md)** — qué servicios son obligatorios, rutas por tiempo y cuándo usar script vs Portal vs CLI.
 
 ## Guías de release separadas
 
+Cada plataforma ofrece **tres enfoques equivalentes** (Script, CLI, Portal). El script es el camino más rápido para el lab.
+
 ### Azure
 
 | Documento | Uso |
 |---|---|
-| [GUIA-RELEASE-SCRIPT-AZURE.md](./azure/GUIA-RELEASE-SCRIPT-AZURE.md) | **Recomendada** — `Deploy-AzureShopDemo.ps1` |
-| [GUIA-RELEASE-CLI-AZURE.md](./azure/GUIA-RELEASE-CLI-AZURE.md) | Mismos recursos con `az` |
-| [GUIA-RELEASE-PORTAL-AZURE.md](./azure/GUIA-RELEASE-PORTAL-AZURE.md) | Portal visual + capturas + Microsoft Learn |
+| [PREPARACION-AMBIENTE-AZURE.md](./azure/PREPARACION-AMBIENTE-AZURE.md) | Suscripción, cuotas, permisos |
+| [GUIA-RELEASE-SCRIPT-AZURE.md](./azure/GUIA-RELEASE-SCRIPT-AZURE.md) | **Recomendada** — `Deploy-AzureShopDemo.ps1` (ACA + AKS) |
+| [GUIA-RELEASE-CLI-AZURE.md](./azure/GUIA-RELEASE-CLI-AZURE.md) | ACA (A.1–A.14) + AKS (B.1–B.11) con `az` |
+| [GUIA-RELEASE-PORTAL-AZURE.md](./azure/GUIA-RELEASE-PORTAL-AZURE.md) | Portal visual ACA + AKS |
 | [IMPLEMENTACION-DESPLIEGUE-AZURE.md](./azure/IMPLEMENTACION-DESPLIEGUE-AZURE.md) | Índice + nombres + troubleshooting |
+
+**Release AKS validado:** [scripts/azure/deploy-aks-report.json](../../scripts/azure/deploy-aks-report.json)
 
 ### AWS
 
 | Documento | Uso |
 |---|---|
+| [PREPARACION-AMBIENTE-AWS.md](./aws/PREPARACION-AMBIENTE-AWS.md) | IAM, cuotas, región |
 | [GUIA-RELEASE-SCRIPT-AWS.md](./aws/GUIA-RELEASE-SCRIPT-AWS.md) | **Recomendada** — `Deploy-AwsShopDemo.ps1` + IAM |
-| [GUIA-RELEASE-CLI-AWS.md](./aws/GUIA-RELEASE-CLI-AWS.md) | Mismos recursos con `aws` |
-| [GUIA-RELEASE-PORTAL-AWS.md](./aws/GUIA-RELEASE-PORTAL-AWS.md) | Consola visual + capturas + AWS Docs |
+| [GUIA-RELEASE-CLI-AWS.md](./aws/GUIA-RELEASE-CLI-AWS.md) | ECS (A.0–A.19) + EKS (B.0–B.14) con `aws` |
+| [GUIA-RELEASE-PORTAL-AWS.md](./aws/GUIA-RELEASE-PORTAL-AWS.md) | Consola visual + IAM |
 | [IMPLEMENTACION-DESPLIEGUE-AWS.md](./aws/IMPLEMENTACION-DESPLIEGUE-AWS.md) | Índice + IAM + troubleshooting |
 | [ANEXO-TASK-DEFINITIONS-ECS.md](./aws/ANEXO-TASK-DEFINITIONS-ECS.md) | JSON task definitions (ruta manual) |
+
+**Release EKS validado (free-tier):** [scripts/aws/deploy-eks-free-tier-report.json](../../scripts/aws/deploy-eks-free-tier-report.json)
 
 ### Kubernetes
 
@@ -47,10 +65,12 @@ Material del curso para llevar los microservicios Docker a la nube con enfoque *
 
 ## Scripts PowerShell de release (automatización)
 
-| Plataforma | Carpeta | Guía | Modos |
-|---|---|---|---|
-| **Azure** | [scripts/azure/](../../scripts/azure/) | [README](../../scripts/azure/README.md) | `ACA` · `AKS` · `All` |
-| **AWS** | [scripts/aws/](../../scripts/aws/) | [README](../../scripts/aws/README.md) | `ECS` · `EKS` · `All` |
+| Plataforma | Carpeta | Guía | Modos | CI/CD (merge `main`) |
+|---|---|---|---|---|
+| **Azure** | [scripts/azure/](../../scripts/azure/) | [README](../../scripts/azure/README.md) | `ACA` · `AKS` · `All` | [deploy-azure.yml](../../.github/workflows/deploy-azure.yml) · [deploy-aks.yml](../../.github/workflows/deploy-aks.yml) |
+| **AWS** | [scripts/aws/](../../scripts/aws/) | [README](../../scripts/aws/README.md) | `ECS` · `EKS` · `All` | [deploy-aws.yml](../../.github/workflows/deploy-aws.yml) · [deploy-eks.yml](../../.github/workflows/deploy-eks.yml) |
+
+**Checklist secrets:** [.github/SECRETS-CHECKLIST.md](../../.github/SECRETS-CHECKLIST.md) · **Setup:** [.github/SETUP-GITHUB.md](../../.github/SETUP-GITHUB.md)
 
 **No incluyen build Docker** — tras ejecutar el script, publica imágenes con GitHub Actions o build manual.
 
@@ -70,7 +90,7 @@ Detalle en [GUIA-RELEASE-SCRIPT-AZURE](./azure/GUIA-RELEASE-SCRIPT-AZURE.md) y [
 |---|---|---|
 | Cómputo | **Azure Container Apps** | **Amazon ECS Fargate** |
 | Registro de imágenes | **Azure Container Registry (ACR)** | **Amazon ECR** |
-| APIs desplegadas | Catalog, Orders, Inventory, Analytics | Igual |
+| APIs desplegadas | Catalog, Orders, Inventory, Analytics, **MCP Gateway** | Igual |
 | AppHost Aspire | Solo desarrollo local — **no se despliega** | Igual |
 | PostgreSQL | Contenedor (ACI / ECS) | Contenedor (ECS + EFS) |
 | Checkpoints Event Hubs | **Storage Account** (`shopdemochecklab01`) en ACA · **Azurite** en AKS/K8s | **Azurite** (`shopdemo-azurite`) en ECS |
@@ -79,6 +99,13 @@ Detalle en [GUIA-RELEASE-SCRIPT-AZURE](./azure/GUIA-RELEASE-SCRIPT-AZURE.md) y [
 
 ## Documentos por plataforma
 
+### Teoría para entrevistas técnicas
+
+| Documento | Contenido |
+|---|---|
+| [teoria-entrevistas/README.md](../teoria-entrevistas/README.md) | Orden de lectura, rutas por tipo de entrevista, diagramas |
+| [01-patrones-diseno.md](../teoria-entrevistas/01-patrones-diseno.md) … [11-observabilidad-resiliencia.md](../teoria-entrevistas/11-observabilidad-resiliencia.md) · [10-preguntas-entrevista.md](../teoria-entrevistas/10-preguntas-entrevista.md) | Patrones, arquitectura, cloud, K8s, CI/CD, MCP, observabilidad, flashcards |
+
 ### Kubernetes (Minikube / AKS / EKS)
 
 | Documento | Contenido |
@@ -86,7 +113,7 @@ Detalle en [GUIA-RELEASE-SCRIPT-AZURE](./azure/GUIA-RELEASE-SCRIPT-AZURE.md) y [
 | [kubernetes/README.md](./kubernetes/README.md) | Índice K8s |
 | [kubernetes/TEORIA-KUBERNETES-OPERACIONES.md](./kubernetes/TEORIA-KUBERNETES-OPERACIONES.md) | kubectl, Secrets, Probes, HPA, Ingress |
 | [kubernetes/REQUERIMIENTOS-KUBERNETES.md](./kubernetes/REQUERIMIENTOS-KUBERNETES.md) | Justificación Minikube |
-| [kubernetes/IMPLEMENTACION-KUBERNETES-LOCAL.md](./kubernetes/IMPLEMENTACION-KUBERNETES-LOCAL.md) | Minikube + manifiestos `k8s/` |
+| [kubernetes/IMPLEMENTACION-KUBERNETES-LOCAL.md](./kubernetes/IMPLEMENTACION-KUBERNETES-LOCAL.md) | Minikube — compartidos `k8s/` + `k8s/local/` |
 | [aks/](./aks/) | AKS: Helm Ingress, Secrets, Probes, HPA |
 | [eks/](./eks/) | EKS: Helm Ingress, Secrets, Probes, HPA |
 
@@ -103,6 +130,7 @@ Detalle en [GUIA-RELEASE-SCRIPT-AZURE](./azure/GUIA-RELEASE-SCRIPT-AZURE.md) y [
 
 | Documento | Contenido |
 |---|---|
+| [PREPARACION-AMBIENTE-AZURE.md](./azure/PREPARACION-AMBIENTE-AZURE.md) | Preparación suscripción y cuotas |
 | [TEORIA-CONTENEDORES-AZURE.md](./azure/TEORIA-CONTENEDORES-AZURE.md) | ACR, Container Apps, secretos, networking |
 | [REQUERIMIENTOS-DESPLIEGUE-AZURE.md](./azure/REQUERIMIENTOS-DESPLIEGUE-AZURE.md) | Justificación y alcance |
 | [GUIA-RELEASE-SCRIPT-AZURE.md](./azure/GUIA-RELEASE-SCRIPT-AZURE.md) | Script PowerShell (recomendado) |
@@ -113,6 +141,7 @@ Detalle en [GUIA-RELEASE-SCRIPT-AZURE](./azure/GUIA-RELEASE-SCRIPT-AZURE.md) y [
 
 | Documento | Contenido |
 |---|---|
+| [PREPARACION-AMBIENTE-AWS.md](./aws/PREPARACION-AMBIENTE-AWS.md) | Preparación IAM y cuotas |
 | [TEORIA-CONTENEDORES-AWS.md](./aws/TEORIA-CONTENEDORES-AWS.md) | ECR, ECS Fargate, Cloud Map |
 | [REQUERIMIENTOS-DESPLIEGUE-AWS.md](./aws/REQUERIMIENTOS-DESPLIEGUE-AWS.md) | Justificación y alcance |
 | [GUIA-RELEASE-SCRIPT-AWS.md](./aws/GUIA-RELEASE-SCRIPT-AWS.md) | Script PowerShell + IAM (recomendado) |
@@ -145,3 +174,15 @@ Para que el agente de IA (Cursor o Claude Code) siga las mismas especificaciones
 | Orders | `Orders/ShopDemo.Orders.Api/Dockerfile` | `Orders/ShopDemo.Orders.Api/docker-compose.yml` |
 | Inventory | `Inventory/ShopDemo.Inventory.Api/Dockerfile` | `Inventory/ShopDemo.Inventory.Api/docker-compose.yml` |
 | Analytics | `Aspire/ShopDemo.Analytics.Api/Dockerfile` | `Aspire/ShopDemo.Analytics.Api/docker-compose.yml` |
+| MCP Gateway | `AI/ShopDemo.Mcp.Api/Dockerfile` | `AI/ShopDemo.Mcp.Api/docker-compose.yml` |
+
+## Problemas frecuentes (release validado)
+
+| Síntoma | Plataforma | Solución |
+|---|---|---|
+| Swagger 404 en AKS/EKS | K8s | `ASPNETCORE_ENVIRONMENT=Development` |
+| Swagger timeout ELB | EKS | URL con puerto **`:8080`** |
+| Analytics CrashLoopBackOff | AKS | Consumer group `analytics-service` en Event Hubs |
+| Ingress timeout | AKS | Health probe `/healthz` en Service Ingress NGINX |
+| Script falla en Ingress | AKS | Helm manual — ver GUIA-RELEASE-SCRIPT-AZURE §5.2 |
+| Pods Pending | EKS free-tier | Perfil reducido — ver deploy-eks-free-tier-report.json |

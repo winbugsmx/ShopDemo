@@ -4,6 +4,7 @@ metadata:
   name: shopdemo-analytics
   namespace: shopdemo
 spec:
+  type: ClusterIP
   selector:
     app: shopdemo-analytics
   ports:

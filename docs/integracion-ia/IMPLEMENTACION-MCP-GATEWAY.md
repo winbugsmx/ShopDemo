@@ -122,4 +122,4 @@ curl http://localhost:8005/health
 
 ## Siguiente paso
 
-Desplegar en nube: [IMPLEMENTACION-DESPLIEGUE-MCP-AZURE.md](./IMPLEMENTACION-DESPLIEGUE-MCP-AZURE.md) o [AWS](./IMPLEMENTACION-DESPLIEGUE-MCP-AWS.md). Manifiestos: `k8s/mcp/`.
+Desplegar en nube: [IMPLEMENTACION-DESPLIEGUE-MCP-AZURE.md](./IMPLEMENTACION-DESPLIEGUE-MCP-AZURE.md) o [AWS](./IMPLEMENTACION-DESPLIEGUE-MCP-AWS.md). Manifiestos K8s: deployment en `k8s/azure/mcp/` o `k8s/aws/mcp/` + `k8s/mcp/service.yaml`.

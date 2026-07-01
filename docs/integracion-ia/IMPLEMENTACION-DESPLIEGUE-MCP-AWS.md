@@ -240,11 +240,8 @@ aws eks update-kubeconfig --name $EKS_CLUSTER --region $AWS_REGION
 $ACCOUNT = aws sts get-caller-identity --query Account --output text
 $ECR_IMAGE = "$ACCOUNT.dkr.ecr.$env:AWS_REGION.amazonaws.com/shopdemo-mcp:v1"
 
-(Get-Content k8s/mcp/deployment.yaml) `
-  -replace 'shopdemo-mcp:latest', $ECR_IMAGE |
-  Set-Content k8s/mcp/deployment-eks.yaml
-
-kubectl apply -f k8s/mcp/deployment-eks.yaml
+```bash
+kubectl apply -f k8s/aws/mcp/deployment.yaml
 kubectl apply -f k8s/mcp/service.yaml
 kubectl wait --for=condition=ready pod -l app=shopdemo-mcp -n shopdemo --timeout=120s
 ```
@@ -281,21 +278,29 @@ Configurar agente: `http://<ingress-host>/mcp`
 
 ## Paso C1 — CI/CD GitHub Actions
 
-`.github/workflows/deploy-aws.yml` incluye:
+| Workflow | MCP en |
+|---|---|
+| [deploy-aws.yml](../../.github/workflows/deploy-aws.yml) | ECS service `shopdemo-mcp` |
+| [deploy-eks.yml](../../.github/workflows/deploy-eks.yml) | Deployment `shopdemo-mcp` + Ingress `/mcp` |
+
+Configuración: [SETUP-GITHUB.md](../../.github/SETUP-GITHUB.md)
+
+Fragmento ECS:
 
 ```yaml
 - dockerfile: AI/ShopDemo.Mcp.Api/Dockerfile
   repository: shopdemo-mcp
-  ecs_service: shopdemo-mcp
+  task_family: shopdemo-mcp
+  container_name: mcp-api
 ```
 
 ### Requisitos previos
 
 | Recurso | Debe existir antes del workflow |
 |---|---|
-| ECR repo `shopdemo-mcp` | Paso A1 |
-| ECS service `shopdemo-mcp` | Pasos A3–A4 |
-| Secrets GitHub | `AWS_ROLE_ARN` o access keys, `ECS_CLUSTER` |
+| ECR repo `shopdemo-mcp` | Script `-Mode ECS/EKS` |
+| ECS service `shopdemo-mcp` | Script o guía manual |
+| Secrets GitHub | Ver [SECRETS-CHECKLIST.md](../../.github/SECRETS-CHECKLIST.md) |
 
 ---
 
@@ -318,7 +323,7 @@ Configurar agente: `http://<ingress-host>/mcp`
 | 2 | `/health` 200 | ✓ | ✓ |
 | 3 | Logs en CloudWatch | ✓ | ✓ (Container Insights) |
 | 4 | Agente `/mcp` | ✓ | ✓ |
-| 5 | CI/CD shopdemo-mcp | ✓ | apply manual / GitOps |
+| 5 | CI/CD shopdemo-mcp | ✓ | ✓ ([deploy-eks.yml](../../.github/workflows/deploy-eks.yml)) |
 
 ---
 

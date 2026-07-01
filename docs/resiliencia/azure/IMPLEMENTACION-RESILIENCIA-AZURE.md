@@ -108,10 +108,10 @@ az containerapp update -n ca-shopdemo-catalog -g $RG --min-replicas 1 --max-repl
 
 ### Paso B1 — Probes
 
-**Objetivo:** Usar manifiestos `k8s/*/deployment.yaml` ya configurados.
+**Objetivo:** Verificar probes en deployments `k8s/azure/` (AKS) o `k8s/local/` (Minikube).
 
 ```bash
-kubectl apply -f k8s/catalog/
+kubectl apply -f k8s/azure/catalog/deployment.yaml   # AKS
 kubectl describe pod -n shopdemo -l app=shopdemo-catalog | findstr -i "Liveness Readiness"
 ```
 

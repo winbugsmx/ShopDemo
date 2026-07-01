@@ -1,0 +1,18 @@
+sequenceDiagram
+  participant User
+  participant O as Orders
+  participant I as Inventory
+  participant LA as Log Analytics / CloudWatch
+
+  User->>O: POST confirm order
+  O->>I: HTTP reserve stock
+  alt Inventory timeout
+    I--xO: sin respuesta
+    O->>O: ExceptionHandlingMiddleware
+    O-->>User: 500 + traceId
+    O->>LA: Log OrderId + error
+  else OK
+    I-->>O: 200
+    O-->>User: 200
+  end
+  Note over User,LA: Investigacion: buscar traceId en logs O e I

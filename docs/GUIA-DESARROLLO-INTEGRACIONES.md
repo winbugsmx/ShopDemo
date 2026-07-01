@@ -289,7 +289,7 @@ No hay código C# nuevo; **integras configuración, scripts PowerShell y pipelin
 | Componente | Azure ACA | AWS ECS | Kubernetes |
 |---|---|---|---|
 | Registro imágenes | ACR `acrshopdemolab01` (5 repos) | ECR `shopdemo-*` (5) | Imagen local / ACR / ECR |
-| APIs + MCP | 5 Container Apps | 5 ECS services + ALB | `k8s/*` + `k8s/mcp/` |
+| APIs + MCP | 5 Container Apps | 5 ECS services + ALB | Compartidos + `k8s/{local,azure,aws}/` |
 | PostgreSQL | ACI | Fargate task | StatefulSet `k8s/postgres/` |
 | Checkpoints EH | **Storage Account** | **Azurite Fargate** | **Azurite** `k8s/azurite/` |
 | Mensajería | Event Hubs (Azure) | Event Hubs cross-cloud | Event Hubs en `secrets.yaml` |
@@ -336,8 +336,11 @@ aws configure
 | `Dockerfile` de cada API | Build de imagen |
 | `.env.azure` / `.env.aws` | Variables del script (no commitear) |
 | Variables en ACA / ECS / secrets | Connection strings, Event Hubs |
-| `.github/workflows/deploy-azure.yml` | CI/CD Azure — **5 imágenes** |
-| `.github/workflows/deploy-aws.yml` | CI/CD AWS — **5 imágenes** |
+| `.github/workflows/deploy-azure.yml` | CI/CD Azure ACA — **5 imágenes** |
+| `.github/workflows/deploy-aws.yml` | CI/CD AWS ECS — **5 imágenes** |
+| `.github/workflows/deploy-aks.yml` | CI/CD Azure AKS — build + `kubectl set image` |
+| `.github/workflows/deploy-eks.yml` | CI/CD Amazon EKS — build + `kubectl set image` |
+| [.github/SECRETS-CHECKLIST.md](../.github/SECRETS-CHECKLIST.md) | Secrets y environments GitHub |
 | Build manual 5 servicios | Ver GUIA-RELEASE-SCRIPT-AZURE / GUIA-RELEASE-SCRIPT-AWS |
 
 Docs manuales: [despliegue/azure/](./despliegue/azure/) · [despliegue/aws/](./despliegue/aws/)
@@ -379,7 +382,7 @@ No hay código C# nuevo en el repositorio; **integras configuración en la nube*
 | 12 Observabilidad | Log Analytics / CloudWatch, alertas, `traceId` en middleware | Detectar fallos y correlacionar requests | [observabilidad/azure](./observabilidad/azure/IMPLEMENTACION-OBSERVABILIDAD-AZURE.md) · [aws](./observabilidad/aws/IMPLEMENTACION-OBSERVABILIDAD-AWS.md) |
 | 13 Resiliencia | Probes K8s, HPA, políticas de reinicio ACA/ECS | Recuperación tras caída de pod/tarea | [resiliencia/azure](./resiliencia/azure/IMPLEMENTACION-RESILIENCIA-AZURE.md) · [aws](./resiliencia/aws/IMPLEMENTACION-RESILIENCIA-AWS.md) |
 
-**Código ya presente en el repo (no copiar de nuevo):** endpoints `/health` y `/alive` en las APIs; manifiestos `k8s/*/deployment.yaml` con `livenessProbe` y `readinessProbe`.
+**Código ya presente en el repo (no copiar de nuevo):** endpoints `/health` y `/alive` en las APIs; deployments en `k8s/local/`, `k8s/azure/` o `k8s/aws/` con `livenessProbe` y `readinessProbe`.
 
 ---
 

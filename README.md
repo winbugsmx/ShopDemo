@@ -22,7 +22,7 @@ Al finalizar las etapas del curso, el alumno debe poder:
 3. **Integrar** servicios por HTTP síncrono (Orders → Inventory) y por mensajería asíncrona (Azure Event Hubs).
 4. **Observar** el bus de eventos con Analytics y orquestar todo localmente con Aspire.
 5. **Empaquetar** cada API en Docker y **desplegarla** en Azure (Container Apps, AKS) y AWS (ECS, EKS).
-6. **Desplegar** en Kubernetes (Minikube local, AKS, EKS) con manifiestos `k8s/`.
+6. **Desplegar** en Kubernetes (Minikube, AKS, EKS) con manifiestos compartidos `k8s/` y deployments en `k8s/local/`, `k8s/azure/` o `k8s/aws/`.
 7. **Exponer** el MCP Gateway para agentes IA (Cursor, Claude Code) sobre Catalog, Inventory y Analytics.
 8. **Probar** flujos de punta a punta con Swagger, Postman y la guía de endpoints.
 9. **Operar** con health checks, observabilidad básica y desarrollo guiado por specs (`spec-driven/`).
@@ -84,11 +84,11 @@ Cada etapa tiene un par de documentos: **requerimientos** (qué y por qué) e **
 | **4** | Integración E2E | [GUIA-ENDPOINTS](docs/GUIA-ENDPOINTS.md) | [ARQUITECTURA §4](docs/ARQUITECTURA.md#4-integración-entre-bounded-contexts) | Flujo compra completo |
 | **5** | Azure Event Hubs | [INTEGRACION-AZURE-EVENT-HUBS](docs/INTEGRACION-AZURE-EVENT-HUBS.md) | Mismo doc (paso a paso) | Auto-stock + eventos en log |
 | **6** | Aspire + Analytics | [REQUERIMIENTOS-ANALYTICS-ASPIRE](docs/analytics/REQUERIMIENTOS-ANALYTICS-ASPIRE.md) | [IMPLEMENTACION-ANALYTICS-ASPIRE](docs/analytics/IMPLEMENTACION-ANALYTICS-ASPIRE.md) | `GET /api/analytics/events` |
-| **7** | Docker → Azure | [REQUERIMIENTOS-DESPLIEGUE-AZURE](docs/despliegue/azure/REQUERIMIENTOS-DESPLIEGUE-AZURE.md) | [IMPLEMENTACION-DESPLIEGUE-AZURE](docs/despliegue/azure/IMPLEMENTACION-DESPLIEGUE-AZURE.md) · [Script PS](scripts/azure/README.md) | APIs en Container Apps |
-| **8** | Docker → AWS | [REQUERIMIENTOS-DESPLIEGUE-AWS](docs/despliegue/aws/REQUERIMIENTOS-DESPLIEGUE-AWS.md) | [IMPLEMENTACION-DESPLIEGUE-AWS](docs/despliegue/aws/IMPLEMENTACION-DESPLIEGUE-AWS.md) · [Script PS](scripts/aws/README.md) | APIs en ECS Fargate |
+| **7** | Docker → Azure | [REQUERIMIENTOS-DESPLIEGUE-AZURE](docs/despliegue/azure/REQUERIMIENTOS-DESPLIEGUE-AZURE.md) | [IMPLEMENTACION-DESPLIEGUE-AZURE](docs/despliegue/azure/IMPLEMENTACION-DESPLIEGUE-AZURE.md) · [Script/CLI/Portal](docs/despliegue/azure/GUIA-RELEASE-SCRIPT-AZURE.md) | Swagger en 5 Container Apps |
+| **8** | Docker → AWS | [REQUERIMIENTOS-DESPLIEGUE-AWS](docs/despliegue/aws/REQUERIMIENTOS-DESPLIEGUE-AWS.md) | [IMPLEMENTACION-DESPLIEGUE-AWS](docs/despliegue/aws/IMPLEMENTACION-DESPLIEGUE-AWS.md) · [Script/CLI/Portal](docs/despliegue/aws/GUIA-RELEASE-SCRIPT-AWS.md) | Swagger en ALB ECS |
 | **9** | Kubernetes local (Minikube) | [REQUERIMIENTOS-KUBERNETES](docs/despliegue/kubernetes/REQUERIMIENTOS-KUBERNETES.md) | [IMPLEMENTACION-KUBERNETES-LOCAL](docs/despliegue/kubernetes/IMPLEMENTACION-KUBERNETES-LOCAL.md) · [Teoría K8s](docs/despliegue/kubernetes/TEORIA-KUBERNETES-OPERACIONES.md) | `kubectl get hpa -n shopdemo` |
-| **10** | Azure AKS | [REQUERIMIENTOS-DESPLIEGUE-AKS](docs/despliegue/aks/REQUERIMIENTOS-DESPLIEGUE-AKS.md) | [IMPLEMENTACION-DESPLIEGUE-AKS](docs/despliegue/aks/IMPLEMENTACION-DESPLIEGUE-AKS.md) · [Script `-Mode AKS`](scripts/azure/README.md) | ShopDemo en AKS |
-| **11** | Amazon EKS | [REQUERIMIENTOS-DESPLIEGUE-EKS](docs/despliegue/eks/REQUERIMIENTOS-DESPLIEGUE-EKS.md) | [IMPLEMENTACION-DESPLIEGUE-EKS](docs/despliegue/eks/IMPLEMENTACION-DESPLIEGUE-EKS.md) · [Script `-Mode EKS`](scripts/aws/README.md) | ShopDemo en EKS |
+| **10** | Azure AKS | [REQUERIMIENTOS-DESPLIEGUE-AKS](docs/despliegue/aks/REQUERIMIENTOS-DESPLIEGUE-AKS.md) | [IMPLEMENTACION-DESPLIEGUE-AKS](docs/despliegue/aks/IMPLEMENTACION-DESPLIEGUE-AKS.md) · [Script `-Mode AKS`](scripts/azure/README.md) | Swagger vía Ingress o LB `:8080` |
+| **11** | Amazon EKS | [REQUERIMIENTOS-DESPLIEGUE-EKS](docs/despliegue/eks/REQUERIMIENTOS-DESPLIEGUE-EKS.md) | [IMPLEMENTACION-DESPLIEGUE-EKS](docs/despliegue/eks/IMPLEMENTACION-DESPLIEGUE-EKS.md) · [Script `-Mode EKS`](scripts/aws/README.md) | Swagger vía LB `:8080` (perfil free-tier) |
 | **12** | Observabilidad | [REQUERIMIENTOS-OBSERVABILIDAD](docs/observabilidad/REQUERIMIENTOS-OBSERVABILIDAD.md) | [Azure](docs/observabilidad/azure/IMPLEMENTACION-OBSERVABILIDAD-AZURE.md) · [AWS](docs/observabilidad/aws/IMPLEMENTACION-OBSERVABILIDAD-AWS.md) | Logs + alerta + traceId |
 | **13** | Resiliencia | [REQUERIMIENTOS-RESILIENCIA](docs/resiliencia/REQUERIMIENTOS-RESILIENCIA.md) | [Azure](docs/resiliencia/azure/IMPLEMENTACION-RESILIENCIA-AZURE.md) · [AWS](docs/resiliencia/aws/IMPLEMENTACION-RESILIENCIA-AWS.md) | Recuperación tras fallo de pod/tarea |
 | **14** | Integración IA | [REQUERIMIENTOS-INTEGRACION-IA](docs/integracion-ia/REQUERIMIENTOS-INTEGRACION-IA.md) | [IMPLEMENTACION-MCP-GATEWAY](docs/integracion-ia/IMPLEMENTACION-MCP-GATEWAY.md) · [Azure](docs/integracion-ia/azure/IMPLEMENTACION-INTEGRACION-IA-AZURE.md) · [AWS](docs/integracion-ia/aws/IMPLEMENTACION-INTEGRACION-IA-AWS.md) | MCP tool + alerta KQL/Insights |
@@ -106,6 +106,18 @@ Cada etapa tiene un par de documentos: **requerimientos** (qué y por qué) e **
 | Desarrollar o probar **en tu PC** sin nube | **Local** | [Inicio local](#inicio-local-desarrollo-y-pruebas) |
 | Publicar a **Azure** (release) | **Azure** | [Release Azure](#release-azure) |
 | Publicar a **AWS** (release) | **AWS** | [Release AWS](#release-aws) |
+
+### Tres enfoques equivalentes por nube (elige uno)
+
+Cada plataforma tiene **Script**, **CLI** y **Portal** con el mismo alcance. El script es el camino más rápido; CLI y Portal sirven para aprender la consola paso a paso.
+
+| Nube | Preparación | Script (recomendado) | CLI manual | Portal visual |
+|---|---|---|---|---|
+| **Azure** | [PREPARACION-AMBIENTE-AZURE](docs/despliegue/azure/PREPARACION-AMBIENTE-AZURE.md) | [GUIA-RELEASE-SCRIPT-AZURE](docs/despliegue/azure/GUIA-RELEASE-SCRIPT-AZURE.md) | [GUIA-RELEASE-CLI-AZURE](docs/despliegue/azure/GUIA-RELEASE-CLI-AZURE.md) | [GUIA-RELEASE-PORTAL-AZURE](docs/despliegue/azure/GUIA-RELEASE-PORTAL-AZURE.md) |
+| **AWS** | [PREPARACION-AMBIENTE-AWS](docs/despliegue/aws/PREPARACION-AMBIENTE-AWS.md) | [GUIA-RELEASE-SCRIPT-AWS](docs/despliegue/aws/GUIA-RELEASE-SCRIPT-AWS.md) | [GUIA-RELEASE-CLI-AWS](docs/despliegue/aws/GUIA-RELEASE-CLI-AWS.md) | [GUIA-RELEASE-PORTAL-AWS](docs/despliegue/aws/GUIA-RELEASE-PORTAL-AWS.md) |
+| **Kubernetes** | Manifiestos `k8s/` | Script `-Mode AKS` / `-Mode EKS` | Secciones AKS/EKS en guías CLI | Secciones AKS/EKS en guías Portal |
+
+**Reportes de release validados (lab):** [AKS](scripts/azure/deploy-aks-report.json) · [EKS free-tier](scripts/aws/deploy-eks-free-tier-report.json) · [EKS completo](scripts/aws/deploy-eks-report.json)
 
 ```mermaid
 flowchart TD
@@ -133,11 +145,11 @@ Referencia rápida para **levantar todos los servicios** según dónde ejecutes 
 
 | Servicio | Puerto | Health | Local Compose | Aspire | `dotnet run` | Minikube (`k8s/`) | Azure ACA | Azure AKS | AWS ECS | AWS EKS |
 |---|---|---|---|---|---|---|---|---|---|---|
-| **Catalog** | 8001 | `/health` | `Catalog/.../docker compose up` | AppHost | `dotnet run --project Catalog/...` | `k8s/catalog/` | Container App | Ingress `/catalog` | ALB dedicado | Ingress `/catalog` |
-| **Orders** | 8002 | `/health` | `Orders/.../docker compose up` | AppHost | `dotnet run --project Orders/...` | `k8s/orders/` | Container App | Ingress `/orders` | ALB dedicado | Ingress `/orders` |
-| **Inventory** | 8003 | `/health` | `Inventory/.../docker compose up` | AppHost | `dotnet run --project Inventory/...` | `k8s/inventory/` | Container App (interno) | Ingress `/inventory` | Cloud Map / ALB | Ingress `/inventory` |
-| **Analytics** | 8004 | `/health` | `Aspire/.../docker compose up` | AppHost | `dotnet run --project Aspire/...` | `k8s/analytics/` | Container App | Ingress `/analytics` | ALB dedicado | Ingress `/analytics` |
-| **MCP Gateway** | 8005 | `/health` | `AI/.../docker compose up` | Manual* | `dotnet run --project AI/...` | `k8s/mcp/` | Container App | Ingress `/mcp` | ALB dedicado | Ingress `/mcp` |
+| **Catalog** | 8001 | `/health` | `Catalog/.../docker compose up` | AppHost | `dotnet run --project Catalog/...` | `k8s/local/catalog/` | Container App | Ingress `/catalog` (`k8s/azure/`) | ALB dedicado | Ingress `/catalog` (`k8s/aws/`) |
+| **Orders** | 8002 | `/health` | `Orders/.../docker compose up` | AppHost | `dotnet run --project Orders/...` | `k8s/local/orders/` | Container App | Ingress `/orders` | ALB dedicado | Ingress `/orders` |
+| **Inventory** | 8003 | `/health` | `Inventory/.../docker compose up` | AppHost | `dotnet run --project Inventory/...` | `k8s/local/inventory/` | Container App (interno) | Ingress `/inventory` | Cloud Map / ALB | Ingress `/inventory` |
+| **Analytics** | 8004 | `/health` | `Aspire/.../docker compose up` | AppHost | `dotnet run --project Aspire/...` | `k8s/local/analytics/` | Container App | Ingress `/analytics` | ALB dedicado | Ingress `/analytics` |
+| **MCP Gateway** | 8005 | `/health` | `AI/.../docker compose up` | Manual* | `dotnet run --project AI/...` | `k8s/local/mcp/` | Container App | Ingress `/mcp` | ALB dedicado | Ingress `/mcp` |
 | **PostgreSQL** | 5433–5435 | — | Por compose de cada API | AppHost (×3 DB) | Requiere PG local | `k8s/postgres/` | ACI / sidecar | StatefulSet | ECS + EFS | StatefulSet |
 | **Azurite** | 10000 | — | En compose Inventory/Analytics | AppHost | — | `k8s/azurite/` | Blob Azure | Blob Azure | S3/Blob | Blob Azure |
 
@@ -278,7 +290,7 @@ Guía: [docs/integracion-ia/README.md](docs/integracion-ia/README.md) · Desplie
 |---|---|
 | 1 | `minikube start` + `minikube addons enable ingress` |
 | 2 | Build imágenes en daemon Minikube (`minikube docker-env`) |
-| 3 | `kubectl apply -f k8s/` (ver orden en [k8s/README.md](k8s/README.md)) |
+| 3 | `apply-k8s-manifests.sh k8s local` o pasos en [k8s/README.md](k8s/README.md) |
 
 Guía completa: [IMPLEMENTACION-KUBERNETES-LOCAL.md](docs/despliegue/kubernetes/IMPLEMENTACION-KUBERNETES-LOCAL.md)
 
@@ -295,7 +307,11 @@ Dos caminos de **release** en Azure. Ambos usan imágenes en **Azure Container R
 | Camino | Servicio Azure | Ideal para | Guía |
 |---|---|---|---|
 | **ACA** | Container Apps | Release serverless, más simple | [GUIA-RELEASE-SCRIPT-AZURE](docs/despliegue/azure/GUIA-RELEASE-SCRIPT-AZURE.md) |
-| **AKS** | Kubernetes Service | Release con manifiestos `k8s/` | [GUIA-RELEASE-KUBERNETES](docs/despliegue/kubernetes/GUIA-RELEASE-KUBERNETES.md) |
+| **AKS** | Kubernetes Service | Compartidos `k8s/` + deployments `k8s/azure/` | [GUIA-RELEASE-KUBERNETES](docs/despliegue/kubernetes/GUIA-RELEASE-KUBERNETES.md) |
+
+**Preparación previa:** [PREPARACION-AMBIENTE-AZURE](docs/despliegue/azure/PREPARACION-AMBIENTE-AZURE.md) (suscripción, cuotas, permisos Contributor).
+
+**Release AKS validado en lab:** cluster `aks-shopdemo`, 2 nodos `Standard_B2s`, 5 APIs + MCP + Ingress. Reporte con URLs: [scripts/azure/deploy-aks-report.json](scripts/azure/deploy-aks-report.json).
 
 ### Scripts PowerShell — configuración y ejecución (recomendado)
 
@@ -325,12 +341,12 @@ az account set --subscription "<TU-SUBSCRIPTION-ID>"
 .\Deploy-AzureShopDemo.ps1 -Mode All  # ACA + AKS
 
 # 4. Publicar imágenes en ACR (obligatorio — el script no hace build)
-#    GitHub Actions: .github/workflows/deploy-azure.yml
+#    GitHub Actions: .github/workflows/ (ver .github/SECRETS-CHECKLIST.md)
 #    O build manual: ver GUIA-RELEASE-SCRIPT-AZURE
 
 # 5. Validar y limpiar
 #    ACA: curl https://<fqdn-catalog>/health
-#    AKS: kubectl apply -f k8s/ (tras editar imágenes ACR)
+#    AKS: apply-k8s-manifests.sh k8s azure (ver k8s/README.md)
 .\Remove-AzureShopDemo.ps1
 ```
 
@@ -340,9 +356,29 @@ az account set --subscription "<TU-SUBSCRIPTION-ID>"
 | `AKS` | Igual + `kubectl apply` | `kubectl get pods -n shopdemo` |
 | `All` | Igual para ambos entornos | Postman con [GUIA-ENDPOINTS](docs/GUIA-ENDPOINTS.md) |
 
-Documentación: [ALCANCE-LAB-RELEASE](docs/despliegue/ALCANCE-LAB-RELEASE.md) · [Script ACA](docs/despliegue/azure/GUIA-RELEASE-SCRIPT-AZURE.md) · [Portal](docs/despliegue/azure/GUIA-RELEASE-PORTAL-AZURE.md) · [CLI](docs/despliegue/azure/GUIA-RELEASE-CLI-AZURE.md) · [AKS](docs/despliegue/kubernetes/GUIA-RELEASE-KUBERNETES.md)
+Documentación: [ALCANCE-LAB-RELEASE](docs/despliegue/ALCANCE-LAB-RELEASE.md) · [Script](docs/despliegue/azure/GUIA-RELEASE-SCRIPT-AZURE.md) · [CLI](docs/despliegue/azure/GUIA-RELEASE-CLI-AZURE.md) · [Portal](docs/despliegue/azure/GUIA-RELEASE-PORTAL-AZURE.md) · [AKS](docs/despliegue/kubernetes/GUIA-RELEASE-KUBERNETES.md) · [Script PS](scripts/azure/README.md)
 
 > **Checkpoints Event Hubs:** en ACA usa **Azure Storage Account** (no Azurite). En AKS/Minikube usa Azurite in-cluster (`k8s/azurite/`).
+
+### Post-script AKS (pasos manuales frecuentes)
+
+El script crea RG, Event Hubs, ACR, cluster y `k8s/secrets.yaml`. Tras el script, completa:
+
+| Paso | Acción |
+|---|---|
+| 1 | Push de 5 imágenes a ACR (las imágenes ACR ya están en `k8s/azure/*/deployment.yaml`; `kubectl set image` solo si cambias tag) |
+| 2 | `kubectl apply` compartidos + **`k8s/azure/`** (ver [k8s/README.md](k8s/README.md)) |
+| 3 | Helm Ingress NGINX si el script falla en este paso (ver [Script §5.2](docs/despliegue/azure/GUIA-RELEASE-SCRIPT-AZURE.md)) |
+| 4 | Anotación health probe Azure: `service.beta.kubernetes.io/azure-load-balancer-health-probe-request-path=/healthz` |
+| 5 | Consumer groups en Event Hubs: `analytics-service`, `inventory-service` |
+| 6 | Entrada en archivo **hosts**: `<IP-ingress> shopdemo.local` |
+| 7 | Swagger: `ASPNETCORE_ENVIRONMENT=Development` en deployments; alternativa LB directo **`:8080/swagger`** |
+
+| Problema | Solución |
+|---|---|
+| Analytics CrashLoopBackOff | Crear consumer group `analytics-service` en Event Hubs |
+| Ingress timeout externo | Health probe `/healthz` + `externalTrafficPolicy: Local` |
+| Swagger 404 | Variable `ASPNETCORE_ENVIRONMENT=Development` |
 
 ### Arranque en Azure (resumen manual)
 
@@ -350,7 +386,7 @@ Documentación: [ALCANCE-LAB-RELEASE](docs/despliegue/ALCANCE-LAB-RELEASE.md) ·
 |---|---|---|---|
 | 1 | **Build y push** imágenes a ACR | `shopdemo-catalog`, `orders`, `inventory`, `analytics`, `mcp` | Igual |
 | 2 | **Infraestructura** | RG + ACR + Environment ACA | RG + ACR + cluster AKS + Ingress NGINX |
-| 3 | **Desplegar APIs** | Crear **5** Container Apps (incl. MCP) | `kubectl apply -f k8s/` incl. `mcp/` |
+| 3 | **Desplegar APIs** | Crear **5** Container Apps (incl. MCP) | Compartidos + **`k8s/azure/`** (ver [k8s/README.md](k8s/README.md)) |
 | 4 | **Secretos** | `EventHubs__*`, PostgreSQL, **Storage Account** checkpoints | `k8s/secrets.yaml` + Azurite in-cluster |
 | 5 | **Verificar** | `curl https://<fqdn>/health` por app | `kubectl get pods -n shopdemo` + Ingress |
 | 6 | **Postman** | Actualizar variables con FQDN de cada ACA | URLs con prefijo Ingress (`/catalog`, …, `/mcp`) |
@@ -362,7 +398,7 @@ flowchart LR
     A[docker build] --> B[docker push ACR]
     B --> C{Destino}
     C -->|ACA| D[Container Apps]
-    C -->|AKS| E[kubectl apply k8s/]
+    C -->|AKS| E[apply-k8s-manifests.sh k8s azure]
     D & E --> F[Probar con Postman]
 ```
 
@@ -371,7 +407,7 @@ flowchart LR
 | 1 | Crear RG + ACR | Crear RG + ACR + cluster AKS |
 | 2 | `docker push` 5 imágenes a ACR | `az aks get-credentials` + push ACR |
 | 3 | Crear 5 Container Apps | Instalar Ingress NGINX |
-| 4 | Secrets `EventHubs__*` en cada app | `kubectl apply -f k8s/` (postgres → APIs → mcp → ingress) |
+| 4 | Secrets `EventHubs__*` en cada app | Compartidos + `k8s/azure/` + ingress (orden en [k8s/README.md](k8s/README.md)) |
 | 5 | Copiar FQDN de cada app | Copiar IP/DNS del Ingress (`shopdemo.local` o IP pública) |
 | 6 | MCP: [IMPLEMENTACION-DESPLIEGUE-MCP-AZURE](docs/integracion-ia/IMPLEMENTACION-DESPLIEGUE-MCP-AZURE.md) | Ruta Ingress `/mcp` en `k8s/ingress/` |
 
@@ -391,7 +427,7 @@ Tras desplegar, actualiza las variables de colección:
 
 **Observabilidad y resiliencia:** [docs/observabilidad/azure/](docs/observabilidad/azure/IMPLEMENTACION-OBSERVABILIDAD-AZURE.md) · [docs/resiliencia/azure/](docs/resiliencia/azure/IMPLEMENTACION-RESILIENCIA-AZURE.md)
 
-CI/CD: [.github/workflows/deploy-azure.yml](.github/workflows/deploy-azure.yml) (incluye `shopdemo-mcp`)
+CI/CD: [.github/workflows/](.github/workflows/) — **4 workflows** (ACA, ECS, AKS, EKS) · Checklist secrets: [.github/SECRETS-CHECKLIST.md](.github/SECRETS-CHECKLIST.md)
 
 ---
 
@@ -402,7 +438,11 @@ Dos caminos de **release** en AWS. Ambos usan **Amazon ECR** y despliegan **5 co
 | Camino | Servicio AWS | Ideal para | Guía |
 |---|---|---|---|
 | **ECS** | Fargate | Release sin Kubernetes | [GUIA-RELEASE-SCRIPT-AWS](docs/despliegue/aws/GUIA-RELEASE-SCRIPT-AWS.md) |
-| **EKS** | Elastic Kubernetes Service | Release con manifiestos `k8s/` | [GUIA-RELEASE-KUBERNETES](docs/despliegue/kubernetes/GUIA-RELEASE-KUBERNETES.md) |
+| **EKS** | Elastic Kubernetes Service | Compartidos `k8s/` + deployments `k8s/aws/` | [GUIA-RELEASE-KUBERNETES](docs/despliegue/kubernetes/GUIA-RELEASE-KUBERNETES.md) |
+
+**Preparación previa:** [PREPARACION-AMBIENTE-AWS](docs/despliegue/aws/PREPARACION-AMBIENTE-AWS.md) (IAM `ShopDemoLabECS` / `ShopDemoLabEKS`, región recomendada `us-east-2`).
+
+**Release EKS validado en lab (free-tier):** 4 nodos `t3.micro`, Catalog/Orders/Inventory con LoadBalancer, Swagger en **`:8080`**. Reporte: [scripts/aws/deploy-eks-free-tier-report.json](scripts/aws/deploy-eks-free-tier-report.json).
 
 ### Scripts PowerShell — configuración y ejecución (recomendado)
 
@@ -430,12 +470,12 @@ aws sts get-caller-identity
 .\Deploy-AwsShopDemo.ps1 -Mode All
 
 # 4. Publicar imágenes en ECR (obligatorio)
-#    GitHub Actions: .github/workflows/deploy-aws.yml
+#    GitHub Actions: .github/workflows/ (ver .github/SECRETS-CHECKLIST.md)
 #    O manual: GUIA-RELEASE-SCRIPT-AWS
 
 # 5. Validar y limpiar
 #    ECS: http://<alb-catalog-dns>/swagger
-#    EKS: kubectl apply -f k8s/
+#    EKS: apply-k8s-manifests.sh k8s aws (ver k8s/README.md)
 .\Remove-AwsShopDemo.ps1   # confirmar: delete-shopdemo
 ```
 
@@ -444,9 +484,25 @@ aws sts get-caller-identity
 | `EVENT_HUBS_CONNECTION_STRING` | **Azure Portal** (Event Hubs — mensajería cross-cloud) |
 | `AWS_REGION` | Consola AWS / `aws configure` |
 
-Documentación: [ALCANCE-LAB-RELEASE](docs/despliegue/ALCANCE-LAB-RELEASE.md) · [Script ECS](docs/despliegue/aws/GUIA-RELEASE-SCRIPT-AWS.md) · [Portal](docs/despliegue/aws/GUIA-RELEASE-PORTAL-AWS.md) · [CLI](docs/despliegue/aws/GUIA-RELEASE-CLI-AWS.md) · [IAM visual](docs/despliegue/aws/GUIA-RELEASE-PORTAL-AWS.md#0-usuario-iam-y-permisos)
+Documentación: [ALCANCE-LAB-RELEASE](docs/despliegue/ALCANCE-LAB-RELEASE.md) · [Script](docs/despliegue/aws/GUIA-RELEASE-SCRIPT-AWS.md) · [CLI](docs/despliegue/aws/GUIA-RELEASE-CLI-AWS.md) · [Portal](docs/despliegue/aws/GUIA-RELEASE-PORTAL-AWS.md) · [Task definitions ECS](docs/despliegue/aws/ANEXO-TASK-DEFINITIONS-ECS.md) · [Script PS](scripts/aws/README.md)
 
 > **Checkpoints Event Hubs en ECS:** Azurite en Fargate. **Mensajería:** Azure Event Hubs (SSM). Task definitions: [ANEXO-TASK-DEFINITIONS-ECS](docs/despliegue/aws/ANEXO-TASK-DEFINITIONS-ECS.md).
+
+### Perfil EKS free-tier (ajustes post-script)
+
+Con 4× `t3.micro` (máx. ~16 pods) el cluster no cabe con los 5 servicios + Ingress + Analytics. Perfil validado:
+
+| Servicio | Estado en free-tier |
+|---|---|
+| Catalog, Orders, Inventory | LoadBalancer + Swagger `:8080` |
+| MCP, Analytics, Ingress NGINX | Omitidos o 0 réplicas (ver [Script §6](docs/despliegue/aws/GUIA-RELEASE-SCRIPT-AWS.md)) |
+| CoreDNS | Reducir a 1 réplica si hay presión de pods |
+
+| Problema | Solución |
+|---|---|
+| Swagger timeout en ELB | Usar puerto **`:8080`** (no `:80`) |
+| Pods Pending | Quitar MCP/Ingress/Analytics o subir nodos |
+| Sin eventos Analytics | Requiere conectividad HTTPS a Azure Event Hubs |
 
 ### Arranque en AWS (resumen manual)
 
@@ -454,7 +510,7 @@ Documentación: [ALCANCE-LAB-RELEASE](docs/despliegue/ALCANCE-LAB-RELEASE.md) ·
 |---|---|---|---|
 | 1 | **Build y push** a ECR | 5 repos/imágenes | Igual |
 | 2 | **Infraestructura** | Cluster ECS + ALB por API pública | Cluster EKS + Ingress NGINX + EBS CSI |
-| 3 | **Desplegar** | Task definitions + services + Cloud Map | `kubectl apply -f k8s/` |
+| 3 | **Desplegar** | Task definitions + services + Cloud Map | Compartidos + **`k8s/aws/`** (ver [k8s/README.md](k8s/README.md)) |
 | 4 | **Secretos** | SSM Parameter Store / Secrets Manager | `k8s/secrets.yaml` |
 | 5 | **Verificar** | `curl http://<alb-dns>/health` | `kubectl get pods -n shopdemo` |
 | 6 | **MCP** | [IMPLEMENTACION-DESPLIEGUE-MCP-AWS](docs/integracion-ia/IMPLEMENTACION-DESPLIEGUE-MCP-AWS.md) | Ingress `/mcp` |
@@ -466,7 +522,7 @@ Documentación: [ALCANCE-LAB-RELEASE](docs/despliegue/ALCANCE-LAB-RELEASE.md) ·
 | 1 | Crear repos ECR (5 imágenes) | `eksctl create cluster` o Consola EKS |
 | 2 | `docker push` a ECR | `aws eks update-kubeconfig` |
 | 3 | Task definitions + services (5) | EBS CSI + Ingress NGINX |
-| 4 | ALB por API pública + Cloud Map Orders→Inventory | `kubectl apply -f k8s/` |
+| 4 | ALB por API pública + Cloud Map Orders→Inventory | Compartidos + `k8s/aws/` + ingress |
 | 5 | MCP en ALB o service interno | Ingress `/mcp` |
 
 ### URLs release AWS (Postman)
@@ -483,7 +539,7 @@ Documentación: [ALCANCE-LAB-RELEASE](docs/despliegue/ALCANCE-LAB-RELEASE.md) ·
 
 **Observabilidad y resiliencia:** [docs/observabilidad/aws/](docs/observabilidad/aws/IMPLEMENTACION-OBSERVABILIDAD-AWS.md) · [docs/resiliencia/aws/](docs/resiliencia/aws/IMPLEMENTACION-RESILIENCIA-AWS.md)
 
-CI/CD: [.github/workflows/deploy-aws.yml](.github/workflows/deploy-aws.yml) (incluye `shopdemo-mcp`)
+CI/CD: [.github/workflows/](.github/workflows/) — **4 workflows** (ACA, ECS, AKS, EKS) · Checklist: [.github/SECRETS-CHECKLIST.md](.github/SECRETS-CHECKLIST.md)
 
 ---
 
@@ -610,7 +666,7 @@ Archivo plantilla: `AI/ShopDemo.Mcp.Api/.env.example`
 | **Azure AKS** | Secrets K8s / Key Vault | [despliegue/aks](docs/despliegue/aks/) |
 | **AWS ECS** | SSM Parameter Store / Secrets Manager | [despliegue/aws](docs/despliegue/aws/) |
 | **Amazon EKS** | Secrets K8s / Parameter Store | [despliegue/eks](docs/despliegue/eks/) |
-| **GitHub Actions** | Repository secrets | [.github/workflows/](.github/workflows/) |
+| **GitHub Actions** | Repository secrets | [.github/SECRETS-CHECKLIST.md](.github/SECRETS-CHECKLIST.md) |
 
 > **Regla:** nunca commitear connection strings reales. Usa `.env` local (gitignored), user secrets o secretos de la plataforma.
 
@@ -637,10 +693,10 @@ ShopDemo/
 ├── AI/               # MCP Gateway (ShopDemo.Mcp.Api :8005)
 ├── Aspire/           # AppHost, ServiceDefaults, Analytics
 ├── ShopDemo.Shared/  # Kernel DDD + mensajería
-├── k8s/              # Manifiestos Kubernetes (5 APIs + PG + Ingress)
+├── k8s/              # Manifiestos K8s: compartidos + local/ azure/ aws/
 ├── spec-driven/      # Specs, plantillas Cursor y Claude Code
 ├── docs/             # Toda la documentación del curso
-└── .github/workflows/  # CI/CD Azure y AWS (incluye shopdemo-mcp)
+└── .github/workflows/  # CI/CD: deploy-azure, deploy-aws, deploy-aks, deploy-eks
 ```
 
 ---
@@ -649,10 +705,15 @@ ShopDemo/
 
 | Tema | Enlace |
 |---|---|
+| **Contexto global para agentes (Cursor)** | [AGENTS.md](AGENTS.md) · reglas en [.cursor/rules/](.cursor/rules/) |
+| **Teoría para entrevistas técnicas** | [docs/teoria-entrevistas/](docs/teoria-entrevistas/) (cap. 11: observabilidad/resiliencia) |
 | **Guía de desarrollo (código paso a paso)** | [docs/GUIA-DESARROLLO-INTEGRACIONES.md](docs/GUIA-DESARROLLO-INTEGRACIONES.md) |
 | Anexos de código | [Shared](docs/ANEXO-CODIGO-SHARED.md) · [Catalog](docs/catalog/ANEXO-CODIGO-CATALOG.md) · [Orders](docs/orders/ANEXO-CODIGO-ORDERS.md) · [Inventory](docs/inventory/ANEXO-CODIGO-INVENTORY.md) · [Event Hubs](docs/ANEXO-CODIGO-EVENT-HUBS.md) · [Analytics/Aspire](docs/analytics/ANEXO-CODIGO-ANALYTICS-ASPIRE.md) · [MCP](docs/integracion-ia/ANEXO-CODIGO-MCP.md) |
 | Scripts Azure (PowerShell) | [scripts/azure/README.md](scripts/azure/README.md) |
 | Scripts AWS (PowerShell) | [scripts/aws/README.md](scripts/aws/README.md) |
+| **CI/CD GitHub Actions** | [.github/README.md](.github/README.md) · [Portal web](.github/SETUP-GITHUB-PORTAL.md) · [SETUP-GITHUB](.github/SETUP-GITHUB.md) · [GH-CLI](.github/GH-CLI-COMMANDS.md) · [SECRETS-CHECKLIST](.github/SECRETS-CHECKLIST.md) |
+| Preparación Azure / AWS | [PREPARACION-AZURE](docs/despliegue/azure/PREPARACION-AMBIENTE-AZURE.md) · [PREPARACION-AWS](docs/despliegue/aws/PREPARACION-AMBIENTE-AWS.md) |
+| Reportes release lab | [AKS](scripts/azure/deploy-aks-report.json) · [EKS free-tier](scripts/aws/deploy-eks-free-tier-report.json) |
 | Arquitectura | [docs/ARQUITECTURA.md](docs/ARQUITECTURA.md) |
 | Endpoints y Postman | [docs/GUIA-ENDPOINTS.md](docs/GUIA-ENDPOINTS.md) |
 | Event Hubs | [docs/INTEGRACION-AZURE-EVENT-HUBS.md](docs/INTEGRACION-AZURE-EVENT-HUBS.md) |

@@ -130,7 +130,9 @@ MCP por separado: `dotnet run --project AI/ShopDemo.Mcp.Api`
 ### Opción C — Kubernetes (Minikube / AKS / EKS)
 
 ```bash
-kubectl apply -f k8s/   # ver orden en k8s/README.md
+# Minikube: apply-k8s-manifests.sh k8s local
+# AKS: k8s/azure/  |  EKS: k8s/aws/  — ver k8s/README.md
+APPLY_INFRA=true bash .github/scripts/apply-k8s-manifests.sh k8s local
 ```
 
 **Postman con Ingress:** `catalogBaseUrl` = `http://shopdemo.local/catalog` (o IP del Ingress + prefijo `/catalog`).
@@ -670,7 +672,7 @@ Endpoints de **operación** (no forman parte del flujo de compra). Útiles antes
 
 | Paso | Acción | Variable Postman (ejemplo) |
 |---|---|---|
-| 1 | `kubectl apply -f k8s/` | — |
+| 1 | `apply-k8s-manifests.sh k8s local` (Minikube) o `k8s/azure/` / `k8s/aws/` según cloud | — |
 | 2 | Configurar host `shopdemo.local` o usar IP Ingress | `catalogBaseUrl` = `http://shopdemo.local/catalog` |
 | 3 | Health checks vía Ingress | `http://shopdemo.local/catalog/health` |
 | 4 | E2E con prefijos | Misma base con `/orders`, `/inventory`, etc. |

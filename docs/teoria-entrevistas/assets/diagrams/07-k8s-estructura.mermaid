@@ -1,0 +1,15 @@
+flowchart TB
+  subgraph SHARED["k8s/ compartidos"]
+    NS[namespace]
+    PG[postgres StatefulSet]
+    AZ[azurite]
+    SVC[Services ClusterIP]
+    ING[Ingress NGINX]
+    HPA[catalog HPA]
+  end
+  subgraph CLOUD["Deployments por cloud"]
+    L[k8s/local/ Minikube]
+    AZD[k8s/azure/ ACR]
+    AWS[k8s/aws/ ECR]
+  end
+  SHARED --> CLOUD

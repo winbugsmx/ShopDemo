@@ -11,6 +11,8 @@
 
 **Versión:** 1.0 · **Alcance:** básico, práctico, sin cambios obligatorios de código en esta etapa.
 
+**Historias de usuario:** [HISTORIAS-USUARIO-OBSERVABILIDAD.md](./HISTORIAS-USUARIO-OBSERVABILIDAD.md)
+
 ---
 
 ## 1. Propósito
@@ -54,14 +56,14 @@ Justificar la necesidad de **observar** ShopDemo en producción/laboratorio nube
 - Métricas de Event Hubs en Azure Portal
 - Aspire Dashboard como referencia **solo local**
 
-## 5. Fuera de alcance
+## 5. No incluido en el curso
 
 | Tema | Motivo |
 |---|---|
-| Modificar Program.cs de Catalog/Orders/Inventory para OTel | Decisión de etapa: solo documentación cloud |
-| **IA para predicción de fallos** | Etapa futura; mencionar como evolución |
+| Modificar Program.cs de Catalog/Orders/Inventory para OTel | El lab usa observabilidad de plataforma (Log Analytics / CloudWatch) |
+| IA para predicción de fallos | No forma parte del lab introductorio |
 | Grafana/Prometheus self-hosted | Complejidad extra para lab básico |
-| Log Analytics / CloudWatch cost optimization avanzada | Fuera del curso introductorio |
+| Optimización avanzada de costos en Log Analytics / CloudWatch | Fuera del curso introductorio |
 
 ---
 

@@ -1,0 +1,44 @@
+{
+  "generatedAt": "2026-06-27T22:00:00Z",
+  "profile": "aks-lab-full",
+  "cluster": "aks-shopdemo",
+  "resourceGroup": "rg-shopdemo-lab",
+  "region": "eastus",
+  "acr": "acrshopdemolab01.azurecr.io",
+  "nodes": { "count": 2, "vmSize": "Standard_B2s" },
+  "activeServices": [
+    "shopdemo-postgres",
+    "shopdemo-azurite",
+    "shopdemo-catalog",
+    "shopdemo-orders",
+    "shopdemo-inventory",
+    "shopdemo-analytics",
+    "shopdemo-mcp",
+    "ingress-nginx-controller"
+  ],
+  "ingress": {
+    "ip": "20.42.38.69",
+    "host": "shopdemo.local",
+    "port": 80,
+    "note": "Agregar en hosts: 20.42.38.69 shopdemo.local"
+  },
+  "ingressUrls": {
+    "catalogSwagger": "http://shopdemo.local/catalog/swagger/index.html",
+    "ordersSwagger": "http://shopdemo.local/orders/swagger/index.html",
+    "inventorySwagger": "http://shopdemo.local/inventory/swagger/index.html",
+    "analyticsSwagger": "http://shopdemo.local/analytics/swagger/index.html",
+    "mcpHealth": "http://shopdemo.local/mcp/health"
+  },
+  "directLoadBalancerUrls": {
+    "catalog": "http://20.62.184.128:8080/swagger/index.html",
+    "orders": "http://20.84.30.124:8080/swagger/index.html",
+    "inventory": "http://20.246.162.192:8080/swagger/index.html",
+    "mcp": "http://4.236.224.185:8080/health"
+  },
+  "eventHubsConsumerGroups": ["analytics-service", "inventory-service"],
+  "notes": [
+    "Ingress requiere Host shopdemo.local (entrada en archivo hosts o curl -H)",
+    "Health probe Azure: annotation azure-load-balancer-health-probe-request-path=/healthz",
+    "Analytics requiere consumer group analytics-service en Event Hubs"
+  ]
+}

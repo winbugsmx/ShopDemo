@@ -1,156 +1,70 @@
 # Scripts PowerShell — Release Azure (ShopDemo)
 
-Automatización del laboratorio Azure del curso Lite Thinking. Complementa la documentación paso a paso; **no sustituye** el build de imágenes Docker.
+Automatización del laboratorio Azure del curso Lite Thinking. Complementa la documentación; **no hace build** de imágenes Docker.
 
 ## Documentación de apoyo
 
 | Tema | Documento |
 |---|---|
-| **Script (recomendado)** | [GUIA-RELEASE-SCRIPT-AZURE.md](../../docs/despliegue/azure/GUIA-RELEASE-SCRIPT-AZURE.md) |
+| Preparación IAM/cuotas | [PREPARACION-AMBIENTE-AZURE.md](../../docs/despliegue/azure/PREPARACION-AMBIENTE-AZURE.md) |
+| **Script** | [GUIA-RELEASE-SCRIPT-AZURE.md](../../docs/despliegue/azure/GUIA-RELEASE-SCRIPT-AZURE.md) |
 | Portal visual | [GUIA-RELEASE-PORTAL-AZURE.md](../../docs/despliegue/azure/GUIA-RELEASE-PORTAL-AZURE.md) |
 | Azure CLI manual | [GUIA-RELEASE-CLI-AZURE.md](../../docs/despliegue/azure/GUIA-RELEASE-CLI-AZURE.md) |
 | AKS + Kubernetes | [GUIA-RELEASE-KUBERNETES.md](../../docs/despliegue/kubernetes/GUIA-RELEASE-KUBERNETES.md) |
 | Event Hubs | [INTEGRACION-AZURE-EVENT-HUBS.md](../../docs/INTEGRACION-AZURE-EVENT-HUBS.md) |
-| MCP Gateway | [IMPLEMENTACION-DESPLIEGUE-MCP-AZURE.md](../../docs/integracion-ia/IMPLEMENTACION-DESPLIEGUE-MCP-AZURE.md) |
-| Guía de desarrollo | [GUIA-DESARROLLO-INTEGRACIONES.md](../../docs/GUIA-DESARROLLO-INTEGRACIONES.md) |
-| CI/CD GitHub | [.github/workflows/deploy-azure.yml](../../.github/workflows/deploy-azure.yml) |
+| Reporte AKS lab | [deploy-aks-report.json](./deploy-aks-report.json) |
+| CI/CD GitHub | [.github/workflows/deploy-azure.yml](../../.github/workflows/deploy-azure.yml) · [deploy-aks.yml](../../.github/workflows/deploy-aks.yml) · [SETUP-GITHUB.md](../../.github/SETUP-GITHUB.md) |
 
 ## Archivos
 
 | Archivo | Función |
 |---|---|
-| `.env.azure.example` | Plantilla de variables (copiar a `.env.azure`) |
-| `Deploy-AzureShopDemo.ps1` | Provisiona infraestructura Azure |
-| `Remove-AzureShopDemo.ps1` | Elimina el Resource Group del lab |
+| `.env.azure.example` | Plantilla de variables |
+| `Deploy-AzureShopDemo.ps1` | Provisionamiento (`-Mode ACA`, `AKS`, `All`) |
+| `Remove-AzureShopDemo.ps1` | Limpieza del lab |
+| `deploy-aks-report.json` | URLs validadas release AKS |
 
 ## Prerrequisitos
 
-1. [Azure CLI](https://learn.microsoft.com/cli/azure/install-azure-cli) instalado
-2. `az login` con una suscripción con permisos **Contributor** (o equivalente)
-3. Para modo **AKS**: [kubectl](https://kubernetes.io/docs/tasks/tools/) y [Helm](https://helm.sh/docs/intro/install/)
-4. **Imágenes en ACR** antes de que arranquen las Container Apps (el script no hace build)
+1. [PREPARACION-AMBIENTE-AZURE.md](../../docs/despliegue/azure/PREPARACION-AMBIENTE-AZURE.md)
+2. Permiso **Contributor** en suscripción o RG
+3. Para **AKS**: `kubectl`, `helm`
+4. **Imágenes en ACR** antes de probar APIs
 
-## Valores que debes obtener o definir
+## Modos
 
-### Del Portal Azure (o de tu administrador)
-
-| Variable en `.env.azure` | Dónde obtenerla en Portal |
-|---|---|
-| `AZURE_SUBSCRIPTION_ID` | **Subscriptions** → tu suscripción → **Subscription ID** |
-| `AZURE_LOCATION` | Región acordada (ej. `eastus`, `mexicocentral`) |
-
-### Nombres canónicos del curso (copiar de `.env.azure.example`)
-
-| Variable | Valor ejemplo |
-|---|---|
-| `RESOURCE_GROUP` | `rg-shopdemo-lab` |
-| `ACR_NAME` | `acrshopdemolab01` |
-| `EVENT_HUB_NAMESPACE` | `shopdemo-eh-ns-lab01` |
-| `STORAGE_ACCOUNT_NAME` | `shopdemochecklab01` |
-| `ACA_ENV_NAME` | `aca-env-shopdemo` |
-
-Si un nombre † está ocupado globalmente, cambia el sufijo `01` → `02` en **`.env.azure` y en toda la documentación manual**.
-
-### Nombres que tú inventas (deben ser únicos globalmente donde aplique)
-
-| Variable | Regla |
-|---|---|
-| `RESOURCE_GROUP` | Nombre del grupo (ej. `rg-shopdemo-lab`) |
-| `ACR_NAME` | Solo `a-z` y `0-9`, 5–50 caracteres, **único en Azure** |
-| `EVENT_HUB_NAMESPACE` | **Único global** (Event Hubs namespace) |
-| `STORAGE_ACCOUNT_NAME` | **Único global**, solo minúsculas y números |
-| `POSTGRES_DNS_LABEL` | Etiqueta DNS del ACI PostgreSQL (única en la región) |
-
-### Valores con default en la plantilla
-
-| Variable | Uso |
-|---|---|
-| `EVENT_HUB_NAME` | Canal de eventos (`shopdemo-events`) |
-| `POSTGRES_USER` / `POSTGRES_PASSWORD` | Credenciales del contenedor PostgreSQL (ACI) |
-| `ACA_ENV_NAME` | Container Apps Environment |
-| `AKS_CLUSTER_NAME` | Cluster Kubernetes (modo AKS/All) |
-| `IMAGE_TAG` | Tag esperado en ACR (`latest` por defecto) |
-
-### Lo que el script obtiene solo (no copies del Portal)
-
-| Valor | Cómo |
-|---|---|
-| Event Hubs connection string | `az eventhubs namespace authorization-rule keys list` |
-| Storage connection string | `az storage account show-connection-string` |
-| FQDN PostgreSQL ACI | Tras crear el contenedor |
-| FQDN de cada Container App | Tras crear ACA |
-| ACR login server | `az acr show` |
+| Modo | Crea | Post-manual (AKS) |
+|---|---|---|
+| **ACA** | RG, EH, Storage, ACR, ACI Postgres, 5 Container Apps + MCP | Consumer groups EH |
+| **AKS** | RG, EH, ACR, AKS, `k8s/secrets.yaml` | Helm Ingress + health probe, apply compartidos + `k8s/azure/`, consumer groups |
+| **All** | ACA + AKS | Todo lo anterior |
 
 ## Uso rápido
 
-> **Documentación:** [GUIA-RELEASE-SCRIPT-AZURE](../../docs/despliegue/azure/GUIA-RELEASE-SCRIPT-AZURE.md) · [README principal](../../README.md#release-azure)
-
 ```powershell
 cd I:\Curso\ShopDemo\scripts\azure
-
-# 1. Configurar variables
 copy .env.azure.example .env.azure
-notepad .env.azure   # Completar AZURE_SUBSCRIPTION_ID y nombres únicos
-
-# 2. Login Azure
+notepad .env.azure
 az login
-az account set --subscription "<TU-SUBSCRIPTION-ID>"
+az account set --subscription "<SUBSCRIPTION-ID>"
 
-# 3. Provisionar (elegir modo)
-.\Deploy-AzureShopDemo.ps1 -Mode ACA    # Solo Container Apps
-.\Deploy-AzureShopDemo.ps1 -Mode AKS    # Solo AKS + secrets.yaml
-.\Deploy-AzureShopDemo.ps1 -Mode All    # ACA + AKS
+# Build/push ACR (ver GUIA-RELEASE-SCRIPT-AZURE §3)
+.\Deploy-AzureShopDemo.ps1 -Mode AKS
 
-# 4. Publicar imágenes (obligatorio antes de probar APIs)
-#    Opción A: workflow GitHub Actions (secrets: AZURE_CREDENTIALS, ACR_NAME, AZURE_RG, ACA_ENV)
-#    Opción B: build manual — ver GUIA-RELEASE-SCRIPT-AZURE
-
-# 5. Modo AKS — aplicar manifiestos (manual)
-cd I:\Curso\ShopDemo
-# Actualizar image: en k8s/*/deployment.yaml → <acr>.azurecr.io/shopdemo-*:latest
-kubectl apply -f k8s/namespace.yaml
-kubectl apply -f k8s/secrets.yaml
-kubectl apply -f k8s/postgres/
-kubectl apply -f k8s/azurite/
-kubectl apply -f k8s/catalog/ k8s/orders/ k8s/inventory/ k8s/analytics/ k8s/mcp/ k8s/ingress/
-
-# 6. Limpieza del lab
-.\Remove-AzureShopDemo.ps1
+# Pasos post-script AKS: ver GUIA-RELEASE-SCRIPT-AZURE §5.2
 ```
-
-## Modos del script
-
-| Modo | Crea | No incluye |
-|---|---|---|
-| **ACA** | RG, Event Hubs, Storage, ACR, PostgreSQL ACI, 5 Container Apps | Build Docker, AKS |
-| **AKS** | RG, Event Hubs, ACR, AKS, Ingress Helm, `k8s/secrets.yaml` | Build Docker, `kubectl apply`, ACA |
-| **All** | Todo lo anterior (ACA + AKS) | Build Docker |
-
-## Diferencia ACA vs AKS (checkpoints Event Hubs)
-
-| Entorno | Almacén de checkpoints |
-|---|---|
-| **ACA** | **Storage Account** real de Azure (`STORAGE_ACCOUNT_NAME`) |
-| **AKS** | **Azurite** dentro del cluster (`k8s/azurite/`), como en Minikube |
-
-## Orden recomendado del curso
-
-1. Código local + Event Hubs ([GUIA-DESARROLLO](../../docs/GUIA-DESARROLLO-INTEGRACIONES.md) etapas 1–6)
-2. `Deploy-AzureShopDemo.ps1 -Mode ACA` + imágenes en ACR + pruebas Postman
-3. `Deploy-AzureShopDemo.ps1 -Mode AKS` (o `-Mode All`) + `kubectl apply`
-4. MCP y observabilidad según docs de integración IA y observabilidad
 
 ## Solución de problemas
 
 | Síntoma | Acción |
 |---|---|
-| `Image pull failed` en ACA | Publica las 5 imágenes en ACR con tag `IMAGE_TAG` |
-| `Completa el valor de AZURE_SUBSCRIPTION_ID` | Edita `.env.azure`; quita los marcadores `<<< >>>` |
-| Nombre ACR/EH/Storage ya existe | Cambia el sufijo en `.env.azure` (deben ser únicos globalmente) |
-| Orders 502 al confirmar | Verifica `InventoryApi__BaseUrl` (FQDN interno Inventory) |
-| AKS `ImagePullBackOff` | Edita `k8s/*/deployment.yaml` con ruta ACR completa |
+| Analytics CrashLoopBackOff | Consumer group `analytics-service` en Event Hubs |
+| Ingress timeout externo | Helm con `health-probe-request-path=/healthz` |
+| Script falla en Ingress | Instalar Helm manual (guía Script §5.2.2) |
+| Swagger 404 AKS | `ASPNETCORE_ENVIRONMENT=Development` |
+| Ingress requiere hosts | `IP shopdemo.local` en archivo hosts |
+| Image pull failed | Push 5 imágenes a ACR |
 
 ## Seguridad
 
-- **No commitees** `.env.azure` ni `k8s/secrets.yaml`
-- El script habilita **admin user** en ACR solo para facilitar el lab en ACA; en producción usa identidad administrada + `AcrPull`
+- No commitees `.env.azure` ni `k8s/secrets.yaml`

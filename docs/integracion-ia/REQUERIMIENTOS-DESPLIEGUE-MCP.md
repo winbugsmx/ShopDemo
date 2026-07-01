@@ -12,6 +12,8 @@
 **Componente:** `AI/ShopDemo.Mcp.Api` · **Puerto:** 8005 (local) / 8080 (contenedor)  
 **Versión:** 1.0
 
+**Historias de usuario:** [HISTORIAS-USUARIO-DESPLIEGUE-MCP.md](./HISTORIAS-USUARIO-DESPLIEGUE-MCP.md)
+
 ---
 
 ## 1. Propósito
@@ -27,7 +29,7 @@ El gateway no sustituye Catalog/Orders/Inventory/Analytics; expone **tools MCP**
 | Situación | Necesidad |
 |---|---|
 | MCP solo en `dotnet run` local | Agentes no pueden consumir tools en nube |
-| Sin manifiestos `k8s/mcp/` | AKS/EKS/Minikube no despliegan el gateway |
+| Sin deployment MCP en `k8s/{local,azure,aws}/mcp/` | AKS/EKS/Minikube no despliegan el gateway |
 | Sin entrada en CI/CD | La imagen no se publica en ACR/ECR automáticamente |
 | Sin ruta Ingress `/mcp` | No hay URL única tras el balanceador |
 
@@ -39,9 +41,9 @@ El gateway no sustituye Catalog/Orders/Inventory/Analytics; expone **tools MCP**
 |---|---|
 | OBJ-MCP-01 | Empaquetar `ShopDemo.Mcp.Api` en imagen Docker |
 | OBJ-MCP-02 | Desplegar en **Azure Container Apps** con health probe y env vars de APIs |
-| OBJ-MCP-03 | Desplegar en **AKS** con manifiestos `k8s/mcp/` e Ingress `/mcp` |
+| OBJ-MCP-03 | Desplegar en **AKS** con `k8s/azure/mcp/deployment.yaml` + `k8s/mcp/service.yaml` e Ingress `/mcp` |
 | OBJ-MCP-04 | Desplegar en **ECS Fargate** con ALB y log group CloudWatch |
-| OBJ-MCP-05 | Desplegar en **EKS** reutilizando manifiestos K8s |
+| OBJ-MCP-05 | Desplegar en **EKS** con `k8s/aws/mcp/deployment.yaml` + `k8s/mcp/service.yaml` |
 | OBJ-MCP-06 | Incluir MCP en workflows `deploy-azure.yml` y `deploy-aws.yml` |
 | OBJ-MCP-07 | Documentar pasos **Portal/Consola** y **CLI** en cada plataforma |
 
@@ -49,14 +51,14 @@ El gateway no sustituye Catalog/Orders/Inventory/Analytics; expone **tools MCP**
 
 ## 4. Alcance incluido
 
-- `k8s/mcp/deployment.yaml` y `service.yaml`
+- `k8s/azure/mcp/deployment.yaml` o `k8s/aws/mcp/deployment.yaml` + `k8s/mcp/service.yaml`
 - Ruta `/mcp` en `k8s/ingress/ingress.yaml`
 - Variables `ShopDemo__*ApiBaseUrl` por entorno
 - Health check HTTP `GET /health`
 - Build context desde raíz del repo (`AI/ShopDemo.Mcp.Api/Dockerfile`)
 - Prerequisito: las 4 APIs de negocio ya desplegadas y alcanzables
 
-## 5. Fuera de alcance
+## 5. No incluido en el lab
 
 | Tema | Motivo |
 |---|---|

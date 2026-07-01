@@ -12,7 +12,7 @@
 **Entorno:** Minikube · **Manifiestos:** `k8s/`  
 **Teoría:** [TEORIA-KUBERNETES-OPERACIONES.md](./TEORIA-KUBERNETES-OPERACIONES.md)  
 **Guía de desarrollo:** [GUIA-DESARROLLO-INTEGRACIONES.md](../GUIA-DESARROLLO-INTEGRACIONES.md) (etapas 9–11)  
-Cada paso incluye explicación breve. Para AKS/EKS ver guías específicas (mismos YAML).
+Cada paso incluye explicación breve. Para AKS usa `k8s/azure/`; para EKS `k8s/aws/`; para Minikube `k8s/local/` — ver [k8s/README.md](../../../k8s/README.md).
 
 ### Archivos a copiar o configurar (sin código C# nuevo)
 
@@ -169,16 +169,37 @@ kubectl get pods -n shopdemo
 
 **Objetivo:** Microservicios con variables desde Secrets y DNS interno.
 
+Los **Services** son compartidos; los **Deployments** de Minikube están en `k8s/local/` (imagen local `shopdemo-*:latest`).
+
 ```bash
-kubectl apply -f k8s/catalog/
-kubectl apply -f k8s/inventory/
-kubectl apply -f k8s/orders/
-kubectl apply -f k8s/analytics/
-kubectl apply -f k8s/mcp/
+# Services (compartidos)
+kubectl apply -f k8s/catalog/service.yaml
+kubectl apply -f k8s/inventory/service.yaml
+kubectl apply -f k8s/orders/service.yaml
+kubectl apply -f k8s/analytics/service.yaml
+kubectl apply -f k8s/mcp/service.yaml
+
+# Deployments Minikube
+kubectl apply -f k8s/local/catalog/deployment.yaml
+kubectl apply -f k8s/local/inventory/deployment.yaml
+kubectl apply -f k8s/local/orders/deployment.yaml
+kubectl apply -f k8s/local/analytics/deployment.yaml
+kubectl apply -f k8s/local/mcp/deployment.yaml
+
 kubectl apply -f k8s/catalog/hpa.yaml
 
 kubectl get pods -n shopdemo -w
 ```
+
+**Alternativa (script del repo):**
+
+```bash
+APPLY_INFRA=true bash .github/scripts/apply-k8s-manifests.sh k8s local
+# Luego: kubectl apply -f k8s/secrets.yaml  (si no lo aplicaste antes)
+kubectl apply -f k8s/ingress/
+```
+
+> En **AKS** usa `k8s/azure/`; en **EKS** usa `k8s/aws/`. No mezcles carpetas — ver [k8s/README.md](../../../k8s/README.md).
 
 **Orders → Inventory:** `InventoryApi__BaseUrl=http://shopdemo-inventory:8080` (Service DNS).
 
@@ -270,7 +291,7 @@ minikube stop
 **Actualizar tras cambio de manifiesto:**
 
 ```bash
-kubectl apply -f k8s/catalog/deployment.yaml
+kubectl apply -f k8s/local/catalog/deployment.yaml
 kubectl rollout status deployment/shopdemo-catalog -n shopdemo
 ```
 
@@ -316,7 +337,7 @@ Las 4 APIs exponen:
 
 ### Manifiestos
 
-Ver `k8s/catalog/deployment.yaml` (mismo patrón en orders, inventory, analytics).
+Ver `k8s/local/catalog/deployment.yaml` (mismo patrón en orders, inventory, analytics). En AKS/EKS usa `k8s/azure/` o `k8s/aws/` — ver [k8s/README.md](../../../k8s/README.md).
 
 ### Verificación
 

@@ -1,226 +1,394 @@
-# Guía — Release Azure con Portal (visual)
+# Guía — Release Azure desde el Portal (Consola web)
 
 | Campo | Detalle |
 |:------|:--------|
 | **Empresa** | Lite Thinking |
-| **Tiempo estimado** | 8–12 h (manual completo) |
-| **Propósito** | Documento para **capturas de pantalla** y clase presencial |
+| **Enfoque** | **Portal** — consola web paso a paso |
+| **Región lab** | `East US` (`eastus`) |
 
-**Ruta rápida:** [GUIA-RELEASE-SCRIPT-AZURE.md](./GUIA-RELEASE-SCRIPT-AZURE.md)  
-**Comandos equivalentes:** [GUIA-RELEASE-CLI-AZURE.md](./GUIA-RELEASE-CLI-AZURE.md)
+**Preparación:** [PREPARACION-AMBIENTE-AZURE.md](./PREPARACION-AMBIENTE-AZURE.md)  
+**Otras rutas equivalentes:** [Script](./GUIA-RELEASE-SCRIPT-AZURE.md) · [CLI](./GUIA-RELEASE-CLI-AZURE.md)
 
-> Sustituye `[📷 Captura: …]` por tus imágenes en `docs/despliegue/azure/imagenes/` (carpeta opcional del instructor).
+> El resultado final es el **mismo** que con el script o la CLI. Para AKS, algunos pasos finales usan `kubectl` en tu PC (incluidos abajo).
 
 ---
 
-## Nombres a usar en el Portal (no cambiar entre pasos)
+## Nombres canónicos (usar en todo el lab)
 
-| Recurso | Nombre en Portal |
+| Recurso | Nombre Portal |
 |---|---|
 | Resource group | `rg-shopdemo-lab` |
-| Región | `East US` (o `mexicocentral`) |
 | Event Hubs namespace | `shopdemo-eh-ns-lab01` |
 | Event hub | `shopdemo-events` |
 | Container registry | `acrshopdemolab01` |
 | Storage account | `shopdemochecklab01` |
 | Log Analytics | `log-shopdemo` |
 | ACA environment | `aca-env-shopdemo` |
-| Container Instance PG | `aci-shopdemo-postgres` |
-| Container Apps | `ca-shopdemo-catalog`, `ca-shopdemo-inventory`, … |
+| PostgreSQL ACI | `aci-shopdemo-postgres` |
+| AKS cluster | `aks-shopdemo` |
 
 ---
 
-## 0. Acceso al Portal
+# Parte A — Release ACA (Container Apps)
 
-1. Abrir [https://portal.azure.com](https://portal.azure.com)
-2. Iniciar sesión con cuenta del curso
-3. Confirmar suscripción correcta (barra superior)
+## A.0 Acceso al Portal
 
-[📷 Captura: Portal Azure con suscripción seleccionada]
-
-**Documentación:** [Azure Portal overview](https://learn.microsoft.com/azure/azure-portal/azure-portal-overview)
+1. [https://portal.azure.com](https://portal.azure.com)
+2. Confirmar suscripción correcta (barra superior)
+3. Anotar **Subscription ID** para `.env.azure` / CLI
 
 ---
 
-## 1. Resource Group
+## A.1 Resource Group
 
-**Para qué sirve:** agrupa todos los recursos del lab; al borrarlo se limpia todo.
+1. Buscar **Resource groups** → **Create**
+2. **Name:** `rg-shopdemo-lab`
+3. **Region:** `East US`
+4. **Review + create** → **Create**
 
-**Documentación:** [Create resource group](https://learn.microsoft.com/azure/azure-resource-manager/management/manage-resource-groups-portal#create-resource-groups)
+---
 
-| Paso | Acción |
+## A.2 Event Hubs
+
+1. **Create a resource** → **Event Hubs**
+2. **Namespace name:** `shopdemo-eh-ns-lab01`
+3. **Resource group:** `rg-shopdemo-lab`
+4. **Pricing tier:** Standard → **Create**
+5. Namespace → **Event Hubs** → **+ Event Hub**
+   - **Name:** `shopdemo-events`
+   - **Partition count:** 4
+6. Event hub → **Consumer groups** → **+ Consumer group:**
+   - `inventory-service`
+   - `analytics-service`
+7. Namespace → **Shared access policies** → **RootManageSharedAccessKey** → copiar **Primary Connection String**
+
+---
+
+## A.3 Storage Account
+
+1. **Create a resource** → **Storage account**
+2. **Name:** `shopdemochecklab01`
+3. **Resource group:** `rg-shopdemo-lab`
+4. **Performance:** Standard · **Redundancy:** LRS → **Create**
+5. Storage → **Containers** → **+ Container:**
+   - `inventory-checkpoints`
+   - `analytics-checkpoints`
+
+---
+
+## A.4 Azure Container Registry
+
+1. **Create a resource** → **Container Registry**
+2. **Registry name:** `acrshopdemolab01`
+3. **SKU:** Basic
+4. **Admin user:** Enabled (lab) → **Create**
+5. Anotar **Login server:** `acrshopdemolab01.azurecr.io`
+
+---
+
+## A.5 Build y push imágenes (PC local)
+
+En PowerShell (raíz del repo):
+
+```powershell
+az acr login --name acrshopdemolab01
+$LOGIN = "acrshopdemolab01.azurecr.io"
+cd I:\Curso\ShopDemo
+
+docker build -f Catalog/ShopDemo.Catalog.Api/Dockerfile -t "$LOGIN/shopdemo-catalog:latest" .
+docker push "$LOGIN/shopdemo-catalog:latest"
+docker build -f Orders/ShopDemo.Orders.Api/Dockerfile -t "$LOGIN/shopdemo-orders:latest" .
+docker push "$LOGIN/shopdemo-orders:latest"
+docker build -f Inventory/ShopDemo.Inventory.Api/Dockerfile -t "$LOGIN/shopdemo-inventory:latest" .
+docker push "$LOGIN/shopdemo-inventory:latest"
+docker build -f Aspire/ShopDemo.Analytics.Api/Dockerfile -t "$LOGIN/shopdemo-analytics:latest" .
+docker push "$LOGIN/shopdemo-analytics:latest"
+docker build -f AI/ShopDemo.Mcp.Api/Dockerfile -t "$LOGIN/shopdemo-mcp:latest" .
+docker push "$LOGIN/shopdemo-mcp:latest"
+```
+
+Verificar en Portal: ACR → **Repositories** → 5 imágenes `shopdemo-*`.
+
+---
+
+## A.6 Log Analytics + Container Apps Environment
+
+1. **Create a resource** → **Container Apps Environment**
+2. **Environment name:** `aca-env-shopdemo`
+3. **Region:** East US
+4. **Logs:** Create new → **Name:** `log-shopdemo`
+5. **Create**
+
+---
+
+## A.7 PostgreSQL en Container Instances
+
+1. **Create a resource** → **Container Instances**
+2. **Name:** `aci-shopdemo-postgres`
+3. **Image:** `postgres:16-alpine`
+4. **Size:** 1 vCPU, 1.5 GiB
+5. **Networking:** Public · **DNS name label:** `shopdemo-pg-lab` · Port **5432**
+6. **Environment variables:**
+   - `POSTGRES_USER` = `ShopDemo`
+   - `POSTGRES_PASSWORD` = `ShopDemo123!`
+7. **Create** → anotar **FQDN** en Overview
+
+Crear bases de datos (Cloud Shell o `psql` local):
+
+```sql
+CREATE DATABASE "ShopDemoCatalog";
+CREATE DATABASE "ShopDemoOrders";
+CREATE DATABASE "ShopDemoInventory";
+```
+
+---
+
+## A.8 Container App — Catalog
+
+1. **Container Apps** → **Create**
+2. **Basics:** Name `ca-shopdemo-catalog`, Environment `aca-env-shopdemo`
+3. **Container:**
+   - Image: `acrshopdemolab01.azurecr.io/shopdemo-catalog:latest`
+   - CPU 0.5, Memory 1 Gi · Target port **8080**
+   - Registry: ACR admin credentials
+4. **Ingress:** Enabled · **External** · Target port 8080
+5. **Secrets:** `eh-connection` (Event Hubs string), `pg-catalog-conn` (connection string PostgreSQL catalog)
+6. **Environment variables:**
+
+| Name | Value |
 |---|---|
-| 1 | Buscar **Resource groups** → **Create** |
-| 2 | **Subscription:** la del curso |
-| 3 | **Resource group name:** `rg-shopdemo-lab` |
-| 4 | **Region:** `East US` |
-| 5 | **Review + create** → **Create** |
+| `ASPNETCORE_ENVIRONMENT` | `Production` |
+| `ConnectionStrings__DefaultConnection` | secret `pg-catalog-conn` |
+| `EventHubs__Enabled` | `true` |
+| `EventHubs__ConnectionString` | secret `eh-connection` |
+| `EventHubs__EventHubName` | `shopdemo-events` |
 
-[📷 Captura: formulario Create resource group]
+7. **Create** → anotar **Application Url** (FQDN Catalog)
 
 ---
 
-## 2. Event Hubs
+## A.9 Container App — Inventory (interno)
 
-**Para qué sirve:** bus de mensajería entre Catalog, Orders, Inventory y Analytics.
+Igual que Catalog con:
 
-**Documentación:** [Create Event Hubs namespace](https://learn.microsoft.com/azure/event-hubs/event-hubs-create)
-
-| Paso | Acción |
+| Campo | Valor |
 |---|---|
-| 1 | **Create a resource** → **Event Hubs** |
-| 2 | **Namespace name:** `shopdemo-eh-ns-lab01` |
-| 3 | **Resource group:** `rg-shopdemo-lab` |
-| 4 | **Location:** misma región |
-| 5 | **Pricing tier:** Basic → **Create** |
-| 6 | En el namespace → **Event Hubs** → **+ Event Hub** → Name: `shopdemo-events` |
-| 7 | En el hub → **Consumer groups** → crear `inventory-service` y `analytics-service` |
-| 8 | Namespace → **Shared access policies** → **RootManageSharedAccessKey** → copiar **Primary Connection String** |
+| Name | `ca-shopdemo-inventory` |
+| Image | `shopdemo-inventory:latest` |
+| Ingress | **Internal** (vNet) |
+| Secrets | `eh-connection`, `pg-inventory-conn`, `storage-checkpoint` (Storage connection string) |
+| Env extra | `EventHubs__ConsumerGroup=inventory-service`, `EventHubs__CheckpointStorageConnectionString`, `EventHubs__CheckpointContainerName=inventory-checkpoints` |
 
-[📷 Captura: Event Hubs namespace creado]  
-[📷 Captura: Consumer groups]  
-[📷 Captura: Connection string]
+Anotar **FQDN interno** de Inventory.
 
 ---
 
-## 3. Azure Container Registry (ACR)
+## A.10 Container App — Orders
 
-**Para qué sirve:** almacén privado de imágenes Docker.
-
-**Documentación:** [Create container registry](https://learn.microsoft.com/azure/container-registry/container-registry-get-started-portal)
-
-| Paso | Acción |
+| Campo | Valor |
 |---|---|
-| 1 | **Create a resource** → **Container Registry** |
-| 2 | **Registry name:** `acrshopdemolab01` |
-| 3 | **Resource group:** `rg-shopdemo-lab` |
-| 4 | **SKU:** Basic |
-| 5 | **Admin user:** Disabled |
-| 6 | **Create** |
-
-[📷 Captura: ACR creado — login server `acrshopdemolab01.azurecr.io`]
+| Name | `ca-shopdemo-orders` |
+| Ingress | **External** |
+| Secret | `pg-orders-conn` |
+| Env extra | `InventoryApi__BaseUrl` = `https://<fqdn-inventory>` |
 
 ---
 
-## 4. Storage Account (checkpoints)
+## A.11 Container App — Analytics
 
-**Para qué sirve:** Blob storage para checkpoints de Event Hubs (Inventory y Analytics en ACA).
-
-**Documentación:** [Create storage account](https://learn.microsoft.com/azure/storage/common/storage-account-create)
-
-| Paso | Acción |
+| Campo | Valor |
 |---|---|
-| 1 | **Create a resource** → **Storage account** |
-| 2 | **Name:** `shopdemochecklab01` |
-| 3 | **Resource group:** `rg-shopdemo-lab` |
-| 4 | **Performance:** Standard · **Redundancy:** LRS |
-| 5 | **Create** |
-| 6 | Storage → **Containers** → crear `inventory-checkpoints` y `analytics-checkpoints` |
+| Name | `ca-shopdemo-analytics` |
+| Ingress | **External** |
+| Min replicas | 1 |
+| Secrets | `eh-connection`, `storage-checkpoint` |
+| Env extra | `EventHubs__ConsumerGroup=analytics-service`, `EventHubs__CheckpointContainerName=analytics-checkpoints` |
 
-[📷 Captura: Storage account y contenedores blob]
+Anotar FQDN Analytics.
 
 ---
 
-## 5. Log Analytics + Container Apps Environment
+## A.12 Container App — MCP
 
-**Para qué sirve:** el **Environment** es el plano donde corren las Container Apps; Log Analytics recoge logs.
-
-**Documentación:** [Container Apps environment](https://learn.microsoft.com/azure/container-apps/environment) · [Log Analytics workspace](https://learn.microsoft.com/azure/azure-monitor/logs/quick-create-workspace)
-
-| Paso | Acción |
+| Campo | Valor |
 |---|---|
-| 1 | **Create a resource** → **Container Apps Environment** (o desde Container Apps wizard) |
-| 2 | **Environment name:** `aca-env-shopdemo` |
-| 3 | **Region:** misma que RG |
-| 4 | **Logs:** Create new → **Name:** `log-shopdemo` |
-| 5 | **Create** |
-
-[📷 Captura: Container Apps Environment con Log Analytics]
+| Name | `ca-shopdemo-mcp` |
+| Ingress | **External** |
+| Env | `ShopDemo__CatalogApiBaseUrl=https://<fqdn-catalog>` |
+| Env | `ShopDemo__InventoryApiBaseUrl=https://<fqdn-inventory>` |
+| Env | `ShopDemo__AnalyticsApiBaseUrl=https://<fqdn-analytics>` |
 
 ---
 
-## 6. PostgreSQL en Container Instances
+## A.13 Validación ACA
 
-**Para qué sirve:** base de datos del lab (3 bases en una instancia).
-
-**Documentación:** [Deploy container instance](https://learn.microsoft.com/azure/container-instances/container-instances-quickstart-portal)
-
-| Paso | Acción |
+| App | URL |
 |---|---|
-| 1 | **Create a resource** → **Container Instances** |
-| 2 | **Name:** `aci-shopdemo-postgres` |
-| 3 | **Image:** `postgres:16-alpine` |
-| 4 | **Size:** 1 vCPU, 1.5 GiB |
-| 5 | **Networking:** Public · DNS label: `shopdemo-pg-lab` · Port `5432` |
-| 6 | **Variables:** `POSTGRES_USER=ShopDemo`, `POSTGRES_PASSWORD=<tu-password>` |
-| 7 | Tras crear: ejecutar SQL para crear `ShopDemoCatalog`, `ShopDemoOrders`, `ShopDemoInventory` |
+| Catalog | `https://<fqdn>/swagger/index.html` |
+| Orders | `https://<fqdn>/swagger/index.html` |
+| Analytics | `https://<fqdn>/swagger/index.html` |
+| MCP | `https://<fqdn>/health` |
 
-[📷 Captura: ACI PostgreSQL — Overview con FQDN]
+Portal: cada Container App → **Application Url** → navegador.
 
 ---
 
-## 7. Container Apps (5 servicios)
+# Parte B — Release AKS (Portal + kubectl)
 
-**Documentación:** [Deploy Container App](https://learn.microsoft.com/azure/container-apps/quickstart-portal) · [Secrets](https://learn.microsoft.com/azure/container-apps/manage-secrets)
+## B.1 Prerrequisitos en PC
 
-### Orden recomendado
+- `az`, `kubectl`, `helm`, Docker
+- Imágenes en ACR (Parte A §A.5)
+- Event Hubs + consumer groups (Parte A §A.2)
 
-1. `ca-shopdemo-catalog` — Ingress **External**
-2. `ca-shopdemo-inventory` — Ingress **Internal**
-3. `ca-shopdemo-orders` — External + `InventoryApi__BaseUrl`
-4. `ca-shopdemo-analytics` — External
-5. `ca-shopdemo-mcp` — External
+---
 
-### Tabla por app (Catalog como ejemplo)
+## B.2 Crear cluster AKS en Portal
 
-| Pestaña | Valor |
+1. **Create a resource** → **Kubernetes Service**
+2. **Basics:**
+   - **Cluster name:** `aks-shopdemo`
+   - **Resource group:** `rg-shopdemo-lab`
+   - **Region:** East US
+3. **Node pools:**
+   - **Node size:** `Standard_B2s`
+   - **Node count:** **2**
+4. **Integrations:**
+   - **Container registry:** `acrshopdemolab01` (Attach)
+5. **Networking:** defaults (lab)
+6. **Review + create** → esperar **Succeeded** (~10–15 min)
+
+---
+
+## B.3 Conectar kubectl
+
+```powershell
+az aks get-credentials -g rg-shopdemo-lab -n aks-shopdemo --overwrite-existing
+kubectl get nodes
+```
+
+Portal: cluster → **Connect** → copiar comando.
+
+---
+
+## B.4 Ingress NGINX (Helm en PC)
+
+```powershell
+helm repo add ingress-nginx https://kubernetes.github.io/ingress-nginx
+helm repo update
+
+helm upgrade --install ingress-nginx ingress-nginx/ingress-nginx `
+  -n ingress-nginx --create-namespace `
+  --set controller.admissionWebhooks.enabled=false `
+  --set controller.service.externalTrafficPolicy=Local `
+  --set-string controller.service.annotations."service\.beta\.kubernetes\.io/azure-load-balancer-health-probe-request-path"=/healthz `
+  --set controller.resources.requests.cpu=100m `
+  --set controller.resources.requests.memory=128Mi `
+  --wait --timeout 5m
+```
+
+Portal: **Kubernetes services** → namespace `ingress-nginx` → ver LoadBalancer IP.
+
+---
+
+## B.5 Secrets y manifiestos Kubernetes
+
+```powershell
+cd I:\Curso\ShopDemo
+copy k8s\secrets.example.yaml k8s\secrets.yaml
+notepad k8s\secrets.yaml   # EVENT_HUBS_CONNECTION_STRING de Parte A §A.2
+
+kubectl apply -f k8s\namespace.yaml
+kubectl apply -f k8s\secrets.yaml
+kubectl apply -f k8s\postgres\
+kubectl apply -f k8s\azurite\deployment.yaml
+kubectl apply -f k8s\azurite\service.yaml
+kubectl apply -f k8s\catalog\service.yaml
+kubectl apply -f k8s\orders\service.yaml
+kubectl apply -f k8s\inventory\service.yaml
+kubectl apply -f k8s\analytics\service.yaml
+kubectl apply -f k8s\mcp\service.yaml
+kubectl apply -f k8s\azure\catalog\deployment.yaml
+kubectl apply -f k8s\azure\orders\deployment.yaml
+kubectl apply -f k8s\azure\inventory\deployment.yaml
+kubectl apply -f k8s\azure\analytics\deployment.yaml
+kubectl apply -f k8s\azure\mcp\deployment.yaml
+kubectl apply -f k8s\ingress\
+
+$ACR = "acrshopdemolab01.azurecr.io"
+# Solo si el tag del push difiere del YAML (latest vs v1):
+kubectl set image deployment/shopdemo-catalog catalog-api="${ACR}/shopdemo-catalog:latest" -n shopdemo
+kubectl set image deployment/shopdemo-orders orders-api="${ACR}/shopdemo-orders:latest" -n shopdemo
+kubectl set image deployment/shopdemo-inventory inventory-api="${ACR}/shopdemo-inventory:latest" -n shopdemo
+kubectl set image deployment/shopdemo-analytics analytics-api="${ACR}/shopdemo-analytics:latest" -n shopdemo
+kubectl set image deployment/shopdemo-mcp mcp-api="${ACR}/shopdemo-mcp:latest" -n shopdemo
+
+kubectl delete hpa shopdemo-catalog-hpa -n shopdemo --ignore-not-found
+kubectl apply -f k8s\azurite\init-checkpoints-job.yaml
+kubectl wait --for=condition=complete job/shopdemo-azurite-init -n shopdemo --timeout=120s
+
+kubectl set env deployment/shopdemo-analytics -n shopdemo ASPNETCORE_ENVIRONMENT=Development EventHubs__Enabled=true
+kubectl rollout restart deployment/shopdemo-analytics -n shopdemo
+```
+
+---
+
+## B.6 Archivo hosts
+
+1. Obtener IP Ingress:
+
+```powershell
+kubectl get svc ingress-nginx-controller -n ingress-nginx
+```
+
+2. Editar `C:\Windows\System32\drivers\etc\hosts` (admin):
+
+```
+<IP-INGRESS> shopdemo.local
+```
+
+---
+
+## B.7 Validación AKS
+
+**Ingress (puerto 80):**
+
+| URL |
+|---|
+| http://shopdemo.local/catalog/swagger/index.html |
+| http://shopdemo.local/orders/swagger/index.html |
+| http://shopdemo.local/inventory/swagger/index.html |
+| http://shopdemo.local/analytics/swagger/index.html |
+| http://shopdemo.local/mcp/health |
+
+**LoadBalancer directo:**
+
+Portal → **Kubernetes resources** → **Services** → namespace `shopdemo` → IPs externas puerto **8080**.
+
+---
+
+## B.8 Monitoreo en Portal
+
+| Qué | Dónde |
 |---|---|
-| **Basics** | Name `ca-shopdemo-catalog`, Environment `aca-env-shopdemo` |
-| **Container** | Image `acrshopdemolab01.azurecr.io/shopdemo-catalog:latest`, Port `8080` |
-| **Ingress** | Enabled, External, Target port `8080` |
-| **Secrets** | `eh-connection`, `pg-catalog-conn` |
-| **Env vars** | `ConnectionStrings__DefaultConnection` → secret; `EventHubs__*` → ver CLI |
-
-[📷 Captura: Create Container App — Basics]  
-[📷 Captura: Ingress External]  
-[📷 Captura: Secrets y environment variables]
-
-Detalle de variables por API: [GUIA-RELEASE-CLI-AZURE.md §7](./GUIA-RELEASE-CLI-AZURE.md#7-container-apps-5-servicios).
+| Cluster estado | **Kubernetes services** → `aks-shopdemo` |
+| Nodos | **Node pools** |
+| Load Balancers | **Load balancing** (IP Ingress y servicios) |
+| Logs AKS | **Monitor** → **Logs** |
 
 ---
 
-## 8. Publicar imágenes en ACR
+## B.9 Limpieza
 
-**Antes** de que las apps arranquen, sube las 5 imágenes (Docker local o GitHub Actions).
-
-**Documentación:** [Push image to ACR](https://learn.microsoft.com/azure/container-registry/container-registry-get-started-docker-cli)
-
-[📷 Captura: ACR → Repositories con 5 imágenes `shopdemo-*`]
+**Resource groups** → `rg-shopdemo-lab` → **Delete resource group** → confirmar nombre.
 
 ---
 
-## 9. Validación
+## Referencias
 
-| Comprobación | Dónde |
+| Documento | Uso |
 |---|---|
-| Cada Container App → **Application Url** | Abrir `/swagger` o `/health` |
-| Log stream | Container App → **Monitoring** → **Log stream** |
-
-[📷 Captura: FQDN Catalog en Overview]
-
----
-
-## 10. Limpieza
-
-**Resource groups** → `rg-shopdemo-lab` → **Delete resource group**
-
-[📷 Captura: Delete resource group — confirmación]
-
----
-
-## Servicios que NO configuras en ACA
-
-| Servicio | Motivo |
-|---|---|
-| Azurite en ACI | Checkpoints usan **Storage Account** en ACA |
-| AKS | Ruta aparte — [GUIA-RELEASE-KUBERNETES.md](../kubernetes/GUIA-RELEASE-KUBERNETES.md) |
+| [PREPARACION-AMBIENTE-AZURE.md](./PREPARACION-AMBIENTE-AZURE.md) | IAM, cuotas |
+| [GUIA-RELEASE-CLI-AZURE.md](./GUIA-RELEASE-CLI-AZURE.md) | Comandos exactos |
+| [GUIA-RELEASE-SCRIPT-AZURE.md](./GUIA-RELEASE-SCRIPT-AZURE.md) | Script PowerShell |
+| [INTEGRACION-AZURE-EVENT-HUBS.md](../../INTEGRACION-AZURE-EVENT-HUBS.md) | Event Hubs |

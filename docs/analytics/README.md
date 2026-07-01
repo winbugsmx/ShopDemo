@@ -16,6 +16,7 @@ Documentación para la integración de **.NET Aspire** y el microservicio observ
 | Documento | Descripción |
 |---|---|
 | [REQUERIMIENTOS-ANALYTICS-ASPIRE.md](./REQUERIMIENTOS-ANALYTICS-ASPIRE.md) | Especificación funcional y técnica |
+| [HISTORIAS-USUARIO-ANALYTICS-ASPIRE.md](./HISTORIAS-USUARIO-ANALYTICS-ASPIRE.md) | Historias de usuario por épica (AppHost, Analytics, ServiceDefaults) |
 | [IMPLEMENTACION-ANALYTICS-ASPIRE.md](./IMPLEMENTACION-ANALYTICS-ASPIRE.md) | Guía paso a paso con código fuente completo |
 | [INTEGRACION-ASPIRE.md](../INTEGRACION-ASPIRE.md) | Visión general de Aspire en la solución |
 

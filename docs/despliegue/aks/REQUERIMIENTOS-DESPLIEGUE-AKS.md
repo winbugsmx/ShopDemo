@@ -12,11 +12,13 @@
 **Plataforma:** Azure Kubernetes Service (AKS)  
 **Versión:** 1.0
 
+**Historias de usuario:** [HISTORIAS-USUARIO-DESPLIEGUE-AKS.md](./HISTORIAS-USUARIO-DESPLIEGUE-AKS.md)
+
 ---
 
 ## 1. Propósito
 
-Desplegar ShopDemo en **AKS** reutilizando manifiestos `k8s/`, imágenes en **ACR** e **Ingress NGINX**, como extensión natural del laboratorio Minikube y complemento de Container Apps.
+Desplegar ShopDemo en **AKS** reutilizando recursos compartidos en `k8s/` y deployments en **`k8s/azure/`** (ACR), con **Ingress NGINX**, como extensión del laboratorio Minikube y complemento de Container Apps.
 
 ---
 
@@ -28,7 +30,7 @@ Desplegar ShopDemo en **AKS** reutilizando manifiestos `k8s/`, imágenes en **AC
 | OBJ-AKS-02 | Publicar 4 imágenes en ACR |
 | OBJ-AKS-03 | Vincular AKS con ACR |
 | OBJ-AKS-04 | Instalar Ingress NGINX |
-| OBJ-AKS-05 | Aplicar manifiestos `k8s/` con imágenes ACR |
+| OBJ-AKS-05 | Aplicar manifiestos compartidos + **`k8s/azure/`** (imágenes ACR) |
 | OBJ-AKS-06 | Probar flujo E2E vía Ingress |
 | OBJ-AKS-07 | Documentar errores comunes y mitigación |
 | OBJ-AKS-08 | Aplicar **Secrets** K8s (`shopdemo-secrets`) |
@@ -45,12 +47,12 @@ Desplegar ShopDemo en **AKS** reutilizando manifiestos `k8s/`, imágenes en **AC
 - Secrets con connection strings (Key Vault opcional — fuera de alcance básico)
 - Ingress NGINX vía **Helm** (no addon)
 
-## 4. Fuera de alcance
+## 4. No incluido en el lab
 
 - Azure CNI avanzado / private cluster
 - Workload Identity completo
-- Azure Database for PostgreSQL (usamos StatefulSet en K8s)
-- Azure Container Apps (guía separada)
+- Azure Database for PostgreSQL gestionado (usamos StatefulSet en K8s)
+- Key Vault / External Secrets (Secrets K8s planos en el lab)
 
 ---
 
@@ -59,7 +61,7 @@ Desplegar ShopDemo en **AKS** reutilizando manifiestos `k8s/`, imágenes en **AC
 | # | Criterio |
 |---|---|
 | CA-AKS-01 | `kubectl get nodes` muestra nodos Ready |
-| CA-AKS-02 | 4 Deployments + Postgres StatefulSet Running |
+| CA-AKS-02 | 5 Deployments (4 APIs + MCP) + Postgres StatefulSet Running |
 | CA-AKS-03 | Ingress con IP externa responde |
 | CA-AKS-04 | Alumno completó pasos Portal y CLI |
 | CA-AKS-05 | Probes HTTP y HPA Catalog operativos |

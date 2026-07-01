@@ -13,6 +13,8 @@
 **Bounded Context:** Inventory  
 **Versión:** 1.0
 
+**Historias de usuario:** [HISTORIAS-USUARIO-INVENTORY.md](./HISTORIAS-USUARIO-INVENTORY.md)
+
 ---
 
 ## 1. Propósito
@@ -76,11 +78,12 @@ flowchart LR
 | RF-07 | Swagger en Development |
 | RF-08 | Docker Compose (API + PostgreSQL) |
 
-### Fuera de alcance
+### No incluido en el curso
 
-- Azure Event Hubs real
-- Sincronización automática Catalog → Inventory vía eventos
-- Kubernetes / Aspire
+- Multi-almacén, reservas parciales y reglas de reabastecimiento avanzadas
+- Outbox Pattern completo
+
+> Event Hubs, sincronización Catalog→Inventory, Aspire AppHost y manifiestos `k8s/` se cubren en las **etapas 5–11**.
 
 ---
 

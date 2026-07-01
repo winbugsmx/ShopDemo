@@ -187,7 +187,7 @@ Resumen: imagen ACR → `ca-shopdemo-mcp` → env `ShopDemo__*ApiBaseUrl` → In
 
 Guía detallada: [IMPLEMENTACION-DESPLIEGUE-MCP-AZURE.md](../IMPLEMENTACION-DESPLIEGUE-MCP-AZURE.md) — Parte B.
 
-Manifiestos: `k8s/mcp/`, Ingress `/mcp` ya en el repo.
+Manifiestos: `k8s/azure/mcp/deployment.yaml` + `k8s/mcp/service.yaml`; Ingress `/mcp` ya en el repo.
 
 ---
 

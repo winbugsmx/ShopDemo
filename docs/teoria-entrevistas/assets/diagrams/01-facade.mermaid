@@ -1,0 +1,12 @@
+flowchart TB
+  CLIENT[Cliente / Controller]
+  FACADE[Facade CheckoutService]
+  S1[Inventario]
+  S2[Pago]
+  S3[Envio]
+  S4[Factura]
+  CLIENT --> FACADE
+  FACADE --> S1
+  FACADE --> S2
+  FACADE --> S3
+  FACADE --> S4

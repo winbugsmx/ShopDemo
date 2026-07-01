@@ -1,0 +1,8 @@
+flowchart TB
+  TX[Transaccion BEGIN]
+  A[Atomicidad - todo o nada]
+  C[Consistencia - reglas de negocio]
+  I[Aislamiento - sin lecturas sucias]
+  D[Durabilidad - sobrevive reinicio]
+  TX --> A --> C --> I --> D
+  D --> COMMIT[COMMIT o ROLLBACK]

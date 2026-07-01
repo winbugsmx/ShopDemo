@@ -1,0 +1,7 @@
+flowchart LR
+  SLI[SLI: métrica medida] --> SLO[SLO: objetivo interno]
+  SLO --> SLA[SLA: compromiso contractual]
+  SLO --> EB[Error budget: margen de fallo]
+  EB --> DEC{¿Budget agotado?}
+  DEC -->|Sí| FIX[Priorizar fiabilidad]
+  DEC -->|No| FEAT[Priorizar features]

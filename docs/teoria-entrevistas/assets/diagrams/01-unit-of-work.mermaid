@@ -1,0 +1,12 @@
+sequenceDiagram
+  participant App as Servicio aplicacion
+  participant UoW as Unit of Work
+  participant R1 as OrderRepository
+  participant R2 as CustomerRepository
+  participant DB as Base de datos
+
+  App->>UoW: Begin
+  App->>R1: Update(order)
+  App->>R2: Update(customer)
+  App->>UoW: Commit()
+  UoW->>DB: transaccion unica

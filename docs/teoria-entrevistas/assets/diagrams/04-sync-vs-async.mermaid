@@ -1,0 +1,9 @@
+flowchart LR
+  subgraph SYNC["Sincrono"]
+    A[Cliente] -->|request/response| B[Servicio]
+  end
+  subgraph ASYNC["Asincrono"]
+    P[Productor] --> Q[Broker]
+    Q --> C1[Consumidor 1]
+    Q --> C2[Consumidor 2]
+  end

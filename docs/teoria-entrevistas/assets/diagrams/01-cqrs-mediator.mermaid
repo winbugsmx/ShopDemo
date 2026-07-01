@@ -1,0 +1,12 @@
+sequenceDiagram
+  participant API as API Controller
+  participant M as Mediator
+  participant H as Command Handler
+  participant D as Domain
+  participant R as Repository
+
+  API->>M: Send(CreateOrderCommand)
+  M->>H: dispatch
+  H->>D: apply business rules
+  H->>R: persist
+  H-->>API: result DTO

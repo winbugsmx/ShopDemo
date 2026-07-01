@@ -1,0 +1,7 @@
+flowchart TD
+  B[Servicio B lento o caído] --> A[Servicio A acumula threads esperando]
+  A --> C[Servicio C depende de A y también falla]
+  B -. mitigación .-> T[Timeout]
+  B -. mitigación .-> CB[Circuit Breaker]
+  A -. mitigación .-> BH[Bulkhead]
+  C -. mitigación .-> RL[Rate Limiting]

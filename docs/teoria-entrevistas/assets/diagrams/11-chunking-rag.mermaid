@@ -1,0 +1,8 @@
+flowchart LR
+  DOC[Documentos fuente] --> CH[Chunking - trozos 500-1000 tokens]
+  CH --> EMB[Embedding por chunk]
+  EMB --> VDB[(Vector DB)]
+  Q[Query usuario] --> EQ[Embedding query]
+  EQ --> SEARCH[Búsqueda top-K]
+  VDB --> SEARCH
+  SEARCH --> CTX[Contexto inyectado en prompt]

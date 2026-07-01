@@ -1,0 +1,8 @@
+flowchart TB
+  subgraph MONOLITO["Un solo despliegue"]
+    M1[Modulo Catalogo]
+    M2[Modulo Pedidos]
+    M3[Modulo Pagos]
+  end
+  M2 -->|interfaz| M1
+  M2 -->|evento| M3

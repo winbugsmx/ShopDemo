@@ -1,0 +1,12 @@
+flowchart LR
+  subgraph DOMINIO["Capa dominio / aplicacion"]
+    S[Servicio aplicacion]
+    IR[IOrderRepository]
+    S --> IR
+  end
+  subgraph INFRA["Infraestructura"]
+    EF[EfOrderRepository]
+    DB[(Base de datos)]
+    EF --> DB
+  end
+  IR -.->|implementa| EF

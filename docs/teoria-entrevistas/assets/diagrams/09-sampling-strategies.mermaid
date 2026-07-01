@@ -1,0 +1,8 @@
+flowchart TB
+  REQ[Request entrante] --> HEAD{Head sampling}
+  HEAD -->|Descartada| DROP[No se almacena trace]
+  HEAD -->|Retenida| TRACE[Trace completo]
+  TRACE --> TAIL{Tail sampling}
+  TAIL -->|Latencia alta o error| KEEP[Retener en backend]
+  TAIL -->|Normal| SAMPLE[Descartar o muestrear]
+  KEEP --> STORE[(Almacenamiento)]

@@ -1,0 +1,7 @@
+flowchart TD
+  A[Alerta: pico en error rate] --> B[Consultar métricas Golden Signals]
+  B --> C[Filtrar logs por correlation ID]
+  C --> D[Abrir trace distribuido]
+  D --> E[Identificar span lento o con error]
+  E --> F[Revisar logs del servicio en ese timestamp]
+  F --> G[Correlacionar con saturación de recursos]

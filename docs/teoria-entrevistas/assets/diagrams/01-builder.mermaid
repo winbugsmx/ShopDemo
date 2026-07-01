@@ -1,0 +1,20 @@
+classDiagram
+  class Director {
+    +construct(builder)
+  }
+  class Builder {
+    <<interface>>
+    +reset()
+    +buildStepA()
+    +buildStepB()
+    +getResult() Product
+  }
+  class ConcreteBuilder {
+    +buildStepA()
+    +buildStepB()
+    +getResult() Product
+  }
+  class Product
+  Director --> Builder
+  Builder <|.. ConcreteBuilder
+  ConcreteBuilder --> Product

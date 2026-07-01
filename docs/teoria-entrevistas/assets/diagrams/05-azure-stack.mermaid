@@ -1,0 +1,8 @@
+flowchart LR
+  DEV[Developer] --> GH[GitHub Actions]
+  GH --> ACR[Azure Container Registry]
+  GH --> AKS[Azure Kubernetes Service]
+  AKS --> KV[Key Vault]
+  AKS --> SB[Service Bus]
+  AKS --> SQL[Azure SQL]
+  AKS --> AI[Application Insights]

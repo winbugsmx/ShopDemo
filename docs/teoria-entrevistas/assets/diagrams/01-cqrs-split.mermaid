@@ -1,0 +1,14 @@
+flowchart TB
+  subgraph ESCRITURA["Lado comando"]
+    CMD[CreateOrderCommand]
+    CH[Command Handler]
+    DOM[Dominio]
+    WR[(BD escritura)]
+    CMD --> CH --> DOM --> WR
+  end
+  subgraph LECTURA["Lado consulta"]
+    QRY[GetOrdersQuery]
+    QH[Query Handler]
+    RD[(BD lectura)]
+    QRY --> QH --> RD
+  end

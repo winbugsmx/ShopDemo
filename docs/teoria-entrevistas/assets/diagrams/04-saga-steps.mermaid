@@ -1,0 +1,6 @@
+flowchart LR
+  S1[Crear pedido] --> S2[Autorizar pago]
+  S2 --> S3[Reservar stock]
+  S3 --> S4[Confirmar]
+  S3 -.->|fallo| C2[Reembolsar]
+  C2 -.-> C1[Cancelar pedido]

@@ -1,0 +1,21 @@
+flowchart TB
+  subgraph PILARES["Tres pilares observabilidad"]
+    M[Metricas]
+    L[Logs]
+    T[Trazas]
+  end
+  subgraph SHOP["ShopDemo"]
+    HC["/health /alive"]
+    LOG[ILogger estructurado]
+    TID[traceId ProblemDetails]
+    OTEL[OpenTelemetry Aspire]
+  end
+  subgraph RES["Resiliencia"]
+    PROBE[K8s probes]
+    HPA[HPA Catalog 1-3]
+    EH[Event Hubs async]
+    RETRY[ServiceDefaults retry Analytics]
+  end
+  M & L & T --> SHOP
+  PROBE & HPA & EH & RETRY --> RES
+  SHOP --> RES

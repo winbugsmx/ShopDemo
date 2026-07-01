@@ -125,3 +125,4 @@ Consumer groups Event Hubs obligatorios: `analytics-service`, `inventory-service
 | K8s local/AKS/EKS | [GUIA-RELEASE-KUBERNETES.md](docs/despliegue/kubernetes/GUIA-RELEASE-KUBERNETES.md) |
 | Configurar GitHub | [SETUP-GITHUB-PORTAL.md](.github/SETUP-GITHUB-PORTAL.md) |
 | Arquitectura completa | [docs/ARQUITECTURA.md](docs/ARQUITECTURA.md) |
+| Teoría / entrevistas técnicas | [docs/teoria-entrevistas/README.md](docs/teoria-entrevistas/README.md) |

@@ -99,6 +99,13 @@ Detalle en [GUIA-RELEASE-SCRIPT-AZURE](./azure/GUIA-RELEASE-SCRIPT-AZURE.md) y [
 
 ## Documentos por plataforma
 
+### Teoría para entrevistas técnicas
+
+| Documento | Contenido |
+|---|---|
+| [teoria-entrevistas/README.md](../teoria-entrevistas/README.md) | Orden de lectura, rutas por tipo de entrevista, diagramas |
+| [01-patrones-diseno.md](../teoria-entrevistas/01-patrones-diseno.md) … [11-observabilidad-resiliencia.md](../teoria-entrevistas/11-observabilidad-resiliencia.md) · [10-preguntas-entrevista.md](../teoria-entrevistas/10-preguntas-entrevista.md) | Patrones, arquitectura, cloud, K8s, CI/CD, MCP, observabilidad, flashcards |
+
 ### Kubernetes (Minikube / AKS / EKS)
 
 | Documento | Contenido |

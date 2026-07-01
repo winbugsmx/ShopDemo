@@ -1,0 +1,9 @@
+flowchart LR
+  DEV[Developer] --> BUILD[docker build]
+  BUILD --> ECR[Amazon ECR]
+  ECR --> ECS[ECS Fargate x5<br/>ALB + Cloud Map]
+  ECR --> EKS[EKS Deployments<br/>k8s/aws/]
+  EH[(Azure Event Hubs<br/>cross-cloud)] --> ECS
+  EH --> EKS
+  AZF[Azurite Fargate] --> ECS
+  AZK[Azurite in-cluster] --> EKS

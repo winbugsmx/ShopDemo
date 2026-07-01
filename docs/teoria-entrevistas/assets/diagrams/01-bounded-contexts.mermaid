@@ -1,0 +1,19 @@
+flowchart TB
+  subgraph BC["Bounded Contexts ShopDemo"]
+    C[Catalog<br/>Clean + CQRS]
+    O[Orders<br/>Clean + CQRS]
+    I[Inventory<br/>Hexagonal]
+  end
+  subgraph TRANS["Transversal"]
+    A[Analytics<br/>Observer]
+    M[MCP Gateway]
+    EH[(Azure Event Hubs)]
+  end
+  O -->|HTTP reserva stock| I
+  C -->|publica eventos| EH
+  O -->|publica eventos| EH
+  I -->|consume + publica| EH
+  EH --> A
+  M -->|tools HTTP| C
+  M -->|tools HTTP| I
+  M -->|tools HTTP| A

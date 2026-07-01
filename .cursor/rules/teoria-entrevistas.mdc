@@ -1,0 +1,14 @@
+---
+description: Teoria para entrevistas — tono pedagogico y enlaces a teoria-entrevistas/
+globs: docs/teoria-entrevistas/**
+alwaysApply: false
+---
+
+# Documentacion teoria entrevistas
+
+- Audiencia: alumnos preparando entrevistas tecnicas.
+- Prosa en espanol; respuestas modelo concisas y ancladas a ShopDemo.
+- Cada capitulo: objetivo, concepto, implementacion en repo, preguntas entrevista.
+- Diagramas: Mermaid embebido + fuente en `assets/diagrams/*.mermaid`.
+- No duplicar guias de implementacion paso a paso; enlazar a `docs/**/IMPLEMENTACION` y `TEORIA` existentes.
+- Al agregar capitulo, actualizar [README.md](../../docs/teoria-entrevistas/README.md) orden de lectura.

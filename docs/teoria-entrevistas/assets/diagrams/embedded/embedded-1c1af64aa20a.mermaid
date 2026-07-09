@@ -1,0 +1,5 @@
+﻿flowchart LR
+  DEV[Desarrollador] -->|git push / CI| AS[App Service]
+  USR[Cliente HTTP] -->|HTTPS| AS
+  AS --> DB[(Azure SQL)]
+  AS --> KV[Key Vault - secretos]

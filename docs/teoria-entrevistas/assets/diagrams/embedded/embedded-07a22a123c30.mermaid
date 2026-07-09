@@ -1,0 +1,5 @@
+﻿flowchart LR
+  API[API] -->|1. consulta cache| R[(Redis)]
+  R -->|miss| API
+  API -->|2. consulta BD| DB[(SQL)]
+  API -->|3. guarda en cache| R

@@ -1,0 +1,7 @@
+flowchart TB
+  subgraph ORQ["Orquestacion"]
+    O[Saga Orchestrator]
+    O --> P1[Pedidos]
+    O --> P2[Pagos]
+    O --> P3[Inventario]
+  end

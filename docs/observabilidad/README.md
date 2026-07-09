@@ -1,40 +1,33 @@
-# Observabilidad de microservicios — ShopDemo
+# Observabilidad — ShopDemo
 
-| Campo | Detalle |
-|:------|:--------|
-| **Empresa** | Lite Thinking |
-| **Curso** | Microservicios con .NET en Kubernetes y Entornos Multicloud |
-| **Instructor** | Lcc. Gilberto Valentino Juárez Sánchez |
-| **Contacto** | WhatsApp: +52 5614206660 |
-| | E-mail: gilberto.juarez@gmail.com |
-| | E-mail: lcc.gilberto.juarez@gmail.com |
+Material para **métricas, logs, trazas y alertas** en ShopDemo desplegado en Azure y AWS.
 
-Material del curso para **métricas, logs, trazas, agregación y correlación** en ShopDemo desplegado en **Azure** y **AWS**.
+## Documentación (3 capas)
 
-## Documentos
-
-| Tipo | Enlace |
+| Capa | Documento |
 |---|---|
-| **Teoría** | [TEORIA-OBSERVABILIDAD.md](./TEORIA-OBSERVABILIDAD.md) |
-| **Requerimientos** | [REQUERIMIENTOS-OBSERVABILIDAD.md](./REQUERIMIENTOS-OBSERVABILIDAD.md) |
-| **Implementación Azure** (ACA + AKS) | [azure/IMPLEMENTACION-OBSERVABILIDAD-AZURE.md](./azure/IMPLEMENTACION-OBSERVABILIDAD-AZURE.md) |
-| **Implementación AWS** (ECS + EKS) | [aws/IMPLEMENTACION-OBSERVABILIDAD-AWS.md](./aws/IMPLEMENTACION-OBSERVABILIDAD-AWS.md) |
+| **A — Negocio** | [REQUERIMIENTOS-OBSERVABILIDAD.md](./REQUERIMIENTOS-OBSERVABILIDAD.md) |
+| **A — Negocio** | [HISTORIAS-USUARIO-OBSERVABILIDAD.md](./HISTORIAS-USUARIO-OBSERVABILIDAD.md) |
+| **B — Técnica** | [ANEXO-ESPECIFICACION-TECNICA-OBSERVABILIDAD.md](./ANEXO-ESPECIFICACION-TECNICA-OBSERVABILIDAD.md) |
+| **B — Técnica** | [ANEXO-HISTORIAS-TECNICAS-OBSERVABILIDAD.md](./ANEXO-HISTORIAS-TECNICAS-OBSERVABILIDAD.md) |
+| **C — Pedagogía** | [ANEXO-PEDAGOGIA-OBSERVABILIDAD.md](./ANEXO-PEDAGOGIA-OBSERVABILIDAD.md) |
 
-## Estado actual en el código
+## Implementación por cloud
 
-| Capacidad | Catalog / Orders / Inventory | Analytics |
+| Cloud | Enlace |
+|---|---|
+| Azure (ACA + AKS) | [azure/IMPLEMENTACION-OBSERVABILIDAD-AZURE.md](./azure/IMPLEMENTACION-OBSERVABILIDAD-AZURE.md) |
+| AWS (ECS + EKS) | [aws/IMPLEMENTACION-OBSERVABILIDAD-AWS.md](./aws/IMPLEMENTACION-OBSERVABILIDAD-AWS.md) |
+| Teoría | [TEORIA-OBSERVABILIDAD.md](./TEORIA-OBSERVABILIDAD.md) |
+
+## Prerequisitos
+
+APIs desplegadas: [despliegue/azure/](../despliegue/azure/) · [despliegue/aws/](../despliegue/aws/)
+
+## Estado en código
+
+| Capacidad | Catalog/Orders/Inventory | Analytics |
 |---|---|---|
-| Logs estructurados (`ILogger`) | Sí | Sí |
-| `traceId` en respuestas de error | Sí (`ExceptionHandlingMiddleware`) | Sí |
-| OpenTelemetry (métricas/trazas) | No (Fase actual) | Sí vía `ShopDemo.ServiceDefaults` |
-| Health `/health`, `/alive` | Sí | Sí |
-| Aspire Dashboard (local) | Solo con AppHost | Sí |
-
-## Plataformas cubiertas
-
-| Azure | AWS |
-|---|---|
-| Container Apps (ACA) | ECS Fargate |
-| AKS | EKS |
-
-**Prerequisitos:** APIs desplegadas según [despliegue/azure](../despliegue/azure/) y [despliegue/aws](../despliegue/aws/).
+| traceId en errores | Sí | Sí |
+| OpenTelemetry | No (fase actual) | Sí (ServiceDefaults) |
+| Aspire Dashboard | Solo local con AppHost | Sí |

@@ -1,0 +1,4 @@
+﻿flowchart LR
+  MET[Metrics Server] --> HPA[HPA]
+  HPA -->|scale| DEP[Deployment]
+  DEP --> PODS[Más pods]

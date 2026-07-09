@@ -1,0 +1,16 @@
+flowchart TD
+  A1[Alerta sin contexto] --> FAT[Fatiga de alertas]
+  A2[Demasiadas alertas duplicadas] --> FAT
+  A3[Sin runbook ni severidad] --> FAT
+  FAT --> IGNORE[Equipo ignora avisos]
+  IGNORE --> MISS[Incidente real no atendido]
+  subgraph FIX["Mitigación"]
+    R1[Agrupar y deduplicar]
+    R2[SLO-based alerting]
+    R3[Runbooks y severidad]
+    R4[Silencios programados]
+  end
+  R1 --> HEALTH[Alertas accionables]
+  R2 --> HEALTH
+  R3 --> HEALTH
+  R4 --> HEALTH

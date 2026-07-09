@@ -1,0 +1,14 @@
+flowchart TB
+  subgraph CP["Control Plane"]
+    API[API Server]
+    ETCD[etcd]
+    SCH[Scheduler]
+    CM[Controller Manager]
+  end
+  subgraph WN["Worker Nodes"]
+    K1[kubelet + kube-proxy]
+    P1[Pods]
+    K1 --> P1
+  end
+  API --> K1
+  ETCD --> API

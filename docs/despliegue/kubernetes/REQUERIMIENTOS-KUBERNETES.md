@@ -1,87 +1,100 @@
-# Requerimientos — Despliegue en Kubernetes (ShopDemo)
+# Documento de Requerimientos — Kubernetes local (ShopDemo)
 
 | Campo | Detalle |
 |:------|:--------|
-| **Empresa** | Lite Thinking |
-| **Curso** | Microservicios con .NET en Kubernetes y Entornos Multicloud |
-| **Instructor** | Lcc. Gilberto Valentino Juárez Sánchez |
-| **Contacto** | WhatsApp: +52 5614206660 |
-| | E-mail: gilberto.juarez@gmail.com |
-| | E-mail: lcc.gilberto.juarez@gmail.com |
+| **Módulo** | Despliegue Kubernetes — entorno local (Minikube) |
+| **Versión** | 2.0 (enfoque negocio) |
+| **Fecha** | Julio 2026 |
 
-**Alcance:** Desarrollo y pruebas en Kubernetes (Minikube) con `k8s/local/`; en AKS/EKS se reutilizan recursos compartidos (`k8s/postgres/`, Services, Ingress…) y deployments en `k8s/azure/` o `k8s/aws/`.  
-**Versión:** 1.0
+**Documentos relacionados:**
 
-**Historias de usuario:** [HISTORIAS-USUARIO-KUBERNETES.md](./HISTORIAS-USUARIO-KUBERNETES.md)
+| Capa | Documento |
+|---|---|
+| Historias de usuario | [HISTORIAS-USUARIO-KUBERNETES.md](./HISTORIAS-USUARIO-KUBERNETES.md) |
+| Especificación técnica | [ANEXO-ESPECIFICACION-TECNICA-KUBERNETES.md](./ANEXO-ESPECIFICACION-TECNICA-KUBERNETES.md) |
+| Historias técnicas | [ANEXO-HISTORIAS-TECNICAS-KUBERNETES.md](./ANEXO-HISTORIAS-TECNICAS-KUBERNETES.md) |
+| Pedagogía | [ANEXO-PEDAGOGIA-KUBERNETES.md](./ANEXO-PEDAGOGIA-KUBERNETES.md) |
+
+---
+
+## Resumen en lenguaje llano
+
+Antes de llevar ShopDemo a la nube, el equipo debe poder **ejecutar la tienda completa en Kubernetes local** (Minikube): mismas APIs, mismo flujo de productos y pedidos, acceso por un único punto de entrada (`shopdemo.local`). Esto valida que los manifiestos funcionan y se reutilizarán en AKS y EKS.
 
 ---
 
 ## 1. Propósito
 
-Justificar el despliegue de ShopDemo en **Kubernetes** como paso natural después de Docker Compose y antes/complemento de ACA/ECS: un solo conjunto de manifiestos YAML reutilizable en local y multicloud.
+Definir qué debe lograr el despliegue local en Kubernetes: operar el e-commerce con flujo E2E, verificar salud de servicios y preparar manifiestos reutilizables en nube.
 
 ---
 
-## 2. Objetivos
+## 2. Actores
+
+| Actor | Rol |
+|---|---|
+| **Operador de la tienda** | Prueba flujos de negocio vía Ingress local |
+| **Responsable de TI** | Despliega y mantiene el cluster Minikube |
+| **Equipo de soporte** | Revisa logs y estado de pods ante incidentes |
+
+---
+
+## 3. Objetivos operativos
 
 | ID | Objetivo |
 |---|---|
-| OBJ-K8-01 | Construir imágenes Docker de las 4 APIs |
-| OBJ-K8-02 | Validar stack con **Docker Compose** en local |
-| OBJ-K8-03 | Desplegar en **Minikube** con compartidos `k8s/` + deployments **`k8s/local/`** |
-| OBJ-K8-04 | Incluir **PostgreSQL** (StatefulSet) y **Azurite** en el cluster |
-| OBJ-K8-05 | Exponer APIs vía **Ingress NGINX** |
-| OBJ-K8-06 | Probar flujo E2E post-despliegue |
-| OBJ-K8-07 | Reutilizar manifiestos en **AKS** y **EKS** con imágenes en ACR/ECR |
-| OBJ-K8-08 | Dominar comandos básicos de **kubectl** (get, describe, logs, apply) |
-| OBJ-K8-09 | Gestionar **Kubernetes Secrets** para PG y Event Hubs |
-| OBJ-K8-10 | Configurar **Liveness y Readiness** HTTP (`/health`, `/alive`) |
-| OBJ-K8-11 | Demostrar **HPA** en Catalog con metrics-server |
-| OBJ-K8-12 | Ingress local vía **addon Minikube** (Helm solo en AKS/EKS) |
+| OBJ-K8-01 | La tienda ShopDemo **funciona en Kubernetes local** con flujo E2E completo |
+| OBJ-K8-02 | Un **punto de entrada único** (Ingress) expone catálogo, pedidos, inventario, analítica y MCP |
+| OBJ-K8-03 | Los servicios reportan **salud** antes de recibir tráfico de negocio |
+| OBJ-K8-04 | Los **datos y secretos** están configurados sin exponer credenciales |
+| OBJ-K8-05 | Los manifiestos son **reutilizables** en AKS y EKS cambiando solo imágenes y carpeta cloud |
 
 ---
 
-## 3. Alcance incluido
+## 4. Alcance
 
-- Namespace `shopdemo`
-- Deployments: Catalog, Orders, Inventory, Analytics, **MCP Gateway**
-- StatefulSet: PostgreSQL (3 bases de datos)
-- Deployment: Azurite (checkpoints)
-- Services ClusterIP internos
-- Ingress NGINX con host `shopdemo.local`
-- Secrets para PG y Event Hubs (`k8s/secrets.example.yaml`)
-- Probes HTTP en Deployments (`/health`, `/alive`)
-- HPA de ejemplo en Catalog (`k8s/catalog/hpa.yaml`)
-- metrics-server (addon Minikube)
+### 4.1 Incluido
 
-## 4. No incluido en el curso
-
-Límites deliberados del lab (no son etapas pendientes):
-
-- Helm charts empaquetados de ShopDemo (se usa `kubectl apply` + Helm solo para Ingress NGINX en AKS/EKS)
-- HPA en las 5 APIs (solo Catalog como demo)
-- Service mesh (Istio/Linkerd)
-- CI/CD GitOps (ArgoCD) — solo referencia en documentación
-- Native AOT en imágenes (documentado en TEORIA-DOCKER-KUBERNETES-AOT)
-
----
-
-## 5. Criterios de aceptación
-
-| # | Criterio |
+| ID | Requerimiento de negocio |
 |---|---|
-| CA-K8-01 | `kubectl get pods -n shopdemo` — todos Running |
-| CA-K8-02 | Ingress responde en rutas `/catalog`, `/orders`, etc. |
-| CA-K8-03 | Flujo crear producto → pedido → confirmar exitoso |
-| CA-K8-04 | Mismos YAML aplicables en AKS/EKS cambiando imagen a ACR/ECR |
-| CA-K8-05 | `kubectl describe pod` muestra probes `health`/`alive` en estado Success |
-| CA-K8-06 | `kubectl get hpa -n shopdemo` muestra HPA de Catalog activo |
+| RF-K8-01 | Registrar productos y completar pedidos vía Ingress local |
+| RF-K8-02 | Inventario y analítica operativos con eventos del bus |
+| RF-K8-03 | PostgreSQL y almacenamiento de checkpoints disponibles en cluster |
+| RF-K8-04 | Verificar salud de cada servicio antes de operar |
+| RF-K8-05 | Escalar catálogo bajo carga (demostración HPA) |
+
+### 4.2 Fuera de alcance
+
+- Service mesh (Istio/Linkerd)
+- GitOps (ArgoCD) en producción
+- Helm charts empaquetados de ShopDemo (solo Ingress Helm en AKS/EKS)
 
 ---
 
-## Referencias
+## 5. Reglas de operación
 
-- [TEORIA-KUBERNETES-OPERACIONES.md](./TEORIA-KUBERNETES-OPERACIONES.md)
+| ID | Regla |
+|---|---|
+| RN-K8-01 | Namespace único `shopdemo` para todos los recursos |
+| RN-K8-02 | Orden de despliegue: infraestructura (postgres, azurite) → APIs → ingress |
+| RN-K8-03 | Secretos generados localmente; nunca commitear `k8s/secrets.yaml` |
+| RN-K8-04 | Host Ingress: `shopdemo.local` en archivo hosts del operador |
 
-- [IMPLEMENTACION-KUBERNETES-LOCAL.md](./IMPLEMENTACION-KUBERNETES-LOCAL.md)
+---
+
+## 6. Criterios de aceptación de negocio (CA-N)
+
+| ID | Criterio |
+|---|---|
+| CA-N-K8-01 | Dado el cluster local, cuando el operador accede a rutas del Ingress, entonces las APIs responden |
+| CA-N-K8-02 | Dado un flujo producto → pedido → confirmación, cuando se ejecuta vía Ingress, entonces se completa sin error |
+| CA-N-K8-03 | Dado un servicio no saludable, cuando el orquestador lo detecta, entonces no enruta tráfico hasta recuperación |
+| CA-N-K8-04 | Dado manifiestos validados en local, cuando se aplican en AKS/EKS, entonces el mismo stack despliega con imágenes cloud |
+
+---
+
+## 7. Referencias
+
 - [k8s/README.md](../../../k8s/README.md)
+- [IMPLEMENTACION-KUBERNETES-LOCAL.md](./IMPLEMENTACION-KUBERNETES-LOCAL.md)
+- [despliegue/aks/](../aks/) · [despliegue/eks/](../eks/)

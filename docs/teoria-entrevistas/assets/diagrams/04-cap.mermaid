@@ -1,0 +1,7 @@
+flowchart TB
+  NET[Particion de red - nodos aislados]
+  NET --> CHOICE{Debes elegir}
+  CHOICE --> C[Consistencia - datos iguales al instante]
+  CHOICE --> A[Disponibilidad - siempre responde]
+  C -.->|ejemplo| CP[Sistemas CP]
+  A -.->|ejemplo| AP[Sistemas AP]

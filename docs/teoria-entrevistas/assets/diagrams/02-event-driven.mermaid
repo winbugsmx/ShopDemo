@@ -1,0 +1,8 @@
+sequenceDiagram
+  participant P as Servicio Pedidos
+  participant B as Bus eventos
+  participant I as Inventario
+  participant A as Analytics
+  P->>B: OrderCreated
+  B->>I: OrderCreated
+  B->>A: OrderCreated

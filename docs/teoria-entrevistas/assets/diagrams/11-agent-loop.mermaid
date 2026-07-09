@@ -1,0 +1,7 @@
+flowchart TD
+  G[Objetivo del usuario] --> P[Planificación]
+  P --> A{¿Necesita acción externa?}
+  A -->|Sí| T[Invocar tool vía MCP]
+  T --> O[Observar resultado]
+  O --> P
+  A -->|No| R[Respuesta final al usuario]

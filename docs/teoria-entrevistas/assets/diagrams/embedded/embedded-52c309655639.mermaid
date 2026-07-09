@@ -1,0 +1,8 @@
+﻿flowchart TD
+  CALL[Llamada a dependencia] --> OK{¿Éxito?}
+  OK -->|Sí| DONE[Retornar resultado]
+  OK -->|No transitorio 4xx| FAIL[Fallar inmediatamente]
+  OK -->|Transitorio| ATT{¿Intentos < max?}
+  ATT -->|Sí| WAIT[Espera backoff + jitter]
+  WAIT --> CALL
+  ATT -->|No| FAIL

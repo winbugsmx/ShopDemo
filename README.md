@@ -69,9 +69,25 @@ flowchart TB
 
 ---
 
+## Estructura de la documentación (3 capas)
+
+Cada módulo del curso separa **negocio**, **especificación técnica** y **pedagogía**:
+
+| Capa | Archivos | Para quién |
+|---|---|---|
+| **A — Negocio** | `REQUERIMIENTOS-*.md`, `HISTORIAS-USUARIO-*.md` | PM, analista, negocio, junior que entiende el dominio |
+| **B — Técnica** | `ANEXO-ESPECIFICACION-TECNICA-*.md`, `ANEXO-HISTORIAS-TECNICAS-*.md` | Desarrollador implementador |
+| **C — Pedagogía** | `ANEXO-PEDAGOGIA-*.md` | Instructor y alumno del curso |
+
+**Guía completa:** [docs/GUIA-ESTRUCTURA-DOCUMENTACION.md](docs/GUIA-ESTRUCTURA-DOCUMENTACION.md)
+
+**Orden sugerido (alumno):** Requerimientos (negocio) → Historias → Anexo técnico → Implementación → Anexo pedagogía.
+
+---
+
 ## Etapas del curso (roadmap)
 
-Cada etapa tiene un par de documentos: **requerimientos** (qué y por qué) e **implementación** (cómo, con código). Se recomienda leer ambos en orden.
+Cada etapa tiene documentación en **3 capas**: **requerimientos de negocio** (qué debe lograr el sistema), **anexos técnicos** (cómo implementarlo) e **implementación** (paso a paso). Ver [GUIA-ESTRUCTURA-DOCUMENTACION.md](docs/GUIA-ESTRUCTURA-DOCUMENTACION.md).
 
 **Guía de desarrollo con código para copiar/integrar (recomendada para alumnos):** [GUIA-DESARROLLO-INTEGRACIONES.md](docs/GUIA-DESARROLLO-INTEGRACIONES.md) — paso a paso por etapa, anexos con `.cs` completos y checklist de validación.
 
@@ -706,7 +722,7 @@ ShopDemo/
 | Tema | Enlace |
 |---|---|
 | **Contexto global para agentes (Cursor)** | [AGENTS.md](AGENTS.md) · reglas en [.cursor/rules/](.cursor/rules/) |
-| **Teoría para entrevistas técnicas** | [docs/teoria-entrevistas/](docs/teoria-entrevistas/) (cap. 11: observabilidad/resiliencia) |
+| **Teoría técnica** | [docs/teoria-entrevistas/](docs/teoria-entrevistas/) — 12 capítulos de teoría general (patrones, arquitectura, cloud, K8s, operaciones) |
 | **Guía de desarrollo (código paso a paso)** | [docs/GUIA-DESARROLLO-INTEGRACIONES.md](docs/GUIA-DESARROLLO-INTEGRACIONES.md) |
 | Anexos de código | [Shared](docs/ANEXO-CODIGO-SHARED.md) · [Catalog](docs/catalog/ANEXO-CODIGO-CATALOG.md) · [Orders](docs/orders/ANEXO-CODIGO-ORDERS.md) · [Inventory](docs/inventory/ANEXO-CODIGO-INVENTORY.md) · [Event Hubs](docs/ANEXO-CODIGO-EVENT-HUBS.md) · [Analytics/Aspire](docs/analytics/ANEXO-CODIGO-ANALYTICS-ASPIRE.md) · [MCP](docs/integracion-ia/ANEXO-CODIGO-MCP.md) |
 | Scripts Azure (PowerShell) | [scripts/azure/README.md](scripts/azure/README.md) |

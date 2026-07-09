@@ -1,0 +1,11 @@
+sequenceDiagram
+  participant O as Saga Orchestrator
+  participant P as Pedidos
+  participant PA as Pagos
+  participant I as Inventario
+  O->>P: CreateOrder
+  P-->>O: OrderCreated
+  O->>PA: AuthorizePayment
+  PA-->>O: PaymentFailed
+  O->>P: CancelOrder
+  O->>PA: RefundPayment

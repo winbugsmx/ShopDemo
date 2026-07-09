@@ -1,267 +1,149 @@
-# Documento de Requerimientos — Microservicio Inventory (ShopDemo)
+# Documento de Requerimientos — Inventario (ShopDemo)
 
 | Campo | Detalle |
 |:------|:--------|
-| **Empresa** | Lite Thinking |
-| **Curso** | Microservicios con .NET en Kubernetes y Entornos Multicloud |
-| **Instructor** | Lcc. Gilberto Valentino Juárez Sánchez |
-| **Contacto** | WhatsApp: +52 5614206660 |
-| | E-mail: gilberto.juarez@gmail.com |
-| | E-mail: lcc.gilberto.juarez@gmail.com |
+| **Módulo** | Inventory — gestión de stock por producto |
+| **Versión** | 2.0 (enfoque negocio) |
+| **Fecha** | Junio 2026 |
 
-**Arquitectura:** Hexagonal (Ports & Adapters)  
-**Bounded Context:** Inventory  
-**Versión:** 1.0
+**Documentos relacionados:**
 
-**Historias de usuario:** [HISTORIAS-USUARIO-INVENTORY.md](./HISTORIAS-USUARIO-INVENTORY.md)
+| Capa | Documento |
+|---|---|
+| Historias de usuario | [HISTORIAS-USUARIO-INVENTORY.md](./HISTORIAS-USUARIO-INVENTORY.md) |
+| Especificación técnica | [ANEXO-ESPECIFICACION-TECNICA-INVENTORY.md](./ANEXO-ESPECIFICACION-TECNICA-INVENTORY.md) |
+| Historias técnicas | [ANEXO-HISTORIAS-TECNICAS-INVENTORY.md](./ANEXO-HISTORIAS-TECNICAS-INVENTORY.md) |
+| Pedagogía (curso) | [ANEXO-PEDAGOGIA-INVENTORY.md](./ANEXO-PEDAGOGIA-INVENTORY.md) |
+
+---
+
+## Resumen en lenguaje llano
+
+El módulo **Inventario** controla **cuántas unidades hay disponibles** de cada producto registrado en el catálogo. Un **operador de inventario** puede registrar stock inicial y consultar disponibilidad en cualquier momento.
+
+Cuando un **operador de ventas** confirma un pedido, el inventario **reserva** las unidades necesarias para evitar sobreventa. Si el pedido se cancela después de confirmarse, las unidades **vuelven a estar disponibles**.
+
+Cada producto del catálogo tiene como máximo un registro de stock, identificado por el mismo identificador de producto.
 
 ---
 
 ## 1. Propósito
 
-Definir los requerimientos del microservicio **Inventory**, responsable de la **gestión de stock** por producto, como tercer bounded context de ShopDemo junto a **Catalog** y **Orders**.
-
-Inventory utiliza **arquitectura hexagonal** (a diferencia de Catalog y Orders que usan Clean Architecture), para que los alumnos comparen ambos enfoques.
+Definir **qué debe hacer** el módulo de inventario en ShopDemo desde la perspectiva del negocio: registro de stock, consulta de disponibilidad, reserva al confirmar pedidos y liberación al cancelarlos.
 
 ---
 
-## 2. Contexto en la plataforma
+## 2. Actores
 
-```mermaid
-flowchart LR
-    Catalog["Catalog API\n:8001\nProductos"]
-    Inventory["Inventory API\n:8003\nStock"]
-    Orders["Orders API\n:8002\nPedidos"]
-    Bus["Message Bus\n(Event Hubs)"]
-
-    Catalog -->|"ProductId"| Inventory
-    Inventory -->|"Stock disponible"| Orders
-    Orders -->|"Reserve / Release"| Inventory
-    Catalog -.-> Bus
-    Orders -.-> Bus
-    Inventory -.-> Bus
-```
-
-### Flujo de negocio integrado (ejercicio)
-
-| Paso | Servicio | Acción |
-|---|---|---|
-| 1 | **Catalog** | `POST /api/products` → crea producto con `ProductId` |
-| 2 | **Inventory** | `POST /api/inventory/stock` → registra stock para ese `ProductId` |
-| 3 | **Orders** | `POST /api/orders` → crea pedido con líneas que referencian `ProductId` |
-| 4 | **Orders** | `POST /api/orders/{id}/confirm` → **reserva stock** en Inventory automáticamente |
-| 5 | **Inventory** | `GET /api/inventory/{productId}` → consulta unidades disponibles |
-| 6 | **Orders** | `POST /api/orders/{id}/cancel` → **libera stock** reservado en Inventory |
-
----
-
-## 3. Objetivos de aprendizaje
-
-1. Implementar **arquitectura hexagonal** con puertos de entrada y salida explícitos.
-2. Diferenciar **driving adapters** (API HTTP) de **driven adapters** (EF Core, HTTP cliente).
-3. Integrar bounded contexts sin acoplar dominios (comunicación por contratos HTTP).
-4. Modelar **StockEntry** como agregado de inventario.
-5. Relacionar los tres microservicios en un flujo de e-commerce coherente.
-
----
-
-## 4. Alcance MVP
-
-| ID | Requerimiento |
+| Actor | Rol |
 |---|---|
-| RF-01 | Registrar stock inicial para un `ProductId` (proveniente de Catalog) |
-| RF-02 | Consultar stock disponible por `ProductId` |
-| RF-03 | Reservar unidades de stock al confirmar un pedido (invocado por Orders) |
-| RF-04 | Liberar unidades al cancelar un pedido confirmado (invocado por Orders) |
-| RF-05 | Persistir en PostgreSQL dedicado (`ShopDemoInventory`) |
-| RF-06 | Publicar eventos de integración (log en desarrollo) |
-| RF-07 | Swagger en Development |
-| RF-08 | Docker Compose (API + PostgreSQL) |
+| **Operador de inventario** | Registra stock inicial y consulta disponibilidad |
+| **Operador de ventas** | Dispara reserva y liberación al confirmar o cancelar pedidos |
+| **Administrador de inventario** | Supervisa reglas y niveles de stock |
+| **Sistema de pedidos** | Solicita reserva y liberación de unidades |
 
-### No incluido en el curso
+---
+
+## 3. Contexto de negocio
+
+Flujo integrado de la tienda (visión de negocio):
+
+| Paso | Qué ocurre |
+|---|---|
+| 1 | El catálogo registra un **producto** con su identificador |
+| 2 | El operador de inventario **registra stock** para ese producto |
+| 3 | Un **cliente crea un pedido** que incluye ese producto |
+| 4 | Al **confirmar el pedido**, se **reservan unidades** en inventario |
+| 5 | Se puede **consultar** cuántas unidades quedan disponibles |
+| 6 | Al **cancelar un pedido confirmado**, se **liberan** las unidades reservadas |
+
+---
+
+## 4. Alcance
+
+### 4.1 Incluido (MVP)
+
+| ID | Requerimiento de negocio |
+|---|---|
+| RF-01 | Registrar stock inicial para un producto del catálogo |
+| RF-02 | Consultar unidades disponibles por producto |
+| RF-03 | Reservar unidades al confirmar un pedido |
+| RF-04 | Liberar unidades al cancelar un pedido confirmado |
+| RF-05 | Conservar el inventario de forma permanente entre sesiones |
+| RF-06 | Notificar a otros procesos cuando el stock cambia |
+| RF-07 | Permitir explorar las operaciones disponibles (documentación de la API) |
+| RF-08 | Operar en un entorno de prueba reproducible para el equipo |
+
+### 4.2 Fuera de alcance
 
 - Multi-almacén, reservas parciales y reglas de reabastecimiento avanzadas
-- Outbox Pattern completo
+- Outbox Pattern y garantías exactly-once entre sistemas
+- Sincronización automática catálogo → inventario (se registra stock manualmente tras crear producto)
 
-> Event Hubs, sincronización Catalog→Inventory, Aspire AppHost y manifiestos `k8s/` se cubren en las **etapas 5–11**.
+> Event Hubs, Aspire AppHost y despliegue en Kubernetes/nube se cubren en las **etapas 5–11**.
 
 ---
 
 ## 5. Lenguaje ubicuo
 
-| Término | Definición |
-|---|---|
-| **StockEntry** | Registro de inventario de un producto (agregado raíz) |
-| **ProductReference** | Referencia externa al producto de Catalog (`ProductId` + nombre snapshot) |
-| **AvailableUnits** | Unidades disponibles para venta |
-| **Reserve** | Descontar unidades al confirmar pedido |
-| **Release** | Devolver unidades al cancelar pedido |
-| **Replenish** | Aumentar stock (reabastecimiento) |
+| Término | Significado para el negocio | Evitar |
+|---|---|---|
+| **Registro de stock** | Cantidad de unidades disponibles de un producto | “Entrada de inventario” sin definición |
+| **Producto** | Artículo del catálogo, referenciado por identificador | Referencia directa al agregado de Catalog |
+| **Unidades disponibles** | Cantidad que puede venderse o reservarse | “Stock” ambiguo sin contexto |
+| **Reservar** | Apartar unidades al confirmar un pedido | “Descontar” sin contexto de pedido |
+| **Liberar** | Devolver unidades al cancelar un pedido confirmado | “Reponer” sin motivo |
+| **Reabastecer** | Aumentar unidades disponibles | “Agregar stock” sin reglas |
+| **Agotado** | Cero unidades disponibles | “Sin stock” sin evento |
 
 ---
 
-## 6. Modelo de dominio
-
-### Agregado `StockEntry`
-
-```
-StockEntry (AggregateRoot — Id = ProductId)
-├── ProductName        (snapshot de Catalog)
-├── AvailableUnits     (int)
-├── CreatedAt
-└── LastUpdatedAt
-```
-
-### Reglas de negocio
+## 6. Reglas de negocio
 
 | ID | Regla |
 |---|---|
-| RN-01 | No se puede reservar más unidades de las disponibles |
-| RN-02 | No se puede liberar más unidades de las que se reservaron en contexto del pedido (simplificado: liberar cantidad solicitada si hay lógica de reserva por pedido; MVP: incrementar available) |
-| RN-03 | `ProductId` no puede ser `Guid.Empty` |
-| RN-04 | Stock inicial no puede ser negativo |
-| RN-05 | Un producto solo tiene un `StockEntry` (ProductId único) |
+| RN-INV-01 | No se puede reservar más unidades de las **disponibles** |
+| RN-INV-02 | Al liberar, las unidades **vuelven a estar disponibles** por la cantidad indicada |
+| RN-INV-03 | El identificador de producto no puede estar vacío |
+| RN-INV-04 | El stock inicial no puede ser **negativo** |
+| RN-INV-05 | Un producto solo tiene **un registro de stock** (identificador único) |
+| RN-INV-06 | Al registrar stock por primera vez, se guarda **snapshot del nombre** del producto |
+| RN-INV-07 | Cuando las unidades disponibles llegan a **cero**, el producto queda agotado |
+| RN-INV-08 | La reserva se asocia al **identificador del pedido** que la originó |
 
-### Domain Events
+---
 
-| Evento | Cuándo |
+## 7. Criterios de aceptación de negocio (CA-N)
+
+| ID | Criterio |
 |---|---|
-| `StockEntryRegisteredDomainEvent` | Al registrar stock por primera vez |
-| `StockReservedDomainEvent` | Al reservar unidades |
-| `StockReleasedDomainEvent` | Al liberar unidades |
-| `StockDepletedDomainEvent` | Cuando `AvailableUnits` llega a 0 |
+| CA-N01 | Dado un producto del catálogo con cantidad válida, cuando el operador registra stock, entonces el producto queda disponible para consulta y venta |
+| CA-N02 | Dado un producto con stock ya registrado, cuando se intenta registrar de nuevo el mismo producto, entonces el sistema informa el conflicto o aplica reabastecimiento según la operación |
+| CA-N03 | Dado un producto con stock registrado, cuando el operador consulta disponibilidad, entonces ve las unidades disponibles |
+| CA-N04 | Dado un producto sin stock registrado, cuando se consulta, entonces el sistema informa que no se encontró |
+| CA-N05 | Dado stock suficiente, cuando se confirma un pedido, entonces las unidades se reservan y el disponible disminuye |
+| CA-N06 | Dado stock insuficiente, cuando se intenta confirmar un pedido, entonces la confirmación falla y el disponible no cambia |
+| CA-N07 | Dado un pedido confirmado cancelado, cuando se libera stock, entonces las unidades vuelven al disponible |
+| CA-N08 | Dado un cambio relevante de stock, entonces queda constancia de la notificación |
+| CA-N09 | Dado un error de regla de negocio, cuando ocurre una operación inválida, entonces el usuario recibe un mensaje claro |
 
 ---
 
-## 7. Arquitectura hexagonal
+## 8. Trazabilidad
 
-```
-                    ┌─────────────────────────────────────┐
-  Driving           │         APPLICATION CORE            │           Driven
-  Adapters          │  (Use Cases + Domain)               │           Adapters
-                    │                                     │
-  ┌──────────┐      │  ┌─────────────┐  ┌─────────────┐  │      ┌──────────────┐
-  │ REST API │─────►│  │ Inbound     │  │  Domain     │  │◄─────│ EF Core Repo │
-  │Controller│      │  │ Ports       │  │  StockEntry │  │      └──────────────┘
-  └──────────┘      │  └──────┬──────┘  └─────────────┘  │      ┌──────────────┐
-                    │         │                           │◄─────│ Event Logger │
-                    │  ┌──────▼──────┐                      │      └──────────────┘
-                    │  │  Use Cases  │                      │
-                    │  └──────┬──────┘                      │
-                    │         │                           │
-                    │  ┌──────▼──────┐  Outbound Ports     │
-                    │  │ IStockRepo  │◄─────────────────────┘
-                    │  │ IEventPub   │
-                    │  └─────────────┘
-                    └─────────────────────────────────────┘
-```
-
-### Puertos requeridos
-
-**Inbound (driving):**
-- `IRegisterStockUseCase`
-- `IGetStockByProductUseCase`
-- `IReserveStockUseCase`
-- `IReleaseStockUseCase`
-
-**Outbound (driven):**
-- `IStockEntryRepository`
-- `IIntegrationEventPublisher`
-- `IUnitOfWork`
-
----
-
-## 8. Endpoints API
-
-| Método | Ruta | Descripción | Invocado por |
-|---|---|---|---|
-| `POST` | `/api/inventory/stock` | Registrar o reabastecer stock | Usuario / flujo manual tras Catalog |
-| `GET` | `/api/inventory/{productId}` | Consultar stock disponible | Usuario / diagnóstico |
-| `POST` | `/api/inventory/reservations` | Reservar unidades por pedido | **Orders** al confirmar |
-| `POST` | `/api/inventory/reservations/release` | Liberar unidades por pedido | **Orders** al cancelar |
-
-### Payload — Registrar stock
-
-```json
-{
-  "productId": "7c9e6679-7425-40de-944b-e07fc1f90ae7",
-  "productName": "Laptop Pro",
-  "units": 100
-}
-```
-
-### Payload — Reservar stock
-
-```json
-{
-  "orderId": "a1b2c3d4-e5f6-7890-abcd-ef1234567890",
-  "lines": [
-    { "productId": "7c9e6679-7425-40de-944b-e07fc1f90ae7", "quantity": 2 }
-  ]
-}
-```
-
----
-
-## 9. Integración con Orders
-
-Orders debe invocar Inventory **antes** de confirmar el pedido (para evitar confirmar sin stock):
-
-```
-ConfirmOrderHandler:
-  1. Obtener Order
-  2. Llamar IInventoryService.ReserveStockAsync(orderId, lines)
-  3. order.Confirm()
-  4. Persistir + publicar eventos
-```
-
-Al cancelar un pedido que estaba **Confirmed** o **Pending** (si ya se reservó en confirm — solo Confirmed reserva en MVP):
-
-```
-CancelOrderHandler:
-  1. Si order.Status == Confirmed → ReleaseStockAsync
-  2. order.Cancel()
-```
-
----
-
-## 10. Configuración técnica
-
-| Parámetro | Valor |
+| Requerimiento | Historia de usuario |
 |---|---|
-| Base de datos | `ShopDemoInventory` |
-| Puerto PostgreSQL (host) | `5435` |
-| Puerto API | `8003` |
-| Framework | .NET 10 |
+| RF-01 | [HU-INV-01](./HISTORIAS-USUARIO-INVENTORY.md#hu-inv-01--registrar-stock-inicial) |
+| RF-02 | [HU-INV-02](./HISTORIAS-USUARIO-INVENTORY.md#hu-inv-02--consultar-stock-disponible) |
+| RF-03 | [HU-INV-03](./HISTORIAS-USUARIO-INVENTORY.md#hu-inv-03--reservar-stock-al-confirmar-pedido) |
+| RF-04 | [HU-INV-04](./HISTORIAS-USUARIO-INVENTORY.md#hu-inv-04--liberar-stock-al-cancelar-pedido) |
+| RF-05–RF-08 | Implementación en [ANEXO-HISTORIAS-TECNICAS-INVENTORY.md](./ANEXO-HISTORIAS-TECNICAS-INVENTORY.md) |
 
 ---
 
-## 11. Criterios de aceptación
+## 9. Referencias
 
-- [ ] Proyectos Inventory con estructura hexagonal (Ports In/Out explícitos)
-- [ ] Use Cases implementan Inbound Ports (sin MediatR en Inventory)
-- [ ] Controllers dependen solo de Inbound Ports
-- [ ] `POST /api/inventory/stock` crea stock consultable por GET
-- [ ] `POST /api/inventory/reservations` descuenta unidades
-- [ ] Confirmar pedido en Orders reduce stock en Inventory
-- [ ] Cancelar pedido confirmado restaura stock en Inventory
-- [ ] Swagger en `/swagger`
-- [ ] Docker Compose funcional
-
----
-
-## 12. Preguntas de reflexión
-
-1. ¿En hexagonal, quién define el contrato: el adaptador o el núcleo?
-2. ¿Por qué el Controller no debe conocer `StockEntryRepository` directamente?
-3. ¿Qué diferencia hay entre Clean Architecture y Hexagonal en la práctica .NET?
-4. ¿Por qué Inventory usa `ProductId` de Catalog sin referenciar su agregado `Product`?
-
----
-
-## 13. Entregables
-
-1. Código fuente `ShopDemo.Inventory.*` (4 proyectos)
-2. Documento de implementación con explicación de clases
-3. Integración Orders → Inventory verificada con flujo end-to-end
-4. Capturas Swagger + pgAdmin (`ShopDemoInventory` en puerto 5435)
+- [GUIA-ESTRUCTURA-DOCUMENTACION.md](../GUIA-ESTRUCTURA-DOCUMENTACION.md)
+- [REQUERIMIENTOS-CATALOG.md](../catalog/REQUERIMIENTOS-CATALOG.md)
+- [REQUERIMIENTOS-ORDERS.md](../orders/REQUERIMIENTOS-ORDERS.md)
+- [RETO-TECNICO-SHOPDEMO.md](../RETO-TECNICO-SHOPDEMO.md)

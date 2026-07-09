@@ -1,0 +1,7 @@
+﻿flowchart LR
+  API[API Gateway] --> L1[Lambda]
+  L1 --> DDB[(DynamoDB)]
+  L1 --> SQS[SQS]
+  XRAY[X-Ray] -.->|traces| API
+  XRAY -.-> L1
+  XRAY -.-> DDB

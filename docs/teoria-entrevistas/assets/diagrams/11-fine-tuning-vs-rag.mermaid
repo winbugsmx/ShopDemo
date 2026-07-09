@@ -1,0 +1,13 @@
+flowchart TB
+  subgraph RAG["RAG"]
+    R1[Conocimiento externo indexado]
+    R2[Recuperación en tiempo de consulta]
+    R3[Sin reentrenar modelo]
+  end
+  subgraph FT["Fine-tuning"]
+    F1[Datos etiquetados del dominio]
+    F2[Adaptación de pesos del modelo]
+    F3[Conocimiento internalizado]
+  end
+  Q[Pregunta] --> RAG
+  Q --> FT

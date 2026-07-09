@@ -1,0 +1,10 @@
+﻿flowchart TB
+  subgraph MONO["Monolito - un despliegue"]
+    WEB[Controllers / API]
+    APP[Application]
+    DOM[Domain]
+    INF[Infrastructure - EF, HTTP]
+  end
+  WEB --> APP --> DOM
+  APP --> INF
+  INF --> DB[(Una base de datos)]

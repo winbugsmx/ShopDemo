@@ -1,0 +1,19 @@
+classDiagram
+  class Component {
+    <<interface>>
+    +operation()
+  }
+  class ConcreteComponent {
+    +operation()
+  }
+  class Decorator {
+    -component: Component
+    +operation()
+  }
+  class ConcreteDecoratorA {
+    +operation()
+  }
+  Component <|.. ConcreteComponent
+  Component <|.. Decorator
+  Decorator <|-- ConcreteDecoratorA
+  Decorator o-- Component

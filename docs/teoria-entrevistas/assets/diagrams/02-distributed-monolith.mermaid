@@ -1,0 +1,16 @@
+flowchart TB
+  subgraph DEPLOY["Tres despliegues independientes"]
+    S1[Servicio Pedidos]
+    S2[Servicio Inventario]
+    S3[Servicio Pagos]
+  end
+  subgraph SHARED["Acoplamiento oculto"]
+    DB[(Base de datos compartida)]
+    SYNC[Llamadas sincronas en cadena]
+  end
+  S1 --> DB
+  S2 --> DB
+  S3 --> DB
+  S1 --> SYNC
+  S2 --> SYNC
+  S3 --> SYNC

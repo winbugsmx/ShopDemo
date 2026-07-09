@@ -1,69 +1,74 @@
-# Teoría para entrevistas técnicas — ShopDemo
+# Guía de teoría técnica — Material de estudio
+
+Bienvenido. Esta guía está escrita **como si asistieras a un curso de arquitectura de software** dirigido a desarrolladores que ya programan (por ejemplo, en C# y ASP.NET) pero que aún no dominan patrones, arquitecturas distribuidas ni plataformas cloud.
 
 | Campo | Detalle |
 |:------|:--------|
-| **Empresa** | Lite Thinking |
-| **Curso** | Microservicios con .NET en Kubernetes y Entornos Multicloud |
-| **Propósito** | Estudiar la **teoría implementada** en ShopDemo como guía de aprendizaje y preparación para entrevistas |
+| **Propósito** | Aprender teoría con definiciones completas, explicaciones progresivas y diagramas |
+| **Audiencia** | Desarrollador junior / intermedio inicial |
+| **Prerrequisitos** | Programación básica, HTTP, bases de datos relacionales, nociones de API REST |
+| **Formato** | Definición → explicación → diagrama → ejemplo → cuándo usar / cuándo no |
 
-Esta carpeta **no sustituye** la práctica del lab; complementa los documentos de implementación con conceptos, patrones y preguntas típicas de entrevista, **anclados al código real** del repositorio.
+> **Cómo leer cada capítulo:** no te saltes las definiciones. En arquitectura, muchos malentendidos vienen de usar palabras (como “microservicio” o “agregado”) sin conocer su significado preciso. Cada sección construye sobre la anterior.
 
 ---
 
 ## Orden de lectura recomendado
 
-| # | Documento | Tiempo | Qué dominarás |
-|---|---|---|---|
-| 1 | [01-patrones-diseno.md](./01-patrones-diseno.md) | 45 min | Patrones en Catalog, Orders, Inventory |
-| 2 | [02-arquitecturas-software.md](./02-arquitecturas-software.md) | 60 min | Clean vs Hexagonal vs microservicios |
-| 3 | [03-ddd-y-bounded-contexts.md](./03-ddd-y-bounded-contexts.md) | 45 min | DDD táctico y contextos |
-| 4 | [04-comunicacion-microservicios.md](./04-comunicacion-microservicios.md) | 50 min | HTTP, Event Hubs, consistencia |
-| 5 | [05-servicios-azure.md](./05-servicios-azure.md) | 40 min | ACA, AKS, ACR, Event Hubs |
-| 6 | [06-servicios-aws.md](./06-servicios-aws.md) | 40 min | ECS, EKS, ECR, cross-cloud |
-| 7 | [07-kubernetes-cloud-native.md](./07-kubernetes-cloud-native.md) | 50 min | K8s, Ingress, HPA, manifiestos |
-| 8 | [08-ci-cd-devops.md](./08-ci-cd-devops.md) | 35 min | GitHub Actions, environments |
-| 9 | [09-integracion-ia-mcp.md](./09-integracion-ia-mcp.md) | 30 min | MCP Gateway y agentes |
-| 10 | [11-observabilidad-resiliencia.md](./11-observabilidad-resiliencia.md) | 55 min | Pilares OTEL, probes, HPA, incidentes |
-| 11 | [10-preguntas-entrevista.md](./10-preguntas-entrevista.md) | 60 min | Flashcards integradas (repaso final) |
+| # | Documento | Qué aprenderás |
+|---|---|---|
+| 1 | [01-patrones-diseno.md](./01-patrones-diseno.md) | Qué es un patrón; GoF; patrones enterprise |
+| 2 | [02-arquitecturas-software.md](./02-arquitecturas-software.md) | Capas, Clean, Hexagonal, microservicios |
+| 3 | [03-ddd-domain-driven-design.md](./03-ddd-domain-driven-design.md) | Modelar el negocio con DDD |
+| 4 | [04-microservicios-comunicacion.md](./04-microservicios-comunicacion.md) | Cómo se hablan los servicios entre sí |
+| 5 | [05-servicios-azure.md](./05-servicios-azure.md) | Servicios Microsoft Azure explicados |
+| 6 | [06-servicios-aws.md](./06-servicios-aws.md) | Servicios AWS explicados |
+| 7 | [07-kubernetes-orquestacion.md](./07-kubernetes-orquestacion.md) | Contenedores y Kubernetes desde cero |
+| 8 | [08-ci-cd-devops.md](./08-ci-cd-devops.md) | Pipelines y entrega continua |
+| 9 | [09-observabilidad.md](./09-observabilidad.md) | Métricas, logs y trazas |
+| 10 | [10-resiliencia.md](./10-resiliencia.md) | Qué pasa cuando algo falla |
+| 11 | [11-integracion-ia-mcp.md](./11-integracion-ia-mcp.md) | IA y protocolo MCP |
+| 12 | [12-sintesis-integracion.md](./12-sintesis-integracion.md) | Mapa final: cómo encaja todo |
+
+**Tiempo orientativo:** dedica entre 1 y 2 horas por capítulo la primera vez. Volver a leer un capítulo con calma es normal.
 
 ---
 
-## Rutas según tipo de entrevista
+## Rutas según tu interés
 
-| Enfoque | Lee primero | Luego |
-|---|---|---|
-| Backend .NET / DDD | 01 → 02 → 03 → 04 | 10 |
-| Cloud Azure | 05 → 07 → 08 | 04 |
-| Cloud AWS | 06 → 07 → 08 | 04 |
-| DevOps / SRE | 07 → 08 → **11** → 05 → 06 | 10 |
-| Observabilidad / resiliencia | **11** → 07 → 04 | 10 |
-| Arquitecto | 02 → 03 → 04 → 05 → 06 | 09 → **11** → 10 |
+| Si quieres enfocarte en… | Lee en este orden |
+|---|---|
+| **Escribir mejor código y organizar proyectos** | 01 → 02 → 03 → 12 |
+| **Backend distribuido** | 02 → 03 → 04 → 09 → 10 → 12 |
+| **Cloud y despliegue** | 05 → 06 → 07 → 08 → 12 |
+| **Operar sistemas en producción** | 07 → 08 → 09 → 10 → 12 |
 
 ---
 
 ## Recursos gráficos
 
-| Recurso | Ubicación |
+| Tipo | Ubicación |
 |---|---|
-| Fuentes Mermaid | [assets/diagrams/](./assets/diagrams/) |
-| draw.io / imágenes | [assets/RECURSOS-GRAFICOS.md](./assets/RECURSOS-GRAFICOS.md) |
+| **Imágenes PNG activas** | `assets/images/diagrams/` — visibles en Cursor (sin bloques Mermaid en el MD) |
+| Fuentes Mermaid editables | [assets/diagrams/](./assets/diagrams/) |
+| Regenerar / activar imágenes | `scripts/docs/Activate-TeoriaDiagramImages.ps1` |
+| Complementar PNG + fuente editable | `scripts/docs/Complement-FuenteEditableImages.ps1` |
+| Guía de edición | [assets/RECURSOS-GRAFICOS.md](./assets/RECURSOS-GRAFICOS.md) |
+
+> **Visualización:** Cada diagrama usa **imagen incrustada** (`![alt](./assets/images/diagrams/....png)`). Abre la **vista previa Markdown** (`Ctrl+Shift+V`) para ver los diagramas renderizados. La línea *Fuente editable* enlaza solo al `.mermaid`.
 
 ---
 
-## Documentación relacionada
+## Método de estudio (recomendado por el instructor)
 
-| Tema | Enlace |
-|---|---|
-| Arquitectura | [docs/ARQUITECTURA.md](../ARQUITECTURA.md) |
-| Observabilidad / resiliencia (detalle) | [TEORIA-OBSERVABILIDAD.md](../observabilidad/TEORIA-OBSERVABILIDAD.md) · [TEORIA-RESILIENCIA.md](../resiliencia/TEORIA-RESILIENCIA.md) |
-| Examen / reto | [EXAMEN-TEORICO-SHOPDEMO.md](../EXAMEN-TEORICO-SHOPDEMO.md) |
+1. **Lee con lápiz y papel.** Dibuja el diagrama del capítulo sin mirar.
+2. **Explica en voz alta** cada definición como si se la contaras a un compañero junior.
+3. **No memorices nombres:** entiende el *problema* que resuelve cada patrón.
+4. **Relaciona con lo que ya conoces.** Si has usado Entity Framework, compáralo con Repository.
+5. Cierra con el capítulo 12 para ver el panorama completo.
 
 ---
 
-## Método de estudio
+## Relación con la práctica
 
-1. Lee un documento (30–45 min).
-2. Ubica 2–3 archivos citados en el repo.
-3. Responde las preguntas del doc sin mirar.
-4. Repasa con el documento **10** (flashcards finales).
-5. Explica el flujo E2E en voz alta (< 3 min).
+Esta guía es **teoría general**. No sustituye escribir código ni desplegar servicios, pero te da el vocabulario y el criterio para entender *por qué* se toman decisiones en proyectos reales.

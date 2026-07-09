@@ -1,0 +1,6 @@
+﻿flowchart TB
+  EC2[Instancia EC2]
+  EC2 --> EBS[Disco EBS]
+  EC2 --> SG[Security Group]
+  SG --> INT[Internet / VPC]
+  DEV[Desarrollador] -->|RDP/SSH| EC2

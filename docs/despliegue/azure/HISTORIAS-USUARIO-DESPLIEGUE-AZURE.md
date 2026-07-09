@@ -1,82 +1,111 @@
-# Historias de Usuario — Despliegue Azure Container Apps (ShopDemo)
+# Historias de Usuario — Despliegue Azure (ShopDemo)
 
 | Campo | Detalle |
 |:------|:--------|
-| **Fuente** | [REQUERIMIENTOS-DESPLIEGUE-AZURE.md](./REQUERIMIENTOS-DESPLIEGUE-AZURE.md) |
-| **Persona** | Alumno DevOps / Desarrollador .NET |
+| **Fuente de negocio** | [REQUERIMIENTOS-DESPLIEGUE-AZURE.md](./REQUERIMIENTOS-DESPLIEGUE-AZURE.md) |
+| **Especificación técnica** | [ANEXO-ESPECIFICACION-TECNICA-DESPLIEGUE-AZURE.md](./ANEXO-ESPECIFICACION-TECNICA-DESPLIEGUE-AZURE.md) |
+| **Historias técnicas** | [ANEXO-HISTORIAS-TECNICAS-DESPLIEGUE-AZURE.md](./ANEXO-HISTORIAS-TECNICAS-DESPLIEGUE-AZURE.md) |
+
+> Este documento contiene **solo historias de negocio/operación**. Las tareas de implementación están en el anexo técnico.
 
 ---
 
-## HU-AZ-01 — Publicar imágenes en ACR
+## HU-AZ-01 — Operar catálogo en nube
 
-| **Objetivo** | OBJ-AZ-01 |
+| Campo | Detalle |
+|---|---|
+| **Requerimiento** | RF-AZ-01, RF-AZ-06 |
 
-**Como** alumno, **quiero** subir las 5 imágenes Docker a ACR, **para** que Container Apps las ejecuten.
+**Como** operador de la tienda, **quiero** registrar y consultar productos usando el catálogo desplegado en Azure, **para** mantener el inventario de artículos sin depender del entorno local.
 
-**Modelo:** **N/A** (infraestructura); artefactos: Dockerfile, tags `shopdemo-*`.
+### Reglas de negocio
 
-**Reglas:** RNF-AZ-03 — secretos no en git.
+| ID | Regla |
+|---|---|
+| RN-AZ-01 | Catálogo accesible por URL pública del entorno |
+| RN-AZ-05 | Credenciales gestionadas por el responsable de TI, no expuestas al operador |
 
-**Criterios:**
-- [ ] 5 repos/tags en ACR (`catalog`, `orders`, `inventory`, `analytics`, `mcp`).
-- [ ] Login ACR con `az acr login` exitoso.
+### Criterios de aceptación (CA-N)
 
----
-
-## HU-AZ-02 — Desplegar APIs en Container Apps
-
-| **Objetivo** | OBJ-AZ-02 · **RF** | RF-AZ-01 a RF-AZ-04 |
-
-**Como** alumno, **quiero** 5 Container Apps en un Environment, **para** exponer el release serverless.
-
-**Modelo:** Secretos ACA (connection strings, Event Hubs, Storage checkpoints); **N/A** entidad.
-
-**Reglas:**
-- RN-AZ-01: Ingress externo Catalog, Orders, Analytics, MCP; Inventory interno.
-- RN-AZ-02: Checkpoints en **Storage Account** (no Azurite en ACA).
-
-**Criterios (CA-AZ-01, CA-AZ-02):**
-- [ ] Apps en estado Running.
-- [ ] Swagger/health en FQDN Catalog.
+- [ ] **CA-N-AZ-01:** La consulta de salud del catálogo responde correctamente.
+- [ ] **CA-N-AZ-02:** Un producto registrado en nube queda disponible para el resto del flujo.
 
 ---
 
-## HU-AZ-03 — PostgreSQL en contenedor (ACI)
+## HU-AZ-02 — Completar flujo de pedido en nube
 
-| **Objetivo** | OBJ-AZ-03 |
+| Campo | Detalle |
+|---|---|
+| **Requerimiento** | RF-AZ-02, RF-AZ-03 |
 
-**Como** lab, **quiero** PostgreSQL en ACI con 3 bases, **para** no usar Azure Database gestionado.
+**Como** operador de la tienda, **quiero** crear y confirmar un pedido en el entorno Azure, **para** validar que la venta y la reserva de stock funcionan igual que en local.
 
-**Reglas:** RN-AZ-03 — datos efímeros si se recrea ACI (documentado).
+### Reglas de negocio
 
-**Criterios:** Connection strings en secrets ACA apuntan a FQDN ACI.
+| ID | Regla |
+|---|---|
+| RN-AZ-02 | Los eventos de creación y confirmación deben propagarse al bus |
+| RN-AZ-03 | La confirmación no falla por comunicación interna entre pedidos e inventario |
 
----
+### Criterios de aceptación (CA-N)
 
-## HU-AZ-04 — Integración Event Hubs y Orders→Inventory
-
-| **Objetivos** | OBJ-AZ-04, OBJ-AZ-05 · **RF** | RF-AZ-02, RF-AZ-03 |
-
-**Criterios (CA-AZ-03, CA-AZ-04):**
-- [ ] Crear producto → evento en Analytics.
-- [ ] Confirmar pedido sin error de URL Inventory interna.
-
----
-
-## HU-AZ-05 — Actualizar release (CI/CD)
-
-| **Objetivo** | OBJ-AZ-07 · **RF** | RF-AZ-05 |
-
-**Como** alumno, **quiero** push nueva imagen + revisión ACA, **para** desplegar cambios.
-
-**Criterios:** Workflow `deploy-azure.yml` o push manual documentado.
+- [ ] **CA-N-AZ-03:** La confirmación de pedido completa la reserva de stock sin error.
+- [ ] Tras crear producto, el inventario refleja stock asignado automáticamente.
 
 ---
 
-## HU-AZ-06 — Documentación dual Portal + CLI
+## HU-AZ-03 — Observar eventos de negocio
 
-| **Objetivo** | OBJ-AZ-06 |
+| Campo | Detalle |
+|---|---|
+| **Requerimiento** | RF-AZ-04 |
 
-**Criterio (CA-AZ-05):** Alumno completó al menos un paso equivalente en Portal y CLI.
+**Como** responsable de operaciones, **quiero** consultar los eventos recientes del flujo de la tienda, **para** verificar que las acciones de negocio se registran correctamente en analítica.
 
-**Referencias:** [GUIA-RELEASE-PORTAL-AZURE.md](../azure/GUIA-RELEASE-PORTAL-AZURE.md) · [GUIA-RELEASE-SCRIPT-AZURE.md](../azure/GUIA-RELEASE-SCRIPT-AZURE.md)
+### Criterios de aceptación (CA-N)
+
+- [ ] **CA-N-AZ-02:** Tras registrar un producto, el evento aparece en la consulta de analítica.
+- [ ] Tras confirmar un pedido, los eventos relacionados son visibles.
+
+---
+
+## HU-AZ-04 — Consultar tienda vía agente
+
+| Campo | Detalle |
+|---|---|
+| **Requerimiento** | RF-AZ-05 |
+
+**Como** equipo de soporte, **quiero** que un agente de IA pueda consultar el estado de ShopDemo en Azure, **para** responder preguntas operativas sin acceder manualmente a cada API.
+
+### Criterios de aceptación (CA-N)
+
+- [ ] **CA-N-AZ-06:** El agente obtiene estado coherente de las APIs vía gateway MCP.
+
+---
+
+## HU-AZ-05 — Actualizar release sin interrumpir operación
+
+| Campo | Detalle |
+|---|---|
+| **Requerimiento** | RF-AZ-07 |
+
+**Como** responsable de TI, **quiero** publicar una nueva versión de las aplicaciones en Azure, **para** incorporar correcciones o mejoras manteniendo el flujo E2E operativo.
+
+### Criterios de aceptación (CA-N)
+
+- [ ] **CA-N-AZ-04:** Tras la actualización, el flujo producto → pedido → confirmación sigue funcionando.
+- [ ] **CA-N-AZ-05:** La documentación cubre el procedimiento en Portal y CLI.
+
+---
+
+## Trazabilidad
+
+| Requerimiento | Historia |
+|---|---|
+| RF-AZ-01, RF-AZ-06 | HU-AZ-01 |
+| RF-AZ-02, RF-AZ-03 | HU-AZ-02 |
+| RF-AZ-04 | HU-AZ-03 |
+| RF-AZ-05 | HU-AZ-04 |
+| RF-AZ-07 | HU-AZ-05 |
+
+Implementación técnica: [ANEXO-HISTORIAS-TECNICAS-DESPLIEGUE-AZURE.md](./ANEXO-HISTORIAS-TECNICAS-DESPLIEGUE-AZURE.md).

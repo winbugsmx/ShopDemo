@@ -1,0 +1,8 @@
+flowchart LR
+  C[Commit] --> B[Build]
+  B --> T[Test]
+  T --> S[Security Scan]
+  S --> P[Publish Image]
+  P --> D[Deploy Staging]
+  D --> A[Approval]
+  A --> PR[Deploy Production]

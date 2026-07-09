@@ -1,0 +1,5 @@
+﻿flowchart LR
+  CM[ConfigMap appsettings] --> POD[Pod API]
+  SEC[Secret db-password] --> POD
+  ESO[External Secrets Operator] --> SEC
+  KV[Key Vault / Secrets Manager] --> ESO

@@ -1,0 +1,7 @@
+﻿flowchart TB
+  REQ[Requests entrantes]
+  REQ --> FAST[Pool GET - 50 threads]
+  REQ --> SLOW[Pool Reports - 10 threads]
+  FAST --> OK1[Consultas responden]
+  SLOW --> SAT[Saturado - solo reports afectados]
+  SAT -.->|sin bulkhead| ALL[Todo el servicio caído]

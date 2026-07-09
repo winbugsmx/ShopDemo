@@ -1,0 +1,9 @@
+flowchart LR
+  subgraph BUCKET["Token bucket"]
+    T[Tokens acumulados]
+    R[Refill rate - tokens/segundo]
+    R --> T
+  end
+  REQ[Request] -->|consume 1 token| T
+  T -->|token disponible| OK[Permitir]
+  T -->|sin tokens| REJ[429 Too Many Requests]

@@ -1,0 +1,9 @@
+stateDiagram-v2
+  [*] --> Closed
+  Closed --> Open: failures exceed threshold
+  Open --> HalfOpen: after cooldown timeout
+  HalfOpen --> Closed: probe success
+  HalfOpen --> Open: probe failure
+  note right of Closed: Cuenta fallos - llamadas normales
+  note right of Open: Rechaza todo - fallback o error rapido
+  note right of HalfOpen: N probes de prueba

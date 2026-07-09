@@ -2,60 +2,54 @@
 
 | Campo | Detalle |
 |:------|:--------|
-| **Fuente** | [REQUERIMIENTOS-SPEC-DRIVEN-DEVELOPMENT.md](../../spec-driven/REQUERIMIENTOS-SPEC-DRIVEN-DEVELOPMENT.md) |
+| **Requerimientos** | [REQUERIMIENTOS-SPEC-DRIVEN-DEVELOPMENT.md](./REQUERIMIENTOS-SPEC-DRIVEN-DEVELOPMENT.md) |
+| **Historias técnicas** | [ANEXO-HISTORIAS-TECNICAS-SPEC-DRIVEN.md](./ANEXO-HISTORIAS-TECNICAS-SPEC-DRIVEN.md) |
 
 ---
 
-## HU-SDD-01 — Specs versionadas por módulo
+## HU-SDD-01 — Especificaciones alineadas al curso
 
-| **Objetivo** | OBJ-SDD-01 |
+| **Objetivo** | OBJ-SDD-01 · **RF** | RF-SDD-01 |
 
-**Como** instructor, **quiero** specs en `spec-driven/specs/` enlazadas a `docs/`, **para** que agentes IA sigan el mismo alcance del curso.
+**Como** instructor, **quiero** que cada módulo tenga una especificación enlazada a su documentación de negocio, **para** que el equipo y los agentes IA trabajen con el mismo alcance.
 
-**Modelo:** Archivos SPEC.md (**N/A** código dominio).
+### Criterios (CA-N)
 
-**Criterios (CA-SDD-01):** 13 specs con enlaces válidos.
-
----
-
-## HU-SDD-02 — Activar Cursor con plantillas
-
-| **Objetivo** | OBJ-SDD-02 |
-
-**Como** alumno, **quiero** copiar templates Cursor, **para** usar reglas y commands del curso.
-
-**Criterios (CA-SDD-02):** Activación sin errores según guía.
+- [ ] **CA-N-SDD-01:** 13 specs con enlaces válidos a `docs/`.
 
 ---
 
-## HU-SDD-03 — Activar Claude Code
+## HU-SDD-02 — Herramientas de IA configuradas
 
-| **Objetivo** | OBJ-SDD-03 |
+| **Objetivos** | OBJ-SDD-02, OBJ-SDD-03 |
 
-**Criterios (CA-SDD-03):** `CLAUDE.md` + `.claude/` operativos.
+**Como** responsable de calidad, **quiero** que Cursor y Claude Code se activen con plantillas del curso, **para** validar implementaciones de forma reproducible.
 
----
+### Criterios (CA-N)
 
-## HU-SDD-04 — Commands deploy Azure/AWS
-
-| **Objetivo** | OBJ-SDD-04 |
-
-**Como** alumno, **quiero** commands separados por nube, **para** no mezclar instrucciones ACA y ECS.
-
-**Modelo:** Skills/commands en carpetas templates.
+- [ ] **CA-N-SDD-02:** Activación de Cursor sin errores según guía.
+- [ ] **CA-N-SDD-03:** Claude Code operativo con configuración del repositorio.
 
 ---
 
-## HU-SDD-05 — Perfiles MCP multientorno
+## HU-SDD-03 — MCP multientorno documentado
 
-| **Objetivo** | OBJ-SDD-05 |
+| **Objetivo** | OBJ-SDD-04 · **RF** | RF-SDD-04 |
 
-**Criterios (CA-SDD-04):** `.mcp.json` template documenta local, Azure, AWS.
+**Como** responsable de integración, **quiero** perfiles MCP para local, Azure y AWS, **para** que agentes operen en el entorno correcto.
+
+### Criterios (CA-N)
+
+- [ ] **CA-N-SDD-04:** Plantilla documenta los tres entornos.
 
 ---
 
-## HU-SDD-06 — Secretos locales fuera de git
+## HU-SDD-04 — Secretos fuera del repositorio
 
-| **Objetivo** | (implícito) |
+| **Objetivo** | OBJ-SDD-04 · **RF** | RF-SDD-05 (implícito) |
 
-**Criterios (CA-SDD-05):** `*.local.*` en `.gitignore`.
+**Como** responsable de seguridad, **quiero** que credenciales locales no se suban a git, **para** proteger el laboratorio.
+
+### Criterios (CA-N)
+
+- [ ] **CA-N-SDD-05:** Patrones `*.local.*` excluidos en `.gitignore`.

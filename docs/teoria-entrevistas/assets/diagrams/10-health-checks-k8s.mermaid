@@ -1,0 +1,9 @@
+flowchart TB
+  subgraph K8S["Kubernetes"]
+    SP[Startup probe] -->|OK| RP[Readiness probe]
+    RP -->|OK| LP[Liveness probe]
+    LP -->|falla| RESTART[Reinicia pod]
+    RP -->|falla| NO_TRAFFIC[Quita del Service]
+    SP -->|pendiente| WAIT[No evalúa liveness/readiness]
+  end
+  SVC[Service / Ingress] -->|solo pods Ready| RP

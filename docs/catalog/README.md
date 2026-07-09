@@ -1,35 +1,62 @@
-# Microservicio Catalog — Material del curso
+# Microservicio Catalog — Documentación ShopDemo
 
 | Campo | Detalle |
 |:------|:--------|
-| **Empresa** | Lite Thinking |
-| **Curso** | Microservicios con .NET en Kubernetes y Entornos Multicloud |
-| **Instructor** | Lcc. Gilberto Valentino Juárez Sánchez |
-| **Contacto** | WhatsApp: +52 5614206660 |
-| | E-mail: gilberto.juarez@gmail.com |
-| | E-mail: lcc.gilberto.juarez@gmail.com |
+| **Módulo** | Catalog — catálogo de productos |
+| **Arquitectura** | Clean Architecture + DDD + CQRS |
 
-Documentación para el bounded context **Catalog** en **ShopDemo**, con **Clean Architecture + DDD + CQRS**.
+---
 
-## Documentos
+## Documentos (3 capas)
 
-| Documento | Descripción |
+| Capa | Documento | Audiencia |
+|---|---|---|
+| **A — Negocio** | [REQUERIMIENTOS-CATALOG.md](./REQUERIMIENTOS-CATALOG.md) | PM, analista, negocio |
+| **A — Negocio** | [HISTORIAS-USUARIO-CATALOG.md](./HISTORIAS-USUARIO-CATALOG.md) | Igual |
+| **B — Técnica** | [ANEXO-ESPECIFICACION-TECNICA-CATALOG.md](./ANEXO-ESPECIFICACION-TECNICA-CATALOG.md) | Desarrollador |
+| **B — Técnica** | [ANEXO-HISTORIAS-TECNICAS-CATALOG.md](./ANEXO-HISTORIAS-TECNICAS-CATALOG.md) | Desarrollador |
+| **C — Pedagogía** | [ANEXO-PEDAGOGIA-CATALOG.md](./ANEXO-PEDAGOGIA-CATALOG.md) | Instructor / alumno |
+
+**Guía de estructura:** [GUIA-ESTRUCTURA-DOCUMENTACION.md](../GUIA-ESTRUCTURA-DOCUMENTACION.md)
+
+---
+
+## Orden de lectura
+
+### Negocio o junior sin contexto técnico
+
+1. REQUERIMIENTOS → sección *Resumen en lenguaje llano*
+2. HISTORIAS-USUARIO
+
+### Desarrollador que implementa
+
+1. REQUERIMIENTOS (negocio)
+2. HISTORIAS-USUARIO
+3. ANEXO-ESPECIFICACION-TECNICA
+4. ANEXO-HISTORIAS-TECNICAS
+5. [IMPLEMENTACION-CATALOG.md](./IMPLEMENTACION-CATALOG.md)
+6. ANEXO-PEDAGOGIA (si eres alumno)
+
+---
+
+## Otros recursos
+
+| Documento | Uso |
 |---|---|
-| [REQUERIMIENTOS-CATALOG.md](./REQUERIMIENTOS-CATALOG.md) | Especificación funcional y técnica |
-| [HISTORIAS-USUARIO-CATALOG.md](./HISTORIAS-USUARIO-CATALOG.md) | Requerimientos en formato historia de usuario + criterios de aceptación |
-| [IMPLEMENTACION-CATALOG.md](./IMPLEMENTACION-CATALOG.md) | Guía paso a paso con código actual y explicación de clases |
+| [IMPLEMENTACION-CATALOG.md](./IMPLEMENTACION-CATALOG.md) | Guía paso a paso con código |
+| [ANEXO-CODIGO-CATALOG.md](./ANEXO-CODIGO-CATALOG.md) | Fragmentos de referencia |
+
+---
 
 ## Relación con otros microservicios
 
 ```
-Catalog (8001)  →  define productos y emite ProductId
+Catalog (8001)  →  define productos
        ↓
-Inventory (8003)  →  registra stock para ese ProductId
+Inventory (8003)  →  asigna stock
        ↓
-Orders (8002)     →  crea pedidos referenciando ProductId
+Orders (8002)     →  crea pedidos
 ```
-
-## Puertos
 
 | Servicio | API | PostgreSQL (host) |
 |---|---|---|

@@ -1,0 +1,5 @@
+flowchart LR
+  P[Productor] --> Q[Cola principal]
+  Q --> C[Consumidor]
+  C -->|fallo tras N reintentos| DLQ[Dead-Letter Queue]
+  DLQ --> OPS[Equipo ops - analisis manual]

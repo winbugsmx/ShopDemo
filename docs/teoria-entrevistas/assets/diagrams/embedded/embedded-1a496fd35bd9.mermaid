@@ -1,0 +1,9 @@
+﻿flowchart TB
+  CW[Context window finito]
+  CW --> SYS[System prompt]
+  CW --> RULES[Reglas del proyecto]
+  CW --> HIST[Historial de chat]
+  CW --> RAG_CTX[RAG context]
+  CW --> FILES[Archivos referenciados]
+  CW --> RESP[Respuesta generada]
+  OVER[Overflow - contexto excedido] -.->|evitar| PRI[Priorizar contexto relevante]

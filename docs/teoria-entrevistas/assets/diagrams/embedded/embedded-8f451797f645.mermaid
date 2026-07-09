@@ -1,0 +1,5 @@
+﻿flowchart LR
+  BLOB[Blob Storage] -->|BlobCreated| EG[Event Grid]
+  EG --> FN[Azure Function]
+  EG --> LA[Logic App]
+  EG --> WH[Webhook HTTP]

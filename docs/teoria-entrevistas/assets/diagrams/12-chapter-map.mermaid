@@ -1,0 +1,18 @@
+flowchart TB
+  P[01 Patrones] --> A[02 Arquitecturas]
+  A --> D[03 DDD]
+  D --> M[04 Microservicios]
+  A --> M
+  M --> O[09 Observabilidad]
+  M --> R[10 Resiliencia]
+  M --> AZ[05 Azure]
+  M --> AW[06 AWS]
+  AZ --> K[07 Kubernetes]
+  AW --> K
+  K --> C[08 CI/CD]
+  C --> O
+  I[11 IA y MCP] --> C
+  I --> O
+  O --> S[12 Síntesis]
+  R --> S
+  C --> S

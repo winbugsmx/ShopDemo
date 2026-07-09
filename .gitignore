@@ -71,6 +71,9 @@ scripts/azure/.env.azure
 scripts/aws/.env.aws
 scripts/aws/.deploy-state.json
 
+# Docs tooling (mermaid-cli)
+scripts/docs/node_modules/
+
 # Spec-driven — archivos locales activados por el alumno (pueden contener URLs/secretos)
 CLAUDE.local.md
 .claude/settings.local.json

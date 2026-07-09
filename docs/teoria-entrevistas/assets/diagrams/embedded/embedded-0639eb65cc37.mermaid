@@ -1,0 +1,9 @@
+﻿flowchart TB
+  subgraph PREGUNTAS["La arquitectura responde"]
+    Q1[Donde vive la logica de negocio?]
+    Q2[Quien puede llamar a quien?]
+    Q3[Como se despliega y escala?]
+  end
+  ARQ[Decisiones de arquitectura] --> Q1
+  ARQ --> Q2
+  ARQ --> Q3

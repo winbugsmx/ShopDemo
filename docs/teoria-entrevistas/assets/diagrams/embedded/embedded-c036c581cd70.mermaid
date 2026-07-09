@@ -1,0 +1,4 @@
+﻿flowchart LR
+  S[Servicio Pedidos] -->|OrderCreated| Q[Cola / Bus]
+  Q --> I[Inventario - T+500ms]
+  Q --> A[Analytics - T+30s]

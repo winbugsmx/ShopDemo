@@ -6,44 +6,50 @@
 
 ---
 
-## HU-EKS-01 — Crear cluster EKS
+## HU-EKS-01 — Operar tienda en EKS
 
-| **Objetivo** | OBJ-EKS-01 |
+| **RF** | RF-EKS-01, RF-EKS-04 |
 
-**Como** alumno, **quiero** cluster EKS (eksctl o consola), **para** orquestar manifiestos ShopDemo.
+**Como** operador, **quiero** acceder a APIs por Ingress en EKS, **para** ejecutar el e-commerce en AWS Kubernetes.
 
-**Criterios (CA-EKS-01):** Nodos Ready.
+### Criterios (CA-N)
 
----
-
-## HU-EKS-02 — Imágenes ECR y kubeconfig
-
-| **Objetivos** | OBJ-EKS-02, OBJ-EKS-03 |
-
-**Criterios:** Imágenes en ECR; `kubectl get nodes` funciona.
+- [ ] **CA-N-EKS-01:** Ingress responde rutas de la tienda.
 
 ---
 
-## HU-EKS-03 — EBS CSI e Ingress Helm
+## HU-EKS-02 — Procesar pedidos y eventos
 
-| **Objetivo** | OBJ-EKS-04, OBJ-EKS-10 |
+| **RF** | RF-EKS-02, RF-EKS-03 |
 
-**Reglas:** PVC para Postgres; Ingress NGINX vía Helm.
+**Como** operador, **quiero** confirmar pedidos y ver eventos en analítica, **para** validar integración completa.
 
-**Criterios (CA-EKS-03):** Ingress accesible.
+### Criterios (CA-N)
 
----
-
-## HU-EKS-04 — Desplegar namespace shopdemo
-
-| **Objetivos** | OBJ-EKS-05, OBJ-EKS-08, OBJ-EKS-09 |
-
-**Criterios (CA-EKS-02, CA-EKS-05):** Todos pods Running; probes y HPA Catalog OK.
+- [ ] **CA-N-EKS-02:** Pedido confirmado; eventos visibles.
 
 ---
 
-## HU-EKS-05 — Validación E2E y dual Consola/CLI
+## HU-EKS-03 — Garantizar disponibilidad
 
-| **Objetivos** | OBJ-EKS-06, OBJ-EKS-07 |
+| **RF** | RF-EKS-05 |
 
-**Criterios (CA-EKS-04):** Pasos en Consola y CLI documentados.
+**Como** equipo de soporte, **quiero** recuperación automática de pods, **para** mantener servicio operativo.
+
+### Criterios (CA-N)
+
+- [ ] **CA-N-EKS-03:** Servicio Ready tras delete pod.
+
+---
+
+## HU-EKS-04 — Gestionar release EKS
+
+**Como** responsable de TI, **quiero** actualizar imágenes ECR y manifiestos, **para** desplegar versiones con procedimiento documentado.
+
+### Criterios (CA-N)
+
+- [ ] **CA-N-EKS-04:** Consola y CLI documentados.
+
+---
+
+Implementación: [ANEXO-HISTORIAS-TECNICAS-DESPLIEGUE-EKS.md](./ANEXO-HISTORIAS-TECNICAS-DESPLIEGUE-EKS.md).

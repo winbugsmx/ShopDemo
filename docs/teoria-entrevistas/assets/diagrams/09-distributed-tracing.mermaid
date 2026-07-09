@@ -1,0 +1,10 @@
+sequenceDiagram
+  participant GW as API Gateway
+  participant A as Service A
+  participant B as Service B
+  participant DB as Database
+
+  GW->>A: trace-id abc
+  A->>B: trace-id abc
+  B->>DB: query
+  Note over GW,DB: Un trace = varios spans

@@ -1,0 +1,5 @@
+﻿flowchart LR
+  DEV[Developer] -->|git push| REPO[Repo Git]
+  REPO --> ARGO[Argo CD / Flux]
+  ARGO -->|sync| K8S[Clúster Kubernetes]
+  K8S -->|drift detectado| ARGO

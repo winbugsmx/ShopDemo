@@ -1,0 +1,12 @@
+flowchart LR
+  CAT[Servicio Catalogo]
+  ORD[Servicio Pedidos]
+  PAY[Servicio Pagos]
+  DBC[(BD Catalogo)]
+  DBO[(BD Pedidos)]
+  DBP[(BD Pagos)]
+  CAT --- DBC
+  ORD --- DBO
+  PAY --- DBP
+  ORD --> CAT
+  ORD --> PAY

@@ -1,0 +1,8 @@
+flowchart LR
+  subgraph ANEMIC["Modelo anemico"]
+    E[Order - solo propiedades]
+    S[OrderService - toda la logica]
+  end
+  CTRL[Controller] --> S
+  S --> E
+  S --> DB[(Base de datos)]

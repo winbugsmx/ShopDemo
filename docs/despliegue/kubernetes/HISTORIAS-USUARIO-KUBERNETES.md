@@ -1,77 +1,59 @@
-# Historias de Usuario — Kubernetes local (Minikube)
+# Historias de Usuario — Kubernetes local (ShopDemo)
 
 | Campo | Detalle |
 |:------|:--------|
 | **Fuente** | [REQUERIMIENTOS-KUBERNETES.md](./REQUERIMIENTOS-KUBERNETES.md) |
+| **Especificación** | [ANEXO-ESPECIFICACION-TECNICA-KUBERNETES.md](./ANEXO-ESPECIFICACION-TECNICA-KUBERNETES.md) |
+| **Historias técnicas** | [ANEXO-HISTORIAS-TECNICAS-KUBERNETES.md](./ANEXO-HISTORIAS-TECNICAS-KUBERNETES.md) |
 
 ---
 
-## HU-K8-01 — Validar imágenes con Docker Compose
+## HU-K8-01 — Operar tienda vía Ingress local
 
-| **Objetivo** | OBJ-K8-02 |
+| **Requerimiento** | RF-K8-01 |
 
-**Como** alumno, **quiero** probar Docker por servicio antes de K8s, **para** aislar errores de Dockerfile.
+**Como** operador de la tienda, **quiero** acceder a catálogo, pedidos y analítica por `shopdemo.local`, **para** probar el e-commerce en Kubernetes sin URLs dispersas.
 
-**Modelo:** **N/A** — contenedores locales.
+### Criterios (CA-N)
 
-**Criterios:** Al menos un servicio responde en Swagger local.
-
----
-
-## HU-K8-02 — Desplegar stack en Minikube
-
-| **Objetivos** | OBJ-K8-03, OBJ-K8-04, OBJ-K8-05 |
-
-**Como** alumno, **quiero** aplicar manifiestos compartidos + **`k8s/local/`**, **para** ejecutar 5 APIs + Postgres + Azurite + Ingress.
-
-**Modelo:** Manifiestos YAML; **Secret** `k8s/secrets.yaml` (no commitear).
-
-**Reglas:** Namespace `shopdemo`; orden postgres → azurite → APIs → ingress.
-
-**Criterios (CA-K8-01, CA-K8-02):** Todos pods Running; Ingress responde rutas.
+- [ ] **CA-N-K8-01:** Rutas `/catalog`, `/orders`, `/analytics`, `/mcp` responden.
 
 ---
 
-## HU-K8-03 — Secrets y Event Hubs
+## HU-K8-02 — Completar flujo E2E en cluster local
 
-| **Objetivo** | OBJ-K8-09 |
+| **Requerimiento** | RF-K8-02 |
 
-**Modelo:** `secrets.example.yaml` → `secrets.yaml` con connection strings.
+**Como** operador, **quiero** crear producto, pedido y confirmación en Minikube, **para** validar integración completa.
 
-**Criterios:** Pods arrancan sin CrashLoop por secretos faltantes.
+### Criterios (CA-N)
 
----
-
-## HU-K8-04 — Health probes
-
-| **Objetivo** | OBJ-K8-10 |
-
-**Reglas:** Liveness/readiness en `/health` y `/alive`.
-
-**Criterios (CA-K8-05):** `kubectl describe pod` muestra probes Success.
+- [ ] **CA-N-K8-02:** Flujo producto → pedido → confirmar exitoso.
 
 ---
 
-## HU-K8-05 — HPA en Catalog
+## HU-K8-03 — Confiar en salud de servicios
 
-| **Objetivo** | OBJ-K8-11 |
+| **Requerimiento** | RF-K8-04 |
 
-**Modelo:** `k8s/catalog/hpa.yaml`; metrics-server habilitado.
+**Como** equipo de soporte, **quiero** que solo instancias saludables reciban tráfico, **para** evitar errores durante despliegues o reinicios.
 
-**Criterios (CA-K8-06):** `kubectl get hpa` muestra HPA activo.
+### Criterios (CA-N)
 
----
-
-## HU-K8-06 — Flujo E2E y reutilización cloud
-
-| **Objetivos** | OBJ-K8-06, OBJ-K8-07 |
-
-**Criterios (CA-K8-03, CA-K8-04):** Flujo producto→pedido→confirmar; carpeta de deployments según entorno (`local/`, `azure/`, `aws/`).
+- [ ] **CA-N-K8-03:** Probes de salud configurados y en estado Success.
 
 ---
 
-## HU-K8-07 — Dominio kubectl básico
+## HU-K8-04 — Preparar release multicloud
 
-| **Objetivo** | OBJ-K8-08 |
+| **Requerimiento** | RF-K8-05, OBJ-K8-05 |
 
-**Criterios:** Alumno ejecuta get, describe, logs, apply sin guía constante.
+**Como** responsable de TI, **quiero** manifiestos validados en local, **para** reutilizarlos en AKS y EKS.
+
+### Criterios (CA-N)
+
+- [ ] **CA-N-K8-04:** Mismos YAML aplicables cambiando carpeta `local/` → `azure/` o `aws/`.
+
+---
+
+Implementación: [ANEXO-HISTORIAS-TECNICAS-KUBERNETES.md](./ANEXO-HISTORIAS-TECNICAS-KUBERNETES.md).

@@ -1,0 +1,7 @@
+﻿flowchart LR
+  DESC[Descripción en lenguaje natural] --> AGENT[Agente IA]
+  AGENT --> MCP_DRAW[MCP Server: Draw.io]
+  MCP_DRAW --> DIAG[Diagrama generado]
+  DIAG --> REV[Revisión humana]
+  REV -->|correcciones| AGENT
+  REV -->|aprobado| EXPORT[Export PNG/SVG para docs]

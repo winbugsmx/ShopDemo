@@ -1,0 +1,6 @@
+﻿flowchart LR
+  HC[HttpClient] --> RET[Polly Retry]
+  RET --> CB[Polly Circuit Breaker]
+  CB --> TO[Polly Timeout]
+  TO --> FB[Polly Fallback]
+  FB --> DEP[Dependencia downstream]

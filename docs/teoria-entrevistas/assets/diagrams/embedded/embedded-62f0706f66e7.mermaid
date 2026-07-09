@@ -1,0 +1,6 @@
+﻿flowchart TB
+  LB[Load Balancer]
+  LB -->|100%| BLUE[Blue v1.0]
+  LB -.->|0%| GREEN[Green v1.1]
+  LB -->|switch| GREEN
+  LB -.-> BLUE

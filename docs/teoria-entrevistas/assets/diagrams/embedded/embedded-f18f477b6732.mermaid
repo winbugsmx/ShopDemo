@@ -1,0 +1,7 @@
+﻿flowchart TB
+  INT[Internet] --> IC[Ingress Controller NGINX]
+  IC --> ING[Ingress rules]
+  ING --> S1[Service orders]
+  ING --> S2[Service catalog]
+  S1 --> P1[Pods]
+  S2 --> P2[Pods]

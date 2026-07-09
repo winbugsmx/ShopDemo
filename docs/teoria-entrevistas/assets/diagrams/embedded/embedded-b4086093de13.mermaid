@@ -1,0 +1,12 @@
+﻿flowchart TB
+  subgraph AKS["Clúster AKS"]
+    CP[Control Plane - gestionado por Azure]
+    W1[Nodo worker 1]
+    W2[Nodo worker 2]
+    P1[Pod API]
+    P2[Pod API]
+    W1 --> P1
+    W2 --> P2
+  end
+  ACR[Container Registry] -->|pull imagen| AKS
+  DEV[Pipeline CI/CD] --> ACR

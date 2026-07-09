@@ -1,0 +1,4 @@
+﻿flowchart LR
+  APP[API .NET] -->|PutObject| S3[(S3 Bucket)]
+  CF[CloudFront CDN] -->|GetObject| S3
+  L[Lambda] -->|trigger| S3

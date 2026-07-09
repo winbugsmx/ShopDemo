@@ -1,0 +1,12 @@
+﻿flowchart TB
+  subgraph REG1["Región Europa"]
+    W1[Escrituras]
+  end
+  subgraph REG2["Región USA"]
+    R1[Réplica lectura]
+  end
+  subgraph REG3["Región Asia"]
+    R2[Réplica lectura]
+  end
+  W1 --> R1
+  W1 --> R2

@@ -1,0 +1,11 @@
+﻿flowchart LR
+  subgraph ANTES["Modelo tradicional"]
+    DEV1[Dev] -->|handoff manual| OPS1[Ops]
+    OPS1 --> PROD1[Producción]
+  end
+  subgraph DEVOPS["DevOps"]
+    DEV2[Dev + Ops colaboran]
+    AUTO[Automatización]
+    DEV2 --> AUTO
+    AUTO --> PROD2[Producción frecuente]
+  end

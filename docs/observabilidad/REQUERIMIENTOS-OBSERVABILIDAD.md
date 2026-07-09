@@ -1,93 +1,101 @@
-# Requerimientos — Observabilidad de microservicios (ShopDemo)
+# Documento de Requerimientos — Observabilidad (ShopDemo)
 
 | Campo | Detalle |
 |:------|:--------|
-| **Empresa** | Lite Thinking |
-| **Curso** | Microservicios con .NET en Kubernetes y Entornos Multicloud |
-| **Instructor** | Lcc. Gilberto Valentino Juárez Sánchez |
-| **Contacto** | WhatsApp: +52 5614206660 |
-| | E-mail: gilberto.juarez@gmail.com |
-| | E-mail: lcc.gilberto.juarez@gmail.com |
+| **Módulo** | Observabilidad — diagnóstico operativo |
+| **Versión** | 2.0 (enfoque negocio) |
+| **Fecha** | Julio 2026 |
 
-**Versión:** 1.0 · **Alcance:** básico, práctico, sin cambios obligatorios de código en esta etapa.
+**Documentos relacionados:**
 
-**Historias de usuario:** [HISTORIAS-USUARIO-OBSERVABILIDAD.md](./HISTORIAS-USUARIO-OBSERVABILIDAD.md)
+| Capa | Documento |
+|---|---|
+| Historias | [HISTORIAS-USUARIO-OBSERVABILIDAD.md](./HISTORIAS-USUARIO-OBSERVABILIDAD.md) |
+| Especificación técnica | [ANEXO-ESPECIFICACION-TECNICA-OBSERVABILIDAD.md](./ANEXO-ESPECIFICACION-TECNICA-OBSERVABILIDAD.md) |
+| Historias técnicas | [ANEXO-HISTORIAS-TECNICAS-OBSERVABILIDAD.md](./ANEXO-HISTORIAS-TECNICAS-OBSERVABILIDAD.md) |
+| Pedagogía | [ANEXO-PEDAGOGIA-OBSERVABILIDAD.md](./ANEXO-PEDAGOGIA-OBSERVABILIDAD.md) |
+
+---
+
+## Resumen en lenguaje llano
+
+Cuando un pedido falla en la nube, el equipo debe poder **saber qué pasó sin entrar a cada contenedor**. Observabilidad permite **centralizar logs**, consultar **métricas de salud**, **seguir una petición** por su identificador de rastreo y **recibir alertas** antes de que el cliente reporte el problema.
 
 ---
 
 ## 1. Propósito
 
-Justificar la necesidad de **observar** ShopDemo en producción/laboratorio nube: sin métricas, logs centralizados y correlación, un fallo en el flujo Orders → Inventory es difícil de diagnosticar cuando hay decenas de réplicas y cuatro APIs.
+Definir qué debe lograr la observabilidad de ShopDemo: diagnosticar fallos del flujo de pedidos y del e-commerce en entornos Azure y AWS.
 
 ---
 
-## 2. Problema actual
+## 2. Actores
 
-| Situación | Impacto |
+| Actor | Rol |
 |---|---|
-| Logs solo en stdout del contenedor | Hay que entrar a cada instancia |
-| Sin dashboard unificado en nube | No hay vista de salud del sistema |
-| `traceId` existe en código pero no se explota en nube | Correlación manual o inexistente |
-| OpenTelemetry solo en Analytics | Catalog/Orders/Inventory no exportan trazas aún |
+| **Equipo de soporte** | Investiga incidentes y correlaciona errores |
+| **Responsable de TI** | Configura agregación de logs y alertas |
+| **Operador de la tienda** | Reporta síntomas (pedido fallido, lentitud) |
 
 ---
 
-## 3. Objetivos
+## 3. Objetivos operativos
 
 | ID | Objetivo |
 |---|---|
-| OBJ-OBS-01 | Centralizar **logs** de las 4 APIs en Azure y AWS |
-| OBJ-OBS-02 | Consultar **métricas** de infraestructura y HTTP |
-| OBJ-OBS-03 | Documentar **trazas** y correlación con `traceId` + herramientas cloud |
-| OBJ-OBS-04 | Configurar **alertas** básicas (5xx, reinicios, CPU) |
-| OBJ-OBS-05 | Demostrar **agregación** en Log Analytics y CloudWatch |
-| OBJ-OBS-06 | Investigar un error E2E usando correlación por `traceId` |
-| OBJ-OBS-07 | Cubrir **ACA + AKS** (Azure) y **ECS + EKS** (AWS) |
+| OBJ-OBS-01 | **Diagnosticar fallos** del flujo de pedidos sin acceso SSH a contenedores |
+| OBJ-OBS-02 | **Centralizar logs** de catálogo, pedidos, inventario y analítica |
+| OBJ-OBS-03 | **Consultar métricas** de salud (CPU, reinicios, errores HTTP) |
+| OBJ-OBS-04 | **Correlacionar** una petición fallida con sus registros |
+| OBJ-OBS-05 | **Recibir alertas** ante degradación o errores repetidos |
+| OBJ-OBS-06 | Cubrir los **cuatro entornos de cómputo** del lab (ACA, AKS, ECS, EKS) |
 
 ---
 
-## 4. Alcance incluido
+## 4. Requerimientos de negocio
 
-- Diagnósticos de Container Apps y AKS hacia Log Analytics
-- Log groups y Container Insights en ECS/EKS
-- Consultas KQL (Azure) y Logs Insights (AWS)
-- Alertas de métrica simples
-- Uso del `traceId` existente en `ExceptionHandlingMiddleware`
-- Métricas de Event Hubs en Azure Portal
-- Aspire Dashboard como referencia **solo local**
-
-## 5. No incluido en el curso
-
-| Tema | Motivo |
+| ID | Requerimiento |
 |---|---|
-| Modificar Program.cs de Catalog/Orders/Inventory para OTel | El lab usa observabilidad de plataforma (Log Analytics / CloudWatch) |
-| IA para predicción de fallos | No forma parte del lab introductorio |
-| Grafana/Prometheus self-hosted | Complejidad extra para lab básico |
-| Optimización avanzada de costos en Log Analytics / CloudWatch | Fuera del curso introductorio |
+| RF-OBS-01 | Ver logs de las 4 APIs de negocio en un panel cloud unificado |
+| RF-OBS-02 | Localizar el origen de un error HTTP 5xx en menos de 15 minutos (lab) |
+| RF-OBS-03 | Seguir una petición usando el identificador devuelto al cliente |
+| RF-OBS-04 | Configurar al menos una alerta por umbral (errores o CPU) |
+| RF-OBS-05 | Documentar flujo de investigación E2E reproducible |
 
 ---
 
-## 6. Criterios de aceptación
+## 5. Reglas de operación
 
-| # | Criterio |
+| ID | Regla |
 |---|---|
-| CA-OBS-01 | Logs de las 4 APIs visibles en Log Analytics (Azure) o CloudWatch (AWS) |
-| CA-OBS-02 | Al menos 1 alerta configurada y probada (umbral CPU o HTTP 5xx) |
-| CA-OBS-03 | Alumno localiza un log usando `traceId` de una respuesta de error |
-| CA-OBS-04 | Documentación completada para ACA, AKS, ECS y EKS |
-| CA-OBS-05 | Flujo de investigación E2E documentado y reproducido |
+| RN-OBS-01 | Toda respuesta de error al cliente incluye identificador de rastreo |
+| RN-OBS-02 | Logs no contienen secretos ni connection strings completos |
+| RN-OBS-03 | Alertas deben probarse (disparo simulado o umbral real) antes de cerrar el módulo |
 
 ---
 
-## 7. Dependencias
+## 6. Fuera de alcance
 
-- APIs desplegadas: [IMPLEMENTACION-DESPLIEGUE-AZURE.md](../despliegue/azure/IMPLEMENTACION-DESPLIEGUE-AZURE.md), [IMPLEMENTACION-DESPLIEGUE-AWS.md](../despliegue/aws/IMPLEMENTACION-DESPLIEGUE-AWS.md), AKS, EKS
-- Event Hubs opcional para métricas de mensajería
+- Modificar código de Catalog/Orders/Inventory para OpenTelemetry (fase actual)
+- Grafana/Prometheus self-hosted
+- ML para predicción de fallos
 
 ---
 
-## Referencias
+## 7. Criterios de aceptación (CA-N)
 
-- [TEORIA-OBSERVABILIDAD.md](./TEORIA-OBSERVABILIDAD.md)
+| ID | Criterio |
+|---|---|
+| CA-N-OBS-01 | Dado un entorno desplegado, cuando soporte abre el panel de logs, entonces ve entradas de las 4 APIs |
+| CA-N-OBS-02 | Dado un error con identificador de rastreo, cuando se busca en logs, entonces se encuentra el registro asociado |
+| CA-N-OBS-03 | Dado umbral configurado, cuando se supera, entonces la alerta se dispara o queda documentada la prueba |
+| CA-N-OBS-04 | Dado un incidente E2E simulado, cuando se sigue la guía, entonces se identifica el servicio afectado |
+| CA-N-OBS-05 | Dado cada plataforma del lab, cuando se revisa documentación, entonces ACA, AKS, ECS y EKS están cubiertos |
+
+---
+
+## 8. Referencias
+
 - [azure/IMPLEMENTACION-OBSERVABILIDAD-AZURE.md](./azure/IMPLEMENTACION-OBSERVABILIDAD-AZURE.md)
 - [aws/IMPLEMENTACION-OBSERVABILIDAD-AWS.md](./aws/IMPLEMENTACION-OBSERVABILIDAD-AWS.md)
+- [despliegue/](../despliegue/)

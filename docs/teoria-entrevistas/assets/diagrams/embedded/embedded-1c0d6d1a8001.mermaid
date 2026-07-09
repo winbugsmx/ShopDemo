@@ -1,0 +1,5 @@
+﻿flowchart LR
+  PROD[Productor rápido] -->|sin backpressure| COLA[Cola crece infinitamente]
+  COLA --> OOM[OOM / latencia extrema]
+  PROD2[Productor] -->|con backpressure| SEM[Semáforo / ACK]
+  SEM --> CONS[Consumidor lento pero estable]

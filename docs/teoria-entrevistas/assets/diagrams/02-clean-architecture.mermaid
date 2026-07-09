@@ -1,20 +1,10 @@
 flowchart TB
-  subgraph API["API / Presentacion"]
-    CTRL[Controllers<br/>Catalog/Orders]
+  subgraph CAPAS["Clean Architecture"]
+    P[Presentacion / API]
+    A[Aplicacion]
+    D[Dominio]
+    I[Infraestructura]
   end
-  subgraph APP["Application"]
-    CMD[Commands / Queries<br/>MediatR Handlers]
-    VAL[FluentValidation]
-  end
-  subgraph DOM["Domain"]
-    AGG[Aggregates<br/>Value Objects<br/>Domain Events]
-  end
-  subgraph INF["Infrastructure"]
-    EF[EF Core DbContext]
-    EH[Event Hubs Publisher]
-    HTTP[HttpClient Inventory]
-  end
-  API --> APP
-  APP --> DOM
-  INF --> APP
-  INF -.->|implementa| DOM
+  P --> A --> D
+  I --> A
+  I -.->|implementa puertos| D

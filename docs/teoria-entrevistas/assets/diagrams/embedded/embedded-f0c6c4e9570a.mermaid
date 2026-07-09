@@ -1,0 +1,6 @@
+﻿flowchart LR
+  T1[Timer - cada hora] --> F[Azure Function]
+  T2[HTTP POST] --> F
+  T3[Mensaje en cola] --> F
+  F --> B[Blob Storage]
+  F --> SB[Service Bus]

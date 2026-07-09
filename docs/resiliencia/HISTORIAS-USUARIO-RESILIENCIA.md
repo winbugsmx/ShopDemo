@@ -6,50 +6,70 @@
 
 ---
 
-## HU-RES-01 — Health checks en todas las plataformas
+## HU-RES-01 — Recuperación automática de servicios
 
-| **Objetivo** | OBJ-RES-01 |
+| **RF** | RF-RES-01 · **OBJ** | OBJ-RES-01 |
 
-**Como** orquestador (ACA/ECS/K8s), **quiero** probes en `/health`, **para** no enviar tráfico a instancias caídas.
+**Como** operador de la tienda, **quiero** que un servicio caído se restablezca solo, **para** no detener ventas por un reinicio puntual.
 
-**Modelo:** Endpoints existentes en código; config en manifiestos/ACA/ALB.
+### Criterios (CA-N)
 
-**Criterios (CA-RES-02):** Probes configurados en 4 servicios × plataforma elegida.
-
----
-
-## HU-RES-02 — Recuperación tras fallo de instancia
-
-| **Objetivo** | OBJ-RES-04 |
-
-**Como** alumno, **quiero** eliminar un pod o reiniciar task ECS, **para** ver auto-recuperación.
-
-**Criterios (CA-RES-01):** Servicio vuelve a Ready/Running sin intervención manual prolongada.
+- [ ] **CA-N-RES-01:** Servicio vuelve a Ready/Running tras fallo simulado.
 
 ---
 
-## HU-RES-03 — Redundancia y escalado
+## HU-RES-02 — Enrutar solo a instancias sanas
 
-| **Objetivos** | OBJ-RES-02, OBJ-RES-05 |
+| **RF** | RF-RES-02 · **OBJ** | OBJ-RES-02 |
 
-**Reglas:** minReplicas ≥ 1; HPA Catalog en K8s; desired count ≥ 1 en ECS.
+**Como** equipo de soporte, **quiero** que el balanceador/orquestador excluya instancias no saludables, **para** evitar errores al cliente.
 
-**Criterios (CA-RES-04):** Escalado manual o HPA demostrado.
+### Criterios (CA-N)
 
----
-
-## HU-RES-04 — Comunicación síncrona vs asíncrona
-
-| **Objetivo** | OBJ-RES-03 |
-
-**Como** alumno, **quiero** explicar fallo Orders→Inventory vs Event Hubs, **para** entender patrones de resiliencia.
-
-**Criterios (CA-RES-03):** Respuesta escrita o oral documentada en entrega.
+- [ ] **CA-N-RES-02:** Health probes configurados en 4 servicios.
 
 ---
 
-## HU-RES-05 — Rolling updates sin downtime total
+## HU-RES-03 — Mantener redundancia y escalar
 
-| **Objetivo** | OBJ-RES-06 (implícito en alcance) |
+| **RF** | RF-RES-03 · **OBJ** | OBJ-RES-03, OBJ-RES-05 |
 
-**Criterios (CA-RES-05):** Guías Azure y AWS de resiliencia completadas.
+**Como** responsable de TI, **quiero** réplicas mínimas y escalado bajo carga, **para** absorber picos sin caída total.
+
+### Criterios (CA-N)
+
+- [ ] **CA-N-RES-04:** HPA o escalado manual demostrado.
+
+---
+
+## HU-RES-04 — Entender fallos síncronos y asíncronos
+
+| **RF** | RF-RES-05 · **OBJ** | OBJ-RES-04 |
+
+**Como** equipo de soporte, **quiero** explicar qué ocurre si falla inventario vs Event Hubs, **para** priorizar incidentes correctamente.
+
+### Reglas
+
+| ID | Regla |
+|---|---|
+| RN-RES-03 | Impacto distinto según tipo de comunicación |
+
+### Criterios (CA-N)
+
+- [ ] **CA-N-RES-03:** Explicación documentada.
+
+---
+
+## HU-RES-05 — Actualizar sin caída total
+
+| **RF** | RF-RES-04 · **OBJ** | OBJ-RES-06 |
+
+**Como** responsable de TI, **quiero** rolling updates en ACA/ECS/K8s, **para** desplegar versiones sin apagar toda la tienda.
+
+### Criterios (CA-N)
+
+- [ ] **CA-N-RES-05:** Guías Azure y AWS completadas.
+
+---
+
+Implementación: [ANEXO-HISTORIAS-TECNICAS-RESILIENCIA.md](./ANEXO-HISTORIAS-TECNICAS-RESILIENCIA.md).

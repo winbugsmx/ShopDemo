@@ -1,0 +1,14 @@
+﻿flowchart LR
+  subgraph COUNTER["Counter - solo sube"]
+    C1[http_requests_total +1]
+    C2[errors_total +1]
+  end
+  subgraph GAUGE["Gauge - sube y baja"]
+    G1[memory_usage_bytes]
+    G2[queue_depth]
+  end
+  subgraph HIST["Histogram - buckets"]
+    H1["le=0.1 → 850"]
+    H2["le=0.5 → 980"]
+    H3["le=1.0 → 995"]
+  end

@@ -1,0 +1,10 @@
+flowchart TB
+  subgraph ESTRATEGICO["DDD Estrategico"]
+    BC[Bounded Contexts]
+    CM[Context Map]
+  end
+  subgraph TACTICO["DDD Tactico"]
+    AG[Aggregates]
+    VO[Value Objects]
+  end
+  ESTRATEGICO --> TACTICO

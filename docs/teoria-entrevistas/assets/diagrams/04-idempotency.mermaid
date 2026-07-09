@@ -1,0 +1,9 @@
+sequenceDiagram
+  participant B as Broker
+  participant C as Consumidor
+  participant DB as BD local
+  B->>C: mensaje id=abc - 1ra vez
+  C->>DB: INSERT ProcessedMessages abc
+  C->>DB: aplicar efecto de negocio
+  B->>C: mensaje id=abc - duplicado
+  C->>DB: abc ya existe - ignorar

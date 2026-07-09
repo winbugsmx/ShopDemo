@@ -1,0 +1,4 @@
+﻿flowchart LR
+  P[Productor] -->|at-least-once| B[Broker]
+  B -->|puede duplicar| C[Consumidor idempotente]
+  C --> DB[(BD)]

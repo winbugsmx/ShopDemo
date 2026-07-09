@@ -1,0 +1,14 @@
+flowchart TB
+  CLIENT[Clientes externos]
+  GW[API Gateway]
+  AUTH[Autenticacion]
+  RATE[Rate limiting]
+  S1[Servicio A]
+  S2[Servicio B]
+  S3[Servicio C]
+  CLIENT --> GW
+  GW --> AUTH
+  GW --> RATE
+  GW --> S1
+  GW --> S2
+  GW --> S3

@@ -1,0 +1,8 @@
+flowchart LR
+  DEV[Developer] --> GHA[GitHub Actions]
+  GHA --> ECR[Elastic Container Registry]
+  GHA --> EKS[Elastic Kubernetes Service]
+  EKS --> SM[Secrets Manager]
+  EKS --> SQS[Amazon SQS]
+  EKS --> RDS[Amazon RDS]
+  EKS --> CW[CloudWatch]

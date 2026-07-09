@@ -1,0 +1,6 @@
+﻿flowchart LR
+  CI[Continuous Integration] --> BUILD[Build + Test OK]
+  BUILD --> DEL[Continuous Delivery]
+  DEL -->|aprobación manual| PROD1[Producción]
+  BUILD --> DEP[Continuous Deployment]
+  DEP -->|automático| PROD2[Producción]

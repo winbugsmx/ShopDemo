@@ -1,0 +1,9 @@
+flowchart TB
+  ROOT[Order - Aggregate Root]
+  LINE1[OrderLine]
+  LINE2[OrderLine]
+  ADDR[Address VO]
+  EXT[Servicio externo] --> ROOT
+  ROOT --> LINE1
+  ROOT --> LINE2
+  ROOT --> ADDR

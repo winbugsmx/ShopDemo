@@ -1,0 +1,12 @@
+flowchart TD
+  START[Proyecto nuevo] --> Q1{Equipo pequeno y dominio incierto?}
+  Q1 -->|Si| MONO[Monolito modular + Clean/Hexagonal]
+  Q1 -->|No| Q2{Equipos autonomos por area de negocio?}
+  Q2 -->|No| MONO
+  Q2 -->|Si| Q3{Releases independientes obligatorios?}
+  Q3 -->|No| MONO
+  Q3 -->|Si| MS[Microservicios por bounded context]
+  MONO --> Q4{Picos muy variables?}
+  MS --> Q5{Muchos clientes distintos?}
+  Q4 -->|Si| FN[Serverless para tareas puntuales]
+  Q5 -->|Si| BFF[BFF + API Gateway]

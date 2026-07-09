@@ -1,313 +1,158 @@
-# Documento de Requerimientos — Microservicio Catalog (ShopDemo)
+# Documento de Requerimientos — Catálogo de productos (ShopDemo)
 
 | Campo | Detalle |
 |:------|:--------|
-| **Empresa** | Lite Thinking |
-| **Curso** | Microservicios con .NET en Kubernetes y Entornos Multicloud |
-| **Instructor** | Lcc. Gilberto Valentino Juárez Sánchez |
-| **Contacto** | WhatsApp: +52 5614206660 |
-| | E-mail: gilberto.juarez@gmail.com |
-| | E-mail: lcc.gilberto.juarez@gmail.com |
+| **Módulo** | Catalog — gestión del catálogo de productos |
+| **Versión** | 2.0 (enfoque negocio) |
+| **Fecha** | Junio 2026 |
 
-**Arquitectura:** Clean Architecture + CQRS (MediatR)  
-**Bounded Context:** Catalog  
-**Versión:** 1.0  
-**Fecha:** Junio 2026
+**Documentos relacionados:**
 
-**Historias de usuario:** [HISTORIAS-USUARIO-CATALOG.md](./HISTORIAS-USUARIO-CATALOG.md)
+| Capa | Documento |
+|---|---|
+| Historias de usuario | [HISTORIAS-USUARIO-CATALOG.md](./HISTORIAS-USUARIO-CATALOG.md) |
+| Especificación técnica | [ANEXO-ESPECIFICACION-TECNICA-CATALOG.md](./ANEXO-ESPECIFICACION-TECNICA-CATALOG.md) |
+| Historias técnicas | [ANEXO-HISTORIAS-TECNICAS-CATALOG.md](./ANEXO-HISTORIAS-TECNICAS-CATALOG.md) |
+| Pedagogía (curso) | [ANEXO-PEDAGOGIA-CATALOG.md](./ANEXO-PEDAGOGIA-CATALOG.md) |
+
+---
+
+## Resumen en lenguaje llano
+
+El módulo **Catálogo** permite que un administrador de la tienda **registre y mantenga los productos** que se venden en ShopDemo. Cada producto tiene nombre, descripción, precio, categoría y cantidad disponible. Una vez registrado, el producto recibe un identificador único que otros procesos (inventario y pedidos) pueden usar.
+
+Si alguien intenta registrar un producto con datos inválidos o con un nombre que ya existe, el sistema lo rechaza y explica el motivo.
 
 ---
 
 ## 1. Propósito
 
-Definir los requerimientos del microservicio **Catalog**, responsable de la **gestión del catálogo de productos** en la plataforma ShopDemo. Es el **primer bounded context** de referencia del curso y sirve de base arquitectónica para Orders e Inventory.
-
-Catalog modela productos como agregados DDD, expone una API REST independiente y persiste en PostgreSQL dedicado.
+Definir **qué debe hacer** el catálogo de productos en ShopDemo desde la perspectiva del negocio: alta de productos, reglas de validación, disponibilidad para venta y notificación a otros procesos cuando un producto se crea o cambia.
 
 ---
 
-## 2. Objetivos de aprendizaje
+## 2. Actores
 
-Al completar esta implementación, el alumno será capaz de:
-
-1. Modelar un **Aggregate Root** (`Product`) con Value Objects y Domain Events.
-2. Aplicar **Clean Architecture** con dependencias hacia el dominio.
-3. Implementar **CQRS** con MediatR (comandos y consultas).
-4. Validar entrada con **FluentValidation** en la capa de aplicación.
-5. Persistir agregados con **EF Core + PostgreSQL** sin contaminar el dominio.
-6. Publicar **Domain Events** mediante un puerto de infraestructura.
-7. Exponer endpoints REST documentados con **Swagger**.
-8. Containerizar el servicio con **Docker Compose**.
+| Actor | Rol |
+|---|---|
+| **Administrador de catálogo** | Registra y mantiene productos |
+| **Sistema de inventario** | Consume el identificador del producto para asignar stock |
+| **Sistema de pedidos** | Referencia productos al crear líneas de pedido |
+| **Consumidor de la API** | Aplicación o integración que consulta o registra productos |
 
 ---
 
-## 3. Contexto en la plataforma
+## 3. Contexto de negocio
 
-```mermaid
-flowchart LR
-    Catalog["Catalog API\n:8001\nProductos"]
-    Inventory["Inventory API\n:8003\nStock"]
-    Orders["Orders API\n:8002\nPedidos"]
-    Bus["Message Bus\n(Event Hubs)"]
+Flujo integrado de la tienda (visión de negocio):
 
-    Catalog -->|"ProductId"| Inventory
-    Catalog -->|"ProductId + precio snapshot"| Orders
-    Catalog -.-> Bus
-    Orders -.-> Bus
-    Inventory -.-> Bus
-```
-
-| Microservicio | Base de datos | Puerto API | Puerto PostgreSQL (host) |
-|---|---|---|---|
-| **Catalog** | **`ShopDemoCatalog`** | **`8001`** | **`5433`** |
-| Orders | `ShopDemoOrders` | `8002` | `5434` |
-| Inventory | `ShopDemoInventory` | `8003` | `5435` |
-
-> **Nota:** Catalog usa el puerto **5433** en el host para no colisionar con PostgreSQL local (5432).
-
-### Flujo de negocio integrado (ejercicio)
-
-| Paso | Servicio | Acción |
-|---|---|---|
-| 1 | **Catalog** | `POST /api/products` → crea producto con `ProductId` |
-| 2 | **Inventory** | `POST /api/inventory/stock` → registra stock para ese `ProductId` |
-| 3 | **Orders** | `POST /api/orders` → crea pedido con líneas que referencian `ProductId` |
-| 4 | **Orders** | `POST /api/orders/{id}/confirm` → reserva stock en Inventory |
-| 5 | **Inventory** | `GET /api/inventory/{productId}` → consulta unidades disponibles |
+| Paso | Qué ocurre |
+|---|---|
+| 1 | Se **registra un producto** en el catálogo |
+| 2 | Se **asigna stock** a ese producto en inventario |
+| 3 | Un **cliente crea un pedido** que incluye ese producto |
+| 4 | Al **confirmar el pedido**, se reserva stock |
+| 5 | Se puede **consultar** cuántas unidades quedan disponibles |
 
 ---
 
-## 4. Alcance MVP
+## 4. Alcance
 
-### 4.1 Dentro del alcance (implementado en el curso)
+### 4.1 Incluido (MVP)
 
-| ID | Requerimiento | Estado |
-|---|---|---|
-| RF-01 | Crear un producto (`CreateProduct`) vía `POST /api/products` | ✅ Implementado |
-| RF-02 | Modelar agregado `Product` con comportamientos de dominio | ✅ Implementado |
-| RF-03 | Persistir productos en PostgreSQL con EF Core | ✅ Implementado |
-| RF-04 | Publicar Domain Events al crear producto (log en desarrollo) | ✅ Implementado |
-| RF-05 | Validar entrada con FluentValidation | ✅ Implementado |
-| RF-06 | Documentar API con Swagger en Development | ✅ Implementado |
-| RF-07 | Desplegar con Docker Compose (API + PostgreSQL) | ✅ Implementado |
-| RF-08 | Aplicar migraciones EF Core al iniciar | ✅ Implementado |
-| RF-09 | Manejo transversal de errores (Problem Details) | ✅ Implementado |
+| ID | Requerimiento de negocio |
+|---|---|
+| RF-01 | Registrar un producto nuevo con nombre, precio, stock inicial y categoría |
+| RF-02 | Aplicar reglas de negocio al crear y modificar productos (activo/inactivo, precios, stock) |
+| RF-03 | Conservar el catálogo de forma permanente entre sesiones |
+| RF-04 | Notificar a otros sistemas cuando un producto se crea o cambia |
+| RF-05 | Rechazar datos inválidos con mensajes comprensibles |
+| RF-06 | Permitir explorar las operaciones disponibles (documentación de la API) |
+| RF-07 | Operar en un entorno de prueba reproducible para el equipo |
+| RF-08 | Aplicar cambios de estructura de datos al iniciar en desarrollo |
+| RF-09 | Responder de forma predecible ante errores de negocio |
 
-### 4.2 Preparado en dominio, pendiente de exponer en API
+### 4.2 Preparado en reglas, pendiente de exponer al usuario
 
-| ID | Requerimiento | Estado |
-|---|---|---|
-| RF-10 | Actualizar detalles de producto (`UpdateDetails`) | Dominio listo |
-| RF-11 | Cambiar precio (`ChangePrice`) | Dominio listo |
-| RF-12 | Reabastecer stock en catálogo (`ReplenishStock`) | Dominio listo |
-| RF-13 | Descontar stock (`DeductStock`) | Dominio listo |
-| RF-14 | Desactivar producto (`Deactivate`) | Dominio listo |
-| RF-15 | Consultar productos (queries CQRS) | Carpeta `Queries/` preparada |
+| ID | Requerimiento |
+|---|---|
+| RF-10 | Actualizar nombre y descripción de un producto activo |
+| RF-11 | Cambiar el precio de un producto |
+| RF-12 | Aumentar unidades disponibles (reabastecimiento) |
+| RF-13 | Reducir unidades disponibles |
+| RF-14 | Desactivar un producto (sin eliminarlo del historial) |
+| RF-15 | Consultar y listar productos |
 
-### 4.3 No incluido en el curso
+### 4.3 Fuera de alcance
 
-Delimitación permanente del laboratorio (no son etapas pendientes del mismo curso):
-
-- Outbox Pattern completo y garantías exactly-once
-- Endpoints CQRS de lectura/actualización avanzada (RF-10–RF-15: dominio listo, API no expuesta)
 - Pagos, facturación y catálogo multi-tenant
-
-> Event Hubs, Aspire AppHost, manifiestos `k8s/` y sincronización Catalog→Inventory vía eventos se cubren en las **etapas 5–11**. Ver [README.md](../../README.md#etapas-del-curso-roadmap).
+- Garantías de entrega de mensajes exactly-once entre sistemas
+- Catálogo con múltiples monedas por producto en la misma operación
 
 ---
 
-## 5. Lenguaje ubicuo (Ubiquitous Language)
+## 5. Lenguaje ubicuo
 
-| Término | Definición | No usar |
+| Término | Significado para el negocio | Evitar |
 |---|---|---|
-| **Product** | Entidad de catálogo; agregado raíz | `Item`, `SKU` |
-| **ProductName** | Nombre validado del producto (3–200 caracteres) | `string name` suelto |
-| **Money** | Precio con monto y moneda ISO 3 letras | `decimal price` |
-| **StockLevel** | Unidades disponibles en catálogo | `int stock` |
-| **Category** | Categoría de producto (catálogo cerrado) | `enum` expuesto |
-| **CreateProduct** | Comando para registrar un nuevo producto | `AddProduct` |
-| **Deactivate** | Marcar producto como inactivo (idempotente) | `Delete` |
-| **ReplenishStock** | Aumentar unidades de inventario | `AddStock` |
-| **DeductStock** | Reducir unidades (validación en Value Object) | `RemoveStock` |
+| **Producto** | Artículo que se vende en la tienda | “Item”, “SKU” |
+| **Nombre del producto** | Texto identificativo (3 a 200 caracteres) | Nombre libre sin validar |
+| **Precio** | Monto y moneda del producto | Solo un número sin moneda |
+| **Stock** | Unidades disponibles para venta | “Cantidad” ambigua |
+| **Categoría** | Clasificación del producto (Electrónica, Ropa, etc.) | Etiquetas libres sin catálogo |
+| **Producto activo** | Se puede vender y modificar | “Visible” sin definición |
+| **Desactivar** | El producto deja de estar a la venta | “Eliminar” (borrado físico) |
+| **Reabastecer** | Aumentar unidades disponibles | “Agregar stock” sin reglas |
 
 ---
 
-## 6. Modelo de dominio requerido
+## 6. Reglas de negocio
 
-### 6.1 Agregado raíz: `Product`
-
-```
-Product (AggregateRoot<Guid>)
-├── ProductName        (Value Object)
-├── string Description
-├── Money Price        (Value Object)
-├── StockLevel Stock   (Value Object)
-├── Category Category  (Value Object)
-├── bool IsActive
-├── DateTimeOffset CreatedAt
-└── DateTimeOffset? LastUpdatedAt
-```
-
-### 6.2 Comportamientos del agregado
-
-| Método | Regla de negocio | Evento generado |
-|---|---|---|
-| `Create()` | Factory; producto activo por defecto | `ProductCreatedDomainEvent` |
-| `UpdateDetails()` | Solo si está activo | — |
-| `ChangePrice()` | No-op si precio igual; solo activos | `ProductPriceChangedDomainEvent` |
-| `ReplenishStock()` | Unidades > 0; solo activos | `StockReplenishedDomainEvent` |
-| `DeductStock()` | Validación en `StockLevel`; solo activos | `StockDepletedDomainEvent` (si stock = 0) |
-| `Deactivate()` | Idempotente | `ProductDeactivatedDomainEvent` |
-| `HasSufficientStock()` | Consulta delegada al Value Object | — |
-
-### 6.3 Value Objects
-
-| Value Object | Reglas |
+| ID | Regla |
 |---|---|
-| `ProductName` | No vacío; 3–200 caracteres; igualdad case-insensitive |
-| `Money` | Monto ≥ 0; moneda ISO 3 letras; operaciones con misma moneda |
-| `StockLevel` | Unidades ≥ 0; `Increase`/`Decrease` inmutables |
-| `Category` | Valores: Electronics, Clothing, Food, Books, Sports |
-
-### 6.4 Domain Events
-
-| Evento | Cuándo se emite |
-|---|---|
-| `ProductCreatedDomainEvent` | Al crear producto |
-| `ProductPriceChangedDomainEvent` | Al cambiar precio |
-| `StockReplenishedDomainEvent` | Al reabastecer stock |
-| `StockDepletedDomainEvent` | Stock llega a 0 |
-| `ProductDeactivatedDomainEvent` | Al desactivar producto |
-
-### 6.5 Repositorio
-
-`IProductRepository` extiende `IRepository<Product, Guid>` con:
-
-- `GetByCategoryAsync`
-- `GetActiveProductsAsync` (paginado)
-- `CountActiveAsync`
-- `ExistsByNameAsync`
+| RN-CAT-01 | El nombre del producto debe tener entre 3 y 200 caracteres |
+| RN-CAT-02 | El precio debe ser mayor o igual a cero e incluir moneda válida (3 letras, ej. USD, MXN) |
+| RN-CAT-03 | El stock inicial debe ser mayor o igual a cero |
+| RN-CAT-04 | La categoría debe ser una de las permitidas: Electronics, Clothing, Food, Books, Sports |
+| RN-CAT-05 | No puede haber dos productos activos con el mismo nombre |
+| RN-CAT-06 | Al registrar un producto, queda **activo** por defecto |
+| RN-CAT-07 | Solo productos activos pueden cambiar detalles, precio o stock |
+| RN-CAT-08 | Cambiar el precio al mismo valor no genera un evento de cambio |
+| RN-CAT-09 | No se puede descontar más stock del disponible |
+| RN-CAT-10 | Desactivar un producto ya inactivo no produce error |
+| RN-CAT-13 | Los avisos a otros sistemas se envían **después** de guardar el producto |
+| RN-CAT-14 | En el entorno de desarrollo, los avisos pueden registrarse en bitácora sin mensajería externa |
 
 ---
 
-## 7. Requerimientos de API
+## 7. Criterios de aceptación de negocio (CA-N)
 
-### 7.1 Endpoint implementado
-
-#### `POST /api/products`
-
-Crea un nuevo producto en el catálogo.
-
-**Request body:**
-
-```json
-{
-  "name": "Teclado Mecánico",
-  "description": "RGB, switches azules",
-  "price": 89.99,
-  "currency": "USD",
-  "stock": 50,
-  "category": "Electronics"
-}
-```
-
-**Respuestas:**
-
-| Código | Descripción |
+| ID | Criterio |
 |---|---|
-| `201 Created` | Producto creado; body = `ProductDto` |
-| `400 Bad Request` | Validación fallida o regla de dominio |
-| `409 Conflict` | Nombre de producto duplicado |
-
-**Response body (`ProductDto`):**
-
-```json
-{
-  "id": "3fa85f64-5717-4562-b3fc-2c963f66afa6",
-  "name": "Teclado Mecánico",
-  "description": "RGB, switches azules",
-  "price": 89.99,
-  "currency": "USD",
-  "stockUnits": 50,
-  "category": "Electronics",
-  "isActive": true,
-  "createdAt": "2026-06-11T22:59:47+00:00",
-  "lastUpdatedAt": null
-}
-```
-
-### 7.2 Swagger
-
-- Disponible en `/swagger` cuando `ASPNETCORE_ENVIRONMENT=Development`.
-- Título: **ShopDemo Catalog API v1**.
+| CA-N01 | Dado un producto con datos válidos, cuando el administrador lo registra, entonces el sistema confirma el alta y asigna un identificador único |
+| CA-N02 | Dado un nombre de producto que ya existe activo, cuando se intenta registrar otro igual, entonces el sistema rechaza la operación e informa el conflicto |
+| CA-N03 | Dado un nombre demasiado corto o un precio negativo, cuando se intenta registrar, entonces el sistema rechaza e indica qué campo es inválido |
+| CA-N04 | Dado un producto registrado, cuando se consulta el catálogo, entonces el producto aparece con todos sus datos |
+| CA-N05 | Dado un producto recién registrado, entonces otros sistemas pueden ser notificados de su creación |
+| CA-N06 | Dado un producto inactivo, cuando se intenta modificar precio o stock, entonces el sistema rechaza la operación |
+| CA-N07 | Dado un error de regla de negocio, cuando ocurre una operación inválida, entonces el usuario recibe un mensaje claro (no un error técnico crudo) |
 
 ---
 
-## 8. Requerimientos técnicos
+## 8. Trazabilidad
 
-### 8.1 Estructura de proyectos
-
-```
-Catalog/
-├── ShopDemo.Catalog.Domain/
-├── ShopDemo.Catalog.Application/
-├── ShopDemo.Catalog.Infraestructure/
-└── ShopDemo.Catalog.Api/
-```
-
-### 8.2 Regla de dependencias
-
-```
-Api → Infrastructure → Application → Domain → Shared
-```
-
-### 8.3 Stack tecnológico
-
-| Componente | Tecnología |
+| Requerimiento | Historia de usuario |
 |---|---|
-| Runtime | .NET 10 |
-| ORM | EF Core 10 + Npgsql |
-| CQRS | MediatR 14.1 |
-| Validación | FluentValidation 12.1 |
-| API docs | Swashbuckle 10.2 |
-| Base de datos | PostgreSQL 16 |
-
-### 8.4 Configuración de conexión
-
-```json
-{
-  "ConnectionStrings": {
-    "DefaultConnection": "Host=localhost;Port=5433;Database=ShopDemoCatalog;Username=ShopDemo;Password=ShopDemo123"
-  }
-}
-```
-
-### 8.5 Tabla de persistencia
-
-| Tabla | Descripción |
-|---|---|
-| `products` | Agregado `Product` con columnas para Value Objects (`name`, `price_amount`, `price_currency`, `stock_units`, `category`) |
+| RF-01 | [HU-CAT-01](./HISTORIAS-USUARIO-CATALOG.md#hu-cat-01--registrar-producto-en-catálogo) |
+| RF-04 | [HU-CAT-02](./HISTORIAS-USUARIO-CATALOG.md#hu-cat-02--notificar-cambios-del-catálogo) |
+| RF-05, RF-09 | [HU-CAT-03](./HISTORIAS-USUARIO-CATALOG.md#hu-cat-03--recibir-mensajes-claros-de-error) |
+| RF-10–RF-15 | Historias preparadas en [HISTORIAS-USUARIO-CATALOG.md](./HISTORIAS-USUARIO-CATALOG.md) |
 
 ---
 
-## 9. Criterios de aceptación
+## 9. Referencias
 
-| # | Criterio |
-|---|---|
-| CA-01 | `POST /api/products` con datos válidos retorna `201` y persiste en PostgreSQL |
-| CA-02 | Nombre duplicado retorna `409 Conflict` |
-| CA-03 | Datos inválidos (nombre corto, precio negativo) retornan `400` |
-| CA-04 | Al crear producto se registra `ProductCreatedDomainEvent` en logs |
-| CA-05 | Swagger accesible en Development |
-| CA-06 | `docker compose up` levanta API en `:8001` y PostgreSQL en `:5433` |
-| CA-07 | Migraciones EF se aplican automáticamente al iniciar la API |
-| CA-08 | El dominio no referencia EF Core, MediatR ni ASP.NET |
-
----
-
-## 10. Referencias
-
-- [IMPLEMENTACION-CATALOG.md](./IMPLEMENTACION-CATALOG.md) — guía paso a paso con código
-- [ARQUITECTURA.md](../ARQUITECTURA.md) — visión global de ShopDemo
-- [REQUERIMIENTOS-ORDERS.md](../orders/REQUERIMIENTOS-ORDERS.md) — microservicio complementario
-- [REQUERIMIENTOS-INVENTORY.md](../inventory/REQUERIMIENTOS-INVENTORY.md) — gestión de stock
+- [GUIA-ESTRUCTURA-DOCUMENTACION.md](../GUIA-ESTRUCTURA-DOCUMENTACION.md)
+- [REQUERIMIENTOS-ORDERS.md](../orders/REQUERIMIENTOS-ORDERS.md)
+- [REQUERIMIENTOS-INVENTORY.md](../inventory/REQUERIMIENTOS-INVENTORY.md)
+- [RETO-TECNICO-SHOPDEMO.md](../RETO-TECNICO-SHOPDEMO.md)

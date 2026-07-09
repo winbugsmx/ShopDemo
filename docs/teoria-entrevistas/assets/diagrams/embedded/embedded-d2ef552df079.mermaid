@@ -1,0 +1,5 @@
+﻿flowchart LR
+  API1[API Pedidos] -->|trace| AI[Application Insights]
+  API2[API Inventario] -->|trace| AI
+  AI --> LA[Log Analytics Workspace]
+  LA --> AL[Alertas]

@@ -1,0 +1,15 @@
+flowchart TB
+  subgraph MON["Monitorización tradicional"]
+    M1[Métricas predefinidas]
+    M2[Umbrales fijos]
+    M3[Alertas conocidas]
+    M1 --> M2 --> M3
+  end
+  subgraph OBS["Observabilidad"]
+    O1[Métricas + logs + trazas]
+    O2[Alta cardinalidad]
+    O3[Consultas ad-hoc]
+    O4[Incidentes no anticipados]
+    O1 --> O2 --> O3 --> O4
+  end
+  MON -.->|complementa| OBS

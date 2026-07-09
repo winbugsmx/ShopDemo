@@ -1,0 +1,5 @@
+﻿flowchart LR
+  SIG[Señales - métricas, logs, trazas] --> AI[AIOps - correlación, anomalías]
+  AI --> INS[Insights - causa raiz sugerida]
+  INS --> HUM[Humano decide acción]
+  HUM --> ACT[Remediación - rollback, escalar, fix]

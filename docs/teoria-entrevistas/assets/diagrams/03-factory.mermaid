@@ -1,0 +1,5 @@
+flowchart TB
+  APP[Caso de uso] --> FAC[OrderFactory]
+  FAC --> VAL[Validar reglas de creacion]
+  VAL --> AGG[Order - Aggregate Root]
+  AGG --> REPO[Repository.Add]

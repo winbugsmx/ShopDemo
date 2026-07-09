@@ -1,0 +1,556 @@
+{
+  "info": {
+    "_postman_id": "shopdemo-collection-2026",
+    "name": "ShopDemo — APIs (Catalog, Orders, Inventory, Analytics, MCP)",
+    "description": "Colección de endpoints de ShopDemo para local, Azure (ACA/AKS) y AWS (ECS/EKS).\n\n## Variables de colección\n\n| Variable | Local (default) | Release |\n|---|---|---|\n| catalogBaseUrl | http://localhost:8001 | FQDN Container App / ALB / Ingress `/catalog` |\n| ordersBaseUrl | http://localhost:8002 | FQDN / Ingress `/orders` |\n| inventoryBaseUrl | http://localhost:8003 | URL interna o Ingress `/inventory` |\n| analyticsBaseUrl | http://localhost:8004 | FQDN / Ingress `/analytics` |\n| mcpBaseUrl | http://localhost:8005 | FQDN / Ingress `/mcp` (sin sufijo /mcp) |\n| deploymentProfile | local | local \\| azure-aca \\| azure-aks \\| aws-ecs \\| aws-eks |\n\n## Cómo cambiar de entorno\n\n1. Abre la colección → pestaña **Variables**.\n2. Actualiza las cinco `*BaseUrl` según tu despliegue (ver README.md y GUIA-ENDPOINTS.md).\n3. Cambia `deploymentProfile` para documentar qué perfil usas.\n\n## Flujo recomendado\n\n1. Carpeta **Health checks** — verificar que los servicios responden.\n2. Carpeta **Flujo integrado (E2E)** — compra completa.\n3. Con Event Hubs: paso 2 del E2E es opcional; usa paso 2b (Analytics).\n4. **MCP Gateway**: solo `GET /health` en Postman; las tools MCP requieren un cliente MCP (Cursor, Claude Code).",
+    "schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json"
+  },
+  "variable": [
+    { "key": "deploymentProfile", "value": "local" },
+    { "key": "catalogBaseUrl", "value": "http://localhost:8001" },
+    { "key": "ordersBaseUrl", "value": "http://localhost:8002" },
+    { "key": "inventoryBaseUrl", "value": "http://localhost:8003" },
+    { "key": "analyticsBaseUrl", "value": "http://localhost:8004" },
+    { "key": "mcpBaseUrl", "value": "http://localhost:8005" },
+    { "key": "customerId", "value": "11111111-1111-1111-1111-111111111111" },
+    { "key": "productId", "value": "00000000-0000-0000-0000-000000000001" },
+    { "key": "orderId", "value": "00000000-0000-0000-0000-000000000002" }
+  ],
+  "item": [
+    {
+      "name": "Health checks",
+      "description": "Verificación de operación antes del E2E o tras desplegar en nube/K8s. Respuesta esperada: 200 OK.",
+      "item": [
+        {
+          "name": "Catalog — Health",
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": { "raw": "{{catalogBaseUrl}}/health", "host": ["{{catalogBaseUrl}}"], "path": ["health"] }
+          },
+          "response": []
+        },
+        {
+          "name": "Catalog — Alive",
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": { "raw": "{{catalogBaseUrl}}/alive", "host": ["{{catalogBaseUrl}}"], "path": ["alive"] }
+          },
+          "response": []
+        },
+        {
+          "name": "Orders — Health",
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": { "raw": "{{ordersBaseUrl}}/health", "host": ["{{ordersBaseUrl}}"], "path": ["health"] }
+          },
+          "response": []
+        },
+        {
+          "name": "Orders — Alive",
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": { "raw": "{{ordersBaseUrl}}/alive", "host": ["{{ordersBaseUrl}}"], "path": ["alive"] }
+          },
+          "response": []
+        },
+        {
+          "name": "Inventory — Health",
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": { "raw": "{{inventoryBaseUrl}}/health", "host": ["{{inventoryBaseUrl}}"], "path": ["health"] }
+          },
+          "response": []
+        },
+        {
+          "name": "Inventory — Alive",
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": { "raw": "{{inventoryBaseUrl}}/alive", "host": ["{{inventoryBaseUrl}}"], "path": ["alive"] }
+          },
+          "response": []
+        },
+        {
+          "name": "Analytics — Health (ServiceDefaults)",
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": { "raw": "{{analyticsBaseUrl}}/health", "host": ["{{analyticsBaseUrl}}"], "path": ["health"] }
+          },
+          "response": []
+        },
+        {
+          "name": "Analytics — Health (API buffer)",
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": { "raw": "{{analyticsBaseUrl}}/api/analytics/health", "host": ["{{analyticsBaseUrl}}"], "path": ["api", "analytics", "health"] }
+          },
+          "response": []
+        },
+        {
+          "name": "MCP Gateway — Health",
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": { "raw": "{{mcpBaseUrl}}/health", "host": ["{{mcpBaseUrl}}"], "path": ["health"] }
+          },
+          "response": []
+        }
+      ]
+    },
+    {
+      "name": "Catalog API",
+      "description": "Microservicio de catálogo de productos (puerto 8001).",
+      "item": [
+        {
+          "name": "Crear producto",
+          "request": {
+            "method": "POST",
+            "header": [
+              { "key": "Content-Type", "value": "application/json" }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"name\": \"Teclado Mecánico\",\n  \"description\": \"RGB, switches azules\",\n  \"price\": 89.99,\n  \"currency\": \"USD\",\n  \"stock\": 50,\n  \"category\": \"Electronics\"\n}"
+            },
+            "url": {
+              "raw": "{{catalogBaseUrl}}/api/products",
+              "host": ["{{catalogBaseUrl}}"],
+              "path": ["api", "products"]
+            },
+            "description": "Registra un nuevo producto en el catálogo. Retorna el ProductId que se usará en Inventory y Orders.\n\nCategorías válidas: Electronics, Clothing, Food, Books, Sports."
+          },
+          "response": []
+        }
+      ]
+    },
+    {
+      "name": "Inventory API",
+      "description": "Microservicio de inventario y stock (puerto 8003).",
+      "item": [
+        {
+          "name": "Stock",
+          "item": [
+            {
+              "name": "Registrar stock",
+              "request": {
+                "method": "POST",
+                "header": [
+                  { "key": "Content-Type", "value": "application/json" }
+                ],
+                "body": {
+                  "mode": "raw",
+                  "raw": "{\n  \"productId\": \"{{productId}}\",\n  \"productName\": \"Teclado Mecánico\",\n  \"units\": 50\n}"
+                },
+                "url": {
+                  "raw": "{{inventoryBaseUrl}}/api/inventory/stock",
+                  "host": ["{{inventoryBaseUrl}}"],
+                  "path": ["api", "inventory", "stock"]
+                },
+                "description": "Registra stock inicial para un ProductId de Catalog. Si el producto ya existe en inventario, suma las unidades (reabastecimiento)."
+              },
+              "response": []
+            },
+            {
+              "name": "Consultar stock por producto",
+              "request": {
+                "method": "GET",
+                "header": [],
+                "url": {
+                  "raw": "{{inventoryBaseUrl}}/api/inventory/{{productId}}",
+                  "host": ["{{inventoryBaseUrl}}"],
+                  "path": ["api", "inventory", "{{productId}}"]
+                },
+                "description": "Consulta las unidades disponibles de un producto en inventario."
+              },
+              "response": []
+            }
+          ]
+        },
+        {
+          "name": "Reservas",
+          "description": "Endpoints invocados normalmente por Orders API al confirmar o cancelar pedidos. Incluidos para pruebas directas.",
+          "item": [
+            {
+              "name": "Reservar stock (pedido)",
+              "request": {
+                "method": "POST",
+                "header": [
+                  { "key": "Content-Type", "value": "application/json" }
+                ],
+                "body": {
+                  "mode": "raw",
+                  "raw": "{\n  \"orderId\": \"{{orderId}}\",\n  \"lines\": [\n    {\n      \"productId\": \"{{productId}}\",\n      \"quantity\": 2\n    }\n  ]\n}"
+                },
+                "url": {
+                  "raw": "{{inventoryBaseUrl}}/api/inventory/reservations",
+                  "host": ["{{inventoryBaseUrl}}"],
+                  "path": ["api", "inventory", "reservations"]
+                },
+                "description": "Descuenta unidades del stock disponible para las líneas de un pedido. Orders lo invoca automáticamente al confirmar."
+              },
+              "response": []
+            },
+            {
+              "name": "Liberar stock (cancelación)",
+              "request": {
+                "method": "POST",
+                "header": [
+                  { "key": "Content-Type", "value": "application/json" }
+                ],
+                "body": {
+                  "mode": "raw",
+                  "raw": "{\n  \"orderId\": \"{{orderId}}\",\n  \"lines\": [\n    {\n      \"productId\": \"{{productId}}\",\n      \"quantity\": 2\n    }\n  ]\n}"
+                },
+                "url": {
+                  "raw": "{{inventoryBaseUrl}}/api/inventory/reservations/release",
+                  "host": ["{{inventoryBaseUrl}}"],
+                  "path": ["api", "inventory", "reservations", "release"]
+                },
+                "description": "Devuelve unidades al inventario cuando un pedido confirmado se cancela. Orders lo invoca automáticamente."
+              },
+              "response": []
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "name": "Orders API",
+      "description": "Microservicio de pedidos (puerto 8002).",
+      "item": [
+        {
+          "name": "Crear pedido",
+          "request": {
+            "method": "POST",
+            "header": [
+              { "key": "Content-Type", "value": "application/json" }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"customerId\": \"{{customerId}}\",\n  \"shippingAddress\": {\n    \"street\": \"Av. Reforma 123\",\n    \"city\": \"Ciudad de México\",\n    \"postalCode\": \"06600\",\n    \"country\": \"MX\"\n  },\n  \"lines\": [\n    {\n      \"productId\": \"{{productId}}\",\n      \"productName\": \"Teclado Mecánico\",\n      \"unitPrice\": 89.99,\n      \"currency\": \"USD\",\n      \"quantity\": 2\n    }\n  ]\n}"
+            },
+            "url": {
+              "raw": "{{ordersBaseUrl}}/api/orders",
+              "host": ["{{ordersBaseUrl}}"],
+              "path": ["api", "orders"]
+            },
+            "description": "Crea un pedido en estado Pending. Las líneas referencian ProductId de Catalog (snapshot de nombre y precio)."
+          },
+          "response": []
+        },
+        {
+          "name": "Consultar pedido por Id",
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "{{ordersBaseUrl}}/api/orders/{{orderId}}",
+              "host": ["{{ordersBaseUrl}}"],
+              "path": ["api", "orders", "{{orderId}}"]
+            },
+            "description": "Obtiene el detalle de un pedido por su identificador."
+          },
+          "response": []
+        },
+        {
+          "name": "Listar pedidos por cliente",
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "{{ordersBaseUrl}}/api/orders?customerId={{customerId}}",
+              "host": ["{{ordersBaseUrl}}"],
+              "path": ["api", "orders"],
+              "query": [
+                { "key": "customerId", "value": "{{customerId}}" }
+              ]
+            },
+            "description": "Lista todos los pedidos de un cliente."
+          },
+          "response": []
+        },
+        {
+          "name": "Confirmar pedido",
+          "request": {
+            "method": "POST",
+            "header": [],
+            "url": {
+              "raw": "{{ordersBaseUrl}}/api/orders/{{orderId}}/confirm",
+              "host": ["{{ordersBaseUrl}}"],
+              "path": ["api", "orders", "{{orderId}}", "confirm"]
+            },
+            "description": "Confirma el pedido (Pending → Confirmed). Reserva stock automáticamente en Inventory API."
+          },
+          "response": []
+        },
+        {
+          "name": "Cancelar pedido",
+          "request": {
+            "method": "POST",
+            "header": [
+              { "key": "Content-Type", "value": "application/json" }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"reason\": \"El cliente solicitó la cancelación\"\n}"
+            },
+            "url": {
+              "raw": "{{ordersBaseUrl}}/api/orders/{{orderId}}/cancel",
+              "host": ["{{ordersBaseUrl}}"],
+              "path": ["api", "orders", "{{orderId}}", "cancel"]
+            },
+            "description": "Cancela el pedido con motivo. Si estaba confirmado, libera el stock reservado en Inventory."
+          },
+          "response": []
+        }
+      ]
+    },
+    {
+      "name": "Analytics API",
+      "description": "Microservicio observador de eventos (puerto 8004). Requiere Event Hubs habilitado.",
+      "item": [
+        {
+          "name": "Listar eventos recibidos",
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "{{analyticsBaseUrl}}/api/analytics/events?take=20",
+              "host": ["{{analyticsBaseUrl}}"],
+              "path": ["api", "analytics", "events"],
+              "query": [{ "key": "take", "value": "20" }]
+            },
+            "description": "Devuelve los eventos de integración consumidos del consumer group `analytics-service`. Útil tras crear producto o confirmar pedido con Event Hubs activo."
+          },
+          "response": []
+        },
+        {
+          "name": "Health (ServiceDefaults)",
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "{{analyticsBaseUrl}}/health",
+              "host": ["{{analyticsBaseUrl}}"],
+              "path": ["health"]
+            },
+            "description": "Health check estándar (usado por probes K8s)."
+          },
+          "response": []
+        },
+        {
+          "name": "Health (API — buffer)",
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "{{analyticsBaseUrl}}/api/analytics/health",
+              "host": ["{{analyticsBaseUrl}}"],
+              "path": ["api", "analytics", "health"]
+            },
+            "description": "Estado del servicio y contador de eventos en buffer."
+          },
+          "response": []
+        }
+      ]
+    },
+    {
+      "name": "MCP Gateway",
+      "description": "ShopDemo MCP Server (puerto 8005). Las herramientas MCP (CreateProduct, GetProductStock, etc.) se consumen con un cliente MCP en {{mcpBaseUrl}}/mcp — no vía REST Postman.",
+      "item": [
+        {
+          "name": "Health",
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "{{mcpBaseUrl}}/health",
+              "host": ["{{mcpBaseUrl}}"],
+              "path": ["health"]
+            },
+            "description": "Verifica que MCP Gateway está activo. Requiere Catalog, Inventory y Analytics en ejecución para que las tools funcionen."
+          },
+          "response": []
+        }
+      ]
+    },
+    {
+      "name": "Flujo integrado (E2E)",
+      "description": "Secuencia recomendada para probar el proceso completo de compra.\n\n**Antes de empezar:** ejecuta la carpeta **Health checks** (al menos Catalog, Inventory, Orders).\n\nEjecutar en orden y actualizar productId y orderId con los valores devueltos.\n\n**Con Event Hubs:** el paso 2 es opcional (Inventory auto-registra stock). Tras el paso 1, ejecuta paso 2b (Analytics).",
+      "item": [
+        {
+          "name": "0. Preflight — Health Catalog + Inventory + Orders",
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "{{catalogBaseUrl}}/health",
+              "host": ["{{catalogBaseUrl}}"],
+              "path": ["health"]
+            },
+            "description": "Opcional: confirma Catalog activo. Repite mentalmente para Orders e Inventory o usa carpeta Health checks completa."
+          },
+          "response": []
+        },
+        {
+          "name": "1. Crear producto (Catalog)",
+          "request": {
+            "method": "POST",
+            "header": [
+              { "key": "Content-Type", "value": "application/json" }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"name\": \"Teclado Mecánico\",\n  \"description\": \"RGB, switches azules\",\n  \"price\": 89.99,\n  \"currency\": \"USD\",\n  \"stock\": 50,\n  \"category\": \"Electronics\"\n}"
+            },
+            "url": {
+              "raw": "{{catalogBaseUrl}}/api/products",
+              "host": ["{{catalogBaseUrl}}"],
+              "path": ["api", "products"]
+            },
+            "description": "Paso 1: Crear producto. Copiar el 'id' de la respuesta a la variable productId."
+          },
+          "response": []
+        },
+        {
+          "name": "2. Registrar stock (Inventory)",
+          "request": {
+            "method": "POST",
+            "header": [
+              { "key": "Content-Type", "value": "application/json" }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"productId\": \"{{productId}}\",\n  \"productName\": \"Teclado Mecánico\",\n  \"units\": 50\n}"
+            },
+            "url": {
+              "raw": "{{inventoryBaseUrl}}/api/inventory/stock",
+              "host": ["{{inventoryBaseUrl}}"],
+              "path": ["api", "inventory", "stock"]
+            },
+            "description": "Paso 2: Registrar stock manualmente. **Opcional** si Event Hubs está activo (Inventory crea stock al recibir ProductCreated)."
+          },
+          "response": []
+        },
+        {
+          "name": "2b. Ver eventos (Analytics) — opcional",
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "{{analyticsBaseUrl}}/api/analytics/events?take=20",
+              "host": ["{{analyticsBaseUrl}}"],
+              "path": ["api", "analytics", "events"],
+              "query": [{ "key": "take", "value": "20" }]
+            },
+            "description": "Opcional con Event Hubs: valida que ProductCreated apareció en Analytics y que Inventory pudo auto-registrar stock."
+          },
+          "response": []
+        },
+        {
+          "name": "3. Crear pedido (Orders)",
+          "request": {
+            "method": "POST",
+            "header": [
+              { "key": "Content-Type", "value": "application/json" }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"customerId\": \"{{customerId}}\",\n  \"shippingAddress\": {\n    \"street\": \"Av. Reforma 123\",\n    \"city\": \"Ciudad de México\",\n    \"postalCode\": \"06600\",\n    \"country\": \"MX\"\n  },\n  \"lines\": [\n    {\n      \"productId\": \"{{productId}}\",\n      \"productName\": \"Teclado Mecánico\",\n      \"unitPrice\": 89.99,\n      \"currency\": \"USD\",\n      \"quantity\": 2\n    }\n  ]\n}"
+            },
+            "url": {
+              "raw": "{{ordersBaseUrl}}/api/orders",
+              "host": ["{{ordersBaseUrl}}"],
+              "path": ["api", "orders"]
+            },
+            "description": "Paso 3: Crear pedido. Copiar el 'id' de la respuesta a la variable orderId."
+          },
+          "response": []
+        },
+        {
+          "name": "4. Confirmar pedido (Orders → reserva stock)",
+          "request": {
+            "method": "POST",
+            "header": [],
+            "url": {
+              "raw": "{{ordersBaseUrl}}/api/orders/{{orderId}}/confirm",
+              "host": ["{{ordersBaseUrl}}"],
+              "path": ["api", "orders", "{{orderId}}", "confirm"]
+            },
+            "description": "Paso 4: Confirmar pedido. Orders reserva stock en Inventory automáticamente."
+          },
+          "response": []
+        },
+        {
+          "name": "5. Consultar stock (Inventory)",
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "{{inventoryBaseUrl}}/api/inventory/{{productId}}",
+              "host": ["{{inventoryBaseUrl}}"],
+              "path": ["api", "inventory", "{{productId}}"]
+            },
+            "description": "Paso 5: Verificar stock. Esperado: 48 unidades (50 - 2 reservadas)."
+          },
+          "response": []
+        },
+        {
+          "name": "6. Cancelar pedido (Orders → libera stock)",
+          "request": {
+            "method": "POST",
+            "header": [
+              { "key": "Content-Type", "value": "application/json" }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"reason\": \"Cliente solicitó cancelación\"\n}"
+            },
+            "url": {
+              "raw": "{{ordersBaseUrl}}/api/orders/{{orderId}}/cancel",
+              "host": ["{{ordersBaseUrl}}"],
+              "path": ["api", "orders", "{{orderId}}", "cancel"]
+            },
+            "description": "Paso 6 (opcional): Cancelar pedido confirmado. Libera las 2 unidades reservadas."
+          },
+          "response": []
+        },
+        {
+          "name": "7. Verificar stock restaurado (Inventory)",
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "{{inventoryBaseUrl}}/api/inventory/{{productId}}",
+              "host": ["{{inventoryBaseUrl}}"],
+              "path": ["api", "inventory", "{{productId}}"]
+            },
+            "description": "Paso 7: Tras cancelar, el stock debe volver a 50 unidades."
+          },
+          "response": []
+        },
+        {
+          "name": "8. MCP Health (opcional — etapa 14+)",
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "{{mcpBaseUrl}}/health",
+              "host": ["{{mcpBaseUrl}}"],
+              "path": ["health"]
+            },
+            "description": "Opcional si MCP Gateway está desplegado. Las tools MCP se prueban con Cursor/Claude Code en {{mcpBaseUrl}}/mcp."
+          },
+          "response": []
+        }
+      ]
+    }
+  ]
+}

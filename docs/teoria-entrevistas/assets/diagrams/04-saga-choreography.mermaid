@@ -1,0 +1,12 @@
+sequenceDiagram
+  participant O as Pedidos
+  participant P as Pagos
+  participant I as Inventario
+  participant B as Bus de eventos
+  O->>B: OrderCreated
+  B->>P: OrderCreated
+  P->>B: PaymentAuthorized
+  B->>I: PaymentAuthorized
+  I->>B: StockReserved
+  B->>O: StockReserved
+  O->>O: Confirmar pedido

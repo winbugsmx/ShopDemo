@@ -1,0 +1,6 @@
+sequenceDiagram
+  participant A as Cliente gRPC
+  participant B as Servicio gRPC
+  A->>B: GetStock(StockRequest) - HTTP/2
+  B-->>A: StockResponse - Protobuf binario
+  Note over A,B: Contrato definido en archivo .proto

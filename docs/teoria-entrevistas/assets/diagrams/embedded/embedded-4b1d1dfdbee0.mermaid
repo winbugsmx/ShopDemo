@@ -1,0 +1,9 @@
+﻿flowchart TD
+  MSG[Mensaje entrante] --> PROC[Procesar]
+  PROC -->|Éxito| OK[Completado]
+  PROC -->|Fallo| RET{Reintentos < max?}
+  RET -->|Sí| WAIT[Espera backoff]
+  WAIT --> PROC
+  RET -->|No| DLQ[Dead-Letter Queue]
+  DLQ --> ALERT[Alerta al equipo]
+  DLQ --> ANAL[Análisis manual / replay]

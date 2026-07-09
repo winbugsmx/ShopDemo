@@ -1,0 +1,10 @@
+﻿flowchart TB
+  subgraph REGION1["Región West Europe"]
+    AZ1[AZ 1 - Pod activo]
+    AZ2[AZ 2 - Pod activo]
+    AZ3[AZ 3 - Pod activo]
+  end
+  subgraph REGION2["Región East US - standby"]
+    AZ4[AZ 1 - Standby]
+  end
+  REGION1 -->|failover si desastre regional| REGION2

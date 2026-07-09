@@ -1,0 +1,5 @@
+﻿flowchart LR
+  APIGW[API Gateway] --> L[Lambda]
+  S3[S3 PutObject] --> L
+  SQS[SQS mensaje] --> L
+  L --> DDB[(DynamoDB)]

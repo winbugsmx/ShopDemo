@@ -1,0 +1,20 @@
+classDiagram
+  class Order {
+    +OrderId Id
+    +OrderStatus Status
+    +Confirm()
+    +Cancel()
+  }
+  class Money {
+    +decimal Amount
+    +string Currency
+    +Add(Money)
+  }
+  class Email {
+    +string Value
+  }
+  Order --> Money : total
+  Order --> Email : customerEmail
+  note for Order "Entity - identidad por Id"
+  note for Money "Value Object - igualdad por valor"
+  note for Email "Value Object - inmutable"

@@ -1,0 +1,9 @@
+sequenceDiagram
+  participant U as Usuario
+  participant GW as API Gateway
+  participant A as Servicio A
+  participant B as Servicio B
+  U->>GW: X-Correlation-Id: req-99
+  GW->>A: X-Correlation-Id: req-99
+  A->>B: X-Correlation-Id: req-99
+  Note over U,B: Mismo ID en todos los logs

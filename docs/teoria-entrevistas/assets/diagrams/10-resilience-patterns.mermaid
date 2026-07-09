@@ -1,0 +1,11 @@
+flowchart TB
+  REQ[Request entrante] --> RL[Rate Limiting]
+  RL --> BH[Bulkhead: pool aislado]
+  BH --> TO[Timeout]
+  TO --> CB{Circuit Breaker}
+  CB -->|Closed| CALL[Llamada a dependencia]
+  CB -->|Open| FB[Fallback / error rápido]
+  CALL -->|Fallo transitorio| RET[Retry con backoff + jitter]
+  RET --> CALL
+  CALL -->|Éxito| OK[Respuesta]
+  CALL -->|Fallo persistente| FB

@@ -1,0 +1,10 @@
+﻿flowchart TB
+  MVP[MVP Observabilidad]
+  MVP --> M[Golden Signals por servicio]
+  MVP --> L[Logs JSON con trace_id]
+  MVP --> T[Trazas con propagación W3C]
+  MVP --> S[SLO + alertas basadas en SLO]
+  M --> PROD[Despliegue a producción]
+  L --> PROD
+  T --> PROD
+  S --> PROD

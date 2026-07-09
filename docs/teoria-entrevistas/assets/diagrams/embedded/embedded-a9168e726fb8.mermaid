@@ -1,0 +1,5 @@
+﻿flowchart LR
+  FAIL[Desastre / fallo mayor] --> RTO[Tiempo hasta restaurar servicio]
+  FAIL --> RPO[Datos perdidos en ventana temporal]
+  RTO --> ARCH[Arquitectura de recuperación]
+  RPO --> BACK[Estrategia de backup/replicación]

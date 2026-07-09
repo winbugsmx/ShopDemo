@@ -1,0 +1,20 @@
+flowchart TB
+  START[Nuevo sistema de negocio]
+  START --> D1{Dominio entendido?}
+  D1 -->|No| MONO1[Monolito modular + DDD tactico]
+  D1 -->|Si| D2{Equipos autonomos y escala distinta?}
+  D2 -->|No| MONO2[Monolito modular con bounded contexts]
+  D2 -->|Si| MS[Microservicio por bounded context]
+  MONO1 --> ARQ[Clean o Hexagonal internamente]
+  MONO2 --> ARQ
+  MS --> COM{Consulta inmediata o reaccion?}
+  ARQ --> COM
+  COM -->|Inmediata| SYNC[HTTP/gRPC + timeout + CB]
+  COM -->|Reaccion| ASYNC[Cola/stream + idempotencia]
+  SYNC --> DEP{Control operativo maximo?}
+  ASYNC --> DEP
+  DEP -->|Si| K8S[Kubernetes + GitOps]
+  DEP -->|No| PAAS[PaaS serverless o Container Apps/ECS]
+  K8S --> OBS[OpenTelemetry + SLO]
+  PAAS --> OBS
+  OBS --> RES[Timeout retry CB bulkhead]

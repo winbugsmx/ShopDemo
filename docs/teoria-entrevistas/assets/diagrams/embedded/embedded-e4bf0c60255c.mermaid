@@ -1,0 +1,4 @@
+﻿flowchart LR
+  C1[Cliente v1] -->|GET /v1/orders| API[API]
+  C2[Cliente v2] -->|GET /v2/orders| API
+  API --> S[Servicio interno unificado o adaptadores]

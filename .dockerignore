@@ -1,0 +1,32 @@
+# Build artifacts — contienen rutas NuGet del host (Windows) que rompen el build en Linux
+**/bin/
+**/obj/
+
+# Visual Studio / Rider
+.vs/
+.vscode/
+*.user
+*.suo
+*.userosscache
+*.sln.docstates
+
+# Git
+.git/
+.gitignore
+
+# Docker
+**/Dockerfile*
+**/docker-compose*
+**/.dockerignore
+
+# Documentación y archivos locales del curso
+docs/
+**/*.md
+
+# Tests y herramientas locales (no requeridos en la imagen)
+**/*.Tests/
+**/TestResults/
+
+# OS
+**/.DS_Store
+**/Thumbs.db

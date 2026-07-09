@@ -1,0 +1,5 @@
+﻿flowchart LR
+  ECR[ECR - imagen] --> TD[Task Definition]
+  TD --> FARG[Fargate]
+  FARG --> ALB[Application Load Balancer]
+  ALB --> USR[Usuarios HTTP]

@@ -1,0 +1,6 @@
+﻿flowchart LR
+  C[Cliente 30s] --> GW[Gateway 25s]
+  GW --> A[Servicio A 20s]
+  A --> B[Servicio B 15s]
+  B --> DB[BD 10s]
+  DB -->|timeout| FAIL[Error rápido al llamador]

@@ -1,0 +1,9 @@
+sequenceDiagram
+  participant AR as Aggregate Root
+  participant DOM as Dominio interno
+  participant DISP as Dispatcher
+  participant H as Handler
+  AR->>DOM: Confirm()
+  DOM->>DOM: validar invariantes
+  AR->>DISP: OrderConfirmed
+  DISP->>H: notificar handler interno

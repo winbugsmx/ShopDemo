@@ -1,0 +1,14 @@
+sequenceDiagram
+  participant H as Handler
+  participant DB as Base de datos
+  participant OB as Tabla Outbox
+  participant W as Outbox Worker
+  participant BUS as Message Bus
+
+  H->>DB: BEGIN TRANSACTION
+  H->>DB: INSERT Order
+  H->>OB: INSERT OutboxMessage
+  H->>DB: COMMIT
+  W->>OB: poll pending
+  W->>BUS: publish
+  W->>OB: mark sent

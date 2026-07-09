@@ -1,0 +1,13 @@
+flowchart LR
+  WEB[App Web SPA]
+  MOB[App Movil]
+  BFF_WEB[BFF Web]
+  BFF_MOB[BFF Movil]
+  API1[Servicio Catalogo]
+  API2[Servicio Pedidos]
+  WEB --> BFF_WEB
+  MOB --> BFF_MOB
+  BFF_WEB --> API1
+  BFF_WEB --> API2
+  BFF_MOB --> API1
+  BFF_MOB --> API2

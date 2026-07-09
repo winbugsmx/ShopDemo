@@ -1,0 +1,7 @@
+﻿flowchart TB
+  subgraph POD["Pod orders-api-xyz"]
+    C1[Contenedor API .NET]
+    C2[Sidecar - log shipper]
+    C1 --- C2
+  end
+  NODE[Nodo worker] --> POD

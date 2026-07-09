@@ -1,0 +1,20 @@
+classDiagram
+  class Invoker {
+    -command: Command
+    +setCommand(c)
+    +execute()
+  }
+  class Command {
+    <<interface>>
+    +execute()
+  }
+  class ConcreteCommand {
+    -receiver
+    +execute()
+  }
+  class Receiver {
+    +action()
+  }
+  Invoker --> Command
+  Command <|.. ConcreteCommand
+  ConcreteCommand --> Receiver

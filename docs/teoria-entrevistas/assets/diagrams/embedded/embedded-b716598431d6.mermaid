@@ -1,0 +1,11 @@
+﻿flowchart TB
+  subgraph PILARES["Tres pilares"]
+    MET[Métricas - agregación temporal]
+    LOG[Logs - eventos discretos]
+    TRA[Trazas - camino distribuido]
+  end
+  COR[Correlación via trace_id / correlation_id]
+  MET --> COR
+  LOG --> COR
+  TRA --> COR
+  COR --> DIAG[Diagnóstico de incidentes]

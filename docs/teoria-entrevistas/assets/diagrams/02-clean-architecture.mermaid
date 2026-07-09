@@ -1,0 +1,10 @@
+flowchart TB
+  subgraph CAPAS["Clean Architecture"]
+    P[Presentacion / API]
+    A[Aplicacion]
+    D[Dominio]
+    I[Infraestructura]
+  end
+  P --> A --> D
+  I --> A
+  I -.->|implementa puertos| D

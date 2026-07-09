@@ -1,0 +1,12 @@
+﻿flowchart TB
+  subgraph R1["Región eu-west-1"]
+    APP1[App]
+    DB1[(RDS)]
+  end
+  subgraph R2["Región us-east-1"]
+    APP2[App]
+    DB2[(Réplica / Global Table)]
+  end
+  DB1 -.->|replicación| DB2
+  R53[Route 53 Latency Routing] --> APP1
+  R53 --> APP2

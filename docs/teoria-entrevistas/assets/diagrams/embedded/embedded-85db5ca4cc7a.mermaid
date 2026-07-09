@@ -1,0 +1,4 @@
+﻿flowchart TB
+  DEV[Developer IAM User] -->|AssumeRole| R[Deployment Role]
+  L[Lambda] -->|Execution Role| S3[S3 Read]
+  POD[Pod EKS] -->|IRSA| R2[App Role]

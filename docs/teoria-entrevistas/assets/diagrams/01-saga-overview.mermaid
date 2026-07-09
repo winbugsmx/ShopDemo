@@ -1,0 +1,5 @@
+flowchart LR
+  A[Crear pedido] --> B[Autorizar pago]
+  B --> C[Reservar stock]
+  C --> D[Confirmar pedido]
+  C -.->|fallo| X[Compensar pago]

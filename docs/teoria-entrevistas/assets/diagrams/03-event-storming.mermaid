@@ -1,0 +1,7 @@
+flowchart LR
+  ACT[Actor Cliente] -->|click| CMD[Comando ConfirmarPedido]
+  CMD --> AGG[Agregado Pedido]
+  AGG --> EVT1[Evento PedidoConfirmado]
+  EVT1 --> POL[Politica ReservarStock]
+  POL --> CMD2[Comando ReservarStock]
+  CMD2 --> AGG2[Agregado Inventario]

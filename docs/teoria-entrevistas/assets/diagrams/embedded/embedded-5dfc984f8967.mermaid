@@ -1,0 +1,5 @@
+﻿flowchart LR
+  INS[Instrumentación - OTel SDK] --> COL[Colección - OTel Collector]
+  COL --> STO[Almacenamiento - Prometheus/Loki/Tempo]
+  STO --> VIS[Visualización - Grafana]
+  VIS --> ALT[Alertas - Alertmanager/PagerDuty]

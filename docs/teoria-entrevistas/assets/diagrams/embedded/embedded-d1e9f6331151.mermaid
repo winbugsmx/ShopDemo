@@ -1,0 +1,12 @@
+﻿flowchart LR
+  subgraph SIN["Sin Kubernetes"]
+    D1[docker run manual]
+    D2[scripts bash frágiles]
+    D3[load balancer manual]
+  end
+  subgraph CON["Con Kubernetes"]
+    YML[YAML declarativo]
+    K8S[Controladores K8s]
+    YML --> K8S
+    K8S --> EST[Estado deseado = actual]
+  end

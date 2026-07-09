@@ -1,0 +1,22 @@
+classDiagram
+  class Context {
+    -state: State
+    +setState(s)
+    +request()
+  }
+  class State {
+    <<interface>>
+    +handle(context)
+  }
+  class ConcreteStateA {
+    +handle(context)
+  }
+  class ConcreteStateB {
+    +handle(context)
+  }
+
+  Context --> State
+  State <|.. ConcreteStateA
+  State <|.. ConcreteStateB
+  ConcreteStateA --> Context : puede cambiar estado
+  ConcreteStateB --> Context : puede cambiar estado

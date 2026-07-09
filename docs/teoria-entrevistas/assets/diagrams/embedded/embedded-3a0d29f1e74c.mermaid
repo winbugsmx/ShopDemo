@@ -1,0 +1,10 @@
+﻿sequenceDiagram
+  participant A as Servicio A
+  participant CB as Circuit Breaker
+  participant B as Servicio B
+  A->>CB: Llamada
+  CB->>B: Forward
+  B-->>CB: Timeout
+  Note over CB: Fallos acumulados - OPEN
+  A->>CB: Nueva llamada
+  CB-->>A: Fail fast sin llamar a B

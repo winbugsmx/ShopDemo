@@ -1,0 +1,17 @@
+flowchart TB
+  subgraph EXTERIOR["Frameworks"]
+    WEB[ASP.NET]
+    EF[Entity Framework]
+  end
+  subgraph ADAPTERS["Adaptadores"]
+    CTRL[Controllers]
+    REPO[Repositorios]
+  end
+  subgraph APP["Aplicacion"]
+    UC[Handlers / Casos de uso]
+  end
+  subgraph DOM["Dominio"]
+    ENT[Entidades y reglas]
+  end
+  WEB --> CTRL --> UC --> ENT
+  EF --> REPO --> UC

@@ -1,0 +1,12 @@
+﻿flowchart LR
+  subgraph IAAS["IaaS"]
+    EC2[EC2 - VM]
+  end
+  subgraph PAAS["PaaS"]
+    RDS[RDS]
+    L[Lambda]
+    F[Fargate]
+  end
+  DEV[Código .NET] --> F
+  DEV --> L
+  DEV --> EC2

@@ -1,0 +1,11 @@
+﻿flowchart TB
+  IGW[Internet Gateway]
+  subgraph VPC["VPC 10.0.0.0/16"]
+    PUB[Subnet pública]
+    PRIV[Subnet privada]
+    ALB[ALB] --> PUB
+    APP[ECS Tasks] --> PRIV
+    RDS[(RDS)] --> PRIV
+  end
+  IGW --> PUB
+  PRIV --> NAT[NAT Gateway] --> IGW

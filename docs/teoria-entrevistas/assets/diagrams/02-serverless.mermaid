@@ -1,0 +1,7 @@
+flowchart LR
+  T1[HTTP trigger] --> F[Funcion serverless]
+  T2[Timer / cron] --> F
+  T3[Mensaje en cola] --> F
+  F --> OUT1[Blob / BD]
+  F --> OUT2[Cola de salida]
+  F -.->|escala a cero| IDLE[Sin coste compute]

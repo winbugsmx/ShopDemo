@@ -1,0 +1,15 @@
+---
+description: Teoria tecnica — material de estudio para desarrolladores junior
+globs: docs/teoria-entrevistas/**
+alwaysApply: false
+---
+
+# Documentacion teoria tecnica
+
+- Audiencia: desarrollador junior; tono de instructor.
+- Prosa en espanol; teoría general sin referencias a proyectos del repo.
+- Cada concepto: definicion formal, explicacion desarrollada, diagrama (Mermaid o PNG), cuando usar.
+- Textos completos; no resumir en bullet points lo que requiere parrafo explicativo.
+- Patrones: incluir diagrama por patron tratado, no solo mencion.
+- Diagramas: Mermaid embebido + fuente en `assets/diagrams/`; imagenes en `assets/images/`.
+- Al agregar capitulo, actualizar README.md orden de lectura.

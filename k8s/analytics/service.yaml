@@ -1,0 +1,12 @@
+apiVersion: v1
+kind: Service
+metadata:
+  name: shopdemo-analytics
+  namespace: shopdemo
+spec:
+  type: ClusterIP
+  selector:
+    app: shopdemo-analytics
+  ports:
+    - port: 8080
+      targetPort: 8080

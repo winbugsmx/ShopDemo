@@ -1,0 +1,5 @@
+﻿flowchart TB
+  P[Publicador] --> T[SNS Topic]
+  T --> Q1[SQS Inventario]
+  T --> Q2[SQS Email]
+  T --> L[Lambda Analytics]

@@ -1,0 +1,9 @@
+﻿flowchart TD
+  TASK[Tarea definida] --> CTX[Contexto relevante]
+  CTX --> CONST[Restricciones explícitas]
+  CONST --> EX[Ejemplos few-shot si aplica]
+  EX --> PROMPT[Prompt estructurado]
+  PROMPT --> LLM[Modelo generativo]
+  LLM --> OUT[Salida]
+  OUT -->|insuficiente| ITER[Iterar prompt]
+  ITER --> PROMPT

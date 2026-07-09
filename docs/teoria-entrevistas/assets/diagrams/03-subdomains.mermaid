@@ -1,0 +1,9 @@
+flowchart TB
+  subgraph DOMINIO["Dominio del negocio - tienda online"]
+    CORE[Core - recomendaciones personalizadas]
+    SUP[Supporting - gestion de pedidos]
+    GEN[Generic - envio de email]
+  end
+  CORE -->|maximo esfuerzo de modelado| DDD[DDD profundo]
+  SUP -->|modelado custom moderado| MOD[Modelo propio]
+  GEN -->|comprar o usar SaaS| SAAS[SendGrid / servicio externo]

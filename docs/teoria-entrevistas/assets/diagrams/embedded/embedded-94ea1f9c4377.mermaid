@@ -1,0 +1,7 @@
+﻿flowchart LR
+  USR[Usuarios] --> LB[Load Balancer]
+  LB -->|95%| OLD[v1.0]
+  LB -->|5%| NEW[v1.1 canary]
+  NEW --> MET[Métricas OK?]
+  MET -->|Sí| EXPAND[Subir a 100%]
+  MET -->|No| ROLL[Rollback canary]

@@ -1,0 +1,15 @@
+flowchart TB
+  subgraph VENTAS["Contexto Ventas"]
+    P[Pedido]
+    L[LineaPedido]
+  end
+  subgraph CATALOGO["Contexto Catalogo"]
+    PR[Producto]
+    PRE[Precio]
+  end
+  subgraph LOGISTICA["Contexto Logistica"]
+    S[Stock]
+    R[Reserva]
+  end
+  VENTAS -->|ProductId| CATALOGO
+  VENTAS -->|reserva| LOGISTICA

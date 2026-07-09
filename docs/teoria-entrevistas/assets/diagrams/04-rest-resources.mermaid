@@ -1,0 +1,9 @@
+flowchart LR
+  CLIENT[Cliente HTTP]
+  subgraph REST["Recursos REST"]
+    R1["GET /orders"]
+    R2["GET /orders/42"]
+    R3["GET /products/7"]
+  end
+  CLIENT -->|verbos HTTP| REST
+  REST --> JSON[Representacion JSON]

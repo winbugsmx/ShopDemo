@@ -1,0 +1,30 @@
+﻿classDiagram
+  class Creator {
+    <<abstract>>
+    +factoryMethod() Product
+    +operation()
+  }
+  class ConcreteCreatorA {
+    +factoryMethod() Product
+  }
+  class ConcreteCreatorB {
+    +factoryMethod() Product
+  }
+  class Product {
+    <<interface>>
+  }
+  class ConcreteProductA
+  class ConcreteProductB
+
+  Creator <|-- ConcreteCreatorA
+  Creator <|-- ConcreteCreatorB
+  Product <|.. ConcreteProductA
+  Product <|.. ConcreteProductB
+  ConcreteCreatorA --> ConcreteProductA : crea
+  ConcreteCreatorB --> ConcreteProductB : crea
+  Creator ..> Product
+```
+
+Fuente editable: [assets/diagrams/01-factory-method.mermaid](./assets/diagrams/01-factory-method.mermaid)
+
+**Ejemplo conceptual (C#):**

@@ -1,0 +1,19 @@
+flowchart LR
+  subgraph APP["Aplicación"]
+    SDK[OTel SDK - auto/manual instrumentación]
+  end
+  subgraph COL["OTel Collector"]
+    REC[Receivers]
+    PROC[Processors - batch, filter, sampling]
+    EXP[Exporters]
+    REC --> PROC --> EXP
+  end
+  subgraph BACK["Backends"]
+    PROM[Prometheus / Mimir]
+    LOKI[Loki / Elasticsearch]
+    TEMPO[Tempo / Jaeger]
+  end
+  SDK -->|OTLP| COL
+  EXP --> PROM
+  EXP --> LOKI
+  EXP --> TEMPO

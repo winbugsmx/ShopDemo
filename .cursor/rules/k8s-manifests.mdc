@@ -1,0 +1,37 @@
+---
+description: Manifiestos Kubernetes — estructura local/azure/aws y orden de apply
+globs: k8s/**
+alwaysApply: false
+---
+
+# K8s — ShopDemo
+
+## Estructura (no revertir al modelo monolítico)
+
+| Tipo | Ubicación |
+|---|---|
+| Compartidos | `k8s/namespace.yaml`, `postgres/`, `azurite/`, `*/service.yaml`, `catalog/hpa.yaml`, `ingress/` |
+| Minikube | `k8s/local/*/deployment.yaml` |
+| AKS (ACR) | `k8s/azure/*/deployment.yaml` |
+| EKS (ECR) | `k8s/aws/*/deployment.yaml` |
+
+**No** crear `k8s/catalog/deployment.yaml` en la raíz del servicio.
+
+## Regla crítica
+
+No mezclar carpetas de cloud → `ImagePullBackOff`. AKS = `azure/` · EKS = `aws/` · Minikube = `local/`.
+
+## Apply (orden)
+
+1. namespace → secrets → postgres → azurite
+2. Services compartidos (`k8s/catalog/service.yaml`, …)
+3. Deployments de la carpeta cloud
+4. HPA → ingress
+
+Script: `APPLY_INFRA=true bash .github/scripts/apply-k8s-manifests.sh k8s {local|azure|aws}`
+
+## Al editar manifiestos
+
+Actualizar también: [k8s/README.md](../../k8s/README.md), guías en `docs/despliegue/{kubernetes,aks,eks}/`, [ALCANCE-LAB-RELEASE.md](../../docs/despliegue/ALCANCE-LAB-RELEASE.md).
+
+Probes: `/health` (readiness), `/alive` (liveness). Namespace: `shopdemo`.

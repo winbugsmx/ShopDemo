@@ -1,0 +1,32 @@
+flowchart TB
+  subgraph DISENO["03 DDD + 02 Arquitectura"]
+    BC1[Contexto Catalogo]
+    BC2[Contexto Pedidos]
+    BC3[Contexto Inventario]
+    BC4[Contexto Pagos]
+  end
+  subgraph CODIGO["01 Patrones + 02 Clean"]
+    CMD[CreateOrderCommand]
+    AGG[Agregado Order]
+    REPO[Repository + UoW]
+    OUT[Outbox]
+  end
+  subgraph COM["04 Comunicacion"]
+    API[POST /orders]
+    EVT[OrderPlaced evento]
+    SAGA[Saga compensacion]
+  end
+  subgraph OPS["05-10 Cloud K8s CI Observabilidad"]
+    PIPE[Pipeline CI/CD]
+    K8[Deployment K8s]
+    TRACE[Trace distribuido]
+    CB[Circuit breaker]
+  end
+  BC2 --> CMD --> AGG --> REPO --> OUT
+  API --> CMD
+  OUT --> EVT
+  EVT --> BC3
+  EVT --> BC4
+  BC2 -.->|fallo stock| SAGA
+  PIPE --> K8 --> TRACE
+  API --> CB

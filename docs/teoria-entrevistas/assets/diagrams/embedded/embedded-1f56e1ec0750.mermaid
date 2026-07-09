@@ -1,0 +1,16 @@
+﻿flowchart TB
+  subgraph CI["CI - cada PR"]
+    PR[Pull Request] --> BUILD[dotnet build + test]
+    BUILD --> SONAR[Análisis código]
+  end
+  subgraph CD["CD - merge main"]
+    MERGE[Merge main] --> DOCKER[docker build]
+    DOCKER --> TRIVY[Scan imagen]
+    TRIVY --> PUSH[Push ACR/ECR]
+    PUSH --> STG[Deploy staging K8s]
+    STG --> SMOKE[Smoke /health]
+    SMOKE --> APPROVE{Aprobación}
+    APPROVE --> PROD[Deploy prod]
+    PROD --> VERIFY[Métricas + alertas]
+  end
+  CI --> CD

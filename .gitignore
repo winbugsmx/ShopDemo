@@ -1,0 +1,81 @@
+# Build results
+[Bb]in/
+[Oo]bj/
+[Ll]og/
+[Ll]ogs/
+
+# Visual Studio
+.vs/
+*.user
+*.userosscache
+*.suo
+*.userprefs
+*.sln.docstates
+
+# Rider / JetBrains
+.idea/
+*.sln.iml
+
+# VS Code
+.vscode/*
+!.vscode/settings.json
+!.vscode/tasks.json
+!.vscode/launch.json
+!.vscode/extensions.json
+
+# NuGet
+*.nupkg
+*.snupkg
+**/[Pp]ackages/*
+!**/[Pp]ackages/build/
+project.lock.json
+project.fragment.lock.json
+artifacts/
+
+# Test results
+[Tt]est[Rr]esult*/
+[Bb]uild[Ll]og.*
+*.trx
+*.coverage
+*.coveragexml
+
+# Publish
+publish/
+**/PublishProfiles/
+
+# OS generated
+.DS_Store
+Thumbs.db
+ehthumbs.db
+Desktop.ini
+
+# User-specific secrets
+appsettings.*.local.json
+secrets.json
+
+# Docker local overrides
+docker-compose.override.yml
+
+# Environment files with secrets (Event Hubs connection strings)
+.env
+**/.env
+!.env.example
+
+# Kubernetes secrets (copia local de secrets.example.yaml)
+k8s/secrets.yaml
+
+# Azure deploy scripts — configuración local con secretos
+scripts/azure/.env.azure
+
+# AWS deploy scripts
+scripts/aws/.env.aws
+scripts/aws/.deploy-state.json
+
+# Docs tooling (mermaid-cli)
+scripts/docs/node_modules/
+
+# Spec-driven — archivos locales activados por el alumno (pueden contener URLs/secretos)
+CLAUDE.local.md
+.claude/settings.local.json
+.cursor/mcp.json
+.mcp.json

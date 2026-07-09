@@ -1,0 +1,5 @@
+﻿flowchart LR
+  MONO[Llamada in-process] -->|microsegundos| OK[Exito casi seguro]
+  MS[Llamada HTTP entre servicios] -->|ms a segundos| F1[Timeout]
+  MS --> F2[500 error]
+  MS --> F3[Respuesta lenta]

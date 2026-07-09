@@ -1,0 +1,6 @@
+﻿flowchart TB
+  PUSH[Push a main] --> WF[Workflow YAML]
+  WF --> JOB1[Job: build-test]
+  WF --> JOB2[Job: deploy]
+  JOB1 --> RUNNER[Runner ubuntu-latest]
+  JOB2 -->|needs: build-test| RUNNER2[Runner con credenciales cloud]

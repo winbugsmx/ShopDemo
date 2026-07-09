@@ -1,0 +1,11 @@
+flowchart TB
+  subgraph HIGH["Modulo de alto nivel - Aplicacion"]
+    UC[Caso de uso]
+    IFACE[IOrderRepository - interfaz]
+    UC --> IFACE
+  end
+  subgraph LOW["Modulo de bajo nivel - Infraestructura"]
+    EF[EfOrderRepository]
+  end
+  EF -.->|implementa| IFACE
+  UC -.->|depende de abstraccion| IFACE

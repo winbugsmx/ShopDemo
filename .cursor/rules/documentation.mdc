@@ -1,0 +1,29 @@
+---
+description: Documentación del curso — coherencia, rutas K8s y pasos completos
+globs: docs/**/*.md,README.md,AGENTS.md
+alwaysApply: false
+---
+
+# Documentación — ShopDemo
+
+Audiencia: **alumnos**. Cada guía debe ser ejecutable sin saltos ni rutas obsoletas.
+
+## Al actualizar docs de despliegue
+
+- Mencionar **script primero** ([ALCANCE-LAB-RELEASE.md](../../docs/despliegue/ALCANCE-LAB-RELEASE.md)).
+- K8s: compartidos + carpeta cloud (`local/`, `azure/`, `aws/`); nunca solo `kubectl apply -f k8s/`.
+- Mantener orden de pasos numerados; no eliminar pasos post-script (Ingress, consumer groups, hosts, Swagger).
+
+## Rutas obsoletas (no usar en docs nuevos)
+
+- `k8s/catalog/deployment.yaml` (sin prefijo cloud)
+- “Mismos manifiestos en Minikube/AKS/EKS” sin distinguir carpeta cloud
+- Patch manual de imágenes ACR/ECR si ya están en `k8s/azure/` o `k8s/aws/`
+
+## Enlaces
+
+Preferir rutas relativas al repo. Tablas de decisión: Script vs CLI vs Portal.
+
+## Idioma
+
+Prosa en **español**. Comandos y paths literales en inglés/código.

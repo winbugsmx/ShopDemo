@@ -1,0 +1,11 @@
+﻿sequenceDiagram
+  participant C as Cliente
+  participant API as API REST
+  C->>API: POST /orders - body JSON
+  alt Validacion OK
+    API-->>C: 201 Created + Location
+  else Input invalido
+    API-->>C: 400 Bad Request
+  else Regla negocio
+    API-->>C: 422 Unprocessable Entity
+  end

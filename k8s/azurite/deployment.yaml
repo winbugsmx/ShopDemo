@@ -1,0 +1,21 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: shopdemo-azurite
+  namespace: shopdemo
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: shopdemo-azurite
+  template:
+    metadata:
+      labels:
+        app: shopdemo-azurite
+    spec:
+      containers:
+        - name: azurite
+          image: mcr.microsoft.com/azure-storage/azurite
+          args: ["azurite-blob", "--blobHost", "0.0.0.0", "--blobPort", "10000", "--skipApiVersionCheck"]
+          ports:
+            - containerPort: 10000

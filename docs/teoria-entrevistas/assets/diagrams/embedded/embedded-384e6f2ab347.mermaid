@@ -1,0 +1,13 @@
+﻿sequenceDiagram
+  participant Dev as Desarrollador
+  participant Reg as Container Registry
+  participant K8S as Kubernetes
+  participant Ing as Ingress
+  participant User as Usuario HTTP
+  Dev->>Reg: docker push orders-api:1.0
+  Dev->>K8S: kubectl apply Deployment + Service + Ingress
+  K8S->>Reg: pull imagen
+  K8S->>K8S: ReplicaSet crea 3 pods
+  User->>Ing: GET /orders
+  Ing->>K8S: Service orders-api
+  K8S->>User: 200 JSON

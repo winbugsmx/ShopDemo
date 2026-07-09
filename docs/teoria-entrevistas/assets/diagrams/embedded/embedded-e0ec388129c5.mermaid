@@ -1,0 +1,6 @@
+﻿flowchart LR
+  S1[Servicio A - log JSON] --> AGG[Agregador - Fluent Bit / Promtail]
+  S2[Servicio B - log JSON] --> AGG
+  S3[Servicio C - log JSON] --> AGG
+  AGG --> STORE[(Loki / Elasticsearch / Log Analytics)]
+  STORE --> QUERY[Consultas: correlationId, traceId, level]

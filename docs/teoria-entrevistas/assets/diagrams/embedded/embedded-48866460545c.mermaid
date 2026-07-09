@@ -1,0 +1,4 @@
+﻿flowchart LR
+  P[Productor - API Pedidos] --> Q[Cola orders-processing]
+  Q --> C1[Consumidor Inventario]
+  Q -->|fallo N veces| DLQ[Dead Letter Queue]

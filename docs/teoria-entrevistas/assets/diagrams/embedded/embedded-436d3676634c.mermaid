@@ -1,0 +1,4 @@
+﻿flowchart LR
+  API[API .NET + EF Core] -->|T-SQL| SQL[(Azure SQL Database)]
+  SQL --> BAK[Backups automáticos]
+  SQL --> HA[Réplica secundaria - tier Premium]

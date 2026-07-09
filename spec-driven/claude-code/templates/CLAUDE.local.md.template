@@ -1,0 +1,7 @@
+# Local overrides (not committed)
+
+# Example: personal Azure subscription notes
+# subscription_id: ...
+
+# Example: preferred deploy target for this machine
+# default_cloud: azure

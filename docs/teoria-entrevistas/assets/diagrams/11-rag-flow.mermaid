@@ -1,0 +1,7 @@
+flowchart LR
+  Q[Consulta del usuario] --> E[Embedding del query]
+  E --> S[Búsqueda vectorial / keyword]
+  S --> K[Top-K documentos relevantes]
+  K --> P[Prompt enriquecido con contexto]
+  P --> LLM[Modelo generativo]
+  LLM --> R[Respuesta con citas de fuente]

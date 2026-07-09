@@ -1,0 +1,4 @@
+﻿flowchart LR
+  GH[GitHub Actions] -->|OIDC token| EID[Entra ID]
+  EID -->|token Azure| ARM[Azure Resource Manager]
+  ARM --> AKS[AKS / App Service]

@@ -1,0 +1,4 @@
+﻿flowchart LR
+  PROD[Productor API] --> Q[SQS Standard Queue]
+  Q --> CON[Consumidor Lambda/ECS]
+  Q -->|N fallos| DLQ[Dead Letter Queue]

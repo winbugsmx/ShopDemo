@@ -21,6 +21,15 @@ Material para desplegar ShopDemo en **Amazon Elastic Kubernetes Service (EKS)**.
 | K8s local | [despliegue/kubernetes/](../kubernetes/) |
 | Manifiestos | [k8s/aws/](../../../k8s/aws/) |
 
+## Tópicos de Estudio relacionados
+
+| # | Tópico | Enlace |
+|---|---|---|
+| 06 | Servicios AWS (EKS, ECR) | [06-servicios-aws.md](../../teoria-entrevistas/06-servicios-aws.md) |
+| 08 | Kubernetes | [08-kubernetes-orquestacion.md](../../teoria-entrevistas/08-kubernetes-orquestacion.md) |
+
+Teoría lab EKS: [TEORIA-EKS.md](./TEORIA-EKS.md) · Índice: [teoria-entrevistas/README.md](../../teoria-entrevistas/README.md)
+
 ## Relación
 
 | Módulo | Enlace |

@@ -15,3 +15,5 @@ cursor/templates/
 ## Specs compartidos
 
 `../specs/` — usados por Cursor y Claude Code.
+
+**Tópicos de Estudio:** [teoria-entrevistas/README.md](../../docs/teoria-entrevistas/README.md)

@@ -111,7 +111,9 @@ Cada etapa tiene documentación en **3 capas**: **requerimientos de negocio** (q
 | **14b** | Despliegue MCP Gateway | [REQUERIMIENTOS-DESPLIEGUE-MCP](docs/integracion-ia/REQUERIMIENTOS-DESPLIEGUE-MCP.md) | [Azure ACA/AKS](docs/integracion-ia/IMPLEMENTACION-DESPLIEGUE-MCP-AZURE.md) · [AWS ECS/EKS](docs/integracion-ia/IMPLEMENTACION-DESPLIEGUE-MCP-AWS.md) | `curl .../mcp` + agente |
 | **15** | Spec-driven (Cursor + Claude Code) | [REQUERIMIENTOS-SPEC-DRIVEN](spec-driven/REQUERIMIENTOS-SPEC-DRIVEN-DEVELOPMENT.md) | [IMPLEMENTACION-SPEC-DRIVEN](spec-driven/IMPLEMENTACION-SPEC-DRIVEN-DEVELOPMENT.md) | Agente sigue `spec-driven/specs/<módulo>/SPEC.md` |
 
-**Teoría:** [Docker/K8s/AOT](docs/TEORIA-DOCKER-KUBERNETES-AOT.md) · [Observabilidad](docs/observabilidad/TEORIA-OBSERVABILIDAD.md) · [Resiliencia](docs/resiliencia/TEORIA-RESILIENCIA.md) · [Integración IA](docs/integracion-ia/TEORIA-INTEGRACION-IA.md) · [Spec-driven](spec-driven/TEORIA-SPEC-DRIVEN-DEVELOPMENT.md) · [AKS](docs/despliegue/aks/TEORIA-AKS.md) · [EKS](docs/despliegue/eks/TEORIA-EKS.md) · [Azure ACA](docs/despliegue/azure/TEORIA-CONTENEDORES-AZURE.md) · [AWS ECS](docs/despliegue/aws/TEORIA-CONTENEDORES-AWS.md)
+**Tópicos de Estudio (teoría general):** [Índice — 13 tópicos](docs/teoria-entrevistas/README.md) (patrones, arquitectura, DDD, microservicios, Azure, AWS, contenedores/Docker, K8s, CI/CD, observabilidad, resiliencia, IA/MCP, síntesis)
+
+**Teoría práctica ShopDemo (lab):** [Docker/K8s/AOT](docs/TEORIA-DOCKER-KUBERNETES-AOT.md) · [Observabilidad](docs/observabilidad/TEORIA-OBSERVABILIDAD.md) · [Resiliencia](docs/resiliencia/TEORIA-RESILIENCIA.md) · [Integración IA](docs/integracion-ia/TEORIA-INTEGRACION-IA.md) · [Spec-driven](spec-driven/TEORIA-SPEC-DRIVEN-DEVELOPMENT.md) · [AKS](docs/despliegue/aks/TEORIA-AKS.md) · [EKS](docs/despliegue/eks/TEORIA-EKS.md) · [Azure ACA](docs/despliegue/azure/TEORIA-CONTENEDORES-AZURE.md) · [AWS ECS](docs/despliegue/aws/TEORIA-CONTENEDORES-AWS.md)
 
 ---
 
@@ -722,7 +724,7 @@ ShopDemo/
 | Tema | Enlace |
 |---|---|
 | **Contexto global para agentes (Cursor)** | [AGENTS.md](AGENTS.md) · reglas en [.cursor/rules/](.cursor/rules/) |
-| **Teoría técnica** | [docs/teoria-entrevistas/](docs/teoria-entrevistas/) — 12 capítulos de teoría general (patrones, arquitectura, cloud, K8s, operaciones) |
+| **Tópicos de Estudio** | [docs/teoria-entrevistas/README.md](docs/teoria-entrevistas/README.md) — [01](docs/teoria-entrevistas/01-patrones-diseno.md) patrones … [13](docs/teoria-entrevistas/13-sintesis-integracion.md) síntesis |
 | **Guía de desarrollo (código paso a paso)** | [docs/GUIA-DESARROLLO-INTEGRACIONES.md](docs/GUIA-DESARROLLO-INTEGRACIONES.md) |
 | Anexos de código | [Shared](docs/ANEXO-CODIGO-SHARED.md) · [Catalog](docs/catalog/ANEXO-CODIGO-CATALOG.md) · [Orders](docs/orders/ANEXO-CODIGO-ORDERS.md) · [Inventory](docs/inventory/ANEXO-CODIGO-INVENTORY.md) · [Event Hubs](docs/ANEXO-CODIGO-EVENT-HUBS.md) · [Analytics/Aspire](docs/analytics/ANEXO-CODIGO-ANALYTICS-ASPIRE.md) · [MCP](docs/integracion-ia/ANEXO-CODIGO-MCP.md) |
 | Scripts Azure (PowerShell) | [scripts/azure/README.md](scripts/azure/README.md) |
@@ -740,7 +742,7 @@ ShopDemo/
 | Integración IA | [docs/integracion-ia/README.md](docs/integracion-ia/README.md) |
 | Spec-driven (Cursor + Claude) | [spec-driven/README.md](spec-driven/README.md) |
 | Cheat sheets CLI | [docs/cheat-sheets/](docs/cheat-sheets/) |
-| Teoría Docker, K8s y AOT | [docs/TEORIA-DOCKER-KUBERNETES-AOT.md](docs/TEORIA-DOCKER-KUBERNETES-AOT.md) |
+| Teoría lab (ShopDemo) | [TEORIA-DOCKER-KUBERNETES-AOT](docs/TEORIA-DOCKER-KUBERNETES-AOT.md) — complementa tópicos [07](docs/teoria-entrevistas/07-contenedores-docker.md) y [08](docs/teoria-entrevistas/08-kubernetes-orquestacion.md) |
 | Manifiestos Kubernetes | [k8s/](k8s/) |
 
 ---

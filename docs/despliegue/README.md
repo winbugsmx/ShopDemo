@@ -103,12 +103,25 @@ Detalle en [GUIA-RELEASE-SCRIPT-AZURE](./azure/GUIA-RELEASE-SCRIPT-AZURE.md) y [
 
 ## Documentos por plataforma
 
-### Teoría técnica
+### Tópicos de Estudio
 
-| Documento | Contenido |
-|---|---|
-| [teoria-entrevistas/README.md](../teoria-entrevistas/README.md) | Orden de lectura, rutas por tipo de entrevista, diagramas |
-| Capítulos [01](../teoria-entrevistas/01-patrones-diseno.md)–[12](../teoria-entrevistas/12-sintesis-integracion.md) | Teoría general: patrones, arquitectura, DDD, microservicios, Azure/AWS, K8s, CI/CD, observabilidad, resiliencia, IA/MCP |
+Material de teoría general (no sustituye la práctica del lab). Índice: [teoria-entrevistas/README.md](../teoria-entrevistas/README.md)
+
+| # | Tópico | Enlace |
+|---|---|---|
+| 01 | Patrones de diseño | [01-patrones-diseno.md](../teoria-entrevistas/01-patrones-diseno.md) |
+| 02 | Arquitecturas de software | [02-arquitecturas-software.md](../teoria-entrevistas/02-arquitecturas-software.md) |
+| 03 | DDD | [03-ddd-domain-driven-design.md](../teoria-entrevistas/03-ddd-domain-driven-design.md) |
+| 04 | Microservicios y comunicación | [04-microservicios-comunicacion.md](../teoria-entrevistas/04-microservicios-comunicacion.md) |
+| 05 | Servicios Azure | [05-servicios-azure.md](../teoria-entrevistas/05-servicios-azure.md) |
+| 06 | Servicios AWS | [06-servicios-aws.md](../teoria-entrevistas/06-servicios-aws.md) |
+| 07 | Contenedores y Docker | [07-contenedores-docker.md](../teoria-entrevistas/07-contenedores-docker.md) |
+| 08 | Kubernetes | [08-kubernetes-orquestacion.md](../teoria-entrevistas/08-kubernetes-orquestacion.md) |
+| 09 | CI/CD y DevOps | [09-ci-cd-devops.md](../teoria-entrevistas/09-ci-cd-devops.md) |
+| 10 | Observabilidad | [10-observabilidad.md](../teoria-entrevistas/10-observabilidad.md) |
+| 11 | Resiliencia | [11-resiliencia.md](../teoria-entrevistas/11-resiliencia.md) |
+| 12 | Integración IA y MCP | [12-integracion-ia-mcp.md](../teoria-entrevistas/12-integracion-ia-mcp.md) |
+| 13 | Síntesis | [13-sintesis-integracion.md](../teoria-entrevistas/13-sintesis-integracion.md) |
 
 ### Kubernetes (Minikube / AKS / EKS)
 

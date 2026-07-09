@@ -29,6 +29,16 @@ Material para desplegar ShopDemo en **Microsoft Azure** (Container Apps) con flu
 | Teoría | [TEORIA-CONTENEDORES-AZURE.md](./TEORIA-CONTENEDORES-AZURE.md) |
 | Preparación | [PREPARACION-AMBIENTE-AZURE.md](./PREPARACION-AMBIENTE-AZURE.md) |
 
+## Tópicos de Estudio relacionados
+
+| # | Tópico | Enlace |
+|---|---|---|
+| 05 | Servicios Azure | [05-servicios-azure.md](../../teoria-entrevistas/05-servicios-azure.md) |
+| 07 | Contenedores y Docker | [07-contenedores-docker.md](../../teoria-entrevistas/07-contenedores-docker.md) |
+| 09 | CI/CD | [09-ci-cd-devops.md](../../teoria-entrevistas/09-ci-cd-devops.md) |
+
+Teoría lab ACA: [TEORIA-CONTENEDORES-AZURE.md](./TEORIA-CONTENEDORES-AZURE.md) · Índice: [teoria-entrevistas/README.md](../../teoria-entrevistas/README.md)
+
 ## Relación con otros módulos
 
 | Módulo | Enlace |

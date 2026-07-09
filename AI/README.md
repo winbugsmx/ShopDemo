@@ -29,4 +29,5 @@ docker compose up --build
 ## Documentación
 
 - [docs/integracion-ia/README.md](../docs/integracion-ia/README.md)
+- **Tópico 12:** [12-integracion-ia-mcp.md](../docs/teoria-entrevistas/12-integracion-ia-mcp.md)
 - **Despliegue en nube:** [IMPLEMENTACION-DESPLIEGUE-MCP-AZURE.md](../docs/integracion-ia/IMPLEMENTACION-DESPLIEGUE-MCP-AZURE.md) · [AWS](../docs/integracion-ia/IMPLEMENTACION-DESPLIEGUE-MCP-AWS.md)

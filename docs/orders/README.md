@@ -39,6 +39,16 @@ Documentación para el bounded context **Orders** en **ShopDemo**, con **Clean A
 5. `IMPLEMENTACION-ORDERS.md` — guía paso a paso
 6. `ANEXO-PEDAGOGIA-ORDERS.md` — solo si eres alumno del curso
 
+## Tópicos de Estudio relacionados
+
+| # | Tópico | Enlace |
+|---|---|---|
+| 02 | Arquitecturas | [02-arquitecturas-software.md](../teoria-entrevistas/02-arquitecturas-software.md) |
+| 03 | DDD | [03-ddd-domain-driven-design.md](../teoria-entrevistas/03-ddd-domain-driven-design.md) |
+| 04 | Microservicios | [04-microservicios-comunicacion.md](../teoria-entrevistas/04-microservicios-comunicacion.md) |
+
+Índice: [teoria-entrevistas/README.md](../teoria-entrevistas/README.md)
+
 ## Relación con otros microservicios
 
 ```

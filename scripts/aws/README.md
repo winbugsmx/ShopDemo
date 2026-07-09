@@ -15,6 +15,7 @@ Automatización del laboratorio AWS del curso Lite Thinking. Complementa la docu
 | MCP Gateway | [IMPLEMENTACION-DESPLIEGUE-MCP-AWS.md](../../docs/integracion-ia/IMPLEMENTACION-DESPLIEGUE-MCP-AWS.md) |
 | Guía de desarrollo | [GUIA-DESARROLLO-INTEGRACIONES.md](../../docs/GUIA-DESARROLLO-INTEGRACIONES.md) |
 | CI/CD GitHub | [.github/workflows/deploy-aws.yml](../../.github/workflows/deploy-aws.yml) · [deploy-eks.yml](../../.github/workflows/deploy-eks.yml) · [SETUP-GITHUB.md](../../.github/SETUP-GITHUB.md) · [SECRETS-CHECKLIST.md](../../.github/SECRETS-CHECKLIST.md) |
+| Tópicos de Estudio | [06 AWS](../../docs/teoria-entrevistas/06-servicios-aws.md) · [07 Docker](../../docs/teoria-entrevistas/07-contenedores-docker.md) · [09 CI/CD](../../docs/teoria-entrevistas/09-ci-cd-devops.md) · [Índice](../../docs/teoria-entrevistas/README.md) |
 
 ## Archivos
 

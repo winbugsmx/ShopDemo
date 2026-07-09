@@ -39,6 +39,16 @@ Documentación para el bounded context **Inventory** en **ShopDemo**, con **arqu
 5. `IMPLEMENTACION-INVENTORY.md` — guía paso a paso
 6. `ANEXO-PEDAGOGIA-INVENTORY.md` — solo si eres alumno del curso
 
+## Tópicos de Estudio relacionados
+
+| # | Tópico | Enlace |
+|---|---|---|
+| 02 | Arquitecturas (Hexagonal) | [02-arquitecturas-software.md](../teoria-entrevistas/02-arquitecturas-software.md) |
+| 03 | DDD | [03-ddd-domain-driven-design.md](../teoria-entrevistas/03-ddd-domain-driven-design.md) |
+| 04 | Microservicios y eventos | [04-microservicios-comunicacion.md](../teoria-entrevistas/04-microservicios-comunicacion.md) |
+
+Índice: [teoria-entrevistas/README.md](../teoria-entrevistas/README.md)
+
 ## Relación entre los 3 microservicios
 
 ```

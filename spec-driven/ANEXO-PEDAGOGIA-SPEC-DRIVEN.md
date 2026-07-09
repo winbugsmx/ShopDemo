@@ -42,4 +42,4 @@ Al completar esta etapa, el alumno será capaz de:
 
 - [TEORIA-SPEC-DRIVEN-DEVELOPMENT.md](./TEORIA-SPEC-DRIVEN-DEVELOPMENT.md)
 - [IMPLEMENTACION-SPEC-DRIVEN-DEVELOPMENT.md](./IMPLEMENTACION-SPEC-DRIVEN-DEVELOPMENT.md)
-- [teoria-entrevistas/11-integracion-ia-mcp.md](../docs/teoria-entrevistas/11-integracion-ia-mcp.md)
+- [teoria-entrevistas/12-integracion-ia-mcp.md](../docs/teoria-entrevistas/12-integracion-ia-mcp.md)

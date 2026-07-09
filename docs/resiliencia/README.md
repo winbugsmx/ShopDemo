@@ -18,7 +18,10 @@ Material para **health checks, recuperación, escalado y patrones de fallo** en 
 |---|---|
 | Azure | [azure/IMPLEMENTACION-RESILIENCIA-AZURE.md](./azure/IMPLEMENTACION-RESILIENCIA-AZURE.md) |
 | AWS | [aws/IMPLEMENTACION-RESILIENCIA-AWS.md](./aws/IMPLEMENTACION-RESILIENCIA-AWS.md) |
-| Teoría | [TEORIA-RESILIENCIA.md](./TEORIA-RESILIENCIA.md) |
+| Teoría lab | [TEORIA-RESILIENCIA.md](./TEORIA-RESILIENCIA.md) |
+| Tópico 11 (teoría general) | [11-resiliencia.md](../teoria-entrevistas/11-resiliencia.md) |
+
+Índice: [teoria-entrevistas/README.md](../teoria-entrevistas/README.md)
 
 ## Relación
 

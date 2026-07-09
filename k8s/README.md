@@ -135,3 +135,12 @@ Con 4× `t3.micro` (~16 pods) suele bastar solo Catalog + Orders + Inventory. Ve
 | Script AWS EKS | [scripts/aws/README.md](../scripts/aws/README.md) |
 | CI/CD AKS/EKS | [.github/workflows/deploy-aks.yml](../.github/workflows/deploy-aks.yml) · [deploy-eks.yml](../.github/workflows/deploy-eks.yml) |
 | MCP Gateway | [IMPLEMENTACION-DESPLIEGUE-MCP-AZURE](../docs/integracion-ia/IMPLEMENTACION-DESPLIEGUE-MCP-AZURE.md) |
+
+## Tópicos de Estudio
+
+| # | Tópico | Enlace |
+|---|---|---|
+| 07 | Contenedores y Docker | [07-contenedores-docker.md](../docs/teoria-entrevistas/07-contenedores-docker.md) |
+| 08 | Kubernetes | [08-kubernetes-orquestacion.md](../docs/teoria-entrevistas/08-kubernetes-orquestacion.md) |
+
+Índice completo: [teoria-entrevistas/README.md](../docs/teoria-entrevistas/README.md)

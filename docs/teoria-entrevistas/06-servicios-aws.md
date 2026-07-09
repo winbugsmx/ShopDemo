@@ -284,9 +284,27 @@ Aurora separa **compute** (instancias) de **storage** (capa distribuida en 6 cop
 
 Para juniors: si el equipo ya usa PostgreSQL en RDS y necesita más rendimiento HA, evalúa Aurora PostgreSQL.
 
+Arquitectura mental:
+
+```
+Writer instance (primary) ──► Storage layer distribuido (6 copias, 3 AZ)
+        │
+        ├── Read replica 1 (reporting)
+        ├── Read replica 2 (analytics)
+        └── Failover automático en ~30 s si primary cae
+```
+
+**Ejemplo de uso con EF Core:** mismo connection string que RDS; Aurora expone endpoint `cluster-xxx.cluster-xxx.us-east-1.rds.amazonaws.com` para escritura y `cluster-xxx.cluster-ro-xxx` para lecturas (con read replica routing en la app o RDS Proxy).
+
 #### Cuándo usar Aurora
 
-Cargas transaccionales exigentes, SaaS con muchas lecturas, necesidad de HA superior a RDS estándar.
+| Usa Aurora cuando… | RDS estándar basta cuando… |
+|---|---|
+| SaaS con muchas lecturas y failover rápido | Carga moderada, presupuesto ajustado |
+| Necesitas hasta 15 read replicas con lag bajo | 1–2 read replicas ocasionales |
+| Storage que crece sin planificar capacidad | Tamaño de BD predecible y estable |
+
+**Recursos:** [Aurora overview](https://docs.aws.amazon.com/AmazonRDS/latest/AuroraUserGuide/CHAP_AuroraOverview.html)
 
 ---
 
@@ -327,11 +345,43 @@ Conceptos:
 
 #### Explicación desarrollada
 
-Equivalente a **Azure Cache for Redis**. Mismos casos: cache de sesión, cache de consultas, rate limiting, leaderboards con Redis sorted sets.
+Equivalente a **Azure Cache for Redis**. Casos típicos en APIs .NET:
+
+| Caso | Patrón |
+|---|---|
+| Cache de catálogo | `GET /products` → Redis 60 s TTL |
+| Sesión distribuida | `IDistributedCache` con StackExchange.Redis |
+| Rate limiting | INCR por IP + EXPIRE |
+| Leaderboard | Redis Sorted Sets |
+
+Modos de despliegue:
+
+- **Cluster mode disabled:** un shard, más simple.
+- **Cluster mode enabled:** partición horizontal para alto throughput.
+- **Memcached:** alternativa más simple sin persistencia ni estructuras ricas.
+
+**Ejemplo C# (conceptual):**
+
+```csharp
+// Registro en Program.cs
+builder.Services.AddStackExchangeRedisCache(o =>
+    o.Configuration = builder.Configuration["Redis:Connection"]);
+
+// Uso en handler
+await cache.SetStringAsync($"product:{id}", json, new DistributedCacheEntryOptions {
+    AbsoluteExpirationRelativeToNow = TimeSpan.FromMinutes(5)
+});
+```
 
 #### Cuándo usar ElastiCache
 
-Datos temporales, lecturas repetidas, reducir carga en RDS. No sustituye una base de datos principal.
+| Usa ElastiCache cuando… | No uses ElastiCache como… |
+|---|---|
+| Lecturas repetidas que alivian RDS | Única fuente de verdad persistente |
+| Latencia sub-ms en hot paths | Cola de mensajes (usa SQS) |
+| Sesiones en farm de APIs | Base de datos principal |
+
+**Recursos:** [ElastiCache for Redis](https://docs.aws.amazon.com/AmazonElastiCache/latest/red-ug/WhatIs.html)
 
 ---
 
@@ -483,6 +533,25 @@ Flujo:
 3. STS de AWS intercambia token por credenciales temporales del rol.
 4. SDK AWS en .NET usa esas credenciales para S3, SQS, etc.
 
+**Anotación en ServiceAccount (conceptual):**
+
+```yaml
+metadata:
+  annotations:
+    eks.amazonaws.com/role-arn: arn:aws:iam::123456789012:role/orders-api-s3-reader
+```
+
+En .NET con AWS SDK, no configuras access keys: el SDK detecta el rol vía variables de entorno inyectadas por el agente EKS.
+
+#### Cuándo usar IRSA
+
+| Usa IRSA cuando… | Evita access keys cuando… |
+|---|---|
+| Pods en EKS acceden a S3, SQS, DynamoDB | Siempre — keys en Secret son riesgo de fuga |
+| Necesitas permisos distintos por microservicio | Un solo rol amplio para todo el clúster |
+
+**Recursos:** [IAM Roles for Service Accounts](https://docs.aws.amazon.com/eks/latest/userguide/iam-roles-for-service-accounts.html)
+
 ---
 
 ### 6.3 AWS Secrets Manager y SSM Parameter Store
@@ -493,7 +562,34 @@ Flujo:
 
 #### Explicación desarrollada
 
-Equivalentes a **Azure Key Vault**. Secrets Manager para credenciales que rotan; Parameter Store para config simple (`/app/prod/MaxRetries`).
+Equivalentes a **Azure Key Vault**. Diferencias prácticas:
+
+| Servicio | Fortaleza |
+|---|---|
+| **Secrets Manager** | Rotación automática de credenciales RDS, versionado, auditoría |
+| **Parameter Store** | Config no sensible (`/app/prod/FeatureFlags`) y secretos simples (Standard gratis, Advanced cifrado con KMS) |
+
+**Ejemplo** — Lambda o ECS leyendo secreto:
+
+```csharp
+// AWS SDK for .NET — GetSecretValueAsync
+var client = new AmazonSecretsManagerClient();
+var response = await client.GetSecretValueAsync(new GetSecretValueRequest {
+    SecretId = "prod/orders/db-connection"
+});
+var connectionString = response.SecretString;
+```
+
+En producción, inyecta secretos como variables de entorno en task definition o usa sidecar/init container; no los commitees en imágenes Docker.
+
+#### Cuándo usar cada uno
+
+| Secrets Manager | Parameter Store |
+|---|---|
+| Rotación automática de password RDS | Parámetros de configuración por entorno |
+| Secretos con ciclo de vida formal | Alto volumen de parámetros con coste mínimo |
+
+**Recursos:** [Secrets Manager](https://docs.aws.amazon.com/secretsmanager/) | [Parameter Store](https://docs.aws.amazon.com/systems-manager/latest/userguide/systems-manager-parameter-store.html)
 
 ---
 
@@ -501,7 +597,34 @@ Equivalentes a **Azure Key Vault**. Secrets Manager para credenciales que rotan;
 
 #### Definición formal
 
-**AWS KMS** gestiona **claves de cifrado** usadas por servicios AWS (S3, RDS, EBS) y aplicaciones para cifrar datos en reposo y en tránsito.
+**AWS KMS** es un servicio **managed** de creación y control de **claves de cifrado** usadas por servicios AWS y aplicaciones para cifrar datos en reposo y firmar digitalmente.
+
+#### Explicación desarrollada
+
+KMS no es un almacén de secretos como Secrets Manager: gestiona **llaves criptográficas** que otros servicios usan para cifrar.
+
+Usos frecuentes:
+
+| Uso | Servicio que lo consume |
+|---|---|
+| Cifrado de bucket S3 | SSE-KMS (`aws:kms`) |
+| Cifrado de disco EBS | Volumen attachado a EC2 |
+| Cifrado de secretos | Secrets Manager, Parameter Store Advanced |
+| Cifrado de RDS/Aurora | Transparent encryption at rest |
+
+Conceptos:
+
+- **CMK (Customer Master Key):** llave lógica; la material nunca sale de KMS.
+- **Envelope encryption:** datos cifrados con data key; data key cifrada con CMK.
+- **IAM policies + key policies:** quién puede `kms:Decrypt`, `kms:GenerateDataKey`.
+
+Para juniors: si S3 o RDS dice "encrypted with KMS", significa que sin permiso `kms:Decrypt` en tu rol IAM no podrás leer datos aunque tengas acceso al bucket.
+
+#### Cuándo usar KMS
+
+Siempre que políticas de seguridad exijan cifrado en reposo con llaves controladas por el cliente (no solo las managed keys por defecto de AWS).
+
+**Recursos:** [KMS concepts](https://docs.aws.amazon.com/kms/latest/developerguide/concepts.html)
 
 ---
 
@@ -540,13 +663,61 @@ AWS ofrece tres balanceadores:
 
 ALB es el más común para APIs .NET en ECS/EKS/EC2. Termina TLS, health checks en `/health`, routing `/api/*` vs `/static/*`.
 
+**Ejemplo de listener rules (mental):**
+
+| Condición | Destino |
+|---|---|
+| Host `api.tienda.com` + path `/orders/*` | Target group Orders (puerto 8080) |
+| Host `api.tienda.com` + path `/catalog/*` | Target group Catalog |
+| Default | 404 fixed response |
+
+NLB se usa cuando necesitas TCP puro, IPs estáticas por AZ o latencia extremadamente baja (gaming, trading). GLB integra appliances de seguridad de terceros en línea.
+
+Integración con ECS: el **Service** registra tasks en el target group; ALB solo envía tráfico a tasks healthy.
+
+#### Cuándo usar cada balanceador
+
+| ALB | NLB | GLB |
+|---|---|---|
+| APIs HTTP/HTTPS REST | TCP/UDP, TLS passthrough | Firewalls virtuales inline |
+| Path/host routing | Millones de conexiones largas | Inspección de paquetes centralizada |
+
+**Recursos:** [Elastic Load Balancing](https://docs.aws.amazon.com/elasticloadbalancing/)
+
 ---
 
 ### 7.3 Amazon Route 53
 
 #### Definición formal
 
-**Route 53** es el servicio DNS de AWS con **hosted zones**, health checks y **routing policies** (weighted, latency, failover).
+**Amazon Route 53** es el servicio DNS escalable de AWS que ofrece **hosted zones**, registro de dominios, **health checks** y **routing policies** avanzadas (weighted, latency, failover, geolocation).
+
+#### Explicación desarrollada
+
+Route 53 resuelve nombres a recursos AWS o externos. Más que un DNS estático, permite **enrutar tráfico de forma inteligente**.
+
+Políticas de routing útiles:
+
+| Política | Uso |
+|---|---|
+| **Simple** | Un registro A → ALB |
+| **Weighted** | 90 % tráfico a región A, 10 % canary región B |
+| **Latency** | Usuario va al endpoint con menor RTT |
+| **Failover** | Primary ALB; si health check falla → secondary |
+| **Geolocation** | EU users → `eu-west-1`, US → `us-east-1` |
+
+Health checks: Route 53 hace HTTP/TCP periódico a tu endpoint; si falla, deja de devolver esa IP en políticas failover/latency.
+
+Ejemplo: `api.miempresa.com` CNAME/alias a ALB en `us-east-1`; registro failover apunta a ALB de `us-west-2` si el primario no responde.
+
+#### Cuándo usar Route 53
+
+| Usa Route 53 cuando… | DNS externo (Cloudflare) cuando… |
+|---|---|
+| Arquitectura multi-región AWS nativa | Ya usas proxy CDN/WAF del proveedor DNS |
+| Failover y weighted routing integrados | Política corporativa fija otro DNS |
+
+**Recursos:** [Route 53 routing policies](https://docs.aws.amazon.com/Route53/latest/DeveloperGuide/routing-policy.html)
 
 ---
 
@@ -554,9 +725,38 @@ ALB es el más común para APIs .NET en ECS/EKS/EC2. Termina TLS, health checks 
 
 #### Definición formal
 
-**CloudFront** es una **CDN (Content Delivery Network)** global con edge locations que cachea contenido cerca del usuario y se integra con S3, ALB y WAF.
+**Amazon CloudFront** es una **CDN (Content Delivery Network)** global con **edge locations** que cachea contenido cerca del usuario, reduce latencia y se integra con S3, ALB, API Gateway y **AWS WAF**.
 
-Equivalente a **Azure Front Door / CDN**.
+#### Explicación desarrollada
+
+Equivalente a **Azure Front Door / CDN**. CloudFront no solo cachea estáticos: puede ser **front door** de tu API con TLS en el edge.
+
+Componentes:
+
+| Componente | Rol |
+|---|---|
+| **Distribution** | Configuración global CDN |
+| **Origin** | S3 bucket, ALB, custom HTTP |
+| **Behavior** | Path pattern, TTL cache, métodos HTTP permitidos |
+| **WAF Web ACL** | Reglas OWASP en el edge |
+
+Patrones:
+
+- **SPA + API:** `/*` estáticos desde S3 (cache largo); `/api/*` forward a ALB (cache none).
+- **Signed URLs:** contenido privado en S3 accesible solo con URL firmada.
+- **DDoS:** AWS Shield Standard incluido; CloudFront absorbe mucho tráfico malicioso en edge.
+
+Para APIs .NET dinámicas, normalmente **no cacheas** `POST/PUT`; sí puedes cachear `GET` públicos con TTL corto si son idempotentes.
+
+#### Cuándo usar CloudFront
+
+| Usa CloudFront cuando… | ALB directo basta cuando… |
+|---|---|
+| Usuarios globales, latencia importa | Todos los usuarios en una región |
+| Estáticos + API bajo mismo dominio | API interna solo en VPC |
+| WAF y Shield en el perímetro | Tráfico bajo, sin requisito CDN |
+
+**Recursos:** [CloudFront developer guide](https://docs.aws.amazon.com/AmazonCloudFront/latest/DeveloperGuide/)
 
 ---
 
@@ -572,10 +772,30 @@ Equivalente a **Azure Front Door / CDN**.
 
 Equivalente central a **Azure Monitor**. Componentes:
 
-- **Metrics:** CPU, RequestCount, Duration de Lambda.
-- **Logs:** Log Groups con Log Streams (stdout de containers).
-- **Alarms:** acciones cuando métrica supera umbral (SNS, autoscaling).
-- **Dashboards:** visualización operativa.
+| Componente | Función | Ejemplo .NET |
+|---|---|---|
+| **Metrics** | Series temporales (1 min) | `AWS/Lambda` Duration p99 |
+| **Logs** | Log Groups / Streams | stdout de contenedor ECS |
+| **Alarms** | Umbral → SNS/autoscaling | CPU > 70 % 5 min |
+| **Dashboards** | Vista operativa | RPS, errores, latencia |
+| **Container Insights** | Métricas pods EKS | CPU/mem por namespace |
+
+**Ejemplo de consulta Logs Insights:**
+
+```sql
+fields @timestamp, @message
+| filter @message like /Exception/
+| sort @timestamp desc
+| limit 50
+```
+
+En .NET publica métricas custom con `AmazonCloudWatchClient.PutMetricData` o OpenTelemetry exporter. Correlaciona con X-Ray para trazas distribuidas.
+
+#### Cuándo usar CloudWatch
+
+Base obligatoria en AWS. Complementa con X-Ray (trazas) y CloudTrail (auditoría API), no los sustituye.
+
+**Recursos:** [CloudWatch documentation](https://docs.aws.amazon.com/cloudwatch/)
 
 ---
 
@@ -597,9 +817,30 @@ Equivalente a **Application Insights** para trazas. SDK X-Ray en .NET propaga se
 
 #### Definición formal
 
-**AWS CloudTrail** registra **llamadas a la API AWS** (quién, qué, cuándo, desde dónde) para auditoría y compliance.
+**AWS CloudTrail** registra **llamadas a la API de AWS** (quién, qué acción, cuándo, desde qué IP, éxito/fallo) y entrega un historial auditable para seguridad y compliance.
 
-No confundir con CloudWatch Logs de aplicación: CloudTrail es auditoría de **control plane**.
+#### Explicación desarrollada
+
+CloudTrail responde: "¿Quién eliminó el bucket S3 de producción a las 3 AM?". No es log de aplicación (eso es CloudWatch Logs); es **auditoría del plano de control**.
+
+Eventos típicos registrados:
+
+- `RunInstances`, `TerminateInstances` (EC2).
+- `CreateCluster`, `DeleteCluster` (EKS).
+- `PutBucketPolicy` (S3).
+- `AssumeRole` (STS) — crítico para detectar uso indebido de roles.
+
+Configuración recomendada:
+
+- **Trail multi-región** habilitado en la cuenta.
+- Logs a bucket S3 cifrado con KMS + retención.
+- Integración con CloudWatch Logs para alertas (`ConsoleLogin` sin MFA).
+
+#### Cuándo usar CloudTrail
+
+Siempre en cuentas AWS de producción. Requisito habitual en SOC2, ISO 27001 y revisiones de seguridad.
+
+**Recursos:** [CloudTrail user guide](https://docs.aws.amazon.com/awscloudtrail/latest/userguide/)
 
 ---
 
@@ -609,9 +850,30 @@ No confundir con CloudWatch Logs de aplicación: CloudTrail es auditoría de **c
 
 #### Definición formal
 
-**ECR** es registro **privado** de imágenes Docker/OCI integrado con ECS, EKS y pipelines CI/CD.
+**Amazon ECR** es un registro **privado** de imágenes Docker/OCI totalmente integrado con IAM, ECS, EKS y pipelines CI/CD, con escaneo de vulnerabilidades y políticas de ciclo de vida.
 
-Equivalente a **ACR**.
+#### Explicación desarrollada
+
+Equivalente a **ACR** (capítulo 05). URI típico: `123456789012.dkr.ecr.us-east-1.amazonaws.com/orders-api:v1`.
+
+Flujo:
+
+```bash
+aws ecr get-login-password --region us-east-1 | docker login --username AWS --password-stdin <account>.dkr.ecr.us-east-1.amazonaws.com
+docker build -t orders-api:local .
+docker tag orders-api:local <account>.dkr.ecr.us-east-1.amazonaws.com/orders-api:v1
+docker push <account>.dkr.ecr.us-east-1.amazonaws.com/orders-api:v1
+```
+
+ECS/EKS task definitions referencian la imagen por URI; el **task execution role** necesita `ecr:GetDownloadUrlForLayer` y `ecr:BatchGetImage`.
+
+Lifecycle policies eliminan tags antiguos automáticamente (ahorro de coste).
+
+#### Cuándo usar ECR
+
+Siempre que despliegues contenedores .NET en ECS/EKS en AWS. No publiques imágenes propietarias solo en Docker Hub.
+
+**Recursos:** [ECR user guide](https://docs.aws.amazon.com/AmazonECR/latest/userguide/)
 
 ---
 
@@ -619,15 +881,47 @@ Equivalente a **ACR**.
 
 #### Definición formal
 
-Suite **CI/CD nativa AWS:**
+La suite **CI/CD nativa AWS** compuesta por **CodeBuild** (compilación y tests), **CodePipeline** (orquestación de stages) y **CodeDeploy** (despliegue a EC2, ECS, Lambda, on-premise).
 
-| Servicio | Función |
+#### Explicación desarrollada
+
+Alternativa a GitHub Actions cuando todo vive en AWS. Pipeline típico para API .NET en ECS:
+
+| Stage | Servicio | Acción |
+|---|---|---|
+| Source | CodeCommit / GitHub | Trigger en push a `main` |
+| Build | CodeBuild | `dotnet test`, `docker build`, `docker push` ECR |
+| Deploy | CodeDeploy / ECS | Nueva task definition, rolling update |
+
+**buildspec.yml** (fragmento CodeBuild):
+
+```yaml
+version: 0.2
+phases:
+  pre_build:
+    commands:
+      - aws ecr get-login-password | docker login ...
+  build:
+    commands:
+      - dotnet publish Orders.Api -c Release -o publish
+      - docker build -t $IMAGE_URI .
+  post_build:
+    commands:
+      - docker push $IMAGE_URI
+artifacts:
+  files: imagedefinitions.json
+```
+
+Muchos equipos prefieren **GitHub Actions + OIDC → AWS** por ecosistema; CodePipeline brilla en cuentas con compliance que exigen servicios AWS-managed end-to-end.
+
+#### Cuándo usar suite Code*
+
+| Usa CodePipeline cuando… | Usa GitHub Actions cuando… |
 |---|---|
-| **CodeBuild** | Compilar, test, build imagen |
-| **CodePipeline** | Orquestar stages |
-| **CodeDeploy** | Desplegar a EC2, ECS, Lambda |
+| Política "solo servicios AWS" | Repos y PRs ya en GitHub |
+| Integración con CodeCommit | Marketplace de actions más amplio |
 
-Alternativa a GitHub Actions; muchos equipos usan GitHub Actions + OIDC a AWS igual que en Azure.
+**Recursos:** [CodePipeline](https://docs.aws.amazon.com/codepipeline/)
 
 ---
 
@@ -635,9 +929,31 @@ Alternativa a GitHub Actions; muchos equipos usan GitHub Actions + OIDC a AWS ig
 
 #### Definición formal
 
-**CloudFormation** declara infraestructura en YAML/JSON (IaC nativo AWS). **AWS CDK** genera CloudFormation desde TypeScript, Python, C#, etc. **Terraform** es multicloud con HCL.
+**AWS CloudFormation** declara infraestructura en YAML/JSON (IaC nativo). **AWS CDK** genera CloudFormation desde lenguajes de programación (TypeScript, Python, **C#**). **Terraform** usa HCL y proveedor AWS para IaC multicloud.
 
-Equivalente a **Bicep/ARM** en Azure.
+#### Explicación desarrollada
+
+Equivalente a **Bicep/ARM** en Azure. CloudFormation crea **stacks** con rollback automático si un recurso falla.
+
+**Ejemplo CDK C# (conceptual):**
+
+```csharp
+var cluster = new Cluster(this, "ShopCluster", new ClusterProps {
+    Vpc = vpc,
+    Version = KubernetesVersion.Of("1.29")
+});
+```
+
+Ventajas CDK: loops, condicionales, unit tests con familiaridad .NET. Terraform domina cuando el mismo equipo gestiona AWS + Azure + on-prem con un solo estado.
+
+#### Cuándo usar cada herramienta
+
+| CloudFormation/CDK | Terraform |
+|---|---|
+| Solo AWS, features día 0 | Multicloud, módulos maduros compartidos |
+| CDK si el equipo es .NET/TS | Estado remoto S3 + DynamoDB lock |
+
+**Recursos:** [AWS CDK](https://docs.aws.amazon.com/cdk/) | [CloudFormation](https://docs.aws.amazon.com/cloudformation/)
 
 ---
 
@@ -645,7 +961,47 @@ Equivalente a **Bicep/ARM** en Azure.
 
 #### Definición formal
 
-**eksctl** es CLI oficial para crear y gestionar clústeres **EKS** de forma declarativa (`eksctl create cluster`).
+**eksctl** es la CLI oficial del proyecto **eksctl** (Weaveworks / AWS) para crear, actualizar y gestionar clústeres **Amazon EKS** de forma declarativa mediante archivos YAML o flags.
+
+#### Explicación desarrollada
+
+Crear un clúster EKS manualmente implica IAM, VPC, subnets, security groups, node groups y addons. `eksctl` reduce eso a un comando o archivo `ClusterConfig`.
+
+**Ejemplo:**
+
+```bash
+eksctl create cluster \
+  --name shopdemo \
+  --region us-east-1 \
+  --nodegroup-name standard \
+  --node-type t3.medium \
+  --nodes 3
+```
+
+O declarativo (`cluster.yaml`):
+
+```yaml
+apiVersion: eksctl.io/v1alpha5
+kind: ClusterConfig
+metadata:
+  name: shopdemo
+  region: us-east-1
+managedNodeGroups:
+  - name: ng-1
+    instanceType: t3.medium
+    desiredCapacity: 3
+```
+
+Complementa (no reemplaza) kubectl y Helm: eksctl provisiona infraestructura; kubectl despliega aplicaciones.
+
+#### Cuándo usar eksctl
+
+| Usa eksctl cuando… | Usa CDK/Terraform cuando… |
+|---|---|
+| Laboratorio EKS rápido | IaC completo de toda la landing zone |
+| Equipo DevOps prefiere CLI + YAML eksctl | Política enterprise unifica Terraform |
+
+**Recursos:** [eksctl documentation](https://eksctl.io/)
 
 ---
 
@@ -741,4 +1097,4 @@ Complejidad: replicación de datos, conflictos de escritura, coste duplicado.
 - **Resiliencia:** Multi-AZ = HA regional; Multi-Region = DR geográfico; Spot/Reserved = optimización coste.
 - Las **equivalencias con Azure** ayudan a transferir conocimiento, pero siempre valida detalles operativos.
 
-**Siguiente paso:** capítulo 07 — **Kubernetes** en profundidad: cómo funciona el orquestador que usan tanto AKS como EKS.
+**Siguiente paso:** capítulo 07 — **contenedores y Docker**: empaquetar tus APIs .NET en imágenes antes de orquestarlas con Kubernetes.

@@ -18,7 +18,10 @@ Material para **métricas, logs, trazas y alertas** en ShopDemo desplegado en Az
 |---|---|
 | Azure (ACA + AKS) | [azure/IMPLEMENTACION-OBSERVABILIDAD-AZURE.md](./azure/IMPLEMENTACION-OBSERVABILIDAD-AZURE.md) |
 | AWS (ECS + EKS) | [aws/IMPLEMENTACION-OBSERVABILIDAD-AWS.md](./aws/IMPLEMENTACION-OBSERVABILIDAD-AWS.md) |
-| Teoría | [TEORIA-OBSERVABILIDAD.md](./TEORIA-OBSERVABILIDAD.md) |
+| Teoría lab | [TEORIA-OBSERVABILIDAD.md](./TEORIA-OBSERVABILIDAD.md) |
+| Tópico 10 (teoría general) | [10-observabilidad.md](../teoria-entrevistas/10-observabilidad.md) |
+
+Índice Tópicos de Estudio: [teoria-entrevistas/README.md](../teoria-entrevistas/README.md)
 
 ## Prerequisitos
 

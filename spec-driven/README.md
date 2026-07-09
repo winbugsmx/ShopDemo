@@ -22,9 +22,12 @@ Estructura versionada para desarrollo guiado por especificaciones con **Cursor**
 
 | Tipo | Enlace |
 |---|---|
-| Teoría | [TEORIA-SPEC-DRIVEN-DEVELOPMENT.md](./TEORIA-SPEC-DRIVEN-DEVELOPMENT.md) |
+| Teoría lab | [TEORIA-SPEC-DRIVEN-DEVELOPMENT.md](./TEORIA-SPEC-DRIVEN-DEVELOPMENT.md) |
+| Tópico 12 (IA/MCP) | [12-integracion-ia-mcp.md](../docs/teoria-entrevistas/12-integracion-ia-mcp.md) |
+| Tópico 13 (síntesis) | [13-sintesis-integracion.md](../docs/teoria-entrevistas/13-sintesis-integracion.md) |
 | Implementación | [IMPLEMENTACION-SPEC-DRIVEN-DEVELOPMENT.md](./IMPLEMENTACION-SPEC-DRIVEN-DEVELOPMENT.md) |
 | Specs por módulo | [specs/](./specs/) |
+| Tópicos de Estudio (índice) | [teoria-entrevistas/README.md](../docs/teoria-entrevistas/README.md) |
 
 ---
 

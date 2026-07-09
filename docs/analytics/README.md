@@ -20,6 +20,15 @@ Documentación para **visibilidad de eventos de negocio** y orquestación local 
 | [ANEXO-CODIGO-ANALYTICS-ASPIRE.md](./ANEXO-CODIGO-ANALYTICS-ASPIRE.md) | Referencia código |
 | [INTEGRACION-ASPIRE.md](../INTEGRACION-ASPIRE.md) | Visión general Aspire |
 
+## Tópicos de Estudio relacionados
+
+| # | Tópico | Enlace |
+|---|---|---|
+| 04 | Microservicios y mensajería | [04-microservicios-comunicacion.md](../teoria-entrevistas/04-microservicios-comunicacion.md) |
+| 10 | Observabilidad | [10-observabilidad.md](../teoria-entrevistas/10-observabilidad.md) |
+
+Índice: [teoria-entrevistas/README.md](../teoria-entrevistas/README.md)
+
 ## Flujo de negocio
 
 ```

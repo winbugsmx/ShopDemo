@@ -1,18 +1,18 @@
-# 12 — Síntesis e integración de conceptos
+# 13 — Síntesis e integración de conceptos
 
 ## Objetivo de este capítulo
 
 Al terminar de leer este capítulo deberías poder:
 
-- Ver cómo los once capítulos anteriores forman una **cadena de decisiones** coherente, no una lista de tecnologías aisladas.
+- Ver cómo los doce capítulos anteriores forman una **cadena de decisiones** coherente, no una lista de tecnologías aisladas.
 - Seguir el hilo conductor desde el **modelado del dominio** hasta la **operación en producción con IA**, entendiendo qué decisión habilita la siguiente.
 - Reconocer los **errores sistémicos** más frecuentes en equipos junior y qué capítulos los previenen.
 - Tener un **mapa mental** para orientarte cuando te enfrentes a un proyecto real: qué leer, qué decidir y en qué orden.
 - Recorrer un **ejemplo completo** — un sistema de pedidos — decisión por decisión, citando capítulos concretos en cada paso.
 
-Asumimos que has leído (o al menos hojeado) los capítulos 01–11. Este capítulo **no introduce conceptos nuevos**: conecta los que ya conoces. Si algo suena abstracto, vuelve al capítulo indicado antes de memorizar tablas.
+Asumimos que has leído (o al menos hojeado) los capítulos 01–12. Este capítulo **no introduce conceptos nuevos**: conecta los que ya conoces. Si algo suena abstracto, vuelve al capítulo indicado antes de memorizar tablas.
 
-> **Nota del instructor:** Este capítulo es el **viaje de vuelta al mapa completo** — como subir a una colina y ver el valle entero. Si los capítulos 01–11 fueron las piezas del puzzle, aquí ves la imagen completa. Léelo con calma, idealmente después de haber recorrido al menos los capítulos 01, 02, 03, 04, 09 y 10.
+> **Nota del instructor:** Este capítulo es el **viaje de vuelta al mapa completo** — como subir a una colina y ver el valle entero. Si los capítulos 01–12 fueron las piezas del puzzle, aquí ves la imagen completa. Léelo con calma, idealmente después de haber recorrido al menos los capítulos 01, 02, 03, 04, 10 y 11.
 
 > **Cómo leer este capítulo:** cada sección sigue el mismo espíritu que el resto de la guía: contexto → definición → explicación → diagrama → cuándo aplicarlo. Las tablas son **brújulas de decisión**, no listas para memorizar de un tirón.
 
@@ -208,7 +208,7 @@ La **comunicación entre servicios** abarca protocolos síncronos (HTTP, gRPC) y
 
 > La garantía realista de entrega es **at-least-once** (al menos una vez). Eso implica que tu consumidor **debe ser idempotente** — procesar el mismo mensaje dos veces no debe causar efectos duplicados.
 
-Esta decisión conecta directamente con **resiliencia** (capítulo 10): retry + idempotencia son inseparables.
+Esta decisión conecta directamente con **resiliencia** (capítulo 11): retry + idempotencia son inseparables.
 
 **Decisión sync vs async:**
 
@@ -272,7 +272,7 @@ Como junior, lo importante no es saber configurar cada servicio, sino saber **qu
 
 ### Etapa 5: Orquestar y desplegar (capítulos 07 y 08)
 
-**Kubernetes** (capítulo 07) estandariza el despliegue de contenedores:
+**Contenedores y Docker** (capítulo 07) empaquetan cada microservicio en una imagen portable. **Kubernetes** (capítulo 08) estandariza el despliegue de contenedores:
 
 | Objeto K8s | Para qué sirve |
 |---|---|
@@ -282,7 +282,7 @@ Como junior, lo importante no es saber configurar cada servicio, sino saber **qu
 | **ConfigMap / Secret** | Configuración y secretos inyectados al pod |
 | **HPA** | Escalado automático por CPU, memoria o métricas custom |
 
-**CI/CD** (capítulo 08) automatiza el camino del código al clúster:
+**CI/CD** (capítulo 09) automatiza el camino del código al clúster:
 
 ```
 Developer push → Pipeline (build → test → scan → publish imagen) → Deploy → Verify
@@ -290,7 +290,7 @@ Developer push → Pipeline (build → test → scan → publish imagen) → Dep
 
 **GitOps** declara el estado deseado en Git; un operador (Argo CD, Flux) reconcilia el clúster continuamente. **IaC** (Terraform, Bicep, CloudFormation) provisiona infraestructura reproducible.
 
-**Estrategias de despliegue** conectan con **resiliencia** (capítulo 10):
+**Estrategias de despliegue** conectan con **resiliencia** (capítulo 11):
 
 | Estrategia | Riesgo que mitiga |
 |---|---|
@@ -307,7 +307,7 @@ Developer push → Pipeline (build → test → scan → publish imagen) → Dep
 4. Despliega a staging; smoke tests verifican salud.
 5. Aprobación humana (o canary automático).
 6. Despliega a producción; probes de readiness validan que los pods están listos.
-7. Observabilidad (capítulo 09) confirma que las Golden Signals no degradaron.
+7. Observabilidad (capítulo 10) confirma que las Golden Signals no degradaron.
 
 #### Cuándo invertir en GitOps
 
@@ -327,14 +327,14 @@ Aquí convergen observabilidad y resiliencia — las dos caras de la operación 
 
 #### Explicación desarrollada
 
-**Observabilidad (capítulo 09)** responde "¿qué está pasando?":
+**Observabilidad (capítulo 10)** responde "¿qué está pasando?":
 
 - **Métricas:** Golden Signals en dashboards.
 - **Logs:** estructurados, con correlation ID, centralizados.
 - **Trazas:** OpenTelemetry, trace ID propagado entre servicios.
 - **SLI/SLO:** objetivos cuantitativos; error budget para equilibrar features y fiabilidad.
 
-**Resiliencia (capítulo 10)** responde "¿cómo sobrevivimos cuando algo falla?":
+**Resiliencia (capítulo 11)** responde "¿cómo sobrevivimos cuando algo falla?":
 
 - **Timeout** en toda llamada saliente.
 - **Retry** con backoff + jitter para transitorios (con idempotencia).
@@ -357,11 +357,11 @@ Aquí convergen observabilidad y resiliencia — las dos caras de la operación 
 #### Cuándo definir SLOs
 
 - Antes del primer release a usuarios reales — aunque sea un objetivo provisional.
-- Cuando negocio pregunta "¿cuánto downtime podemos permitir?" — traduce a error budget (capítulo 09).
+- Cuando negocio pregunta "¿cuánto downtime podemos permitir?" — traduce a error budget (capítulo 10).
 
 ---
 
-### Etapa 7: Amplificar con IA (capítulo 11)
+### Etapa 7: Amplificar con IA (capítulo 12)
 
 La IA no es una etapa "después" de todo lo demás — es una **capa transversal** que acelera cada fase:
 
@@ -713,7 +713,7 @@ Para complementar el sistema completo, sigamos **una feature** a través de toda
 - Timeout en llamadas salientes; circuit breaker hacia servicio de Pagos si la cancelación consulta estado de pago sync.
 - SLO: 99.9 % de cancelaciones procesadas en < 500 ms.
 
-### IA (capítulo 11)
+### IA (capítulo 12)
 
 - El agente generó el borrador del handler y los tests iniciales.
 - RAG recuperó la documentación del agregado `Order` para mantener consistencia.

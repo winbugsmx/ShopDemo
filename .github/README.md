@@ -11,6 +11,8 @@ Despliegue automático tras **merge a `main`** (no en apertura de PR). También 
 
 **Checklist de secrets y prerequisitos:** [SECRETS-CHECKLIST.md](SECRETS-CHECKLIST.md) · **Guía de configuración:** [SETUP-GITHUB.md](SETUP-GITHUB.md) · **Portal web (alumnos):** [SETUP-GITHUB-PORTAL.md](SETUP-GITHUB-PORTAL.md) · **Comandos `gh` CLI:** [GH-CLI-COMMANDS.md](GH-CLI-COMMANDS.md)
 
+**Tópicos de Estudio:** [09 — CI/CD y DevOps](../docs/teoria-entrevistas/09-ci-cd-devops.md) · [Índice](../docs/teoria-entrevistas/README.md)
+
 ## Scripts auxiliares
 
 | Script | Uso |

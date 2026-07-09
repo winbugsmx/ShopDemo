@@ -330,15 +330,44 @@ Conceptos clave:
 
 #### Definición formal
 
-**Azure Database for PostgreSQL** y **Azure Database for MySQL** son servicios **PaaS** que ejecutan motores open source relacionales gestionados por Azure (backups, parches, alta disponibilidad).
+**Azure Database for PostgreSQL** y **Azure Database for MySQL** son servicios **PaaS** que ejecutan motores open source relacionales gestionados por Azure (backups automáticos, parches de seguridad, alta disponibilidad opcional y escalado de compute/almacenamiento).
 
 #### Explicación desarrollada
 
-Equivalente managed a "PostgreSQL/MySQL sin administrar el servidor". Muy usados cuando el equipo prefiere PostgreSQL por extensiones (PostGIS), licenciamiento o coste.
+Equivalente managed a instalar PostgreSQL o MySQL en una VM, pero sin administrar el servidor. Azure opera el motor; tú defines SKU, red y parámetros.
 
-#### Cuándo usar
+Variantes habituales:
 
-Elige PostgreSQL/MySQL managed cuando tu stack ya usa esos motores y no necesitas SQL Server específicamente.
+| Variante | Descripción |
+|---|---|
+| **Flexible Server** | Modelo actual recomendado; control de zona de disponibilidad, parada/arranque, réplicas de lectura |
+| **Single Server** | Legado; migrar a Flexible Server en proyectos nuevos |
+
+Conceptos para juniors:
+
+- **Connection string** igual que on-premise, con TLS obligatorio en producción.
+- **Firewall / Private Link:** la BD no debe exponerse a internet abierto; solo subnets de aplicación.
+- **Extensiones PostgreSQL:** PostGIS, `uuid-ossp`, etc. — motivo frecuente para elegir PostgreSQL sobre SQL Server.
+
+**Ejemplo de connection string (EF Core):**
+
+```json
+"ConnectionStrings": {
+  "Default": "Host=myserver.postgres.database.azure.com;Database=orders;Username=app@myserver;Password=***;Ssl Mode=Require"
+}
+```
+
+En C# con Npgsql o Pomelo.EntityFrameworkCore.PostgreSQL, el código de dominio no cambia; solo el proveedor y la cadena de conexión.
+
+#### Cuándo usar PostgreSQL/MySQL managed
+
+| Elige PostgreSQL/MySQL managed cuando… | Elige Azure SQL cuando… |
+|---|---|
+| Stack open source, extensiones PostgreSQL | Ecosistema Microsoft, T-SQL, Always Encrypted |
+| Coste/licenciamiento SQL Server es factor | Migración directa desde SQL Server on-premise |
+| Equipo con experiencia en Postgres | Reporting con herramientas SQL Server nativas |
+
+**Recursos:** [Documentación Azure Database for PostgreSQL](https://learn.microsoft.com/azure/postgresql/) | [Comparativa Flexible Server](https://learn.microsoft.com/azure/postgresql/flexible-server/overview)
 
 ---
 
@@ -491,7 +520,25 @@ Event Grid reacciona a **hechos** ("se creó un blob", "se eliminó una VM") y d
 
 #### Explicación desarrollada
 
-Logic Apps permite integrar sistemas **sin escribir mucho código**: arrastras pasos ("cuando llegue email → guardar adjunto en Blob → crear fila en SQL").
+Logic Apps permite integrar sistemas **con poco o ningún código**: diseñas un workflow visual o JSON con **conectores** predefinidos.
+
+Ejemplo de flujo B2B:
+
+1. **Trigger:** "Cuando llega un email con adjunto PDF a buzón facturas@".
+2. **Acción:** Extraer PDF → guardar en Blob Storage `invoices/incoming/`.
+3. **Acción:** Crear fila en SQL `Invoices` con metadata.
+4. **Acción:** Publicar mensaje en Service Bus topic `invoice-received`.
+
+Conectores útiles para backends .NET:
+
+| Conector | Uso |
+|---|---|
+| HTTP / HTTP + Swagger | Llamar tu API REST |
+| Azure Service Bus | Publicar/consumir mensajes |
+| SQL Server / PostgreSQL | CRUD sin escribir worker |
+| Office 365 / Teams | Notificaciones humanas |
+
+**Cuándo no:** lógica con ramas complejas, tests unitarios extensos, latencia sub-100 ms — ahí un **Azure Function** o microservicio .NET es más mantenible.
 
 #### Cuándo usar Logic Apps
 
@@ -586,15 +633,35 @@ Siempre que un recurso Azure acceda a otro servicio Azure (SQL, Storage, Service
 
 #### Definición formal
 
-**Azure Private Link** expone servicios PaaS de Azure mediante **endpoints privados** dentro de tu Virtual Network, de modo que el tráfico **no atraviese internet público**.
+**Azure Private Link** expone servicios PaaS de Azure mediante **Private Endpoints** con direcciones IP privadas dentro de tu Virtual Network, de modo que el tráfico entre aplicación y servicio **no atraviese internet público**.
 
 #### Explicación desarrollada
 
-Por defecto, Azure SQL tiene un endpoint público (con firewall). Con Private Link, tu API en una VNet accede a SQL por IP privada interna — mayor seguridad y cumplimiento.
+Por defecto, muchos servicios PaaS (Azure SQL, Storage, Key Vault) tienen un endpoint público protegido por firewall. Eso funciona en laboratorios, pero en enterprise el requisito suele ser: "todo el tráfico permanece en red privada".
+
+Private Link crea un **NIC privado** en tu subnet que representa al servicio PaaS. Tu API en App Service (con integración VNet) o en AKS resuelve `myserver.privatelink.database.windows.net` por IP interna.
+
+Flujo mental:
+
+1. Creas **Private Endpoint** en subnet `data`.
+2. Deshabilitas o restringes el endpoint público del servicio.
+3. DNS privado (Azure Private DNS Zone) resuelve el FQDN del servicio a la IP privada.
+4. NSG controlan qué subnets pueden hablar con ese endpoint.
+
+Casos típicos:
+
+- API en VNet accede a SQL sin IP pública en la base de datos.
+- Data exfiltration risk reducido: el servicio no es alcanzable desde internet aunque alguien filtre credenciales.
 
 #### Cuándo usar Private Link
 
-Entornos enterprise, datos sensibles, requisitos de red privada o compliance estricto.
+| Usa Private Link cuando… | Endpoint público + firewall basta cuando… |
+|---|---|
+| Datos sensibles, PCI, HIPAA, ISO 27001 | Prototipo, dev/test aislado |
+| Política "sin tráfico a PaaS por internet" | Equipo pequeño sin VNet integrada aún |
+| Arquitectura hub-spoke o landing zone enterprise | MVP con acceso restringido por IP del desarrollador |
+
+**Recursos:** [Private Link overview](https://learn.microsoft.com/azure/private-link/private-link-overview)
 
 ---
 
@@ -604,11 +671,35 @@ Entornos enterprise, datos sensibles, requisitos de red privada o compliance est
 
 #### Definición formal
 
-**Azure Virtual Network** es una red privada aislada en Azure con rangos IP propios, **subnets**, peering entre VNets, y conectividad híbrida via VPN o ExpressRoute.
+**Azure Virtual Network** es una red privada aislada en Azure con rangos IP definidos por el cliente (CIDR), **subnets**, peering entre VNets, gateways VPN/ExpressRoute y servicios de filtrado (NSG, Azure Firewall).
 
 #### Explicación desarrollada
 
-Piensa en la VNet como tu "red de oficina" en la nube. Subnets segmentan recursos (subnet `frontend`, subnet `data`). Network Security Groups (NSG) filtran tráfico como un firewall.
+Piensa en la VNet como tu **red de oficina virtual** en la nube. Todo recurso que necesita comunicación privada (VMs, AKS, App Service con integración VNet, Private Endpoints) vive dentro de una VNet o se conecta a ella.
+
+Conceptos clave:
+
+| Concepto | Función |
+|---|---|
+| **Address space** | Rango CIDR de la VNet (ej. `10.10.0.0/16`) |
+| **Subnet** | Segmento dentro de la VNet (`10.10.1.0/24` para apps, `10.10.2.0/24` para datos) |
+| **Peering** | Conectar dos VNets para tráfico privado (misma región o global) |
+| **Service endpoints** | Acceso legacy a PaaS desde subnet (Private Link es el enfoque moderno preferido) |
+| **DNS** | Resolución de nombres internos; Private DNS Zones para Private Link |
+
+Patrón típico para APIs .NET:
+
+- Subnet `app` → App Service integrado o nodos AKS.
+- Subnet `data` → Private Endpoints hacia SQL, Storage, Key Vault.
+- Subnet `gateway` → Application Gateway o Firewall.
+
+#### Cuándo usar VNet
+
+| Usa VNet cuando… | Sin VNet basta cuando… |
+|---|---|
+| AKS, Private Link, tráfico interno entre servicios | App Service público simple sin datos sensibles |
+| Conectividad híbrida (on-premise ↔ Azure) | Prototipo con PaaS público y firewall por IP |
+| Segmentación por capas (app / data / dmz) | Functions Consumption sin integración de red |
 
 ---
 
@@ -616,7 +707,31 @@ Piensa en la VNet como tu "red de oficina" en la nube. Subnets segmentan recurso
 
 #### Definición formal
 
-**NSG** es un firewall con reglas de permitir/denegar tráfico por puerto, protocolo y dirección, aplicable a subnets o interfaces de red (NIC).
+Un **Network Security Group (NSG)** es un firewall con estado que aplica reglas de **permitir/denegar** tráfico por puerto, protocolo, dirección y prioridad, asociado a subnets o interfaces de red (NIC).
+
+#### Explicación desarrollada
+
+Los NSG son la primera línea de defensa en red dentro de Azure. Cada regla tiene **prioridad** (número menor = más prioritaria) y se evalúa en orden hasta coincidencia.
+
+Ejemplo mental para una API en subnet `app`:
+
+| Prioridad | Dirección | Puerto | Origen | Acción |
+|---|---|---|---|---|
+| 100 | Inbound | 443 | Application Gateway subnet | Allow |
+| 200 | Inbound | * | Internet | Deny |
+| 100 | Outbound | 5432 | subnet `data` | Allow (hacia SQL via Private Link) |
+
+Diferencia con firewall de aplicación (WAF): NSG opera en **capa 3–4** (IP, puerto); WAF inspecciona HTTP (capa 7).
+
+Buenas prácticas:
+
+- Principio de mínimo privilegio: solo puertos necesarios.
+- No abrir RDP/SSH desde `0.0.0.0/0` en producción.
+- Combinar NSG con Private Link para que datos nunca salgan a internet.
+
+#### Cuándo usar NSG
+
+Siempre que tengas VNet. Sin NSG explícitos, Azure aplica reglas por defecto que pueden ser demasiado permisivas para producción.
 
 ---
 
@@ -624,7 +739,37 @@ Piensa en la VNet como tu "red de oficina" en la nube. Subnets segmentan recurso
 
 #### Definición formal
 
-**Application Gateway** es un balanceador de carga **Layer 7 (HTTP/HTTPS)** con enrutamiento por URL, terminación SSL, afinidad de sesión y **WAF (Web Application Firewall)** opcional.
+**Application Gateway** es un balanceador de carga **Layer 7 (HTTP/HTTPS)** regional con enrutamiento por URL/path, terminación SSL/TLS, afinidad de sesión, autoscaling y **WAF (Web Application Firewall)** opcional integrado.
+
+#### Explicación desarrollada
+
+Si tu API .NET recibe tráfico HTTPS desde internet, algo debe terminar TLS y distribuir requests entre instancias. Application Gateway cumple ese rol **dentro de una región** y **integrado con VNet**.
+
+Componentes:
+
+| Componente | Rol |
+|---|---|
+| **Frontend IP** | IP pública o privada que recibe tráfico |
+| **Listener** | Puerto 443, certificado TLS, protocolo |
+| **Routing rule** | `if path starts with /api/orders` → backend pool Orders |
+| **Backend pool** | IPs de VMs, App Service, AKS ingress |
+| **Health probe** | `GET /health` cada N segundos; quita instancias unhealthy |
+| **WAF** | Reglas OWASP contra SQLi, XSS, bots |
+
+Ejemplo de enrutamiento:
+
+- `https://api.tienda.com/catalog/*` → pool Catalog (3 instancias App Service).
+- `https://api.tienda.com/orders/*` → pool Orders.
+
+En AKS suele combinarse con **Ingress Controller** (AGIC) que configura Application Gateway automáticamente desde recursos Ingress de Kubernetes.
+
+#### Cuándo usar Application Gateway
+
+| Usa Application Gateway cuando… | Considera Front Door cuando… |
+|---|---|
+| Tráfico regional en una VNet | Usuarios globales en múltiples regiones |
+| WAF regional con integración VNet profunda | CDN + anycast + failover multi-región |
+| Path-based routing hacia microservicios | Optimizar latencia mundial con edge |
 
 ---
 
@@ -649,7 +794,32 @@ Piensa en la VNet como tu "red de oficina" en la nube. Subnets segmentan recurso
 
 #### Definición formal
 
-**Azure DNS** hospeda zonas DNS y registra registros A, CNAME, MX, etc., integrado con otros servicios Azure.
+**Azure DNS** es un servicio de hospedaje de **zonas DNS** autoritativas que permite crear y gestionar registros (A, AAAA, CNAME, MX, TXT, SRV) con integración nativa a otros recursos Azure.
+
+#### Explicación desarrollada
+
+Cuando un usuario escribe `api.miempresa.com`, un resolver DNS consulta la **zona autoritativa**. Azure DNS hospeda esa zona si delegas el dominio desde tu registrador (GoDaddy, Cloudflare, etc.).
+
+Registros frecuentes en despliegues .NET:
+
+| Registro | Ejemplo | Uso |
+|---|---|---|
+| **A** | `api` → IP de Application Gateway | API pública |
+| **CNAME** | `www` → `myapp.azurewebsites.net` | Alias a App Service |
+| **TXT** | verificación dominio, SPF email | Validación Entra ID, correo |
+| **Private DNS Zone** | `privatelink.database.windows.net` | Resolver Private Link internamente |
+
+Azure DNS no es un CDN ni un proxy: solo **resuelve nombres a direcciones**. El tráfico HTTP lo manejan App Gateway, Front Door o Ingress.
+
+#### Cuándo usar Azure DNS
+
+| Usa Azure DNS cuando… | Mantén DNS en otro proveedor cuando… |
+|---|---|
+| Quieres IaC completo en Azure (Bicep/Terraform) | Ya usas Cloudflare con proxy/WAF global |
+| Private DNS Zones para Private Link | Política corporativa fija otro DNS |
+| Integración simple con recursos Azure | Necesitas features avanzadas del registrador |
+
+**Recursos:** [Azure DNS overview](https://learn.microsoft.com/azure/dns/dns-overview)
 
 ---
 
@@ -659,13 +829,40 @@ Piensa en la VNet como tu "red de oficina" en la nube. Subnets segmentan recurso
 
 #### Definición formal
 
-**Azure Monitor** es la plataforma unificada de **métricas, logs y alertas** para recursos Azure y aplicaciones.
+**Azure Monitor** es la plataforma unificada de **telemetría operativa** en Azure que recopila **métricas** (series temporales numéricas), **logs** (datos de texto estructurados) y **trazas** (distribuidas vía Application Insights/OpenTelemetry), y permite definir **alertas** y **autoscale**.
 
-Recopila:
+#### Explicación desarrollada
 
-- **Métricas:** series temporales numéricas (CPU, requests/seg).
-- **Logs:** texto estructurado (KQL queries).
-- **Alertas:** reglas que disparan acciones (email, webhook, autoscale).
+Azure Monitor es el "sistema nervioso" de tu suscripción. Casi todo recurso Azure emite métricas automáticamente: CPU de VM, RPS de App Service, mensajes en Service Bus, latencia de SQL.
+
+Tres pilares dentro del ecosistema:
+
+| Pilar | Qué almacena | Ejemplo de consulta |
+|---|---|---|
+| **Metrics** | Números agregados cada 1–5 min | CPU > 80 % durante 10 min |
+| **Logs** | Eventos detallados en Log Analytics | `requests | where resultCode == 500` |
+| **Alerts** | Reglas que disparan acción | Email, webhook, runbook, scale out |
+
+Flujo típico para una API .NET:
+
+1. Application Insights SDK envía requests, dependencias y excepciones.
+2. Datos aterrizan en Log Analytics Workspace.
+3. Alerta KQL detecta pico de errores 5xx.
+4. Action Group notifica al equipo on-call.
+
+Métricas de plataforma vs aplicación:
+
+- **Plataforma:** `Percentage CPU` de App Service — infraestructura.
+- **Aplicación:** `requests/duration` p95 — experiencia del usuario.
+
+#### Cuándo usar Azure Monitor
+
+| Usa Azure Monitor cuando… | No es suficiente solo cuando… |
+|---|---|
+| Operas cualquier recurso en Azure | Necesitas APM profundo sin instrumentar código (aun así, añade App Insights) |
+| Quieres alertas y dashboards centralizados | Requieres SIEM enterprise (envía logs a Sentinel) |
+
+**Recursos:** [Azure Monitor overview](https://learn.microsoft.com/azure/azure-monitor/overview)
 
 ---
 
@@ -687,7 +884,39 @@ En ASP.NET Core añades el SDK NuGet; automáticamente registras cada request, l
 
 #### Definición formal
 
-**Log Analytics Workspace** es el repositorio central donde se almacenan logs de múltiples fuentes; consultas con **KQL (Kusto Query Language)**.
+Un **Log Analytics Workspace** es el repositorio centralizado donde Azure Monitor almacena **logs de consulta**, indexados para búsqueda con **KQL (Kusto Query Language)**.
+
+#### Explicación desarrollada
+
+Piensa en el Workspace como una **base de datos de eventos operativos**. Application Insights, diagnósticos de AKS, logs de Azure Firewall y custom logs via Data Collection Rule convergen aquí.
+
+**Ejemplo KQL** — errores HTTP en la última hora:
+
+```kusto
+requests
+| where timestamp > ago(1h)
+| where success == false
+| summarize count() by name, resultCode
+| order by count_ desc
+```
+
+Tablas comunes para desarrolladores .NET:
+
+| Tabla | Contenido |
+|---|---|
+| `requests` | Cada HTTP request a tu API |
+| `dependencies` | Llamadas a SQL, HTTP externos, Service Bus |
+| `exceptions` | Stack traces no manejados |
+| `traces` | `ILogger` y mensajes custom |
+| `ContainerLog` | stdout/stderr de pods AKS |
+
+Retención y coste dependen del plan (pay-as-you-go por GB ingerido). En producción define **retention** y **sampling** para controlar gasto.
+
+#### Cuándo usar Log Analytics
+
+Siempre que uses Application Insights o centralices logs de infraestructura. Un workspace por entorno (`prod`, `staging`) es un patrón habitual.
+
+**Recursos:** [KQL quick reference](https://learn.microsoft.com/azure/data-explorer/kusto/query/)
 
 ---
 
@@ -697,7 +926,41 @@ En ASP.NET Core añades el SDK NuGet; automáticamente registras cada request, l
 
 #### Definición formal
 
-**ACR** es un **registro privado** de imágenes Docker/OCI con integración a AKS, App Service y pipelines CI/CD.
+**Azure Container Registry (ACR)** es un registro **privado** de imágenes de contenedor compatibles con OCI/Docker, con autenticación integrada, geo-replicación, escaneo de vulnerabilidades y webhooks para CI/CD.
+
+#### Explicación desarrollada
+
+ACR almacena las imágenes que construyes en el capítulo 07 (`docker push`). AKS, Container Apps y App Service (modo contenedor) hacen **pull** desde ACR al desplegar.
+
+Conceptos:
+
+| Concepto | Ejemplo |
+|---|---|
+| **Login server** | `myacr.azurecr.io` |
+| **Repository** | `orders-api` |
+| **Tag** | `v1.2.0`, `build-456` |
+| **SKU** | Basic (lab), Standard (webhooks), Premium (geo-replica, private link) |
+
+Flujo CI/CD típico:
+
+```bash
+az acr login --name myacr
+docker build -t myacr.azurecr.io/orders-api:$GITHUB_SHA .
+docker push myacr.azurecr.io/orders-api:$GITHUB_SHA
+# Pipeline despliega tag en AKS/ACA
+```
+
+Integración con identidad: AKS puede hacer pull con **Managed Identity** (AcrPull) sin admin user ni password en el clúster.
+
+#### Cuándo usar ACR
+
+| Usa ACR cuando… | Docker Hub público basta cuando… |
+|---|---|
+| Imágenes propietarias .NET en Azure | Solo imágenes base open source en dev |
+| AKS, ACA, App Service contenedor | Prototipo local sin cloud |
+| Escaneo CVE y políticas de retención | — |
+
+**Recursos:** [ACR documentation](https://learn.microsoft.com/azure/container-registry/)
 
 ---
 
@@ -705,7 +968,58 @@ En ASP.NET Core añades el SDK NuGet; automáticamente registras cada request, l
 
 #### Definición formal
 
-**Azure DevOps** es la suite de colaboración: repos Git, **pipelines YAML**, boards (Kanban), test plans y artifacts. Alternativa a GitHub Actions dentro del ecosistema Microsoft.
+**Azure DevOps** es la suite de colaboración de Microsoft para desarrollo de software que incluye **Azure Repos** (Git), **Pipelines** (CI/CD YAML), **Boards** (work items/Kanban), **Test Plans** y **Artifacts** (paquetes NuGet/npm).
+
+#### Explicación desarrollada
+
+Equivalente al ecosistema GitHub dentro de Azure/Microsoft 365. Muchas empresas con contrato enterprise usan Azure DevOps aunque el código sea similar a GitHub Actions.
+
+**Pipeline YAML** ejemplo simplificado (.NET + Docker + AKS):
+
+```yaml
+trigger:
+  branches: [ main ]
+
+stages:
+  - stage: Build
+    jobs:
+      - job: CI
+        steps:
+          - task: DotNetCoreCLI@2
+            inputs:
+              command: publish
+              projects: Orders.Api/Orders.Api.csproj
+          - task: Docker@2
+            inputs:
+              command: buildAndPush
+              repository: orders-api
+              containerRegistry: myacr-connection
+              tags: $(Build.BuildId)
+  - stage: Deploy
+    jobs:
+      - deployment: AKS
+        environment: production
+        strategy:
+          runOnce:
+            deploy:
+              steps:
+                - task: KubernetesManifest@1
+                  inputs:
+                    action: deploy
+                    manifests: k8s/deployment.yaml
+```
+
+Ventajas vs GitHub Actions: integración con Boards, permisos enterprise AD, agentes self-hosted en VNet.
+
+#### Cuándo usar Azure DevOps
+
+| Usa Azure DevOps cuando… | Usa GitHub Actions cuando… |
+|---|---|
+| Organización ya estandarizó Azure DevOps | Repos en GitHub, open source, ecosistema Actions |
+| Requieres Boards + Pipelines unificados | OIDC federado simple con Azure ya configurado |
+| Agentes en red privada sin salida a internet | — |
+
+**Recursos:** [Azure Pipelines docs](https://learn.microsoft.com/azure/devops/pipelines/)
 
 ---
 
@@ -713,7 +1027,53 @@ En ASP.NET Core añades el SDK NuGet; automáticamente registras cada request, l
 
 #### Definición formal
 
-**ARM (Azure Resource Manager)** es la capa de despliegue de recursos Azure. **Bicep** es un lenguaje declarativo que compila a ARM, más legible que JSON puro — **Infraestructura como Código (IaC)** nativa Azure.
+**ARM (Azure Resource Manager)** es la capa de API y despliegue declarativo de recursos Azure. **Bicep** es un lenguaje **domain-specific** que compila a ARM JSON, diseñado para **Infraestructura como Código (IaC)** nativa con sintaxis legible.
+
+#### Explicación desarrollada
+
+En lugar de crear recursos a mano en el portal (no reproducible), defines infraestructura en archivos versionados en Git.
+
+**Ejemplo Bicep** — App Service + plan:
+
+```bicep
+param location string = resourceGroup().location
+param appName string = 'orders-api-prod'
+
+resource plan 'Microsoft.Web/serverfarms@2022-09-01' = {
+  name: '${appName}-plan'
+  location: location
+  sku: { name: 'P1v3', tier: 'PremiumV3' }
+}
+
+resource app 'Microsoft.Web/sites@2022-09-01' = {
+  name: appName
+  location: location
+  properties: { serverFarmId: plan.id }
+}
+```
+
+Despliegue:
+
+```bash
+az deployment group create -g my-rg -f main.bicep
+```
+
+Comparación con otras herramientas:
+
+| Herramienta | Alcance |
+|---|---|
+| **Bicep/ARM** | Nativo Azure, día 0 de features |
+| **Terraform** | Multicloud, estado remoto, HCL |
+| **Pulumi** | IaC con C#/TypeScript real |
+
+#### Cuándo usar Bicep
+
+| Usa Bicep cuando… | Usa Terraform cuando… |
+|---|---|
+| Solo Azure, equipo Microsoft | Multicloud AKS + EKS + on-prem |
+| Quieres tipado y módulos nativos | Ya tienes módulos Terraform maduros |
+
+**Recursos:** [Bicep documentation](https://learn.microsoft.com/azure/azure-resource-manager/bicep/)
 
 ---
 
@@ -721,7 +1081,43 @@ En ASP.NET Core añades el SDK NuGet; automáticamente registras cada request, l
 
 #### Definición formal
 
-**OIDC federation** permite que un pipeline de GitHub Actions **asuma un rol** en Entra ID y despliegue en Azure **sin almacenar client secrets permanentes** en GitHub Secrets.
+**OIDC federation** (OpenID Connect) permite que un workflow de GitHub Actions obtenga un token de identidad de GitHub y **asuma un rol/app registration** en Microsoft Entra ID para desplegar en Azure **sin client secrets de larga duración** almacenados en GitHub Secrets.
+
+#### Explicación desarrollada
+
+El anti-patrón: guardar `AZURE_CLIENT_SECRET` en GitHub y rotarlo manualmente cada año. El patrón moderno:
+
+1. Creas **App Registration** / **federated credential** que confía en el issuer `token.actions.githubusercontent.com` y el repo `org/repo`.
+2. El workflow solicita `id-token: write`.
+3. `azure/login@v2` intercambia el token OIDC por credenciales temporales de Azure.
+4. Pasos siguientes ejecutan `az deployment`, `kubectl`, `docker push` a ACR.
+
+**Ejemplo workflow (fragmento):**
+
+```yaml
+permissions:
+  id-token: write
+  contents: read
+
+jobs:
+  deploy:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: azure/login@v2
+        with:
+          client-id: ${{ secrets.AZURE_CLIENT_ID }}
+          tenant-id: ${{ secrets.AZURE_TENANT_ID }}
+          subscription-id: ${{ secrets.AZURE_SUBSCRIPTION_ID }}
+      - run: az acr login --name myacr && az aks get-credentials -g rg -n cluster
+```
+
+Beneficios: credenciales de corta duración, auditoría en Entra ID, menos fugas de secretos.
+
+#### Cuándo usar OIDC federado
+
+Siempre en pipelines GitHub → Azure en producción. Client secrets solo en migraciones legacy o herramientas sin soporte OIDC.
+
+**Recursos:** [GitHub Actions Azure OIDC](https://learn.microsoft.com/azure/developer/github/connect-from-azure)
 
 ![Diagrama](./assets/images/diagrams/embedded-d5cfc51229ac.png)
 

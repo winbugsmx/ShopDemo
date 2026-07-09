@@ -46,6 +46,16 @@
 | [IMPLEMENTACION-CATALOG.md](./IMPLEMENTACION-CATALOG.md) | Guía paso a paso con código |
 | [ANEXO-CODIGO-CATALOG.md](./ANEXO-CODIGO-CATALOG.md) | Fragmentos de referencia |
 
+## Tópicos de Estudio relacionados
+
+| # | Tópico | Enlace |
+|---|---|---|
+| 01 | Patrones de diseño | [01-patrones-diseno.md](../teoria-entrevistas/01-patrones-diseno.md) |
+| 02 | Arquitecturas (Clean, Hexagonal) | [02-arquitecturas-software.md](../teoria-entrevistas/02-arquitecturas-software.md) |
+| 03 | DDD | [03-ddd-domain-driven-design.md](../teoria-entrevistas/03-ddd-domain-driven-design.md) |
+
+Índice completo: [teoria-entrevistas/README.md](../teoria-entrevistas/README.md)
+
 ---
 
 ## Relación con otros microservicios

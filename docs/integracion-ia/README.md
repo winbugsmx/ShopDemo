@@ -31,8 +31,11 @@ Material para **alertas, MCP Gateway, Semantic Kernel** en Azure y AWS.
 | MCP AWS | [IMPLEMENTACION-DESPLIEGUE-MCP-AWS.md](./IMPLEMENTACION-DESPLIEGUE-MCP-AWS.md) |
 | IA Azure | [azure/IMPLEMENTACION-INTEGRACION-IA-AZURE.md](./azure/IMPLEMENTACION-INTEGRACION-IA-AZURE.md) |
 | IA AWS | [aws/IMPLEMENTACION-INTEGRACION-IA-AWS.md](./aws/IMPLEMENTACION-INTEGRACION-IA-AWS.md) |
-| Teoría | [TEORIA-INTEGRACION-IA.md](./TEORIA-INTEGRACION-IA.md) |
+| Teoría lab | [TEORIA-INTEGRACION-IA.md](./TEORIA-INTEGRACION-IA.md) |
+| Tópico 12 (teoría general) | [12-integracion-ia-mcp.md](../teoria-entrevistas/12-integracion-ia-mcp.md) |
 | Código MCP | [ANEXO-CODIGO-MCP.md](./ANEXO-CODIGO-MCP.md) |
+
+Índice Tópicos de Estudio: [teoria-entrevistas/README.md](../teoria-entrevistas/README.md)
 
 ## Código
 

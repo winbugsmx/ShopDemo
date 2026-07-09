@@ -21,6 +21,15 @@ Material para desplegar ShopDemo en **Azure Kubernetes Service (AKS)**.
 | K8s local (prerequisito) | [despliegue/kubernetes/](../kubernetes/) |
 | Manifiestos | [k8s/azure/](../../../k8s/azure/) |
 
+## Tópicos de Estudio relacionados
+
+| # | Tópico | Enlace |
+|---|---|---|
+| 05 | Servicios Azure (AKS, ACR) | [05-servicios-azure.md](../../teoria-entrevistas/05-servicios-azure.md) |
+| 08 | Kubernetes | [08-kubernetes-orquestacion.md](../../teoria-entrevistas/08-kubernetes-orquestacion.md) |
+
+Teoría lab AKS: [TEORIA-AKS.md](./TEORIA-AKS.md) · Índice: [teoria-entrevistas/README.md](../../teoria-entrevistas/README.md)
+
 ## Relación
 
 | Módulo | Enlace |

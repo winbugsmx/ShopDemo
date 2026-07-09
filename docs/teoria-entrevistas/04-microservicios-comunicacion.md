@@ -731,7 +731,7 @@ Usuario reporta error en checkout. Sin correlation ID, buscas en logs de 5 servi
 2. Propaga en header HTTP a downstream.
 3. Incluye en mensajes de cola (metadata).
 4. Logger enriquece cada línea: `CorrelationId=req-7f3a`.
-5. OpenTelemetry span usa mismo trace id (capítulo 09).
+5. OpenTelemetry span usa mismo trace id (capítulo 10).
 
 ![Diagrama: 04-correlation-id](./assets/images/diagrams/04-correlation-id.png)
 
@@ -743,7 +743,7 @@ En .NET: `Activity.Current` / OpenTelemetry; middleware que lee header y pone en
 
 | Obligatorio cuando… | Complementa con… |
 |---|---|
-| 2+ microservicios | Distributed tracing (capítulo 09) |
+| 2+ microservicios | Distributed tracing (capítulo 10) |
 | Mensajería async | MessageId distinto por mensaje + correlation por flujo |
 | Soporte investiga incidentes | Dashboards que filtran por correlation |
 
@@ -765,7 +765,7 @@ Servicio B lento (500 ms → 30 s por bug de BD). Servicio A llama a B **síncro
 
 > *Fuente editable (Mermaid):* [10-failure-cascade.mermaid](./assets/diagrams/10-failure-cascade.mermaid)
 
-**Mitigaciones (introducción — capítulo 10 profundiza):**
+**Mitigaciones (introducción — capítulo 11 profundiza):**
 
 | Técnica | Efecto |
 |---|---|

@@ -1,4 +1,4 @@
-# 09 — Observabilidad
+# 10 — Observabilidad
 
 ## Objetivo de este capítulo
 
@@ -818,4 +818,4 @@ Un error clásico de equipos junior: "Añadimos observabilidad cuando tengamos t
 - **Alert fatigue** se mitiga con alertas basadas en SLO, runbooks y revisión periódica.
 - Instrumenta **desde el primer día**, no después del primer incidente.
 
-**Siguiente paso:** lee el capítulo 10 sobre resiliencia. Observabilidad te dice *qué* falla; resiliencia te enseña *cómo* diseñar para que el fallo no derribe todo el sistema.
+**Siguiente paso:** lee el capítulo 11 sobre resiliencia. Observabilidad te dice *qué* falla; resiliencia te enseña *cómo* diseñar para que el fallo no derribe todo el sistema.

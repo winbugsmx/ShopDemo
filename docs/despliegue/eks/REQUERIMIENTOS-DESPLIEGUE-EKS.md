@@ -1,66 +1,91 @@
-# Requerimientos — Despliegue en Amazon EKS (ShopDemo)
+# Documento de Requerimientos — Despliegue EKS (ShopDemo)
 
 | Campo | Detalle |
 |:------|:--------|
-| **Empresa** | Lite Thinking |
-| **Curso** | Microservicios con .NET en Kubernetes y Entornos Multicloud |
-| **Instructor** | Lcc. Gilberto Valentino Juárez Sánchez |
-| **Contacto** | WhatsApp: +52 5614206660 |
-| | E-mail: gilberto.juarez@gmail.com |
-| | E-mail: lcc.gilberto.juarez@gmail.com |
+| **Módulo** | Despliegue Amazon Elastic Kubernetes Service |
+| **Versión** | 2.0 (enfoque negocio) |
+| **Fecha** | Julio 2026 |
 
-**Plataforma:** Amazon EKS  
-**Versión:** 1.0
+**Documentos relacionados:**
 
-**Historias de usuario:** [HISTORIAS-USUARIO-DESPLIEGUE-EKS.md](./HISTORIAS-USUARIO-DESPLIEGUE-EKS.md)
+| Capa | Documento |
+|---|---|
+| Historias | [HISTORIAS-USUARIO-DESPLIEGUE-EKS.md](./HISTORIAS-USUARIO-DESPLIEGUE-EKS.md) |
+| Especificación técnica | [ANEXO-ESPECIFICACION-TECNICA-DESPLIEGUE-EKS.md](./ANEXO-ESPECIFICACION-TECNICA-DESPLIEGUE-EKS.md) |
+| Historias técnicas | [ANEXO-HISTORIAS-TECNICAS-DESPLIEGUE-EKS.md](./ANEXO-HISTORIAS-TECNICAS-DESPLIEGUE-EKS.md) |
+| Pedagogía | [ANEXO-PEDAGOGIA-DESPLIEGUE-EKS.md](./ANEXO-PEDAGOGIA-DESPLIEGUE-EKS.md) |
+
+---
+
+## Resumen en lenguaje llano
+
+ShopDemo debe **funcionar en Amazon EKS** con el mismo flujo de tienda que en Minikube, AKS y ECS: registrar productos, procesar pedidos, observar eventos y consultar MCP. El responsable de TI opera el cluster Kubernetes en AWS y garantiza acceso estable vía Ingress.
 
 ---
 
 ## 1. Propósito
 
-Desplegar ShopDemo en **EKS** con manifiestos **compartidos** en `k8s/` y **deployments** en `k8s/aws/` (imágenes **ECR**) e **Ingress NGINX**.
+Definir qué debe lograr el despliegue en EKS: e-commerce operativo en Kubernetes gestionado en AWS, reutilizando manifiestos compartidos con imágenes ECR.
 
 ---
 
-## 2. Objetivos
+## 2. Actores
+
+| Actor | Rol |
+|---|---|
+| **Operador de la tienda** | Ejecuta flujos vía Ingress EKS |
+| **Responsable de TI** | Gestiona cluster EKS, ECR y manifiestos `k8s/aws/` |
+| **Equipo de soporte** | Diagnostica pods y disponibilidad |
+
+---
+
+## 3. Objetivos operativos
 
 | ID | Objetivo |
 |---|---|
-| OBJ-EKS-01 | Crear cluster EKS (Consola + CLI/eksctl) |
-| OBJ-EKS-02 | Publicar imágenes en ECR |
-| OBJ-EKS-03 | Configurar `kubectl` contra EKS |
-| OBJ-EKS-04 | Instalar Ingress NGINX y EBS CSI (PVC) |
-| OBJ-EKS-05 | Aplicar manifiestos compartidos + **`k8s/aws/`** (imágenes ECR) |
-| OBJ-EKS-06 | Validar flujo E2E |
-| OBJ-EKS-07 | Documentar errores comunes |
-| OBJ-EKS-08 | Aplicar **Secrets** K8s |
-| OBJ-EKS-09 | Validar **Liveness/Readiness** HTTP |
-| OBJ-EKS-10 | Ingress **Helm** + **HPA** Catalog |
+| OBJ-EKS-01 | Tienda **disponible en EKS** con Ingress accesible |
+| OBJ-EKS-02 | **Flujo E2E** completado en cluster AWS |
+| OBJ-EKS-03 | Servicios **se recuperan** tras fallos de pod |
+| OBJ-EKS-04 | Imágenes desde **ECR** en deployments `k8s/aws/` |
+| OBJ-EKS-05 | Documentación **Consola y CLI** reproducible |
 
 ---
 
-## 3. Alcance
+## 4. Requerimientos de negocio
 
-- Cluster EKS 1 node group (lab)
-- ECR para imágenes
-- Manifiestos `k8s/` compartidos con Minikube/AKS
-- EBS CSI + Ingress Helm
-
-## 4. Criterios de aceptación
-
-| # | Criterio |
+| ID | Requerimiento |
 |---|---|
-| CA-EKS-01 | Nodos Ready en `kubectl get nodes` |
-| CA-EKS-02 | Namespace `shopdemo` con todos los Pods Running |
-| CA-EKS-03 | Ingress accesible vía DNS/IP del balanceador |
-| CA-EKS-04 | Pasos realizados en Consola y CLI |
-| CA-EKS-05 | Probes y HPA Catalog verificados |
+| RF-EKS-01 | APIs accesibles vía Ingress del balanceador |
+| RF-EKS-02 | Confirmación de pedidos con reserva de stock |
+| RF-EKS-03 | Eventos visibles en analítica |
+| RF-EKS-04 | MCP Gateway en ruta `/mcp` |
+| RF-EKS-05 | Salud verificada antes de tráfico |
 
 ---
 
-## Referencias
+## 5. Reglas de operación
 
-- [TEORIA-KUBERNETES-OPERACIONES.md](../kubernetes/TEORIA-KUBERNETES-OPERACIONES.md)
+| ID | Regla |
+|---|---|
+| RN-EKS-01 | Deployments solo desde `k8s/aws/`; nunca `k8s/azure/` en EKS |
+| RN-EKS-02 | PVC Postgres requiere EBS CSI driver |
+| RN-EKS-03 | Secretos K8s; no commitear valores |
 
-- [TEORIA-EKS.md](./TEORIA-EKS.md)
+---
+
+## 6. Criterios de aceptación (CA-N)
+
+| ID | Criterio |
+|---|---|
+| CA-N-EKS-01 | Ingress accesible por DNS/IP del balanceador |
+| CA-N-EKS-02 | Flujo E2E exitoso |
+| CA-N-EKS-03 | Recuperación tras fallo de instancia |
+| CA-N-EKS-04 | Documentación Consola + CLI |
+
+---
+
+## 7. Referencias
+
 - [IMPLEMENTACION-DESPLIEGUE-EKS.md](./IMPLEMENTACION-DESPLIEGUE-EKS.md)
+- [despliegue/kubernetes/](../kubernetes/)
+- [despliegue/aws/](../aws/)

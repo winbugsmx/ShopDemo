@@ -61,10 +61,13 @@ Orden y scripts: [k8s/README.md](k8s/README.md) · `APPLY_INFRA=true bash .githu
 
 ## Flujo spec-driven
 
-1. Leer `spec-driven/specs/<área>/SPEC.md` y docs `REQUERIMIENTOS` + `IMPLEMENTACION` enlazados.
-2. Cambio mínimo acotado al SPEC; no refactorizar fuera de alcance.
-3. Validar criterios de aceptación del SPEC al terminar.
-4. **No mezclar** comandos Azure CLI y AWS CLI en una misma tarea salvo petición explícita.
+1. Leer `REQUERIMIENTOS-*.md` (negocio) y `spec-driven/specs/<área>/SPEC.md`.
+2. Consultar `ANEXO-ESPECIFICACION-TECNICA-*.md` y `IMPLEMENTACION-*.md` enlazados.
+3. Cambio mínimo acotado al SPEC; no refactorizar fuera de alcance.
+4. Validar criterios CA-N (negocio) y CA-T (técnico) del módulo.
+5. **No mezclar** comandos Azure CLI y AWS CLI en una misma tarea salvo petición explícita.
+
+**Guía documental:** [docs/GUIA-ESTRUCTURA-DOCUMENTACION.md](docs/GUIA-ESTRUCTURA-DOCUMENTACION.md)
 
 ## Build y verificación
 

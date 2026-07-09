@@ -1,49 +1,56 @@
 # Integración de IA — ShopDemo
 
-| Campo | Detalle |
-|:------|:--------|
-| **Empresa** | Lite Thinking |
-| **Curso** | Microservicios con .NET en Kubernetes y Entornos Multicloud |
-| **Instructor** | Lcc. Gilberto Valentino Juárez Sánchez |
-| **Contacto** | WhatsApp: +52 5614206660 |
-| | E-mail: gilberto.juarez@gmail.com |
-| | E-mail: lcc.gilberto.juarez@gmail.com |
+Material para **alertas, MCP Gateway, Semantic Kernel** en Azure y AWS.
 
-Material para **detección de anomalías**, **MCP Server** y **Semantic Kernel** (Event Hubs + anexo Kafka) en Azure y AWS.
+## Integración IA (3 capas)
 
-## Documentos
+| Capa | Documento |
+|---|---|
+| **A — Negocio** | [REQUERIMIENTOS-INTEGRACION-IA.md](./REQUERIMIENTOS-INTEGRACION-IA.md) |
+| **A — Negocio** | [HISTORIAS-USUARIO-INTEGRACION-IA.md](./HISTORIAS-USUARIO-INTEGRACION-IA.md) |
+| **B — Técnica** | [ANEXO-ESPECIFICACION-TECNICA-INTEGRACION-IA.md](./ANEXO-ESPECIFICACION-TECNICA-INTEGRACION-IA.md) |
+| **B — Técnica** | [ANEXO-HISTORIAS-TECNICAS-INTEGRACION-IA.md](./ANEXO-HISTORIAS-TECNICAS-INTEGRACION-IA.md) |
+| **C — Pedagogía** | [ANEXO-PEDAGOGIA-INTEGRACION-IA.md](./ANEXO-PEDAGOGIA-INTEGRACION-IA.md) |
+
+## Despliegue MCP (3 capas)
+
+| Capa | Documento |
+|---|---|
+| **A — Negocio** | [REQUERIMIENTOS-DESPLIEGUE-MCP.md](./REQUERIMIENTOS-DESPLIEGUE-MCP.md) |
+| **A — Negocio** | [HISTORIAS-USUARIO-DESPLIEGUE-MCP.md](./HISTORIAS-USUARIO-DESPLIEGUE-MCP.md) |
+| **B — Técnica** | [ANEXO-ESPECIFICACION-TECNICA-DESPLIEGUE-MCP.md](./ANEXO-ESPECIFICACION-TECNICA-DESPLIEGUE-MCP.md) |
+| **B — Técnica** | [ANEXO-HISTORIAS-TECNICAS-DESPLIEGUE-MCP.md](./ANEXO-HISTORIAS-TECNICAS-DESPLIEGUE-MCP.md) |
+| **C — Pedagogía** | [ANEXO-PEDAGOGIA-DESPLIEGUE-MCP.md](./ANEXO-PEDAGOGIA-DESPLIEGUE-MCP.md) |
+
+## Implementación
 
 | Tipo | Enlace |
 |---|---|
-| **Guía de desarrollo (curso)** | [GUIA-DESARROLLO-INTEGRACIONES.md](../GUIA-DESARROLLO-INTEGRACIONES.md) |
-| **Implementación MCP (código local)** | [IMPLEMENTACION-MCP-GATEWAY.md](./IMPLEMENTACION-MCP-GATEWAY.md) |
-| **Anexo código MCP** | [ANEXO-CODIGO-MCP.md](./ANEXO-CODIGO-MCP.md) |
-| **Teoría** | [TEORIA-INTEGRACION-IA.md](./TEORIA-INTEGRACION-IA.md) |
-| **Requerimientos IA** | [REQUERIMIENTOS-INTEGRACION-IA.md](./REQUERIMIENTOS-INTEGRACION-IA.md) |
-| **Requerimientos despliegue MCP** | [REQUERIMIENTOS-DESPLIEGUE-MCP.md](./REQUERIMIENTOS-DESPLIEGUE-MCP.md) |
-| **Despliegue MCP Azure** (ACA + AKS) | [IMPLEMENTACION-DESPLIEGUE-MCP-AZURE.md](./IMPLEMENTACION-DESPLIEGUE-MCP-AZURE.md) |
-| **Despliegue MCP AWS** (ECS + EKS) | [IMPLEMENTACION-DESPLIEGUE-MCP-AWS.md](./IMPLEMENTACION-DESPLIEGUE-MCP-AWS.md) |
-| **Integración IA Azure** (anomalías, SK) | [azure/IMPLEMENTACION-INTEGRACION-IA-AZURE.md](./azure/IMPLEMENTACION-INTEGRACION-IA-AZURE.md) |
-| **Integración IA AWS** | [aws/IMPLEMENTACION-INTEGRACION-IA-AWS.md](./aws/IMPLEMENTACION-INTEGRACION-IA-AWS.md) |
+| MCP local | [IMPLEMENTACION-MCP-GATEWAY.md](./IMPLEMENTACION-MCP-GATEWAY.md) |
+| MCP Azure | [IMPLEMENTACION-DESPLIEGUE-MCP-AZURE.md](./IMPLEMENTACION-DESPLIEGUE-MCP-AZURE.md) |
+| MCP AWS | [IMPLEMENTACION-DESPLIEGUE-MCP-AWS.md](./IMPLEMENTACION-DESPLIEGUE-MCP-AWS.md) |
+| IA Azure | [azure/IMPLEMENTACION-INTEGRACION-IA-AZURE.md](./azure/IMPLEMENTACION-INTEGRACION-IA-AZURE.md) |
+| IA AWS | [aws/IMPLEMENTACION-INTEGRACION-IA-AWS.md](./aws/IMPLEMENTACION-INTEGRACION-IA-AWS.md) |
+| Teoría | [TEORIA-INTEGRACION-IA.md](./TEORIA-INTEGRACION-IA.md) |
+| Código MCP | [ANEXO-CODIGO-MCP.md](./ANEXO-CODIGO-MCP.md) |
 
-## Código en el repositorio
+## Código
 
 | Componente | Ruta | Puerto |
 |---|---|---|
 | **MCP Gateway** | [AI/ShopDemo.Mcp.Api](../../AI/ShopDemo.Mcp.Api/) | 8005 (`/mcp`) |
 
-Herramientas MCP expuestas: `CreateProduct`, `GetProductStock`, `ListAnalyticsEvents`, `GetShopDemoStatus`.
+**Tools:** `CreateProduct`, `GetProductStock`, `ListAnalyticsEvents`, `GetShopDemoStatus`
 
-## Objetivos del módulo
+## Relación
 
-| # | Objetivo | Implementación en repo |
-|---|---|---|
-| 1 | Anomalías en métricas/logs | Documentación (KQL / Logs Insights + umbrales) |
-| 2 | MCP Server .NET | `ShopDemo.Mcp.Api` |
-| 3 | Semantic Kernel + mensajería | Documentación: **Event Hubs** (principal) + anexo **Kafka** |
+- [observabilidad/](../observabilidad/) — prerequisito logs
+- [despliegue/](../despliegue/) — prerequisito APIs en nube
+- [GUIA-ESTRUCTURA-DOCUMENTACION.md](../GUIA-ESTRUCTURA-DOCUMENTACION.md)
 
-## Relación con otros módulos
+## Orden de lectura
 
-- [Observabilidad](../observabilidad/README.md) — agregación de logs previa
-- [Event Hubs](../INTEGRACION-AZURE-EVENT-HUBS.md) — bus de eventos para SK
-- [Despliegue](../despliegue/README.md) — ACA, AKS, ECS, EKS
+1. `REQUERIMIENTOS-INTEGRACION-IA.md` → contexto negocio
+2. `REQUERIMIENTOS-DESPLIEGUE-MCP.md` → despliegue gateway
+3. Anexos técnicos → implementación
+4. `ANEXO-PEDAGOGIA-*.md` → si eres alumno del curso

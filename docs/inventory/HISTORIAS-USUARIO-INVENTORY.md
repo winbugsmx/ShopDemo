@@ -1,9 +1,12 @@
-# Historias de Usuario — Microservicio Inventory (ShopDemo)
+# Historias de Usuario — Inventario (ShopDemo)
 
 | Campo | Detalle |
 |:------|:--------|
-| **Fuente** | [REQUERIMIENTOS-INVENTORY.md](./REQUERIMIENTOS-INVENTORY.md) |
-| **Arquitectura** | Hexagonal |
+| **Fuente de negocio** | [REQUERIMIENTOS-INVENTORY.md](./REQUERIMIENTOS-INVENTORY.md) |
+| **Especificación técnica** | [ANEXO-ESPECIFICACION-TECNICA-INVENTORY.md](./ANEXO-ESPECIFICACION-TECNICA-INVENTORY.md) |
+| **Historias técnicas** | [ANEXO-HISTORIAS-TECNICAS-INVENTORY.md](./ANEXO-HISTORIAS-TECNICAS-INVENTORY.md) |
+
+> Este documento contiene **solo historias de negocio**. Las tareas de implementación están en el anexo técnico.
 
 ---
 
@@ -12,33 +15,23 @@
 | Campo | Detalle |
 |---|---|
 | **Requerimiento** | RF-01 |
-| **Endpoint** | `POST /api/inventory/stock` |
 
-**Como** operador de inventario, **quiero** registrar stock para un `ProductId` de Catalog, **para** que el producto pueda venderse.
+**Como** operador de inventario, **quiero** registrar stock para un producto del catálogo, **para** que el producto pueda venderse y reservarse en pedidos.
 
 ### Reglas de negocio
 
 | ID | Regla |
 |---|---|
-| RN-03 | `ProductId` ≠ `Guid.Empty` |
-| RN-04 | Stock inicial ≥ 0 |
-| RN-05 | Un solo `StockEntry` por `ProductId` |
+| RN-INV-03 | Identificador de producto válido |
+| RN-INV-04 | Stock inicial ≥ 0 |
+| RN-INV-05 | Un solo registro de stock por producto |
+| RN-INV-06 | Se guarda snapshot del nombre del producto |
 
-### Modelo requerido
+### Criterios de aceptación (CA-N)
 
-| Capa | Artefacto |
-|---|---|
-| Dominio | **Agregado** `StockEntry` (Id = ProductId) |
-| Dominio | **VO** `ProductReference` (snapshot nombre) |
-| Aplicación | **Inbound port** `IRegisterStockUseCase` |
-| Aplicación | **DTO** request/response stock |
-| Infra | **Outbound** `IStockEntryRepository` |
-
-### Criterios de aceptación
-
-- [ ] **CA-01:** POST válido → stock consultable por GET.
-- [ ] **CA-02:** Segundo registro mismo ProductId → conflicto o reabastecimiento según diseño MVP.
-- [ ] **CA-03:** Se emite `StockEntryRegisteredDomainEvent`.
+- [ ] **CA-N01:** Con datos válidos, el stock queda registrado y consultable.
+- [ ] **CA-N02:** Segundo registro del mismo producto → conflicto o reabastecimiento según operación.
+- [ ] **CA-N09:** Con datos inválidos, el sistema indica qué corregir.
 
 ---
 
@@ -47,119 +40,69 @@
 | Campo | Detalle |
 |---|---|
 | **Requerimiento** | RF-02 |
-| **Endpoint** | `GET /api/inventory/{productId}` |
 
-**Como** operador o Orders, **quiero** conocer unidades disponibles, **para** validar ventas.
+**Como** operador de inventario, **quiero** consultar las unidades disponibles de un producto, **para** validar si hay suficiente stock para ventas o pedidos.
 
-### Modelo requerido
+### Criterios de aceptación (CA-N)
 
-| Capa | Artefacto |
-|---|---|
-| Aplicación | **Inbound** `IGetStockByProductUseCase` |
-| Aplicación | **DTO** `StockDto` |
-
-### Criterios de aceptación
-
-- [ ] **CA-04:** ProductId existente → `200` con `availableUnits`.
-- [ ] **CA-05:** ProductId sin stock → `404`.
+- [ ] **CA-N03:** Producto con stock registrado → se muestran las unidades disponibles.
+- [ ] **CA-N04:** Producto sin stock registrado → el sistema informa que no se encontró.
 
 ---
 
-## HU-INV-03 — Reservar stock (confirmación de pedido)
+## HU-INV-03 — Reservar stock al confirmar pedido
 
 | Campo | Detalle |
 |---|---|
 | **Requerimiento** | RF-03 |
-| **Endpoint** | `POST /api/inventory/reservations` |
 
-**Como** Orders, **quiero** reservar unidades al confirmar un pedido, **para** evitar sobreventa.
+**Como** operador de ventas, **quiero** que al confirmar un pedido se reserven las unidades necesarias en inventario, **para** evitar vender más de lo disponible.
 
 ### Reglas de negocio
 
 | ID | Regla |
 |---|---|
-| RN-01 | No reservar más unidades de las disponibles |
+| RN-INV-01 | No reservar más unidades de las disponibles |
+| RN-INV-07 | Si el disponible llega a cero, el producto queda agotado |
+| RN-INV-08 | La reserva se asocia al identificador del pedido |
 
-### Modelo requerido
+### Criterios de aceptación (CA-N)
 
-| Capa | Artefacto |
-|---|---|
-| Dominio | `StockEntry.Reserve(quantity)` |
-| Dominio | **Evento** `StockReservedDomainEvent`, `StockDepletedDomainEvent` |
-| Aplicación | **Inbound** `IReserveStockUseCase` |
-| Aplicación | **DTO** con `orderId` y `lines[]` |
-
-### Criterios de aceptación
-
-- [ ] **CA-06:** Reserva exitosa decrementa `availableUnits`.
-- [ ] **CA-07:** Stock insuficiente → `400`/`409`.
-- [ ] **CA-08:** Confirmar pedido en Orders invoca este endpoint.
+- [ ] **CA-N05:** Con stock suficiente, la reserva reduce las unidades disponibles.
+- [ ] **CA-N06:** Sin stock suficiente, la operación falla y el disponible no cambia.
+- [ ] **CA-N08:** Tras reservar, queda constancia de la notificación de cambio.
 
 ---
 
-## HU-INV-04 — Liberar stock (cancelación)
+## HU-INV-04 — Liberar stock al cancelar pedido
 
 | Campo | Detalle |
 |---|---|
 | **Requerimiento** | RF-04 |
-| **Endpoint** | `POST /api/inventory/reservations/release` |
 
-**Como** Orders, **quiero** devolver unidades al cancelar un pedido confirmado, **para** recuperar inventario.
+**Como** operador de ventas, **quiero** que al cancelar un pedido confirmado se liberen las unidades reservadas, **para** recuperar inventario disponible para otras ventas.
 
 ### Reglas de negocio
 
 | ID | Regla |
 |---|---|
-| RN-02 | MVP: incrementar `availableUnits` por cantidad liberada |
+| RN-INV-02 | Las unidades liberadas vuelven al disponible |
 
-### Modelo requerido
+### Criterios de aceptación (CA-N)
 
-| Capa | Artefacto |
-|---|---|
-| Dominio | `StockEntry.Release(quantity)` |
-| Dominio | **Evento** `StockReleasedDomainEvent` |
-| Aplicación | **Inbound** `IReleaseStockUseCase` |
-
-### Criterios de aceptación
-
-- [ ] **CA-09:** Tras cancelar pedido Confirmed, stock aumenta.
-- [ ] **CA-10:** Se emite `StockReleasedDomainEvent`.
-
----
-
-## HU-INV-05 — Arquitectura hexagonal y persistencia
-
-| Campo | Detalle |
-|---|---|
-| **Requerimientos** | RF-05, RF-06, RF-07, RF-08 |
-
-**Como** alumno, **quiero** separar puertos inbound/outbound, **para** comparar con Clean Architecture de Catalog/Orders.
-
-### Modelo requerido
-
-| Tipo | Artefactos |
-|---|---|
-| **Inbound ports** | 4 use case interfaces |
-| **Outbound ports** | `IStockEntryRepository`, `IIntegrationEventPublisher`, `IUnitOfWork` |
-| **Driving adapter** | REST Controllers (solo dependen de inbound) |
-| **Driven adapter** | EF Core, event logger |
-| **DTO** | Contratos HTTP; **sin** exponer `StockEntry` en API |
-
-### Criterios de aceptación
-
-- [ ] **CA-11:** Controller no referencia repositorio EF directamente.
-- [ ] **CA-12:** BD `ShopDemoInventory`, puerto **5435**.
-- [ ] **CA-13:** Swagger en `/swagger`.
-- [ ] **CA-14:** `docker compose up` funcional.
+- [ ] **CA-N07:** Tras cancelar un pedido confirmado, el stock disponible aumenta por las cantidades liberadas.
+- [ ] **CA-N08:** Tras liberar, queda constancia de la notificación de cambio.
 
 ---
 
 ## Trazabilidad
 
-| RF | Historia |
+| Requerimiento | Historia |
 |---|---|
 | RF-01 | HU-INV-01 |
 | RF-02 | HU-INV-02 |
 | RF-03 | HU-INV-03 |
 | RF-04 | HU-INV-04 |
-| RF-05–08 | HU-INV-05 |
+| RF-05–RF-08 | Ver [ANEXO-HISTORIAS-TECNICAS-INVENTORY.md](./ANEXO-HISTORIAS-TECNICAS-INVENTORY.md) |
+
+Implementación técnica: ver [ANEXO-HISTORIAS-TECNICAS-INVENTORY.md](./ANEXO-HISTORIAS-TECNICAS-INVENTORY.md).

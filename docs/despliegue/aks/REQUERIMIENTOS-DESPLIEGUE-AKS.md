@@ -1,76 +1,91 @@
-# Requerimientos — Despliegue en Azure AKS (ShopDemo)
+# Documento de Requerimientos — Despliegue AKS (ShopDemo)
 
 | Campo | Detalle |
 |:------|:--------|
-| **Empresa** | Lite Thinking |
-| **Curso** | Microservicios con .NET en Kubernetes y Entornos Multicloud |
-| **Instructor** | Lcc. Gilberto Valentino Juárez Sánchez |
-| **Contacto** | WhatsApp: +52 5614206660 |
-| | E-mail: gilberto.juarez@gmail.com |
-| | E-mail: lcc.gilberto.juarez@gmail.com |
+| **Módulo** | Despliegue Azure Kubernetes Service |
+| **Versión** | 2.0 (enfoque negocio) |
+| **Fecha** | Julio 2026 |
 
-**Plataforma:** Azure Kubernetes Service (AKS)  
-**Versión:** 1.0
+**Documentos relacionados:**
 
-**Historias de usuario:** [HISTORIAS-USUARIO-DESPLIEGUE-AKS.md](./HISTORIAS-USUARIO-DESPLIEGUE-AKS.md)
+| Capa | Documento |
+|---|---|
+| Historias | [HISTORIAS-USUARIO-DESPLIEGUE-AKS.md](./HISTORIAS-USUARIO-DESPLIEGUE-AKS.md) |
+| Especificación técnica | [ANEXO-ESPECIFICACION-TECNICA-DESPLIEGUE-AKS.md](./ANEXO-ESPECIFICACION-TECNICA-DESPLIEGUE-AKS.md) |
+| Historias técnicas | [ANEXO-HISTORIAS-TECNICAS-DESPLIEGUE-AKS.md](./ANEXO-HISTORIAS-TECNICAS-DESPLIEGUE-AKS.md) |
+| Pedagogía | [ANEXO-PEDAGOGIA-DESPLIEGUE-AKS.md](./ANEXO-PEDAGOGIA-DESPLIEGUE-AKS.md) |
+
+---
+
+## Resumen en lenguaje llano
+
+ShopDemo debe **funcionar en Azure Kubernetes Service (AKS)** con el mismo flujo de tienda que en Minikube y Container Apps: productos, pedidos, inventario, analítica y MCP accesibles por un punto de entrada en la nube. El responsable de TI gestiona el cluster y garantiza que la operación del e-commerce no dependa de máquinas locales.
 
 ---
 
 ## 1. Propósito
 
-Desplegar ShopDemo en **AKS** reutilizando recursos compartidos en `k8s/` y deployments en **`k8s/azure/`** (ACR), con **Ingress NGINX**, como extensión del laboratorio Minikube y complemento de Container Apps.
+Definir qué debe lograr el despliegue en AKS: disponibilidad del flujo E2E en Kubernetes gestionado en Azure, reutilizando manifiestos validados en local.
 
 ---
 
-## 2. Objetivos
+## 2. Actores
+
+| Actor | Rol |
+|---|---|
+| **Operador de la tienda** | Ejecuta flujos E2E vía Ingress en AKS |
+| **Responsable de TI** | Crea cluster, publica imágenes y aplica manifiestos |
+| **Equipo de soporte** | Monitorea pods y responde incidentes |
+
+---
+
+## 3. Objetivos operativos
 
 | ID | Objetivo |
 |---|---|
-| OBJ-AKS-01 | Crear cluster AKS (Portal + CLI) |
-| OBJ-AKS-02 | Publicar 4 imágenes en ACR |
-| OBJ-AKS-03 | Vincular AKS con ACR |
-| OBJ-AKS-04 | Instalar Ingress NGINX |
-| OBJ-AKS-05 | Aplicar manifiestos compartidos + **`k8s/azure/`** (imágenes ACR) |
-| OBJ-AKS-06 | Probar flujo E2E vía Ingress |
-| OBJ-AKS-07 | Documentar errores comunes y mitigación |
-| OBJ-AKS-08 | Aplicar **Secrets** K8s (`shopdemo-secrets`) |
-| OBJ-AKS-09 | Validar **Liveness/Readiness** HTTP en pods |
-| OBJ-AKS-10 | Instalar Ingress con **Helm** e instalar **HPA** Catalog |
+| OBJ-AKS-01 | La tienda ShopDemo está **disponible en AKS** con Ingress público |
+| OBJ-AKS-02 | El **flujo E2E** se completa en el cluster de producción-lab |
+| OBJ-AKS-03 | Los servicios se **recuperan automáticamente** tras fallos de instancia |
+| OBJ-AKS-04 | Las **imágenes** provienen de ACR vinculado al cluster |
+| OBJ-AKS-05 | Existe documentación operativa **Portal y CLI** |
 
 ---
 
-## 3. Alcance
+## 4. Alcance — Requerimientos de negocio
 
-- Cluster AKS 1 node pool (lab)
-- ACR Basic (reutilizar o crear)
-- Mismos Deployments/StatefulSet/Ingress/HPA que Minikube
-- Secrets con connection strings (Key Vault opcional — fuera de alcance básico)
-- Ingress NGINX vía **Helm** (no addon)
-
-## 4. No incluido en el lab
-
-- Azure CNI avanzado / private cluster
-- Workload Identity completo
-- Azure Database for PostgreSQL gestionado (usamos StatefulSet en K8s)
-- Key Vault / External Secrets (Secrets K8s planos en el lab)
-
----
-
-## 5. Criterios de aceptación
-
-| # | Criterio |
+| ID | Requerimiento |
 |---|---|
-| CA-AKS-01 | `kubectl get nodes` muestra nodos Ready |
-| CA-AKS-02 | 5 Deployments (4 APIs + MCP) + Postgres StatefulSet Running |
-| CA-AKS-03 | Ingress con IP externa responde |
-| CA-AKS-04 | Alumno completó pasos Portal y CLI |
-| CA-AKS-05 | Probes HTTP y HPA Catalog operativos |
+| RF-AKS-01 | Operar catálogo, pedidos y analítica vía Ingress AKS |
+| RF-AKS-02 | Confirmar pedidos con reserva de stock |
+| RF-AKS-03 | Consultar MCP Gateway en ruta `/mcp` |
+| RF-AKS-04 | Verificar salud de servicios antes de tráfico |
+| RF-AKS-05 | Actualizar release con nuevas imágenes ACR |
 
 ---
 
-## Referencias
+## 5. Reglas de operación
 
-- [TEORIA-KUBERNETES-OPERACIONES.md](../kubernetes/TEORIA-KUBERNETES-OPERACIONES.md)
+| ID | Regla |
+|---|---|
+| RN-AKS-01 | Deployments solo desde `k8s/azure/`; nunca aplicar `k8s/aws/` en AKS |
+| RN-AKS-02 | Recursos compartidos (postgres, services, ingress) desde `k8s/` |
+| RN-AKS-03 | Secretos en `shopdemo-secrets`; no commitear valores reales |
 
-- [TEORIA-AKS.md](./TEORIA-AKS.md)
+---
+
+## 6. Criterios de aceptación (CA-N)
+
+| ID | Criterio |
+|---|---|
+| CA-N-AKS-01 | Ingress AKS responde rutas de la tienda |
+| CA-N-AKS-02 | Flujo producto → pedido → confirmación exitoso |
+| CA-N-AKS-03 | Tras eliminar un pod, el servicio vuelve a operar |
+| CA-N-AKS-04 | Documentación Portal + CLI completada |
+
+---
+
+## 7. Referencias
+
 - [IMPLEMENTACION-DESPLIEGUE-AKS.md](./IMPLEMENTACION-DESPLIEGUE-AKS.md)
+- [despliegue/kubernetes/](../kubernetes/)
+- [despliegue/azure/](../azure/)

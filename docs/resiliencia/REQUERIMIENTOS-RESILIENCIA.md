@@ -1,73 +1,100 @@
-# Requerimientos — Resiliencia de servicios (ShopDemo)
+# Documento de Requerimientos — Resiliencia (ShopDemo)
 
 | Campo | Detalle |
 |:------|:--------|
-| **Empresa** | Lite Thinking |
-| **Curso** | Microservicios con .NET en Kubernetes y Entornos Multicloud |
-| **Instructor** | Lcc. Gilberto Valentino Juárez Sánchez |
-| **Contacto** | WhatsApp: +52 5614206660 |
-| | E-mail: gilberto.juarez@gmail.com |
-| | E-mail: lcc.gilberto.juarez@gmail.com |
+| **Módulo** | Resiliencia — continuidad operativa |
+| **Versión** | 2.0 (enfoque negocio) |
+| **Fecha** | Julio 2026 |
 
-**Versión:** 1.0 · **Alcance:** básico, configuración en plataforma (sin cambios .NET obligatorios).
+**Documentos relacionados:**
 
-**Historias de usuario:** [HISTORIAS-USUARIO-RESILIENCIA.md](./HISTORIAS-USUARIO-RESILIENCIA.md)
+| Capa | Documento |
+|---|---|
+| Historias | [HISTORIAS-USUARIO-RESILIENCIA.md](./HISTORIAS-USUARIO-RESILIENCIA.md) |
+| Especificación técnica | [ANEXO-ESPECIFICACION-TECNICA-RESILIENCIA.md](./ANEXO-ESPECIFICACION-TECNICA-RESILIENCIA.md) |
+| Historias técnicas | [ANEXO-HISTORIAS-TECNICAS-RESILIENCIA.md](./ANEXO-HISTORIAS-TECNICAS-RESILIENCIA.md) |
+| Pedagogía | [ANEXO-PEDAGOGIA-RESILIENCIA.md](./ANEXO-PEDAGOGIA-RESILIENCIA.md) |
+
+---
+
+## Resumen en lenguaje llano
+
+Si un servicio de la tienda falla, **el resto no debe caer en cadena**. Resiliencia garantiza que pedidos, inventario y catálogo **se recuperan solos** tras un reinicio, que solo instancias sanas reciben tráfico y que el equipo entiende la diferencia entre fallos **inmediatos** (pedido llama a inventario) y **diferidos** (eventos por mensajería).
 
 ---
 
 ## 1. Propósito
 
-Justificar prácticas de **resiliencia** para ShopDemo en multicloud: los microservicios fallan de forma independiente; la plataforma y la arquitectura deben **absorber** esos fallos sin detener todo el e-commerce.
+Definir qué debe lograr la resiliencia de ShopDemo: absorber fallos parciales sin detener todo el e-commerce en entornos multicloud.
 
 ---
 
-## 2. Objetivos
+## 2. Actores
+
+| Actor | Rol |
+|---|---|
+| **Operador de la tienda** | Continúa operando mientras se recuperan servicios |
+| **Responsable de TI** | Configura health checks, réplicas y escalado |
+| **Equipo de soporte** | Explica impacto de fallos síncronos vs asíncronos |
+
+---
+
+## 3. Objetivos operativos
 
 | ID | Objetivo |
 |---|---|
-| OBJ-RES-01 | Aplicar **health checks** en ACA, AKS, ECS y EKS |
-| OBJ-RES-02 | Configurar **redundancia** (mínimo 1 réplica; escalado donde aplique) |
-| OBJ-RES-03 | Documentar **comunicación síncrona vs asíncrona** en ShopDemo |
-| OBJ-RES-04 | Demostrar **recuperación** tras fallo de un pod/tarea |
-| OBJ-RES-05 | Usar **HPA** (K8s) o reglas de escala (ACA) como resiliencia ante carga |
-| OBJ-RES-06 | Cubrir **Azure (ACA + AKS)** y **AWS (ECS + EKS)** por separado |
+| OBJ-RES-01 | Los servicios **se recuperan automáticamente** tras fallo de instancia |
+| OBJ-RES-02 | Solo instancias **saludables** reciben tráfico de negocio |
+| OBJ-RES-03 | Existe **redundancia mínima** (al menos una réplica operativa) |
+| OBJ-RES-04 | El equipo **entiende** impacto de fallo pedidos→inventario vs Event Hubs |
+| OBJ-RES-05 | Las **actualizaciones** de versión no dejan la tienda totalmente caída |
+| OBJ-RES-06 | Prácticas aplicadas en **Azure (ACA+AKS)** y **AWS (ECS+EKS)** |
 
 ---
 
-## 3. Alcance incluido
+## 4. Requerimientos de negocio
 
-- Probes HTTP `/health` y `/alive` (ya en código)
-- Réplicas múltiples en ACA (min 1, max 3 lab)
-- HPA Catalog en AKS/EKS
-- ECS desired count ≥ 1 + health check ALB
-- Event Hubs como patrón de resiliencia asíncrona
-- Rolling updates / revisiones sin downtime total
-
-## 4. No incluido en el curso
-
-| Tema | Motivo |
+| ID | Requerimiento |
 |---|---|
-| Implementar Polly/retry en `InventoryHttpClient` | Patrón documentado; cambio de código opcional avanzado |
-| Multi-AZ / multi-region DR | Complejidad enterprise |
-| IA para predicción de fallos | No forma parte del lab (ver teoría §7 como referencia) |
-| Chaos Engineering (Chaos Mesh, FIS) | Opcional avanzado |
+| RF-RES-01 | Tras fallo de una instancia, el servicio vuelve a estar disponible sin intervención prolongada |
+| RF-RES-02 | Health checks activos en los 4 servicios de negocio en cada plataforma |
+| RF-RES-03 | Escalado ante carga demostrado en al menos un servicio |
+| RF-RES-04 | Actualización rolling sin downtime total del e-commerce |
+| RF-RES-05 | Documentación de patrones síncrono vs asíncrono en ShopDemo |
 
 ---
 
-## 5. Criterios de aceptación
+## 5. Reglas
 
-| # | Criterio |
+| ID | Regla |
 |---|---|
-| CA-RES-01 | Tras `kubectl delete pod` / reinicio de tarea ECS, el servicio vuelve a Ready |
-| CA-RES-02 | Health probe configurado en los 4 servicios en cada plataforma |
-| CA-RES-03 | Alumno explica diferencia fallo síncrono Orders→Inventory vs asíncrono Event Hubs |
-| CA-RES-04 | Escalado manual o HPA demostrado en al menos un servicio |
-| CA-RES-05 | Guías Azure y AWS completadas |
+| RN-RES-01 | Mínimo 1 réplica operativa por servicio crítico |
+| RN-RES-02 | Event Hubs desacopla inventario/analítica de publicadores |
+| RN-RES-03 | Fallo síncrono Orders→Inventory bloquea confirmación; fallo asíncrono no bloquea creación de producto |
 
 ---
 
-## Referencias
+## 6. Fuera de alcance
 
-- [TEORIA-RESILIENCIA.md](./TEORIA-RESILIENCIA.md)
+- Multi-región / DR enterprise
+- Chaos Engineering (Chaos Mesh, FIS)
+- Polly/retry en código (opcional avanzado)
+
+---
+
+## 7. Criterios de aceptación (CA-N)
+
+| ID | Criterio |
+|---|---|
+| CA-N-RES-01 | Dado un pod/tarea eliminada, cuando pasa el tiempo de recuperación, entonces el servicio vuelve a Ready |
+| CA-N-RES-02 | Dado tráfico entrante, cuando una instancia no está saludable, entonces no recibe peticiones |
+| CA-N-RES-03 | Dado soporte, cuando explica tipos de fallo, entonces diferencia síncrono vs asíncrono |
+| CA-N-RES-04 | Dado pico de carga simulado, cuando se escala, entonces el servicio mantiene respuesta |
+| CA-N-RES-05 | Dado guías Azure y AWS, cuando se completan, entonces resiliencia documentada en ambas nubes |
+
+---
+
+## 8. Referencias
+
 - [azure/IMPLEMENTACION-RESILIENCIA-AZURE.md](./azure/IMPLEMENTACION-RESILIENCIA-AZURE.md)
 - [aws/IMPLEMENTACION-RESILIENCIA-AWS.md](./aws/IMPLEMENTACION-RESILIENCIA-AWS.md)

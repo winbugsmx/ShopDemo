@@ -4,11 +4,17 @@
 
 Mantener coherencia entre los microservicios ShopDemo y validar el flujo de compra de punta a punta.
 
-## Referencias
+## Documentación (3 capas)
 
-- [docs/GUIA-ENDPOINTS.md](../../../docs/GUIA-ENDPOINTS.md)
-- [docs/ARQUITECTURA.md](../../../docs/ARQUITECTURA.md)
-- [docs/ShopDemo.postman_collection.json](../../../docs/ShopDemo.postman_collection.json)
+| Capa | Documento |
+|---|---|
+| Visión global | [RETO-TECNICO-SHOPDEMO.md](../../../docs/RETO-TECNICO-SHOPDEMO.md) |
+| Guía estructural | [GUIA-ESTRUCTURA-DOCUMENTACION.md](../../../docs/GUIA-ESTRUCTURA-DOCUMENTACION.md) |
+| Contratos API | [GUIA-ENDPOINTS.md](../../../docs/GUIA-ENDPOINTS.md) |
+| Arquitectura | [ARQUITECTURA.md](../../../docs/ARQUITECTURA.md) |
+| Postman E2E | [ShopDemo.postman_collection.json](../../../docs/ShopDemo.postman_collection.json) |
+
+**Por módulo:** cada servicio tiene `REQUERIMIENTOS` + `HISTORIAS-USUARIO` (negocio) y `ANEXO-ESPECIFICACION-TECNICA` + `ANEXO-HISTORIAS-TECNICAS` (técnico). Ver README de `docs/catalog/`, `docs/orders/`, etc.
 
 ## Alcance
 
@@ -22,12 +28,20 @@ Mantener coherencia entre los microservicios ShopDemo y validar el flujo de comp
 
 ## Criterios de aceptación
 
+### Negocio (CA-N)
+
+- [ ] Flujo E2E: crear producto → stock → pedido → confirmar → consultar inventario
+
+### Técnico (CA-T)
+
 - [ ] `dotnet build ShopDemo.slnx` sin errores
-- [ ] Flujo Postman E2E: crear producto → stock → pedido → confirmar
+- [ ] Flujo Postman E2E completo
 - [ ] Variables Postman actualizadas según entorno (local / Azure / AWS)
 
 ## Instrucciones para el agente
 
-1. No romper contratos HTTP documentados en GUIA-ENDPOINTS.
-2. Antes de cambios cross-service, leer ARQUITECTURA §4.
-3. Responder en español al usuario; código y rules en inglés.
+1. Leer [RETO-TECNICO-SHOPDEMO.md](../../../docs/RETO-TECNICO-SHOPDEMO.md) y [GUIA-ENDPOINTS.md](../../../docs/GUIA-ENDPOINTS.md) antes de cambios cross-service.
+2. No romper contratos HTTP documentados.
+3. Antes de cambios entre servicios, leer [ARQUITECTURA.md](../../../docs/ARQUITECTURA.md) §4.
+4. Para un módulo concreto, leer su `REQUERIMIENTOS` (negocio) y `ANEXO-ESPECIFICACION-TECNICA`.
+5. Responder en español al usuario; código y rules en inglés.

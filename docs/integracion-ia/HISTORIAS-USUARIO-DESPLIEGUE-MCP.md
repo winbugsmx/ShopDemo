@@ -6,44 +6,55 @@
 
 ---
 
-## HU-MCP-01 — Empaquetar MCP en Docker
+## HU-MCP-01 — Consultar tienda desde agente en nube
 
-| **Objetivo** | OBJ-MCP-01 |
+| **RF** | RF-MCP-01, RF-MCP-02 |
 
-**Como** pipeline CI, **quiero** imagen `shopdemo-mcp`, **para** desplegar igual que las otras APIs.
+**Como** responsable de operaciones, **quiero** conectar un agente a `/mcp` en la nube, **para** invocar herramientas sin entorno local.
 
-**Modelo:** Dockerfile en `AI/ShopDemo.Mcp.Api/`; **N/A** entidad.
+### Criterios (CA-N)
 
-**Criterios:** Build desde raíz repo exitoso.
-
----
-
-## HU-MCP-02 — Desplegar en Azure (ACA + AKS)
-
-| **Objetivos** | OBJ-MCP-02, OBJ-MCP-03 |
-
-**Como** agente externo, **quiero** URL `/mcp` en nube Azure, **para** tools en lab ACA o Ingress AKS.
-
-**Reglas:** Env vars `ShopDemo__*ApiBaseUrl`; health probe `/health`.
-
-**Criterios (CA-MCP-01, CA-MCP-04):** curl health 200; pod Running en AKS.
+- [ ] **CA-N-MCP-02:** Agente lista herramientas.
+- [ ] **CA-N-MCP-03:** `GetShopDemoStatus` reporta APIs OK.
 
 ---
 
-## HU-MCP-03 — Desplegar en AWS (ECS + EKS)
+## HU-MCP-02 — Verificar disponibilidad del gateway
 
-| **Objetivos** | OBJ-MCP-04, OBJ-MCP-05 |
+| **RF** | RF-MCP-03 |
 
-**Reglas:** ALB MCP en ECS; en EKS: `k8s/aws/mcp/deployment.yaml` + `k8s/mcp/service.yaml`.
+**Como** equipo de soporte, **quiero** consultar salud del gateway, **para** aislar fallos MCP vs APIs de negocio.
 
-**Criterios (CA-MCP-02):** Agente lista tools contra URL pública.
+### Criterios (CA-N)
+
+- [ ] **CA-N-MCP-01:** `/health` responde 200 en cada plataforma.
 
 ---
 
-## HU-MCP-04 — CI/CD y documentación dual
+## HU-MCP-03 — Mantener gateway actualizado
 
-| **Objetivos** | OBJ-MCP-06, OBJ-MCP-07 |
+| **RF** | RF-MCP-04 |
 
-**Criterios (CA-MCP-03, CA-MCP-05):** `GetShopDemoStatus` OK; workflow actualiza ACR/ECR.
+**Como** responsable de TI, **quiero** actualizar imagen MCP con el release, **para** mantener herramientas al día.
 
-**Dependencia:** 4 APIs de negocio ya desplegadas y alcanzables.
+### Reglas
+
+| ID | Regla |
+|---|---|
+| RN-MCP-05 | APIs de negocio desplegadas primero |
+
+---
+
+## HU-MCP-04 — Desplegar en todas las plataformas lab
+
+| **RF** | RF-MCP-03 |
+
+**Como** responsable de TI, **quiero** MCP en ACA, AKS, ECS y EKS, **para** paridad multicloud.
+
+### Criterios (CA-N)
+
+- [ ] **CA-N-MCP-04:** `/mcp` accesible en cada plataforma documentada.
+
+---
+
+Implementación: [ANEXO-HISTORIAS-TECNICAS-DESPLIEGUE-MCP.md](./ANEXO-HISTORIAS-TECNICAS-DESPLIEGUE-MCP.md).

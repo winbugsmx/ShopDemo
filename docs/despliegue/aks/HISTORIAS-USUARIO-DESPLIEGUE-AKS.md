@@ -6,38 +6,52 @@
 
 ---
 
-## HU-AKS-01 — Crear cluster y vincular ACR
+## HU-AKS-01 — Operar tienda en AKS
 
-| **Objetivos** | OBJ-AKS-01, OBJ-AKS-02, OBJ-AKS-03 |
+| **RF** | RF-AKS-01, RF-AKS-03 |
 
-**Como** alumno, **quiero** cluster AKS + imágenes en ACR, **para** pull autenticado desde nodos.
+**Como** operador, **quiero** acceder a las APIs por Ingress en AKS, **para** ejecutar el e-commerce en Kubernetes gestionado.
 
-**Modelo:** **N/A** infra; manifiestos con URI ACR.
+### Criterios (CA-N)
 
-**Criterios (CA-AKS-01):** Nodos Ready.
-
----
-
-## HU-AKS-02 — Ingress NGINX con Helm
-
-| **Objetivo** | OBJ-AKS-04, OBJ-AKS-10 |
-
-**Criterios (CA-AKS-03):** Ingress con IP externa responde.
+- [ ] **CA-N-AKS-01:** Rutas Ingress responden correctamente.
 
 ---
 
-## HU-AKS-03 — Aplicar manifiestos ShopDemo
+## HU-AKS-02 — Completar flujo de pedidos
 
-| **Objetivos** | OBJ-AKS-05, OBJ-AKS-08 |
+| **RF** | RF-AKS-02 |
 
-**Como** alumno, **quiero** aplicar manifiestos compartidos + **`k8s/azure/`** con secrets y probes, **para** mismo stack que Minikube en nube.
+**Como** operador, **quiero** confirmar pedidos en AKS, **para** validar integración pedidos-inventario en cluster.
 
-**Criterios (CA-AKS-02, CA-AKS-05):** 4 Deployments + Postgres Running; probes OK.
+### Criterios (CA-N)
+
+- [ ] **CA-N-AKS-02:** Confirmación exitosa con reserva de stock.
 
 ---
 
-## HU-AKS-04 — Flujo E2E y documentación dual
+## HU-AKS-03 — Mantener disponibilidad del servicio
 
-| **Objetivos** | OBJ-AKS-06, OBJ-AKS-07 |
+| **RF** | RF-AKS-04 |
 
-**Criterios (CA-AKS-04):** Portal + CLI completados; flujo E2E vía Ingress.
+**Como** equipo de soporte, **quiero** que el cluster reemplace instancias fallidas, **para** minimizar tiempo de indisponibilidad.
+
+### Criterios (CA-N)
+
+- [ ] **CA-N-AKS-03:** Servicio recuperado tras fallo de pod.
+
+---
+
+## HU-AKS-04 — Gestionar release en AKS
+
+| **RF** | RF-AKS-05 |
+
+**Como** responsable de TI, **quiero** actualizar imágenes y manifiestos, **para** desplegar nuevas versiones con documentación reproducible.
+
+### Criterios (CA-N)
+
+- [ ] **CA-N-AKS-04:** Pasos Portal y CLI documentados.
+
+---
+
+Implementación: [ANEXO-HISTORIAS-TECNICAS-DESPLIEGUE-AKS.md](./ANEXO-HISTORIAS-TECNICAS-DESPLIEGUE-AKS.md).

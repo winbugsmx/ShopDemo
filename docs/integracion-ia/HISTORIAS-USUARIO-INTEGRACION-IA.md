@@ -6,56 +6,72 @@
 
 ---
 
-## HU-IA-01 — Alertas de anomalías en logs
+## HU-IA-01 — Recibir alertas de anomalías
 
-| **Objetivo** | OBJ-IA-01 |
+| **RF** | RF-IA-01 · **OBJ** | OBJ-IA-01 |
 
-**Como** operador, **quiero** alertas KQL/Logs Insights por umbral, **para** detectar picos de errores sin ML custom.
+**Como** equipo de soporte, **quiero** alertas por picos de errores o CPU, **para** actuar antes de que el operador reporte fallos.
 
-**Modelo:** **N/A** — consultas y reglas cloud.
+### Criterios (CA-N)
 
-**Criterios (CA-IA-01):** Al menos 1 alerta activa y probada.
-
----
-
-## HU-IA-02 — MCP Gateway local
-
-| **Objetivo** | OBJ-IA-02 |
-
-**Como** agente IA, **quiero** conectar a `/mcp` del gateway, **para** invocar tools sobre ShopDemo.
-
-**Modelo:** **DTO** tools MCP; servicio `ShopDemo.Mcp.Api` (sin agregado dominio).
-
-**Reglas:** 4 tools documentadas; delegación HTTP a APIs.
-
-**Criterios (CA-IA-02, CA-IA-03):** `/health` 200; agente lista e invoca tool.
+- [ ] **CA-N-IA-01:** Al menos una alerta activa y probada.
 
 ---
 
-## HU-IA-03 — Documentar Semantic Kernel + Event Hubs
+## HU-IA-02 — Consultar tienda con agente IA
 
-| **Objetivo** | OBJ-IA-03, OBJ-IA-04 |
+| **RF** | RF-IA-02 · **OBJ** | OBJ-IA-02 |
 
-**Como** alumno, **quiero** diseño SK consumiendo eventos, **para** entender enriquecimiento con LLM.
+**Como** responsable de operaciones, **quiero** que un agente invoque herramientas sobre ShopDemo, **para** obtener estado, productos o eventos sin usar cada API manualmente.
 
-**Modelo:** Pseudocódigo + paquetes NuGet (**N/A** worker en repo).
+### Reglas
 
-**Criterios (CA-IA-04):** Documento describe flujo Event Hubs → LLM → publicación.
+| ID | Regla |
+|---|---|
+| RN-IA-01 | Gateway delega en APIs; no sustituye dominio |
 
----
+### Criterios (CA-N)
 
-## HU-IA-04 — Guías multicloud IA
-
-| **Objetivo** | OBJ-IA-05 |
-
-**Criterios (CA-IA-05):** Implementación Azure y AWS MCP/alertas documentadas.
+- [ ] **CA-N-IA-02:** Agente lista e invoca herramienta con respuesta coherente.
 
 ---
 
-## HU-IA-05 — OpenAI como LLM común
+## HU-IA-03 — Entender enriquecimiento con IA
 
-| **Objetivo** | OBJ-IA-06 |
+| **RF** | RF-IA-03 · **OBJ** | OBJ-IA-03 |
 
-**Reglas:** API key en secreto; no commitear.
+**Como** responsable de TI, **quiero** documentación del flujo Semantic Kernel con eventos, **para** planificar enriquecimiento futuro de mensajes de negocio.
 
-**Modelo:** Configuración env var / user secrets.
+### Criterios (CA-N)
+
+- [ ] **CA-N-IA-03:** Documento describe Event Hubs → LLM → publicación.
+
+---
+
+## HU-IA-04 — Operar integración IA multicloud
+
+| **RF** | RF-IA-04 · **OBJ** | OBJ-IA-04 |
+
+**Como** responsable de TI, **quiero** guías separadas Azure y AWS, **para** replicar alertas y MCP en cada nube del lab.
+
+### Criterios (CA-N)
+
+- [ ] **CA-N-IA-04:** Implementación Azure y AWS documentadas.
+
+---
+
+## HU-IA-05 — Proteger credenciales LLM
+
+| **RF** | RF-IA-05 · **OBJ** | OBJ-IA-05 |
+
+**Como** responsable de TI, **quiero** API keys en secretos, **para** cumplir política de seguridad.
+
+### Reglas
+
+| ID | Regla |
+|---|---|
+| RN-IA-03 | Worker SK opcional; diseño en docs |
+
+---
+
+Implementación: [ANEXO-HISTORIAS-TECNICAS-INTEGRACION-IA.md](./ANEXO-HISTORIAS-TECNICAS-INTEGRACION-IA.md) · Despliegue MCP: [HISTORIAS-USUARIO-DESPLIEGUE-MCP.md](./HISTORIAS-USUARIO-DESPLIEGUE-MCP.md).

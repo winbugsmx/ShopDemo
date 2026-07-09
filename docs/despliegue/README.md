@@ -14,15 +14,19 @@
 
 Material del curso para llevar los microservicios Docker a la nube con enfoque **práctico y básico**.
 
-## Historias de usuario (despliegue e infra)
+## Documentación 3 capas (despliegue)
 
-| Módulo | Requerimientos | Historias de usuario |
-|---|---|---|
-| Azure ACA | [REQUERIMIENTOS-DESPLIEGUE-AZURE](./azure/REQUERIMIENTOS-DESPLIEGUE-AZURE.md) | [HISTORIAS-USUARIO-DESPLIEGUE-AZURE](./azure/HISTORIAS-USUARIO-DESPLIEGUE-AZURE.md) |
-| AWS ECS | [REQUERIMIENTOS-DESPLIEGUE-AWS](./aws/REQUERIMIENTOS-DESPLIEGUE-AWS.md) | [HISTORIAS-USUARIO-DESPLIEGUE-AWS](./aws/HISTORIAS-USUARIO-DESPLIEGUE-AWS.md) |
-| Kubernetes | [REQUERIMIENTOS-KUBERNETES](./kubernetes/REQUERIMIENTOS-KUBERNETES.md) | [HISTORIAS-USUARIO-KUBERNETES](./kubernetes/HISTORIAS-USUARIO-KUBERNETES.md) |
-| AKS | [REQUERIMIENTOS-DESPLIEGUE-AKS](./aks/REQUERIMIENTOS-DESPLIEGUE-AKS.md) | [HISTORIAS-USUARIO-DESPLIEGUE-AKS](./aks/HISTORIAS-USUARIO-DESPLIEGUE-AKS.md) |
-| EKS | [REQUERIMIENTOS-DESPLIEGUE-EKS](./eks/REQUERIMIENTOS-DESPLIEGUE-EKS.md) | [HISTORIAS-USUARIO-DESPLIEGUE-EKS](./eks/HISTORIAS-USUARIO-DESPLIEGUE-EKS.md) |
+Estructura según [GUIA-ESTRUCTURA-DOCUMENTACION.md](../GUIA-ESTRUCTURA-DOCUMENTACION.md): **A** negocio · **B** técnica · **C** pedagogía.
+
+| Módulo | Índice README |
+|---|---|
+| Azure ACA | [azure/README.md](./azure/README.md) |
+| AWS ECS | [aws/README.md](./aws/README.md) |
+| Kubernetes local | [kubernetes/README.md](./kubernetes/README.md) |
+| AKS | [aks/README.md](./aks/README.md) |
+| EKS | [eks/README.md](./eks/README.md) |
+
+Cada módulo incluye: `REQUERIMIENTOS-*` · `HISTORIAS-USUARIO-*` · `ANEXO-ESPECIFICACION-TECNICA-*` · `ANEXO-HISTORIAS-TECNICAS-*` · `ANEXO-PEDAGOGIA-*`
 
 ## Alcance del lab (2 días · pocas horas)
 

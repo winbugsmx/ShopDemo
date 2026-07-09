@@ -9,36 +9,50 @@
 | | E-mail: gilberto.juarez@gmail.com |
 | | E-mail: lcc.gilberto.juarez@gmail.com |
 
-Documentación para el desarrollo del bounded context **Orders** en la solución **ShopDemo**.
+Documentación para el bounded context **Orders** en **ShopDemo**, con **Clean Architecture + DDD + CQRS**.
 
-## Documentos
+## Documentos (5 capas)
 
-| Documento | Audiencia | Descripción |
+| # | Documento | Capa | Audiencia | Descripción |
+|---|---|---|---|---|
+| 1 | [REQUERIMIENTOS-ORDERS.md](./REQUERIMIENTOS-ORDERS.md) | A — Negocio | PM, analista, negocio | Qué debe hacer el módulo: ciclo de pedido, reglas RN-*, CA-N |
+| 2 | [HISTORIAS-USUARIO-ORDERS.md](./HISTORIAS-USUARIO-ORDERS.md) | A — Negocio | Igual | Historias de cliente y operador con criterios de aceptación |
+| 3 | [ANEXO-ESPECIFICACION-TECNICA-ORDERS.md](./ANEXO-ESPECIFICACION-TECNICA-ORDERS.md) | B — Técnica | Desarrollador | Agregado Order, API, MediatR, EF Core, Docker, CA-T |
+| 4 | [ANEXO-HISTORIAS-TECNICAS-ORDERS.md](./ANEXO-HISTORIAS-TECNICAS-ORDERS.md) | B — Técnica | Desarrollador / DevOps | Tareas HT-ORD-* de implementación |
+| 5 | [ANEXO-PEDAGOGIA-ORDERS.md](./ANEXO-PEDAGOGIA-ORDERS.md) | C — Pedagogía | Instructor y alumno | Objetivos de aprendizaje y entregables |
+
+**Guía de implementación adicional:** [IMPLEMENTACION-ORDERS.md](./IMPLEMENTACION-ORDERS.md)
+
+## Orden de lectura recomendado
+
+### Para negocio o junior sin contexto técnico
+
+1. `REQUERIMIENTOS-ORDERS.md` — sección *Resumen en lenguaje llano*
+2. `HISTORIAS-USUARIO-ORDERS.md`
+
+### Para desarrollador que implementa
+
+1. `REQUERIMIENTOS-ORDERS.md` — contexto de negocio
+2. `HISTORIAS-USUARIO-ORDERS.md` — qué debe lograr el sistema
+3. `ANEXO-ESPECIFICACION-TECNICA-ORDERS.md` — cómo construirlo
+4. `ANEXO-HISTORIAS-TECNICAS-ORDERS.md` — tareas técnicas detalladas
+5. `IMPLEMENTACION-ORDERS.md` — guía paso a paso
+6. `ANEXO-PEDAGOGIA-ORDERS.md` — solo si eres alumno del curso
+
+## Relación con otros microservicios
+
+```
+Catalog (8001)  →  define productos (ProductId + precio snapshot)
+       ↓
+Orders (8002)   →  crea y confirma pedidos
+       ↓
+Inventory (8003)  →  reserva/libera stock al confirmar/cancelar
+```
+
+## Puertos
+
+| Servicio | API | PostgreSQL (host) |
 |---|---|---|
-| [REQUERIMIENTOS-ORDERS.md](./REQUERIMIENTOS-ORDERS.md) | Alumnos | Qué construir: reglas de negocio, endpoints, criterios de aceptación |
-| [HISTORIAS-USUARIO-ORDERS.md](./HISTORIAS-USUARIO-ORDERS.md) | Alumnos | Historias de usuario, reglas, modelo y criterios por RF |
-| [IMPLEMENTACION-ORDERS.md](./IMPLEMENTACION-ORDERS.md) | Alumnos / Instructor | Código funcional de referencia capa por capa |
-
-## Sprints de referencia
-
-- Sprint 1: Domain Layer (Aggregates, Value Objects, Domain Events)
-- Sprint 2: Infrastructure + Application (EF Core, CQRS, Docker)
-
-## Microservicios en ShopDemo
-
-| Servicio | Puerto API | Puerto PostgreSQL | Estado |
-|---|---|---|---|
-| Catalog | 8001 | 5433 | Implementado (referencia) |
-| **Orders** | **8002** | **5434** | Por implementar |
-
-## Orden de trabajo sugerido
-
-1. Leer `REQUERIMIENTOS-ORDERS.md`
-2. Implementar capa por capa siguiendo el orden de la sección 14
-3. Validar con `IMPLEMENTACION-ORDERS.md` como guía de referencia
-4. Probar con Swagger y pgAdmin
-
-## Documentación relacionada
-
-- [Arquitectura general](../ARQUITECTURA.md)
-- [Cheat sheets](../cheat-sheets/README.md)
+| Catalog | 8001 | 5433 |
+| **Orders** | **8002** | **5434** |
+| Inventory | 8003 | 5435 |

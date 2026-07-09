@@ -3,60 +3,80 @@
 | Campo | Detalle |
 |:------|:--------|
 | **Fuente** | [REQUERIMIENTOS-OBSERVABILIDAD.md](./REQUERIMIENTOS-OBSERVABILIDAD.md) |
-| **Persona** | Alumno SRE / DevOps |
 
 ---
 
 ## HU-OBS-01 — Centralizar logs en nube
 
-| **Objetivo** | OBJ-OBS-01, OBJ-OBS-05 |
+| **RF** | RF-OBS-01 · **OBJ** | OBJ-OBS-02 |
 
-**Como** operador, **quiero** ver logs de las 4 APIs en Log Analytics o CloudWatch, **para** diagnosticar sin entrar a cada contenedor.
+**Como** equipo de soporte, **quiero** ver logs de catálogo, pedidos, inventario y analítica en un solo panel, **para** diagnosticar sin entrar a cada contenedor.
 
-**Modelo:** **N/A** — configuración plataforma + `traceId` en middleware existente.
+### Criterios (CA-N)
 
-**Criterios (CA-OBS-01):** Logs visibles de Catalog, Orders, Inventory, Analytics.
-
----
-
-## HU-OBS-02 — Consultar métricas HTTP e infra
-
-| **Objetivo** | OBJ-OBS-02 |
-
-**Como** operador, **quiero** métricas de CPU, reinicios y latencia, **para** detectar degradación.
-
-**Modelo:** **N/A**.
-
-**Criterios:** Alumno localiza métrica de al menos un servicio en portal cloud.
+- [ ] **CA-N-OBS-01:** Logs visibles de las 4 APIs.
 
 ---
 
-## HU-OBS-03 — Correlacionar con traceId
+## HU-OBS-02 — Consultar métricas de salud
 
-| **Objetivo** | OBJ-OBS-03, OBJ-OBS-06 |
+| **OBJ** | OBJ-OBS-03 |
 
-**Como** alumno, **quiero** buscar logs por `traceId` de una respuesta error, **para** seguir una petición E2E.
+**Como** responsable de TI, **quiero** métricas de CPU, reinicios y latencia HTTP, **para** detectar degradación temprana.
 
-**Reglas:** Usar `ExceptionHandlingMiddleware` existente.
+### Criterios (CA-N)
 
-**Criterios (CA-OBS-03):** Investigación documentada con traceId real.
-
----
-
-## HU-OBS-04 — Configurar alerta básica
-
-| **Objetivo** | OBJ-OBS-04 |
-
-**Como** operador, **quiero** alerta por 5xx o CPU alta, **para** simular operación proactiva.
-
-**Modelo:** **N/A** — regla KQL o Logs Insights.
-
-**Criterios (CA-OBS-02):** Alerta creada y probada (disparo simulado o umbral real).
+- [ ] Métricas localizables en portal cloud por servicio.
 
 ---
 
-## HU-OBS-05 — Cubrir las 4 plataformas de cómputo
+## HU-OBS-03 — Correlacionar peticiones fallidas
 
-| **Objetivo** | OBJ-OBS-07 |
+| **RF** | RF-OBS-02, RF-OBS-03 · **OBJ** | OBJ-OBS-01, OBJ-OBS-04 |
 
-**Criterios (CA-OBS-04, CA-OBS-05):** Guías ACA, AKS, ECS, EKS completadas; flujo investigación E2E reproducido.
+**Como** equipo de soporte, **quiero** buscar logs por identificador de rastreo de una respuesta de error, **para** seguir el flujo de un pedido fallido.
+
+### Reglas
+
+| ID | Regla |
+|---|---|
+| RN-OBS-01 | Identificador presente en respuesta de error |
+
+### Criterios (CA-N)
+
+- [ ] **CA-N-OBS-02:** Investigación documentada con traceId real.
+
+---
+
+## HU-OBS-04 — Configurar alertas proactivas
+
+| **RF** | RF-OBS-04 · **OBJ** | OBJ-OBS-05 |
+
+**Como** responsable de TI, **quiero** alertas por errores 5xx o CPU alta, **para** actuar antes del reporte del operador.
+
+### Reglas
+
+| ID | Regla |
+|---|---|
+| RN-OBS-03 | Alerta probada antes de cerrar módulo |
+
+### Criterios (CA-N)
+
+- [ ] **CA-N-OBS-03:** Al menos una alerta creada y probada.
+
+---
+
+## HU-OBS-05 — Investigar incidente E2E
+
+| **RF** | RF-OBS-05 · **OBJ** | OBJ-OBS-06 |
+
+**Como** equipo de soporte, **quiero** una guía de investigación reproducible, **para** identificar el servicio afectado en flujos completos.
+
+### Criterios (CA-N)
+
+- [ ] **CA-N-OBS-04:** Flujo investigación E2E reproducido.
+- [ ] **CA-N-OBS-05:** Documentación ACA, AKS, ECS, EKS.
+
+---
+
+Implementación: [ANEXO-HISTORIAS-TECNICAS-OBSERVABILIDAD.md](./ANEXO-HISTORIAS-TECNICAS-OBSERVABILIDAD.md).

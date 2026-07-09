@@ -1,386 +1,196 @@
-# Documento de Requerimientos — Microservicio Orders (ShopDemo)
+# Documento de Requerimientos — Pedidos (ShopDemo)
 
 | Campo | Detalle |
 |:------|:--------|
-| **Empresa** | Lite Thinking |
-| **Curso** | Microservicios con .NET en Kubernetes y Entornos Multicloud |
-| **Instructor** | Lcc. Gilberto Valentino Juárez Sánchez |
-| **Contacto** | WhatsApp: +52 5614206660 |
-| | E-mail: gilberto.juarez@gmail.com |
-| | E-mail: lcc.gilberto.juarez@gmail.com |
+| **Módulo** | Orders — gestión del ciclo de vida de pedidos |
+| **Versión** | 2.0 (enfoque negocio) |
+| **Fecha** | Junio 2026 |
 
-**Sprints de referencia:** Sprint 1 (Domain Layer) + Sprint 2 (Infrastructure & Application)  
-**Bounded Context:** Orders  
-**Versión:** 1.0  
-**Fecha:** Junio 2026
+**Documentos relacionados:**
 
-**Historias de usuario:** [HISTORIAS-USUARIO-ORDERS.md](./HISTORIAS-USUARIO-ORDERS.md)
+| Capa | Documento |
+|---|---|
+| Historias de usuario | [HISTORIAS-USUARIO-ORDERS.md](./HISTORIAS-USUARIO-ORDERS.md) |
+| Especificación técnica | [ANEXO-ESPECIFICACION-TECNICA-ORDERS.md](./ANEXO-ESPECIFICACION-TECNICA-ORDERS.md) |
+| Historias técnicas | [ANEXO-HISTORIAS-TECNICAS-ORDERS.md](./ANEXO-HISTORIAS-TECNICAS-ORDERS.md) |
+| Pedagogía (curso) | [ANEXO-PEDAGOGIA-ORDERS.md](./ANEXO-PEDAGOGIA-ORDERS.md) |
+
+---
+
+## Resumen en lenguaje llano
+
+El módulo **Pedidos** permite que un **cliente** de la tienda **inicie una compra** indicando qué productos quiere, en qué cantidad y a qué dirección debe enviarse. Cada pedido recibe un identificador único y pasa por estados claros: pendiente, confirmado, enviado, entregado o cancelado.
+
+Un **operador de ventas** puede consultar pedidos, confirmarlos (lo que reserva stock en inventario) o dar seguimiento post-venta. El **cliente** puede cancelar su pedido mientras aún no haya sido enviado.
+
+El sistema guarda una **copia del nombre y precio** de cada producto al momento del pedido, para que cambios futuros en el catálogo no alteren pedidos ya registrados.
 
 ---
 
 ## 1. Propósito
 
-Este documento define los requerimientos funcionales y técnicos para que los alumnos implementen el **microservicio de pedidos (Orders)** dentro de la solución **ShopDemo**, siguiendo los mismos patrones arquitectónicos ya aplicados en el microservicio **Catalog**.
-
-El microservicio Orders gestiona el ciclo de vida de los pedidos de clientes en una plataforma de e-commerce, sin acoplarse directamente al dominio de Catalog.
+Definir **qué debe hacer** el módulo de pedidos en ShopDemo desde la perspectiva del negocio: registro de compras, consulta, confirmación con reserva de stock, cancelación y reglas del ciclo de vida del pedido.
 
 ---
 
-## 2. Objetivos de aprendizaje
+## 2. Actores
 
-Al completar esta implementación, el alumno será capaz de:
-
-1. Modelar un **Aggregate Root** (`Order`) con entidades hijas y Value Objects.
-2. Aplicar **Clean Architecture** con separación estricta de capas.
-3. Implementar **CQRS** con MediatR (comandos y consultas).
-4. Persistir el agregado con **EF Core + PostgreSQL** sin contaminar el dominio.
-5. Publicar **Domain Events** mediante un puerto de infraestructura.
-6. Exponer endpoints REST documentados con **Swagger**.
-7. Containerizar el servicio con **Docker Compose**.
+| Actor | Rol |
+|---|---|
+| **Cliente de la tienda** | Crea pedidos y puede cancelarlos |
+| **Operador de ventas** | Consulta pedidos, confirma pedidos y da soporte post-venta |
+| **Administrador de pedidos** | Supervisa el flujo y las reglas del módulo |
+| **Sistema de inventario** | Recibe solicitudes de reserva y liberación de stock al confirmar o cancelar |
 
 ---
 
-## 3. Contexto del sistema
+## 3. Contexto de negocio
 
-```
-┌─────────────────┐         ┌─────────────────┐
-│  Catalog API    │         │   Orders API    │
-│  Puerto: 8001   │         │   Puerto: 8002  │
-│  BD: 5433       │         │   BD: 5434      │
-└────────┬────────┘         └────────┬────────┘
-         │                           │
-         │    (futuro: Event Hubs)   │
-         └───────────┬───────────────┘
-                     ▼
-            Comunicación asíncrona
-```
+Flujo integrado de la tienda (visión de negocio):
 
-| Microservicio | Base de datos | Puerto API | Puerto PostgreSQL (host) |
-|---|---|---|---|
-| Catalog | `ShopDemoCatalog` | `8001` | `5433` |
-| **Orders** | **`ShopDemoOrders`** | **`8002`** | **`5434`** |
-
-> **Nota:** Orders usa puertos distintos para evitar colisión con Catalog y con PostgreSQL local (5432).
+| Paso | Qué ocurre |
+|---|---|
+| 1 | El catálogo registra un **producto** con su identificador |
+| 2 | Inventario asigna **stock** a ese producto |
+| 3 | El **cliente crea un pedido** con líneas que referencian productos del catálogo |
+| 4 | El **operador confirma el pedido** y se **reserva stock** en inventario |
+| 5 | El pedido puede **enviarse**, **entregarse** o **cancelarse** según las reglas |
+| 6 | El **operador consulta** el estado y el detalle de cualquier pedido |
 
 ---
 
 ## 4. Alcance
 
-### 4.1 Dentro del alcance (MVP del curso)
+### 4.1 Incluido (MVP)
 
-| ID | Requerimiento |
+| ID | Requerimiento de negocio |
 |---|---|
-| RF-01 | Crear un pedido (`PlaceOrder`) con al menos una línea |
-| RF-02 | Consultar un pedido por Id |
-| RF-03 | Cancelar un pedido con motivo |
-| RF-04 | Confirmar un pedido (cambio de estado) |
-| RF-05 | Persistir pedidos en PostgreSQL con EF Core |
-| RF-06 | Publicar Domain Events al crear/confirmar/cancelar |
-| RF-07 | Validar entrada con FluentValidation |
-| RF-08 | Documentar API con Swagger |
-| RF-09 | Desplegar con Docker Compose (API + PostgreSQL) |
-| RF-10 | Aplicar migraciones EF Core al iniciar en Development |
+| RF-01 | Registrar un pedido con al menos una línea de producto y dirección de envío |
+| RF-02 | Consultar un pedido por su identificador y listar pedidos de un cliente |
+| RF-03 | Cancelar un pedido con motivo, respetando los estados permitidos |
+| RF-04 | Confirmar un pedido pendiente, reservando stock en inventario |
+| RF-05 | Conservar el historial de pedidos de forma permanente |
+| RF-06 | Notificar a otros procesos cuando un pedido se crea, confirma o cancela |
+| RF-07 | Rechazar operaciones inválidas con mensajes comprensibles |
+| RF-08 | Permitir explorar las operaciones disponibles (documentación de la API) |
+| RF-09 | Operar en un entorno de prueba reproducible para el equipo |
+| RF-10 | Aplicar cambios de estructura de datos al iniciar en desarrollo |
 
-### 4.2 No incluido en el curso
+### 4.2 Fuera de alcance
 
-- Outbox Pattern completo
-- Pagos, envíos y notificaciones
-- Validación síncrona de stock contra Catalog (la integración activa es Orders→Inventory por HTTP)
+- Pagos, envíos físicos y notificaciones al cliente
+- Validación síncrona de existencia de producto en catálogo (se usa identificador y snapshot)
+- Outbox Pattern y garantías exactly-once entre sistemas
+- Transiciones de envío y entrega expuestas al usuario en el MVP (estados preparados en reglas)
 
 > Event Hubs, Aspire AppHost y despliegue en Kubernetes/nube se cubren en las **etapas 5–11**.
 
 ---
 
-## 5. Lenguaje ubicuo (Ubiquitous Language)
+## 5. Lenguaje ubicuo
 
-| Término | Definición | No usar |
+| Término | Significado para el negocio | Evitar |
 |---|---|---|
-| **Order** | Pedido del cliente; agregado raíz | `Purchase`, `Sale` |
-| **OrderLine** | Línea de pedido: producto + cantidad + precio snapshot | `OrderItem` (aceptable), `CartItem` |
-| **CustomerId** | Identificador del cliente que realiza el pedido | `UserId` |
-| **PlaceOrder** | Acto de registrar un nuevo pedido | `CreateOrder` |
-| **OrderStatus** | Estado del ciclo de vida del pedido | `State`, `int status` |
-| **OrderTotal** | Monto total calculado del pedido | `decimal total` |
-| **ShippingAddress** | Dirección de entrega | `Address` genérico |
+| **Pedido** | Compra del cliente con una o más líneas de producto | “Orden”, “Venta” |
+| **Línea de pedido** | Producto, cantidad y precio al momento de la compra | “Item del carrito” |
+| **Cliente** | Persona o cuenta que realiza el pedido | “Usuario” genérico |
+| **Registrar pedido** | Iniciar una nueva compra | “Crear orden” |
+| **Estado del pedido** | Fase del ciclo de vida (pendiente, confirmado, etc.) | “Código de estado” |
+| **Total del pedido** | Suma de los importes de todas las líneas | Solo un número sin moneda |
+| **Dirección de envío** | Lugar donde debe entregarse el pedido | “Dirección” sin contexto |
+| **Snapshot de precio** | Precio y nombre guardados al registrar el pedido | Referencia viva al catálogo |
+| **Confirmar pedido** | Aprobar un pedido pendiente y reservar stock | “Aprobar” sin reserva |
+| **Cancelar pedido** | Anular el pedido y liberar stock si ya se reservó | “Eliminar” (borrado físico) |
 
 ---
 
-## 6. Modelo de dominio requerido
+## 6. Ciclo de vida del pedido (máquina de estados)
 
-### 6.1 Agregado raíz: `Order`
+Estados posibles y transiciones en lenguaje de negocio:
 
-```
-Order (AggregateRoot<Guid>)
-├── CustomerId         (Value Object)
-├── ShippingAddress    (Value Object)
-├── OrderStatus        (Value Object)
-├── Money TotalAmount  (Value Object)
-├── List<OrderLine>    (Entidades hijas)
-├── DateTimeOffset CreatedAt
-└── DateTimeOffset? LastUpdatedAt
-```
-
-### 6.2 Entidad hija: `OrderLine`
-
-```
-OrderLine (Entity<Guid>)
-├── ProductId          (Guid — referencia externa a Catalog)
-├── ProductName        (string — snapshot)
-├── UnitPrice          (Money — snapshot al momento del pedido)
-├── Quantity           (int)
-└── LineTotal          (Money — calculado)
-```
-
-> **Decisión de diseño:** Orders guarda **snapshot** del nombre y precio del producto. No referencia el agregado `Product` de Catalog para mantener autonomía del bounded context.
-
-### 6.3 Value Objects requeridos
-
-| Value Object | Reglas de validación |
+| Estado | Significado |
 |---|---|
-| `CustomerId` | Guid no vacío (`Guid.Empty` inválido) |
-| `Money` | Monto ≥ 0; moneda ISO 3 letras (default `MXN`) |
-| `OrderStatus` | Valores: `Pending`, `Confirmed`, `Shipped`, `Delivered`, `Cancelled` |
-| `ShippingAddress` | Street, City, PostalCode, Country — todos requeridos |
-| `Quantity` | Entero > 0 |
+| **Pendiente** | Pedido registrado; aún no confirmado ni reservado en inventario |
+| **Confirmado** | Pedido aprobado; stock reservado en inventario |
+| **Enviado** | Pedido despachado al cliente |
+| **Entregado** | Pedido recibido por el cliente; ciclo cerrado |
+| **Cancelado** | Pedido anulado; no admite más cambios |
 
-### 6.4 Máquina de estados
+### Transiciones permitidas
 
-```mermaid
-stateDiagram-v2
-    [*] --> Pending : PlaceOrder()
-    Pending --> Confirmed : Confirm()
-    Confirmed --> Shipped : MarkAsShipped()
-    Shipped --> Delivered : MarkAsDelivered()
-    Pending --> Cancelled : Cancel()
-    Confirmed --> Cancelled : Cancel()
-    Delivered --> [*]
-    Cancelled --> [*]
-```
-
-**Transiciones prohibidas:**
-
-| Desde | Acción | Motivo |
+| Desde | Acción de negocio | Hacia |
 |---|---|---|
-| `Shipped` | `Cancel()` | El pedido ya fue enviado |
-| `Delivered` | `Cancel()` | El pedido ya fue entregado |
-| `Cancelled` | Cualquier modificación | Pedido cerrado |
+| — | Registrar pedido | Pendiente |
+| Pendiente | Confirmar pedido | Confirmado |
+| Pendiente | Cancelar pedido | Cancelado |
+| Confirmado | Cancelar pedido | Cancelado |
+| Confirmado | Marcar como enviado | Enviado |
+| Enviado | Marcar como entregado | Entregado |
 
-### 6.5 Domain Events requeridos
+### Transiciones prohibidas
 
-| Evento | Cuándo se emite |
-|---|---|
-| `OrderPlacedDomainEvent` | Al crear el pedido (`PlaceOrder`) |
-| `OrderConfirmedDomainEvent` | Al confirmar el pedido |
-| `OrderCancelledDomainEvent` | Al cancelar el pedido |
-| `OrderShippedDomainEvent` | Al marcar como enviado (opcional en MVP) |
+| Desde | Acción | Motivo de negocio |
+|---|---|---|
+| Enviado | Cancelar | El pedido ya salió del almacén |
+| Entregado | Cancelar | El pedido ya fue recibido por el cliente |
+| Cancelado | Cualquier modificación | El pedido está cerrado |
 
-### 6.6 Reglas de negocio (invariantes)
+---
+
+## 7. Reglas de negocio
 
 | ID | Regla |
 |---|---|
-| RN-01 | Un pedido debe tener **al menos una línea** |
-| RN-02 | Todas las líneas deben usar la **misma moneda** |
-| RN-03 | El total del pedido es la **suma de los LineTotal** |
-| RN-04 | No se puede cancelar un pedido en estado `Delivered` |
-| RN-05 | No se puede cancelar un pedido en estado `Shipped` |
-| RN-06 | Solo pedidos en `Pending` pueden confirmarse |
-| RN-07 | `Quantity` en cada línea debe ser mayor a cero |
-| RN-08 | `ProductId` en cada línea no puede ser `Guid.Empty` |
+| RN-01 | Un pedido debe tener **al menos una línea** de producto |
+| RN-02 | Todas las líneas del pedido deben usar la **misma moneda** |
+| RN-03 | El total del pedido es la **suma de los importes de cada línea** |
+| RN-04 | No se puede cancelar un pedido en estado **Entregado** |
+| RN-05 | No se puede cancelar un pedido en estado **Enviado** |
+| RN-06 | Solo pedidos en estado **Pendiente** pueden confirmarse |
+| RN-07 | La cantidad en cada línea debe ser **mayor a cero** |
+| RN-08 | Cada línea debe referenciar un producto válido (identificador no vacío) |
+| RN-ORD-09 | Al registrar un pedido, el estado inicial es **Pendiente** |
+| RN-ORD-10 | Se guarda **snapshot** del nombre y precio del producto; no se depende del catálogo en tiempo real |
+| RN-ORD-11 | Antes de confirmar, debe **reservarse stock** en inventario por cada línea |
+| RN-ORD-12 | Tras confirmar correctamente, el estado pasa a **Confirmado** |
+| RN-ORD-13 | Si el pedido estaba **Confirmado**, al cancelar se **libera el stock** reservado |
+| RN-ORD-14 | Un pedido **Cancelado** no admite más cambios de estado ni de contenido |
 
 ---
 
-## 7. Contratos de persistencia
+## 8. Criterios de aceptación de negocio (CA-N)
 
-### 7.1 `IOrderRepository` (definido en Domain)
-
-Debe extender `IRepository<Order, Guid>` e incluir:
-
-```csharp
-Task<IReadOnlyList<Order>> GetByCustomerAsync(CustomerId customerId, CancellationToken ct = default);
-Task<IReadOnlyList<Order>> GetByStatusAsync(OrderStatus status, int skip, int take, CancellationToken ct = default);
-```
-
-### 7.2 Tablas PostgreSQL esperadas
-
-| Tabla | Descripción |
+| ID | Criterio |
 |---|---|
-| `orders` | Agregado Order |
-| `order_lines` | Líneas del pedido (relación 1:N) |
-| `__EFMigrationsHistory` | Control de migraciones EF Core |
+| CA-N01 | Dado un pedido con al menos una línea y dirección válida, cuando el cliente lo registra, entonces el sistema confirma el alta con estado Pendiente y un identificador único |
+| CA-N02 | Dado un pedido sin líneas, cuando se intenta registrar, entonces el sistema rechaza la operación e informa el motivo |
+| CA-N03 | Dado un pedido existente, cuando el operador lo consulta por identificador, entonces ve estado, líneas, totales y dirección de envío |
+| CA-N04 | Dado un identificador de pedido inexistente, cuando se consulta, entonces el sistema informa que no se encontró |
+| CA-N05 | Dado un cliente con pedidos previos, cuando el operador lista por cliente, entonces obtiene la lista correspondiente (vacía o con pedidos) |
+| CA-N06 | Dado un pedido en estado Pendiente con stock suficiente, cuando el operador lo confirma, entonces el estado pasa a Confirmado y el inventario refleja la reserva |
+| CA-N07 | Dado un pedido ya Confirmado, cuando se intenta confirmar de nuevo, entonces el sistema rechaza la operación |
+| CA-N08 | Dado un pedido Pendiente, cuando el cliente lo cancela con motivo, entonces el estado pasa a Cancelado |
+| CA-N09 | Dado un pedido Enviado o Entregado, cuando se intenta cancelar, entonces el sistema rechaza la operación |
+| CA-N10 | Dado un pedido Confirmado, cuando el cliente lo cancela, entonces el stock reservado se libera en inventario |
+| CA-N11 | Dado un error de regla de negocio, cuando ocurre una operación inválida, entonces el usuario recibe un mensaje claro (no un error técnico crudo) |
 
 ---
 
-## 8. Casos de uso y endpoints API
+## 9. Trazabilidad
 
-### 8.1 Comandos (escritura)
-
-| Caso de uso | HTTP | Ruta | Comando MediatR |
-|---|---|---|---|
-| Registrar pedido | `POST` | `/api/orders` | `PlaceOrderCommand` |
-| Confirmar pedido | `POST` | `/api/orders/{id}/confirm` | `ConfirmOrderCommand` |
-| Cancelar pedido | `POST` | `/api/orders/{id}/cancel` | `CancelOrderCommand` |
-
-### 8.2 Consultas (lectura)
-
-| Caso de uso | HTTP | Ruta | Query MediatR |
-|---|---|---|---|
-| Obtener pedido por Id | `GET` | `/api/orders/{id}` | `GetOrderByIdQuery` |
-| Listar pedidos por cliente | `GET` | `/api/orders?customerId={guid}` | `GetOrdersByCustomerQuery` |
-
-### 8.3 Payload de ejemplo — PlaceOrder
-
-```json
-{
-  "customerId": "3fa85f64-5717-4562-b3fc-2c963f66afa6",
-  "shippingAddress": {
-    "street": "Av. Reforma 123",
-    "city": "Ciudad de México",
-    "postalCode": "06600",
-    "country": "MX"
-  },
-  "lines": [
-    {
-      "productId": "7c9e6679-7425-40de-944b-e07fc1f90ae7",
-      "productName": "Laptop Pro",
-      "unitPrice": 1299.99,
-      "currency": "MXN",
-      "quantity": 1
-    }
-  ]
-}
-```
-
-### 8.4 Respuesta esperada — OrderDto
-
-```json
-{
-  "id": "a1b2c3d4-e5f6-7890-abcd-ef1234567890",
-  "customerId": "3fa85f64-5717-4562-b3fc-2c963f66afa6",
-  "status": "Pending",
-  "totalAmount": 1299.99,
-  "currency": "MXN",
-  "shippingAddress": {
-    "street": "Av. Reforma 123",
-    "city": "Ciudad de México",
-    "postalCode": "06600",
-    "country": "MX"
-  },
-  "lines": [
-    {
-      "id": "...",
-      "productId": "7c9e6679-7425-40de-944b-e07fc1f90ae7",
-      "productName": "Laptop Pro",
-      "unitPrice": 1299.99,
-      "currency": "MXN",
-      "quantity": 1,
-      "lineTotal": 1299.99
-    }
-  ],
-  "createdAt": "2026-06-11T20:00:00Z",
-  "lastUpdatedAt": null
-}
-```
-
----
-
-## 9. Requerimientos técnicos por capa
-
-### 9.1 Proyectos de la solución
-
-| Proyecto | Responsabilidad |
+| Requerimiento | Historia de usuario |
 |---|---|
-| `ShopDemo.Orders.Domain` | Agregados, VOs, eventos, `IOrderRepository` |
-| `ShopDemo.Orders.Application` | Commands, Queries, DTOs, Behaviors, Ports |
-| `ShopDemo.Orders.Infraestructure` | EF Core, repositorios, mensajería, DI |
-| `ShopDemo.Orders.Api` | Controllers, middleware, Program.cs, Docker |
-
-### 9.2 Regla de dependencias
-
-```
-Orders.Api → Orders.Infraestructure → Orders.Application → Orders.Domain → ShopDemo.Shared
-```
-
-### 9.3 Paquetes NuGet requeridos
-
-| Proyecto | Paquetes |
-|---|---|
-| Orders.Application | `MediatR`, `FluentValidation`, `FluentValidation.DependencyInjectionExtensions` |
-| Orders.Infraestructure | `Microsoft.EntityFrameworkCore`, `Npgsql.EntityFrameworkCore.PostgreSQL` |
-| Orders.Api | `Swashbuckle.AspNetCore`, `Microsoft.EntityFrameworkCore.Design` |
-
-### 9.4 Configuración de conexión
-
-```json
-{
-  "ConnectionStrings": {
-    "DefaultConnection": "Host=localhost;Port=5434;Database=ShopDemoOrders;Username=ShopDemo;Password=ShopDemo123"
-  }
-}
-```
-
-### 9.5 Docker Compose requerido
-
-El alumno debe crear `ShopDemo.Orders.Api/docker-compose.yml` con:
-
-- Servicio `orders-db` (PostgreSQL 16)
-- Servicio `orders-service` (API .NET 10)
-- Puerto host PostgreSQL: **5434**
-- Puerto host API: **8002**
-- Healthcheck con `pg_isready -U ShopDemo -d ShopDemoOrders`
-- Archivo `.dockerignore` en la raíz del repo (ya existe)
+| RF-01 | [HU-ORD-01](./HISTORIAS-USUARIO-ORDERS.md#hu-ord-01--registrar-pedido) |
+| RF-02 | [HU-ORD-02](./HISTORIAS-USUARIO-ORDERS.md#hu-ord-02--consultar-pedido), [HU-ORD-03](./HISTORIAS-USUARIO-ORDERS.md#hu-ord-03--listar-pedidos-por-cliente) |
+| RF-03 | [HU-ORD-05](./HISTORIAS-USUARIO-ORDERS.md#hu-ord-05--cancelar-pedido) |
+| RF-04 | [HU-ORD-04](./HISTORIAS-USUARIO-ORDERS.md#hu-ord-04--confirmar-pedido) |
+| RF-05–RF-10 | Implementación en [ANEXO-HISTORIAS-TECNICAS-ORDERS.md](./ANEXO-HISTORIAS-TECNICAS-ORDERS.md) |
 
 ---
 
-## 10. Criterios de aceptación
+## 10. Referencias
 
-### 10.1 Dominio
-
-- [ ] `Order.PlaceOrder()` es la única forma de crear pedidos
-- [ ] `Order.Cancel()` valida estados prohibidos
-- [ ] `Order.Confirm()` solo funciona desde `Pending`
-- [ ] Domain Events se levantan en cada cambio de estado relevante
-- [ ] Value Objects invalidan datos incorrectos en construcción
-
-### 10.2 Aplicación
-
-- [ ] Handlers no contienen lógica de negocio (solo orquestan)
-- [ ] FluentValidation valida comandos antes del handler
-- [ ] DTOs nunca exponen el agregado directamente
-- [ ] Pipeline MediatR incluye `ValidationBehavior`
-
-### 10.3 Infraestructura
-
-- [ ] `IOrderRepository` implementado con EF Core
-- [ ] Migración inicial generada y aplicada
-- [ ] `IDomainEventPublisher` registrado (logging en dev)
-- [ ] `DatabaseInitializer` crea BD si no existe
-
-### 10.4 API
-
-- [ ] Swagger disponible en `/swagger` (Development)
-- [ ] `POST /api/orders` retorna `201 Created`
-- [ ] `GET /api/orders/{id}` retorna `200` o `404`
-- [ ] Errores de dominio retornan `400 Bad Request`
-- [ ] Errores de validación retornan `400` con detalle
-
-### 10.5 Docker
-
-- [ ] `docker compose up -d --build` levanta API y PostgreSQL
-- [ ] Base de datos `ShopDemoOrders` visible en pgAdmin (puerto **5434**)
-- [ ] Tablas `orders` y `order_lines` creadas tras primer request o migrate
-
----
-
-## 11. Entregables del alumno
-
-| # | Entregable |
-|---|---|
-| 1 | Código fuente en los 4 proyectos Orders.* |
-| 2 | Migración EF Core `InitialCreate` |
-| 3 | `docker-compose.yml` y `Dockerfile` |
-| 4 | Captura de Swagger con endpoints funcionando |
-| 5 | Captura de pgAdmin mostrando `ShopDemoOrders` |
-| 6 | Respuestas breves a las preguntas de reflexión (sección 12) |
-
-
-```
+- [GUIA-ESTRUCTURA-DOCUMENTACION.md](../GUIA-ESTRUCTURA-DOCUMENTACION.md)
+- [REQUERIMIENTOS-CATALOG.md](../catalog/REQUERIMIENTOS-CATALOG.md)
+- [REQUERIMIENTOS-INVENTORY.md](../inventory/REQUERIMIENTOS-INVENTORY.md)
+- [RETO-TECNICO-SHOPDEMO.md](../RETO-TECNICO-SHOPDEMO.md)

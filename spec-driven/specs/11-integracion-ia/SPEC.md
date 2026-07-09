@@ -2,16 +2,46 @@
 
 ## Objetivo
 
-Documentar y configurar anomalías en logs, SK + Event Hubs (Kafka anexo).
+Documentar y configurar detección de anomalías en logs, Semantic Kernel y alertas cloud.
 
-## Referencias
+## Documentación (3 capas)
 
-- [REQUERIMIENTOS-INTEGRACION-IA.md](../../../docs/integracion-ia/REQUERIMIENTOS-INTEGRACION-IA.md)
-- [TEORIA-INTEGRACION-IA.md](../../../docs/integracion-ia/TEORIA-INTEGRACION-IA.md)
-- Guías azure/aws en [docs/integracion-ia/](../../../docs/integracion-ia/)
+| Capa | Documento |
+|---|---|
+| **A — Negocio** | [REQUERIMIENTOS-INTEGRACION-IA.md](../../../docs/integracion-ia/REQUERIMIENTOS-INTEGRACION-IA.md) |
+| **A — Negocio** | [HISTORIAS-USUARIO-INTEGRACION-IA.md](../../../docs/integracion-ia/HISTORIAS-USUARIO-INTEGRACION-IA.md) |
+| **B — Técnica** | [ANEXO-ESPECIFICACION-TECNICA-INTEGRACION-IA.md](../../../docs/integracion-ia/ANEXO-ESPECIFICACION-TECNICA-INTEGRACION-IA.md) |
+| **B — Técnica** | [ANEXO-HISTORIAS-TECNICAS-INTEGRACION-IA.md](../../../docs/integracion-ia/ANEXO-HISTORIAS-TECNICAS-INTEGRACION-IA.md) |
+| **C — Pedagogía** | [ANEXO-PEDAGOGIA-INTEGRACION-IA.md](../../../docs/integracion-ia/ANEXO-PEDAGOGIA-INTEGRACION-IA.md) |
+| Teoría | [TEORIA-INTEGRACION-IA.md](../../../docs/integracion-ia/TEORIA-INTEGRACION-IA.md) |
+| Impl. Azure | [azure/IMPLEMENTACION-INTEGRACION-IA-AZURE.md](../../../docs/integracion-ia/azure/IMPLEMENTACION-INTEGRACION-IA-AZURE.md) |
+| Impl. AWS | [aws/IMPLEMENTACION-INTEGRACION-IA-AWS.md](../../../docs/integracion-ia/aws/IMPLEMENTACION-INTEGRACION-IA-AWS.md) |
+| MCP Gateway | [IMPLEMENTACION-MCP-GATEWAY.md](../../../docs/integracion-ia/IMPLEMENTACION-MCP-GATEWAY.md) |
+
+Guía: [GUIA-ESTRUCTURA-DOCUMENTACION.md](../../../docs/GUIA-ESTRUCTURA-DOCUMENTACION.md)
+
+## Alcance (agente)
+
+- Alertas KQL (Azure) / Logs Insights (AWS)
+- Worker Semantic Kernel + Event Hubs
+- Sin commitear `OPENAI_API_KEY`
 
 ## Criterios de aceptación
 
+### Negocio (CA-N)
+
+- [ ] Responsable TI recibe alerta ante patrón anómalo en logs
+- [ ] Integración IA documentada para operación del lab
+
+### Técnico (CA-T)
+
 - [ ] KQL / Logs Insights configurados
 - [ ] Worker SK documentado (Event Hubs principal)
-- [ ] Sin commitear `OPENAI_API_KEY`
+- [ ] `OPENAI_API_KEY` solo en secretos locales o cloud
+
+## Instrucciones para el agente
+
+1. Leer **REQUERIMIENTOS-INTEGRACION-IA** (negocio).
+2. Consultar **ANEXO-ESPECIFICACION-TECNICA-INTEGRACION-IA**.
+3. Nunca commitear claves de OpenAI ni connection strings.
+4. Validar CA-N y CA-T al finalizar.

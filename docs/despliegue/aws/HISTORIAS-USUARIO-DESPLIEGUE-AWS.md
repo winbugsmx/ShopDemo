@@ -1,90 +1,86 @@
-# Historias de Usuario — Despliegue AWS ECS Fargate (ShopDemo)
+# Historias de Usuario — Despliegue AWS (ShopDemo)
 
 | Campo | Detalle |
 |:------|:--------|
-| **Fuente** | [REQUERIMIENTOS-DESPLIEGUE-AWS.md](./REQUERIMIENTOS-DESPLIEGUE-AWS.md) |
-| **Persona** | Alumno DevOps |
+| **Fuente de negocio** | [REQUERIMIENTOS-DESPLIEGUE-AWS.md](./REQUERIMIENTOS-DESPLIEGUE-AWS.md) |
+| **Especificación técnica** | [ANEXO-ESPECIFICACION-TECNICA-DESPLIEGUE-AWS.md](./ANEXO-ESPECIFICACION-TECNICA-DESPLIEGUE-AWS.md) |
+| **Historias técnicas** | [ANEXO-HISTORIAS-TECNICAS-DESPLIEGUE-AWS.md](./ANEXO-HISTORIAS-TECNICAS-DESPLIEGUE-AWS.md) |
+
+> Solo historias de **negocio/operación**. Tareas técnicas en el anexo.
 
 ---
 
-## HU-AW-01 — Configurar IAM y credenciales
+## HU-AW-01 — Acceder a APIs en nube
 
-**Como** alumno, **quiero** un usuario IAM con permisos de lab, **para** crear VPC, ECS, ECR y SSM sin errores AccessDenied.
+| Campo | Detalle |
+|---|---|
+| **Requerimiento** | RF-AW-01, RF-AW-06 |
 
-**Reglas:** Máx. 10 políticas → usar `ShopDemoLabECS` (1 policy).
+**Como** operador de la tienda, **quiero** acceder a catálogo, pedidos, analítica y MCP por URLs públicas en AWS, **para** operar la tienda sin entorno local.
 
-**Modelo:** **N/A** — política IAM JSON en `scripts/aws/`.
+### Criterios de aceptación (CA-N)
 
-**Criterios:** `aws sts get-caller-identity` exitoso.
-
----
-
-## HU-AW-02 — Publicar imágenes en ECR
-
-| **Objetivo** | OBJ-AW-01 · **RF** | RF-AW-04 |
-
-**Como** alumno, **quiero** build y push desde mi PC, **para** que ECS descargue imágenes privadas.
-
-**Reglas:** Push **no** se hace desde consola AWS; requiere Docker + CLI.
-
-**Criterios (CA-AW-01):**
-- [ ] 5 repos con tag `latest`.
-- [ ] Force new deployment si tasks estaban STOPPED.
-
-**Referencia:** [GUIA-RELEASE-PORTAL-AWS §12](../aws/GUIA-RELEASE-PORTAL-AWS.md#12-publicar-imágenes-en-ecr)
+- [ ] **CA-N-AW-01:** Health/Swagger del catálogo responde vía DNS del balanceador.
 
 ---
 
-## HU-AW-03 — Red VPC y security groups
+## HU-AW-02 — Verificar eventos del negocio
 
-**Como** plataforma, **quiero** VPC con subnets públicas y 3 SG, **para** aislar ALB, apps y datos.
+| Campo | Detalle |
+|---|---|
+| **Requerimiento** | RF-AW-02 |
 
-**Modelo:** **N/A** infra.
+**Como** responsable de operaciones, **quiero** ver eventos tras crear un producto, **para** confirmar que la mensajería cross-cloud funciona.
 
-**Criterios:** Tráfico ALB→apps:8080; apps→postgres:5432; apps→azurite:10000.
+### Criterios de aceptación (CA-N)
 
----
-
-## HU-AW-04 — PostgreSQL y secretos SSM
-
-**Como** ECS task de APIs, **quiero** connection strings en SSM, **para** conectar a Postgres sin texto plano en task definition.
-
-**Reglas:**
-- RN-AW-01: Host en SSM = **IP privada** de task Postgres (no pública).
-- RN-AW-02: Tras reinicio Postgres, actualizar `/shopdemo/pg-*`.
-
-**Modelo:** Parámetros SecureString; **N/A** DTO.
-
-**Criterios:** 3 parámetros pg-* con bases correctas.
+- [ ] **CA-N-AW-02:** Evento de producto creado visible en analítica.
 
 ---
 
-## HU-AW-05 — Desplegar APIs con ALB y Cloud Map
+## HU-AW-03 — Procesar pedidos con inventario
 
-| **Objetivos** | OBJ-AW-02, OBJ-AW-04 · **RF** | RF-AW-01, RF-AW-03 |
+| Campo | Detalle |
+|---|---|
+| **Requerimiento** | RF-AW-03, RF-AW-04 |
 
-**Como** cliente HTTP, **quiero** ALB por API pública, **para** acceder a Catalog/Orders/Analytics/MCP.
+**Como** operador de la tienda, **quiero** confirmar pedidos en AWS, **para** validar que pedidos encuentra inventario automáticamente.
 
-**Como** Orders, **quiero** resolver `inventory.shopdemo.local`, **para** confirmar pedidos.
+### Reglas
 
-**Criterios (CA-AW-02, CA-AW-04):**
-- [ ] Swagger Catalog vía DNS ALB.
-- [ ] Confirmación pedido exitosa.
+| ID | Regla |
+|---|---|
+| RN-AW-01 | Inventario resuelto por descubrimiento de servicios interno |
+| RN-AW-02 | Eventos propagados al bus |
 
----
+### Criterios de aceptación (CA-N)
 
-## HU-AW-06 — Integración cross-cloud Event Hubs
-
-| **Objetivo** | OBJ-AW-05 · **RF** | RF-AW-02 |
-
-**Reglas:** RNF-AW-03 — egress 443 hacia Azure; connection string en SSM `/shopdemo/eh-connection`.
-
-**Criterios (CA-AW-03):** Analytics lista eventos tras crear producto.
+- [ ] **CA-N-AW-03:** Confirmación de pedido exitosa con reserva de stock.
 
 ---
 
-## HU-AW-07 — Documentación Consola + CLI
+## HU-AW-04 — Actualizar release
 
-| **Objetivo** | OBJ-AW-06 |
+| Campo | Detalle |
+|---|---|
+| **Requerimiento** | RF-AW-05 |
 
-**Criterio (CA-AW-05):** Pasos equivalentes en Portal y CLI documentados.
+**Como** responsable de TI, **quiero** publicar nuevas versiones de las aplicaciones, **para** mantener el entorno actualizado sin romper el flujo E2E.
+
+### Criterios de aceptación (CA-N)
+
+- [ ] **CA-N-AW-04:** Flujo E2E operativo tras actualización.
+- [ ] **CA-N-AW-05:** Documentación Consola + CLI disponible.
+
+---
+
+## Trazabilidad
+
+| Requerimiento | Historia |
+|---|---|
+| RF-AW-01, RF-AW-06 | HU-AW-01 |
+| RF-AW-02 | HU-AW-02 |
+| RF-AW-03, RF-AW-04 | HU-AW-03 |
+| RF-AW-05 | HU-AW-04 |
+
+Implementación: [ANEXO-HISTORIAS-TECNICAS-DESPLIEGUE-AWS.md](./ANEXO-HISTORIAS-TECNICAS-DESPLIEGUE-AWS.md).

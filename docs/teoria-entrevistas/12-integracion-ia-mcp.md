@@ -1,4 +1,4 @@
-# 11 — Integración de IA y MCP (Model Context Protocol)
+# 12 — Integración de IA y MCP (Model Context Protocol)
 
 ## Objetivo de este capítulo
 
@@ -635,7 +635,7 @@ Integrar IA en flujos de desarrollo introduce riesgos que no existen con un comp
 
 ### Explicación desarrollada
 
-La IA también asiste en operaciones — complementando la observabilidad del capítulo 09, no reemplazándola:
+La IA también asiste en operaciones — complementando la observabilidad del capítulo 10, no reemplazándola:
 
 | Aplicación | Ejemplo concreto |
 |---|---|
@@ -671,7 +671,7 @@ La IA también asiste en operaciones — complementando la observabilidad del ca
 |---|---|
 | Alto volumen de alertas (> 100/día) | Sí — correlación esencial |
 | Equipo SRE con observabilidad madura | Sí — acelera MTTR |
-| Sin observabilidad implementada | No — primero capítulo 09 |
+| Sin observabilidad implementada | No — primero capítulo 10 |
 | Automatización de respuesta | Solo con aprobación humana y blast radius limitado |
 
 > **Nota del instructor:** AIOps acelera la **interpretación** de señales de observabilidad. Pero las métricas, logs y trazas siguen siendo la fuente de verdad. Sin observabilidad, la IA opera a ciegas.
@@ -783,4 +783,4 @@ Lo que **no** cambia:
 - **AIOps** complementa observabilidad con correlación y sugerencias; no reemplaza métricas, logs ni trazas.
 - Domina fundamentos primero; usa IA como acelerador, no como muleta.
 
-**Siguiente paso:** lee el capítulo 12 — la síntesis que conecta todos los temas de la guía en un hilo conductor pedagógico, desde el dominio de negocio hasta la operación en producción con IA.
+**Siguiente paso:** lee el capítulo 13 — la síntesis que conecta todos los temas de la guía en un hilo conductor pedagógico, desde el dominio de negocio hasta la operación en producción con IA.

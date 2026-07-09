@@ -1,4 +1,4 @@
-# Guía de teoría técnica — Material de estudio
+# Tópicos de Estudio — Material de aprendizaje
 
 Bienvenido. Esta guía está escrita **como si asistieras a un curso de arquitectura de software** dirigido a desarrolladores que ya programan (por ejemplo, en C# y ASP.NET) pero que aún no dominan patrones, arquitecturas distribuidas ni plataformas cloud.
 
@@ -23,12 +23,13 @@ Bienvenido. Esta guía está escrita **como si asistieras a un curso de arquitec
 | 4 | [04-microservicios-comunicacion.md](./04-microservicios-comunicacion.md) | Cómo se hablan los servicios entre sí |
 | 5 | [05-servicios-azure.md](./05-servicios-azure.md) | Servicios Microsoft Azure explicados |
 | 6 | [06-servicios-aws.md](./06-servicios-aws.md) | Servicios AWS explicados |
-| 7 | [07-kubernetes-orquestacion.md](./07-kubernetes-orquestacion.md) | Contenedores y Kubernetes desde cero |
-| 8 | [08-ci-cd-devops.md](./08-ci-cd-devops.md) | Pipelines y entrega continua |
-| 9 | [09-observabilidad.md](./09-observabilidad.md) | Métricas, logs y trazas |
-| 10 | [10-resiliencia.md](./10-resiliencia.md) | Qué pasa cuando algo falla |
-| 11 | [11-integracion-ia-mcp.md](./11-integracion-ia-mcp.md) | IA y protocolo MCP |
-| 12 | [12-sintesis-integracion.md](./12-sintesis-integracion.md) | Mapa final: cómo encaja todo |
+| 7 | [07-contenedores-docker.md](./07-contenedores-docker.md) | Contenedores, Dockerfile y Docker Compose |
+| 8 | [08-kubernetes-orquestacion.md](./08-kubernetes-orquestacion.md) | Kubernetes y orquestación |
+| 9 | [09-ci-cd-devops.md](./09-ci-cd-devops.md) | Pipelines y entrega continua |
+| 10 | [10-observabilidad.md](./10-observabilidad.md) | Métricas, logs y trazas |
+| 11 | [11-resiliencia.md](./11-resiliencia.md) | Qué pasa cuando algo falla |
+| 12 | [12-integracion-ia-mcp.md](./12-integracion-ia-mcp.md) | IA y protocolo MCP |
+| 13 | [13-sintesis-integracion.md](./13-sintesis-integracion.md) | Mapa final: cómo encaja todo |
 
 **Tiempo orientativo:** dedica entre 1 y 2 horas por capítulo la primera vez. Volver a leer un capítulo con calma es normal.
 
@@ -38,10 +39,10 @@ Bienvenido. Esta guía está escrita **como si asistieras a un curso de arquitec
 
 | Si quieres enfocarte en… | Lee en este orden |
 |---|---|
-| **Escribir mejor código y organizar proyectos** | 01 → 02 → 03 → 12 |
-| **Backend distribuido** | 02 → 03 → 04 → 09 → 10 → 12 |
-| **Cloud y despliegue** | 05 → 06 → 07 → 08 → 12 |
-| **Operar sistemas en producción** | 07 → 08 → 09 → 10 → 12 |
+| **Escribir mejor código y organizar proyectos** | 01 → 02 → 03 → 13 |
+| **Backend distribuido** | 02 → 03 → 04 → 10 → 11 → 13 |
+| **Cloud y despliegue** | 05 → 06 → 07 → 08 → 09 → 13 |
+| **Operar sistemas en producción** | 07 → 08 → 09 → 10 → 11 → 13 |
 
 ---
 
@@ -65,7 +66,7 @@ Bienvenido. Esta guía está escrita **como si asistieras a un curso de arquitec
 2. **Explica en voz alta** cada definición como si se la contaras a un compañero junior.
 3. **No memorices nombres:** entiende el *problema* que resuelve cada patrón.
 4. **Relaciona con lo que ya conoces.** Si has usado Entity Framework, compáralo con Repository.
-5. Cierra con el capítulo 12 para ver el panorama completo.
+5. Cierra con el capítulo 13 para ver el panorama completo.
 
 ---
 

@@ -26,7 +26,17 @@ Material para desplegar ShopDemo en **Amazon Web Services** (ECS Fargate).
 | Consola | [GUIA-RELEASE-PORTAL-AWS.md](./GUIA-RELEASE-PORTAL-AWS.md) |
 | CLI | [GUIA-RELEASE-CLI-AWS.md](./GUIA-RELEASE-CLI-AWS.md) |
 | Task definitions | [ANEXO-TASK-DEFINITIONS-ECS.md](./ANEXO-TASK-DEFINITIONS-ECS.md) |
-| Teoría | [TEORIA-CONTENEDORES-AWS.md](./TEORIA-CONTENEDORES-AWS.md) |
+| Teoría lab | [TEORIA-CONTENEDORES-AWS.md](./TEORIA-CONTENEDORES-AWS.md) |
+
+## Tópicos de Estudio relacionados
+
+| # | Tópico | Enlace |
+|---|---|---|
+| 06 | Servicios AWS | [06-servicios-aws.md](../../teoria-entrevistas/06-servicios-aws.md) |
+| 07 | Contenedores y Docker | [07-contenedores-docker.md](../../teoria-entrevistas/07-contenedores-docker.md) |
+| 09 | CI/CD | [09-ci-cd-devops.md](../../teoria-entrevistas/09-ci-cd-devops.md) |
+
+Índice: [teoria-entrevistas/README.md](../../teoria-entrevistas/README.md)
 
 ## Relación
 

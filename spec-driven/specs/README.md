@@ -36,6 +36,21 @@ Cada `SPEC.md` enlaza la documentación en **3 capas** (negocio → técnica →
 | [11-integracion-ia](./11-integracion-ia/) | [SPEC.md](./11-integracion-ia/SPEC.md) | [REQUERIMIENTOS-IA](../../docs/integracion-ia/REQUERIMIENTOS-INTEGRACION-IA.md) |
 | [12-mcp-gateway](./12-mcp-gateway/) | [SPEC.md](./12-mcp-gateway/SPEC.md) | [REQUERIMIENTOS-MCP](../../docs/integracion-ia/REQUERIMIENTOS-DESPLIEGUE-MCP.md) |
 
+## Tópicos de Estudio (teoría general)
+
+Cada spec del lab se complementa con tópicos en [teoria-entrevistas/README.md](../../docs/teoria-entrevistas/README.md):
+
+| Spec | Tópicos recomendados |
+|---|---|
+| 01–03 catalog/orders/inventory | [01](../../docs/teoria-entrevistas/01-patrones-diseno.md) · [02](../../docs/teoria-entrevistas/02-arquitecturas-software.md) · [03](../../docs/teoria-entrevistas/03-ddd-domain-driven-design.md) |
+| 04 analytics / 05 event-hubs | [04](../../docs/teoria-entrevistas/04-microservicios-comunicacion.md) |
+| 06 deploy-azure | [05](../../docs/teoria-entrevistas/05-servicios-azure.md) · [07](../../docs/teoria-entrevistas/07-contenedores-docker.md) |
+| 07 deploy-aws | [06](../../docs/teoria-entrevistas/06-servicios-aws.md) · [07](../../docs/teoria-entrevistas/07-contenedores-docker.md) |
+| 08 kubernetes | [07](../../docs/teoria-entrevistas/07-contenedores-docker.md) · [08](../../docs/teoria-entrevistas/08-kubernetes-orquestacion.md) |
+| 09 observabilidad | [10](../../docs/teoria-entrevistas/10-observabilidad.md) |
+| 10 resiliencia | [11](../../docs/teoria-entrevistas/11-resiliencia.md) |
+| 11–12 IA / MCP | [12](../../docs/teoria-entrevistas/12-integracion-ia-mcp.md) |
+
 ## Uso con el agente
 
 Prompt recomendado:

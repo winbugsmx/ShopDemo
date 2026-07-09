@@ -61,3 +61,5 @@ Guía detallada: [IMPLEMENTACION-SPEC-DRIVEN-DEVELOPMENT.md](../IMPLEMENTACION-S
 | User rules / MCP en IDE | `.mcp.json` + `settings.json` |
 
 Specs compartidos: `spec-driven/specs/`
+
+**Tópicos de Estudio:** [teoria-entrevistas/README.md](../../docs/teoria-entrevistas/README.md)

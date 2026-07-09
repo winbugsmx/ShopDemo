@@ -1,4 +1,4 @@
-# 10 — Resiliencia y tolerancia a fallos
+# 11 — Resiliencia y tolerancia a fallos
 
 ## Objetivo de este capítulo
 
@@ -61,7 +61,7 @@ Esto no es pesimismo — es realismo profesional. Los patrones de este capítulo
 | **Patrones de resiliencia** | Microservicios, llamadas HTTP entre servicios, colas, cloud | Script batch local sin dependencias externas |
 | **Asumir fallos desde diseño** | Siempre en producción distribuida | Prototipo desechable de un solo desarrollador |
 
-> **Nota del instructor:** Si el capítulo 09 te enseñó a *ver* qué pasa en producción, este capítulo te enseña a *diseñar* para que un fallo parcial no se convierta en catástrofe total. La resiliencia no es un parche post-incidente: es una decisión de arquitectura que tomas **antes** de desplegar.
+> **Nota del instructor:** Si el capítulo 10 te enseñó a *ver* qué pasa en producción, este capítulo te enseña a *diseñar* para que un fallo parcial no se convierta en catástrofe total. La resiliencia no es un parche post-incidente: es una decisión de arquitectura que tomas **antes** de desplegar.
 
 ---
 
@@ -94,7 +94,7 @@ Si el timeout interno es mayor que el externo, el servicio externo ya habrá fal
 
 **Cómo elegir valores concretos:**
 
-1. Conoce tu **SLO de latencia** (capítulo 09). Si prometes p99 < 500 ms, un timeout de 30 s es absurdo.
+1. Conoce tu **SLO de latencia** (capítulo 10). Si prometes p99 < 500 ms, un timeout de 30 s es absurdo.
 2. Mide la latencia **normal** del servicio downstream en producción (p99 + margen).
 3. El timeout debe ser ligeramente superior al p99 normal, no al peor caso histórico.
 4. Documenta y revisa periódicamente — un timeout de hace dos años puede estar desalineado con el rendimiento actual.
@@ -250,7 +250,7 @@ Orden mental: Rate Limit → Bulkhead → Timeout → Retry → Circuit Breaker 
 | Llamada a servicio interno ultra-confiable en LAN | Opcional — evaluar coste vs beneficio |
 | Operación local sin red | No aplica |
 
-> **Nota del instructor:** Un circuit breaker sin métricas que muestren cuándo se abre es una caja negra. Expón métricas: `circuit_breaker_state{service="payments"}`, `circuit_breaker_failures_total`. Sin observabilidad (capítulo 09), no sabrás si el breaker está protegiendo o bloqueando tráfico legítimo.
+> **Nota del instructor:** Un circuit breaker sin métricas que muestren cuándo se abre es una caja negra. Expón métricas: `circuit_breaker_state{service="payments"}`, `circuit_breaker_failures_total`. Sin observabilidad (capítulo 10), no sabrás si el breaker está protegiendo o bloqueando tráfico legítimo.
 
 ---
 
@@ -776,7 +776,7 @@ Chaos engineering **no es "romper cosas por diversión"**. Todo experimento debe
 1. **Hipótesis clara:** "Si matamos un pod del servicio de pagos, el circuit breaker del servicio de pedidos se abre y el fallback muestra 'pago no disponible' sin derribar pedidos."
 2. **Blast radius limitado:** empieza en staging, luego canary en producción con 1 % de tráfico.
 3. **Rollback planificado:** cómo detener el experimento si algo sale mal (botón de pánico).
-4. **Observabilidad activa:** métricas y alertas funcionando (capítulo 09) — sin observabilidad, chaos es ceguera.
+4. **Observabilidad activa:** métricas y alertas funcionando (capítulo 10) — sin observabilidad, chaos es ceguera.
 5. **Equipo informado:** nadie debe descubrir el experimento via alerta de producción sin contexto.
 
 **Ejemplos de experimentos:**
@@ -922,7 +922,7 @@ Diseña ambos **desde el inicio**. Un circuit breaker sin métricas que muestre 
 | **Patrones + métricas de resiliencia** | Producción con usuarios | Prototipos locales |
 | **Chaos + observabilidad** | Pre-producción crítica | MVPs desechables |
 
-> **Nota del instructor:** El mejor incident review combina trazas del capítulo 09 con análisis de qué patrón de resiliencia falló o no existía del capítulo 10. Ese cruce es donde aprendes de verdad.
+> **Nota del instructor:** El mejor incident review combina trazas del capítulo 10 con análisis de qué patrón de resiliencia falló o no existía del capítulo 11. Ese cruce es donde aprendes de verdad.
 
 ---
 
@@ -938,4 +938,4 @@ Diseña ambos **desde el inicio**. Un circuit breaker sin métricas que muestre 
 - **Chaos engineering** valida hipótesis de resiliencia con experimentos controlados.
 - **Polly** implementa patrones de forma declarativa en .NET; combínalo con observabilidad desde el diseño.
 
-**Siguiente paso:** lee el capítulo 11 sobre integración de IA y MCP — verás cómo la inteligencia artificial amplifica cada fase del ciclo de vida del software, incluyendo operaciones y resiliencia.
+**Siguiente paso:** lee el capítulo 12 sobre integración de IA y MCP — verás cómo la inteligencia artificial amplifica cada fase del ciclo de vida del software, incluyendo operaciones y resiliencia.

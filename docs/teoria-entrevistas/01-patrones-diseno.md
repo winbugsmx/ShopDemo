@@ -11,7 +11,7 @@ Al terminar deberías poder responder, con tus propias palabras:
 
 Asumimos que ya sabes programar en C#, crear clases e interfaces, y que has visto al menos un proyecto con capas (`Controllers`, `Services`, `Data`). Si has escrito un `if` para elegir entre dos implementaciones según una condición, ya has sentido el problema que muchos patrones resuelven.
 
-> **Cómo leer este capítulo:** cada patrón sigue la misma estructura: definición formal → explicación desarrollada → diagrama → cuándo usarlo. No te saltes las definiciones; son el vocabulario que usarás en code reviews y diseños de equipo.
+> **Cómo leer este capítulo:** cada patrón sigue la misma estructura: definición formal → explicación desarrollada → diagrama → **ejemplo en C# comentado** → cuándo usarlo. No te saltes las definiciones; son el vocabulario que usarás en code reviews y diseños de equipo.
 
 ---
 
@@ -121,19 +121,30 @@ En C#, el Factory Method suele aparecer como método `protected abstract` en una
 
 > *Fuente editable (Mermaid):* [01-factory-method.mermaid](./assets/diagrams/01-factory-method.mermaid)
 
-**Ejemplo conceptual (C#):**
+**Ejemplo en C# (comentado):**
 
 ```csharp
+// Contrato del producto que la fábrica crea
 public interface INotificationSender { void Send(string message); }
 
+// Clase base: define el flujo; la subclase decide QUÉ implementación crear
 public abstract class NotificationFactory
 {
+    // Plantilla del caso de uso: no conoce EmailSender ni SmsSender
     public void NotifyUser(string message)
     {
-        var sender = CreateSender(); // Factory Method
+        var sender = CreateSender(); // ← Factory Method: delegación a subclase
         sender.Send(message);
     }
+
+    // Cada subclase devuelve su implementación concreta
     protected abstract INotificationSender CreateSender();
+}
+
+// Implementación concreta: solo decide el tipo de notificación
+public class EmailNotificationFactory : NotificationFactory
+{
+    protected override INotificationSender CreateSender() => new EmailSender();
 }
 ```
 
@@ -176,19 +187,36 @@ En backend, un ejemplo típico es una fábrica por proveedor de infraestructura:
 
 > *Fuente editable (Mermaid):* [01-abstract-factory.mermaid](./assets/diagrams/01-abstract-factory.mermaid)
 
-**Ejemplo conceptual (C#):**
+**Ejemplo en C# (comentado):**
 
 ```csharp
+// Fábrica abstracta: crea TODA la familia de productos de un proveedor
 public interface IPaymentFactory
 {
     IPaymentGateway CreateGateway();
     IPaymentReceiptFormatter CreateReceiptFormatter();
 }
 
+// Familia Stripe: gateway y formateador siempre compatibles entre sí
 public class StripePaymentFactory : IPaymentFactory
 {
     public IPaymentGateway CreateGateway() => new StripeGateway();
     public IPaymentReceiptFormatter CreateReceiptFormatter() => new StripeReceiptFormatter();
+}
+
+// El cliente solo depende de la fábrica, no de clases concretas sueltas
+public class CheckoutService
+{
+    private readonly IPaymentFactory _factory;
+    public CheckoutService(IPaymentFactory factory) => _factory = factory;
+
+    public void Pay(decimal amount)
+    {
+        var gateway = _factory.CreateGateway();
+        var receipt = _factory.CreateReceiptFormatter();
+        gateway.Charge(amount);
+        receipt.FormatReceipt(amount);
+    }
 }
 ```
 
@@ -226,7 +254,58 @@ Opcionalmente existe un **Director** que conoce la secuencia de pasos para const
 
 > *Fuente editable (Mermaid):* [01-builder.mermaid](./assets/diagrams/01-builder.mermaid)
 
-**Ejemplo:** `OrderBuilder.WithCustomer(id).AddLine(productId, qty).WithShippingAddress(addr).Build()` — cada paso valida parcialmente; `Build()` lanza excepción si faltan datos obligatorios.
+**Ejemplo en C# (comentado):**
+
+```csharp
+// Producto final: solo se construye vía Build() con reglas validadas
+public sealed class Order
+{
+    public Guid CustomerId { get; init; }
+    public List<OrderLine> Lines { get; init; } = new();
+    public Address? ShippingAddress { get; init; }
+}
+
+// Builder fluido: cada método devuelve this para encadenar llamadas
+public class OrderBuilder
+{
+    private Guid _customerId;
+    private readonly List<OrderLine> _lines = new();
+    private Address? _shippingAddress;
+
+    public OrderBuilder WithCustomer(Guid customerId)
+    {
+        _customerId = customerId; // acumula estado intermedio
+        return this;
+    }
+
+    public OrderBuilder AddLine(Guid productId, int quantity)
+    {
+        _lines.Add(new OrderLine(productId, quantity));
+        return this;
+    }
+
+    public OrderBuilder WithShippingAddress(Address address)
+    {
+        _shippingAddress = address;
+        return this;
+    }
+
+    // Punto único de validación antes de crear el objeto
+    public Order Build()
+    {
+        if (_customerId == Guid.Empty) throw new InvalidOperationException("Customer required");
+        if (_lines.Count == 0) throw new InvalidOperationException("At least one line required");
+        return new Order { CustomerId = _customerId, Lines = _lines, ShippingAddress = _shippingAddress };
+    }
+}
+
+// Uso legible: se lee como una receta paso a paso
+var order = new OrderBuilder()
+    .WithCustomer(customerId)
+    .AddLine(productId, 2)
+    .WithShippingAddress(address)
+    .Build();
+```
 
 #### Cuándo usar
 
@@ -260,14 +339,16 @@ En software:
 
 En .NET, `MemberwiseClone()` es superficial; para dominio rico suele preferirse un método explícito `Clone()` o un mapper que construya una copia con reglas claras.
 
-**Ejemplo conceptual (C#):**
+**Ejemplo en C# (comentado):**
 
 ```csharp
-public class ReportTemplate : ICloneable
+// Plantilla con datos mutables que se copiarán
+public class ReportTemplate
 {
-    public string Title { get; init; }
-    public List<Section> Sections { get; init; }
+    public string Title { get; init; } = "";
+    public List<Section> Sections { get; init; } = new();
 
+    // Clonación profunda: cada sección también se copia (no comparte referencias)
     public ReportTemplate DeepClone() =>
         new ReportTemplate
         {
@@ -275,6 +356,10 @@ public class ReportTemplate : ICloneable
             Sections = Sections.Select(s => s.Clone()).ToList()
         };
 }
+
+// Uso: partir de una plantilla y personalizar sin reconstruir desde cero
+var monthlyReport = baseTemplate.DeepClone();
+monthlyReport.Title = "Reporte marzo 2026";
 ```
 
 #### Cuándo usar
@@ -305,6 +390,24 @@ El patrón original usaba constructor privado y `getInstance()` estático. Eso c
 **Hoy en .NET:** se prefiere registrar el servicio en el contenedor de **inyección de dependencias (DI)** con lifetime `Singleton`. El contenedor garantiza una instancia por aplicación sin antipatrón manual.
 
 ![Diagrama](./assets/images/diagrams/embedded-9b0424ad3951.png)
+
+**Ejemplo en C# (comentado):**
+
+```csharp
+// En ASP.NET Core: el contenedor DI gestiona la instancia única (patrón moderno)
+// Program.cs — registro una sola vez al arrancar la aplicación
+builder.Services.AddSingleton<IAppConfiguration, AppConfiguration>();
+
+// Cualquier servicio recibe la MISMA instancia por constructor
+public class PricingService
+{
+    private readonly IAppConfiguration _config;
+    public PricingService(IAppConfiguration config) => _config = config; // inyectado, no new()
+}
+
+// Evitar en código nuevo: Singleton manual con getInstance() estático
+// public static AppConfiguration Instance { get; } — difícil de testear
+```
 
 #### Cuándo usar
 
@@ -351,6 +454,36 @@ En arquitectura enterprise, el Adapter suele vivir en la capa de **infraestructu
 
 > *Fuente editable (Mermaid):* [01-adapter.mermaid](./assets/diagrams/01-adapter.mermaid)
 
+**Ejemplo en C# (comentado):**
+
+```csharp
+// Puerto que TU dominio espera (contrato interno estable)
+public interface IPaymentGateway
+{
+    PaymentResult Charge(decimal amount, string currency);
+}
+
+// SDK externo con API distinta — no debe filtrarse al dominio
+public class LegacyPaymentSdk
+{
+    public string CreateChargeJson(decimal cents, string iso) { /* HTTP al proveedor */ return "{}"; }
+}
+
+// Adapter: traduce del contrato interno al SDK externo
+public class LegacyPaymentAdapter : IPaymentGateway
+{
+    private readonly LegacyPaymentSdk _sdk;
+    public LegacyPaymentAdapter(LegacyPaymentSdk sdk) => _sdk = sdk;
+
+    public PaymentResult Charge(decimal amount, string currency)
+    {
+        var cents = (long)(amount * 100);           // conversión de unidades
+        var json = _sdk.CreateChargeJson(cents, currency); // delega al adaptee
+        return PaymentResult.FromJson(json);        // traduce respuesta al modelo interno
+    }
+}
+```
+
 #### Cuándo usar
 
 - Integrar **APIs legacy o de terceros** con contratos distintos al tuyo.
@@ -378,23 +511,26 @@ En arquitectura enterprise, el Adapter suele vivir en la capa de **infraestructu
 
 En código, la abstracción mantiene una referencia a una interfaz `IImplementation` (o `IDeliveryCarrier`). Cada variante de abstracción delega operaciones a la implementación inyectada.
 
-**Ejemplo conceptual (C#):**
+**Ejemplo en C# (comentado):**
 
 ```csharp
+// Implementación concreta (el "dispositivo" que puede cambiar)
 public interface INotificationChannel { void Send(string to, string body); }
 
+// Abstracción de alto nivel: no sabe si envía por email, SMS o push
 public abstract class Notification
 {
-    protected readonly INotificationChannel Channel;
+    protected readonly INotificationChannel Channel; // composición, no herencia múltiple
     protected Notification(INotificationChannel channel) => Channel = channel;
     public abstract void Notify(string to, string body);
 }
 
+// Variante de abstracción: añade prefijo sin cambiar el canal subyacente
 public class UrgentNotification : Notification
 {
     public UrgentNotification(INotificationChannel channel) : base(channel) { }
     public override void Notify(string to, string body) =>
-        Channel.Send(to, $"[URGENT] {body}");
+        Channel.Send(to, $"[URGENT] {body}"); // delega al canal inyectado
 }
 ```
 
@@ -435,6 +571,39 @@ El patrón distingue:
 
 > *Fuente editable (Mermaid):* [01-composite.mermaid](./assets/diagrams/01-composite.mermaid)
 
+**Ejemplo en C# (comentado):**
+
+```csharp
+// Component: interfaz común para hoja y contenedor
+public interface IMenuComponent
+{
+    decimal GetPrice();
+}
+
+// Leaf: elemento sin hijos
+public class MenuItem : IMenuComponent
+{
+    public decimal Price { get; init; }
+    public decimal GetPrice() => Price;
+}
+
+// Composite: agrupa hijos y delega la operación recursivamente
+public class MenuGroup : IMenuComponent
+{
+    private readonly List<IMenuComponent> _children = new();
+    public void Add(IMenuComponent child) => _children.Add(child);
+    public decimal GetPrice() => _children.Sum(c => c.GetPrice()); // recursión uniforme
+}
+
+// Cliente: trata ítem y grupo igual — no necesita saber si es hoja o composite
+var burger = new MenuItem { Price = 8.99m };
+var drink = new MenuItem { Price = 2.50m };
+var combo = new MenuGroup();
+combo.Add(burger);
+combo.Add(drink);
+decimal total = combo.GetPrice(); // 11.49 — suma sin if/else por tipo
+```
+
 #### Cuándo usar
 
 - Estructuras **jerárquicas** (UI, categorías, permisos, expresiones).
@@ -465,6 +634,40 @@ El patrón distingue:
 ![Diagrama: 01-decorator](./assets/images/diagrams/01-decorator.png)
 
 > *Fuente editable (Mermaid):* [01-decorator.mermaid](./assets/diagrams/01-decorator.mermaid)
+
+**Ejemplo en C# (comentado):**
+
+```csharp
+// Interfaz compartida: componente real y decoradores
+public interface IOrderRepository
+{
+    Task<Order?> GetByIdAsync(Guid id, CancellationToken ct = default);
+}
+
+// Componente concreto (implementación base)
+public class EfOrderRepository : IOrderRepository { /* acceso a BD */ }
+
+// Decorator: envuelve otro repositorio y añade caché sin cambiar EfOrderRepository
+public class CachedOrderRepository : IOrderRepository
+{
+    private readonly IOrderRepository _inner; // referencia al componente envuelto
+    private readonly IMemoryCache _cache;
+
+    public CachedOrderRepository(IOrderRepository inner, IMemoryCache cache)
+    {
+        _inner = inner;
+        _cache = cache;
+    }
+
+    public async Task<Order?> GetByIdAsync(Guid id, CancellationToken ct = default)
+    {
+        if (_cache.TryGetValue(id, out Order? cached)) return cached; // comportamiento extra
+        var order = await _inner.GetByIdAsync(id, ct);              // delega al interior
+        _cache.Set(id, order);
+        return order;
+    }
+}
+```
 
 #### Cuándo usar
 
@@ -503,6 +706,36 @@ La Facade **no añade lógica de negocio nueva** — coordina llamadas que ya ex
 
 > *Fuente editable (Mermaid):* [01-facade.mermaid](./assets/diagrams/01-facade.mermaid)
 
+**Ejemplo en C# (comentado):**
+
+```csharp
+// Facade: una entrada simple para un subsistema con varios servicios
+public class OrderCheckoutFacade
+{
+    private readonly IInventoryService _inventory;
+    private readonly IPaymentService _payment;
+    private readonly INotificationService _notifications;
+
+    public OrderCheckoutFacade(
+        IInventoryService inventory,
+        IPaymentService payment,
+        INotificationService notifications)
+    {
+        _inventory = inventory;
+        _payment = payment;
+        _notifications = notifications;
+    }
+
+    // El controller solo llama ConfirmOrder — no conoce los 3 servicios internos
+    public async Task ConfirmOrderAsync(Order order, CancellationToken ct)
+    {
+        await _inventory.ReserveAsync(order, ct);       // paso 1 del subsistema
+        await _payment.ChargeAsync(order.Total, ct);    // paso 2
+        await _notifications.SendConfirmationAsync(order, ct); // paso 3
+    }
+}
+```
+
 #### Cuándo usar
 
 - Subsistema con **múltiples puntos de entrada** que el cliente no debería conocer.
@@ -538,7 +771,31 @@ El **Context** (servicio de pedidos) delega en una interfaz `IStrategy`. Cambiar
 
 > *Fuente editable (Mermaid):* [01-strategy.mermaid](./assets/diagrams/01-strategy.mermaid)
 
-**Ejemplo:** `IDiscountStrategy` con implementaciones `SeasonDiscount`, `VipDiscount`. El servicio recibe la estrategia por DI o la selecciona según reglas de negocio.
+**Ejemplo en C# (comentado):**
+
+```csharp
+// Estrategia intercambiable: cada algoritmo en su propia clase
+public interface IDiscountStrategy
+{
+    decimal Apply(decimal subtotal, Customer customer);
+}
+
+public class VipDiscountStrategy : IDiscountStrategy
+{
+    public decimal Apply(decimal subtotal, Customer customer) =>
+        customer.IsVip ? subtotal * 0.90m : subtotal;
+}
+
+// Context: delega el cálculo sin switch interno
+public class OrderPricingService
+{
+    private readonly IDiscountStrategy _strategy;
+    public OrderPricingService(IDiscountStrategy strategy) => _strategy = strategy;
+
+    public decimal CalculateTotal(Order order) =>
+        _strategy.Apply(order.Subtotal, order.Customer); // algoritmo inyectado
+}
+```
 
 #### Cuándo usar
 
@@ -568,6 +825,32 @@ El **Context** (servicio de pedidos) delega en una interfaz `IStrategy`. Cambiar
 ![Diagrama: 01-observer](./assets/images/diagrams/01-observer.png)
 
 > *Fuente editable (Mermaid):* [01-observer.mermaid](./assets/diagrams/01-observer.mermaid)
+
+**Ejemplo en C# (comentado):**
+
+```csharp
+// Sujeto: mantiene estado y lista de observadores
+public class Order
+{
+    private readonly List<IOrderObserver> _observers = new();
+    public void Attach(IOrderObserver observer) => _observers.Add(observer);
+
+    public void Confirm()
+    {
+        Status = OrderStatus.Confirmed; // cambio de estado
+        foreach (var observer in _observers)
+            observer.OnOrderConfirmed(this); // notifica a todos sin conocerlos en detalle
+    }
+}
+
+// Observador: reacciona al evento sin modificar la clase Order
+public interface IOrderObserver { void OnOrderConfirmed(Order order); }
+
+public class EmailNotifier : IOrderObserver
+{
+    public void OnOrderConfirmed(Order order) { /* enviar email */ }
+}
+```
 
 #### Cuándo usar
 
@@ -600,6 +883,30 @@ Roles clásicos: **Invoker** (quien ejecuta), **Command** (la solicitud), **Rece
 
 > *Fuente editable (Mermaid):* [01-command.mermaid](./assets/diagrams/01-command.mermaid)
 
+**Ejemplo en C# (comentado):**
+
+```csharp
+// Command: encapsula la solicitud como objeto (parámetros + intención)
+public record CancelOrderCommand(Guid OrderId, string Reason);
+
+// Handler (receiver): ejecuta la lógica real
+public class CancelOrderHandler
+{
+    private readonly IOrderRepository _orders;
+    public CancelOrderHandler(IOrderRepository orders) => _orders = orders;
+
+    public async Task Handle(CancelOrderCommand command, CancellationToken ct)
+    {
+        var order = await _orders.GetByIdAsync(command.OrderId, ct);
+        order.Cancel(command.Reason); // acción sobre el dominio
+        await _orders.UpdateAsync(order, ct);
+    }
+}
+
+// Invoker (API): solo despacha el comando, no conoce detalles de cancelación
+// await _mediator.Send(new CancelOrderCommand(id, reason), ct);
+```
+
 #### Cuándo usar
 
 - Operaciones que deben **encolarse**, auditarse o deshacer.
@@ -631,19 +938,27 @@ Cada estado implementa la misma interfaz (`IOrderState`) con métodos como `Conf
 
 > *Fuente editable (Mermaid):* [01-state.mermaid](./assets/diagrams/01-state.mermaid)
 
-**Ejemplo conceptual (C#):**
+**Ejemplo en C# (comentado):**
 
 ```csharp
+// Interfaz común: cada estado implementa las mismas operaciones
 public interface IOrderState
 {
     void Confirm(Order order);
     void Ship(Order order);
 }
 
+// Estado concreto: define qué está permitido en "borrador"
 public class DraftOrderState : IOrderState
 {
-    public void Confirm(Order order) { /* validar y pasar a Confirmed */ }
-    public void Ship(Order order) => throw new InvalidOperationException("Cannot ship draft");
+    public void Confirm(Order order)
+    {
+        // validar reglas y cambiar al siguiente estado
+        order.SetState(new ConfirmedOrderState());
+    }
+
+    public void Ship(Order order) =>
+        throw new InvalidOperationException("Cannot ship draft"); // transición inválida aquí
 }
 ```
 
@@ -674,20 +989,29 @@ La clase abstracta define `Execute()` con pasos fijos: `LoadData()` → `Transfo
 
 **Analogía:** Una receta de cocina con pasos fijos ("calentar horno", "mezclar", "hornear") donde solo cambia el relleno según el postre.
 
-**Ejemplo conceptual (C#):**
+**Ejemplo en C# (comentado):**
 
 ```csharp
+// Clase base: fija el ORDEN del algoritmo; subclases solo varían pasos concretos
 public abstract class ReportExporter
 {
+    // Template Method: esqueleto no modificable por subclases
     public void Export()
     {
-        var data = LoadData();
-        var formatted = Format(data);
-        WriteOutput(formatted);
+        var data = LoadData();           // paso 1 — puede ser abstracto
+        var formatted = Format(data);    // paso 2 — variación por subclase
+        WriteOutput(formatted);          // paso 3 — común a todos
     }
+
     protected abstract Data LoadData();
     protected abstract FormattedData Format(Data data);
-    protected void WriteOutput(FormattedData data) { /* común */ }
+    protected void WriteOutput(FormattedData data) { /* lógica compartida */ }
+}
+
+public class PdfReportExporter : ReportExporter
+{
+    protected override Data LoadData() => /* SQL o API */;
+    protected override FormattedData Format(Data data) => /* layout PDF */;
 }
 ```
 
@@ -720,9 +1044,10 @@ Cada **handler** implementa la misma interfaz y mantiene referencia al **siguien
 
 En ASP.NET Core, el pipeline de **middleware** es una cadena de responsabilidad: cada middleware puede cortar la respuesta o pasar al siguiente.
 
-**Ejemplo conceptual (C#):**
+**Ejemplo en C# (comentado):**
 
 ```csharp
+// Handler base: mantiene referencia al siguiente eslabón de la cadena
 public abstract class ValidationHandler
 {
     protected ValidationHandler? Next;
@@ -730,12 +1055,13 @@ public abstract class ValidationHandler
     public abstract ValidationResult Handle(OrderRequest request);
 }
 
+// Handler concreto: procesa o delega al siguiente
 public class StockValidationHandler : ValidationHandler
 {
     public override ValidationResult Handle(OrderRequest request)
     {
-        if (!HasStock(request)) return ValidationResult.Fail("No stock");
-        return Next?.Handle(request) ?? ValidationResult.Ok();
+        if (!HasStock(request)) return ValidationResult.Fail("No stock"); // corta la cadena
+        return Next?.Handle(request) ?? ValidationResult.Ok(); // pasa al siguiente handler
     }
 }
 ```
@@ -768,6 +1094,30 @@ public class StockValidationHandler : ValidationHandler
 ![Diagrama: 01-cqrs-mediator](./assets/images/diagrams/01-cqrs-mediator.png)
 
 > *Fuente editable (Mermaid):* [01-cqrs-mediator.mermaid](./assets/diagrams/01-cqrs-mediator.mermaid)
+
+**Ejemplo en C# (comentado):**
+
+```csharp
+// Command: intención de escritura enviada al mediador
+public record CreateOrderCommand(Guid CustomerId, List<OrderLineDto> Lines);
+
+// Handler: procesa UN tipo de mensaje; no lo invoca el controller directamente
+public class CreateOrderHandler
+{
+    public Task<OrderDto> Handle(CreateOrderCommand command, CancellationToken ct) { /* ... */ }
+}
+
+// Controller: solo conoce IMediator, no los handlers concretos
+public class OrdersController
+{
+    private readonly IMediator _mediator;
+    public OrdersController(IMediator mediator) => _mediator = mediator;
+
+    [HttpPost]
+    public Task<OrderDto> Create(CreateOrderCommand command, CancellationToken ct) =>
+        _mediator.Send(command, ct); // mediador enruta al handler correcto
+}
+```
 
 #### Cuándo usar
 
@@ -816,6 +1166,31 @@ Estos patrones no vienen del libro GoF original, pero son **estándar** en backe
 | Lógica de query dispersa | Punto único de acceso por agregado |
 | Tests acoplados a BD | Tests con dobles en memoria |
 
+**Ejemplo en C# (comentado):**
+
+```csharp
+// Puerto en dominio/aplicación: habla en términos de agregados, no de tablas SQL
+public interface IOrderRepository
+{
+    Task<Order?> GetByIdAsync(Guid id, CancellationToken ct = default);
+    Task AddAsync(Order order, CancellationToken ct = default);
+    Task UpdateAsync(Order order, CancellationToken ct = default);
+}
+
+// Implementación en infraestructura: EF Core, SQL, etc. — oculta detalles al dominio
+public class EfOrderRepository : IOrderRepository
+{
+    private readonly AppDbContext _db;
+    public EfOrderRepository(AppDbContext db) => _db = db;
+
+    public async Task<Order?> GetByIdAsync(Guid id, CancellationToken ct) =>
+        await _db.Orders.Include(o => o.Lines).FirstOrDefaultAsync(o => o.Id == id, ct);
+
+    public async Task AddAsync(Order order, CancellationToken ct) =>
+        await _db.Orders.AddAsync(order, ct);
+}
+```
+
 #### Cuándo usar
 
 - Dominio con **agregados** y reglas que deben testearse sin BD.
@@ -844,6 +1219,31 @@ Estos patrones no vienen del libro GoF original, pero son **estándar** en backe
 ![Diagrama: 01-unit-of-work](./assets/images/diagrams/01-unit-of-work.png)
 
 > *Fuente editable (Mermaid):* [01-unit-of-work.mermaid](./assets/diagrams/01-unit-of-work.mermaid)
+
+**Ejemplo en C# (comentado):**
+
+```csharp
+// Servicio de aplicación: coordina varios cambios en una sola unidad de trabajo
+public class PlaceOrderHandler
+{
+    private readonly IOrderRepository _orders;
+    private readonly IUnitOfWork _unitOfWork; // abstrae el commit atómico
+
+    public async Task Handle(PlaceOrderCommand command, CancellationToken ct)
+    {
+        var order = Order.Create(command.CustomerId, command.Lines);
+        await _orders.AddAsync(order, ct);           // cambio pendiente en memoria/tracker
+        await _unitOfWork.SaveChangesAsync(ct);      // un solo commit: todo o nada
+    }
+}
+
+// En EF Core, DbContext.SaveChanges() ES la Unit of Work
+public class EfUnitOfWork : IUnitOfWork
+{
+    private readonly AppDbContext _db;
+    public Task SaveChangesAsync(CancellationToken ct) => _db.SaveChangesAsync(ct);
+}
+```
 
 #### Cuándo usar
 
@@ -884,6 +1284,25 @@ Estos patrones no vienen del libro GoF original, pero son **estándar** en backe
 
 ![Diagrama](./assets/images/diagrams/embedded-3d931326eae9.png)
 
+**Ejemplo en C# (comentado):**
+
+```csharp
+// COMMAND — mutación: cambia estado, sin lógica de lectura mezclada
+public record CreateOrderCommand(Guid CustomerId, List<OrderLineDto> Lines);
+public class CreateOrderHandler { /* valida, crea agregado, persiste */ }
+
+// QUERY — lectura: no modifica estado, puede proyectar DTOs optimizados
+public record GetOrdersByCustomerQuery(Guid CustomerId);
+public class GetOrdersByCustomerHandler
+{
+    public Task<List<OrderSummaryDto>> Handle(GetOrdersByCustomerQuery query, CancellationToken ct)
+    {
+        // puede usar SQL directo o vista desnormalizada — independiente del modelo de escritura
+        return Task.FromResult(new List<OrderSummaryDto>());
+    }
+}
+```
+
 #### Cuándo usar
 
 - Modelos de lectura y escritura **divergen** (pantallas complejas vs agregados ricos).
@@ -914,6 +1333,28 @@ Un **Domain Event** es algo que ocurrió en el dominio, expresado en lenguaje de
 | **Transporte** | En memoria, MediatR, outbox local | Bus, cola, HTTP webhook |
 | **Modelo** | Puede incluir entidades ricas | DTO plano, estable en el tiempo |
 
+**Ejemplo en C# (comentado):**
+
+```csharp
+// Domain Event: ocurre DENTRO del bounded context, lenguaje de negocio
+public record OrderPlacedDomainEvent(Guid OrderId, DateTimeOffset OccurredAt);
+
+// En el agregado, al confirmar la operación de negocio
+public class Order
+{
+    private readonly List<object> _domainEvents = new();
+    public void Place() { /* reglas */ _domainEvents.Add(new OrderPlacedDomainEvent(Id, DateTimeOffset.UtcNow)); }
+}
+
+// Integration Event: contrato para OTRO servicio (mensajería, versión estable)
+public record OrderPlacedIntegrationEvent
+{
+    public Guid OrderId { get; init; }
+    public string EventType { get; init; } = "orders.placed.v1";
+    public DateTimeOffset OccurredAt { get; init; }
+}
+```
+
 #### Cuándo usar cada uno
 
 - **Domain Event:** reacciones dentro del mismo servicio (enviar email tras confirmar pedido en el mismo proceso).
@@ -936,6 +1377,31 @@ Un **Domain Event** es algo que ocurrió en el dominio, expresado en lenguaje de
 ![Diagrama: 01-outbox](./assets/images/diagrams/01-outbox.png)
 
 > *Fuente editable (Mermaid):* [01-outbox.mermaid](./assets/diagrams/01-outbox.mermaid)
+
+**Ejemplo en C# (comentado):**
+
+```csharp
+// Misma transacción: guardar pedido Y mensaje outbox
+public async Task Handle(PlaceOrderCommand command, CancellationToken ct)
+{
+    var order = Order.Create(command);
+    _db.Orders.Add(order);
+
+    // Mensaje pendiente de publicar — vive en la MISMA BD que el pedido
+    _db.OutboxMessages.Add(new OutboxMessage
+    {
+        Id = Guid.NewGuid(),
+        Type = "OrderPlaced",
+        Payload = JsonSerializer.Serialize(new { order.Id }),
+        CreatedAt = DateTimeOffset.UtcNow
+    });
+
+    await _db.SaveChangesAsync(ct); // commit atómico: pedido + outbox juntos
+}
+
+// Proceso en background (worker): lee outbox y publica al bus
+// foreach (var msg in pending) { await _bus.Publish(msg); msg.MarkProcessed(); }
+```
 
 #### Cuándo usar
 
@@ -965,6 +1431,26 @@ Un **Domain Event** es algo que ocurrió en el dominio, expresado en lenguaje de
 La ACL traduce **en ambos sentidos** si hace falta: peticiones salientes al formato legacy y respuestas entrantes a tus value objects y entidades. Es Adapter a escala de **bounded context**.
 
 ![Diagrama](./assets/images/diagrams/embedded-4fdd620ad0f4.png)
+
+**Ejemplo en C# (comentado):**
+
+```csharp
+// Modelo INTERNO del dominio — no se contamina con el legacy
+public record CustomerId(Guid Value);
+
+// DTO del sistema legacy (formato ajeno a tu ubiquitous language)
+public class LegacyCustomerDto { public int LegacyId { get; set; } public string FullName { get; set; } }
+
+// ACL: traduce entre mundos; el dominio nunca ve LegacyCustomerDto
+public class LegacyCustomerAdapter
+{
+    public CustomerId ToDomain(LegacyCustomerDto legacy) =>
+        new CustomerId(Guid.Parse(legacy.LegacyId.ToString().PadLeft(32, '0')));
+
+    public LegacyCustomerDto ToLegacy(string name) =>
+        new LegacyCustomerDto { FullName = name }; // solo en capa de integración
+}
+```
 
 #### Cuándo usar
 
@@ -997,6 +1483,31 @@ Dos estilos (detalle en capítulo 04):
 ![Diagrama: 01-saga-overview](./assets/images/diagrams/01-saga-overview.png)
 
 > *Fuente editable (Mermaid):* [01-saga-overview.mermaid](./assets/diagrams/01-saga-overview.mermaid)
+
+**Ejemplo en C# (comentado):**
+
+```csharp
+// Saga orquestada: coordinador ejecuta pasos locales con compensación si falla
+public class PlaceOrderSaga
+{
+    public async Task ExecuteAsync(PlaceOrderRequest request)
+    {
+        Guid? reservationId = null;
+        try
+        {
+            var orderId = await _orders.CreateAsync(request);     // paso 1 — transacción local
+            reservationId = await _inventory.ReserveAsync(orderId); // paso 2 — otra transacción local
+            await _payments.ChargeAsync(orderId);                   // paso 3
+        }
+        catch
+        {
+            if (reservationId.HasValue)
+                await _inventory.ReleaseAsync(reservationId.Value); // compensación del paso 2
+            throw;
+        }
+    }
+}
+```
 
 #### Cuándo usar
 

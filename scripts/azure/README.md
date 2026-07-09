@@ -14,6 +14,7 @@ Automatización del laboratorio Azure del curso Lite Thinking. Complementa la do
 | Event Hubs | [INTEGRACION-AZURE-EVENT-HUBS.md](../../docs/INTEGRACION-AZURE-EVENT-HUBS.md) |
 | Reporte AKS lab | [deploy-aks-report.json](./deploy-aks-report.json) |
 | CI/CD GitHub | [.github/workflows/deploy-azure.yml](../../.github/workflows/deploy-azure.yml) · [deploy-aks.yml](../../.github/workflows/deploy-aks.yml) · [SETUP-GITHUB.md](../../.github/SETUP-GITHUB.md) |
+| Tópicos de Estudio | [05 Azure](../../docs/teoria-entrevistas/05-servicios-azure.md) · [07 Docker](../../docs/teoria-entrevistas/07-contenedores-docker.md) · [09 CI/CD](../../docs/teoria-entrevistas/09-ci-cd-devops.md) · [Índice](../../docs/teoria-entrevistas/README.md) |
 
 ## Archivos
 

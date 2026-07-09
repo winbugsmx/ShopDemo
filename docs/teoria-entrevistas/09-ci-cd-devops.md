@@ -1,10 +1,10 @@
-# 08 — CI/CD y DevOps
+# 09 — CI/CD y DevOps
 
 ## Objetivo de este capítulo
 
 Entender los **principios de DevOps**, la diferencia entre **CI y CD**, cómo se estructura un **pipeline** de integración y entrega continua, qué **estrategias de despliegue** existen, y qué prácticas hacen que operar software en producción sea **confiable y repetible**.
 
-Asumimos que sabes C#, Git, HTTP, SQL, y que has leído los capítulos de cloud (05–06) y Kubernetes (07). Aquí conectamos **código** con **despliegue automatizado**.
+Asumimos que sabes C#, Git, HTTP, SQL, y que has leído los capítulos de cloud (05–06), contenedores (07) y Kubernetes (08). Aquí conectamos **código** con **despliegue automatizado**.
 
 Conceptos que dominarás:
 
@@ -319,7 +319,7 @@ Implementación:
 
 #### Cuándo usar canary
 
-Alta escala, tolerancia cero a downtime masivo por bug, observabilidad (capítulo 09) implementada.
+Alta escala, tolerancia cero a downtime masivo por bug, observabilidad (capítulo 10) implementada.
 
 ---
 
@@ -588,4 +588,4 @@ Para un junior: preguntar "¿cuál es nuestro lead time?" en una empresa te posi
 - **SemVer + digest** identifican artefactos inmutables.
 - **Métricas DORA** miden madurez: frecuencia, lead time, tasa de fallo, MTTR.
 
-**Siguiente paso:** capítulo 09 — **observabilidad**: cómo saber qué pasa en producción cuando el pipeline ya desplegó tu código (métricas, logs y trazas).
+**Siguiente paso:** capítulo 10 — **observabilidad**: cómo saber qué pasa en producción cuando el pipeline ya desplegó tu código (métricas, logs y trazas).

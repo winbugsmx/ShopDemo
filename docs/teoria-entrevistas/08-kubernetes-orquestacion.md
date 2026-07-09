@@ -1,10 +1,10 @@
-# 07 — Kubernetes y orquestación
+# 08 — Kubernetes y orquestación
 
 ## Objetivo de este capítulo
 
 Comprender **qué es Kubernetes**, cómo funciona su arquitectura interna, qué **objetos** usa para desplegar aplicaciones .NET containerizadas, y qué conceptos de red, escalado, almacenamiento y seguridad necesitas para operar o desarrollar para K8s.
 
-Asumimos que sabes C#, HTTP, SQL, y que has oído hablar de **Docker** (empaquetar una app en una imagen). Kubernetes **no sustituye** a Docker: **orquesta** contenedores — decide dónde corren, los mantiene vivos, los escala y los expone en red.
+Asumimos que sabes C#, HTTP, SQL, y que completaste el capítulo 07 (**contenedores y Docker**). Kubernetes **no sustituye** a Docker: **orquesta** las imágenes que ya construiste — decide dónde corren, los mantiene vivos, los escala y los expone en red.
 
 Conceptos que dominarás:
 
@@ -47,26 +47,21 @@ Hacer esto manualmente con `docker run` en varios servidores es frágil. Kuberne
 
 ---
 
-## 2. Conceptos previos: contenedores e imágenes
+## 2. Prerrequisito: contenedores e imágenes (capítulo 07)
 
 ### Definición formal
 
-Un **contenedor** es un proceso aislado que empaqueta aplicación + dependencias runtime en una **imagen** inmutable construida desde un `Dockerfile`.
+Kubernetes ejecuta **contenedores** empaquetados en **imágenes** OCI construidas con Docker (u otra herramienta compatible); el clúster **no compila** tu código.
 
 ### Explicación desarrollada
 
-Para un desarrollador C#:
+Si aún no dominas `Dockerfile`, `docker build`, `docker push` y registros (ACR/ECR), lee primero el **capítulo 07**. Aquí asumimos que ya tienes una imagen como `myregistry/orders-api:v1` lista para desplegar.
 
-```dockerfile
-FROM mcr.microsoft.com/dotnet/aspnet:10.0
-WORKDIR /app
-COPY publish/ .
-ENTRYPOINT ["dotnet", "Orders.Api.dll"]
-```
+Puntos clave que K8s reutiliza:
 
-- `docker build` crea la **imagen**.
-- `docker run` inicia un **contenedor** (instancia de la imagen).
-- Kubernetes **no construye** imágenes; las **descarga** de un registro (ACR, ECR, Docker Hub) y las ejecuta en pods.
+- La imagen es **inmutable**; un nuevo despliegue = nueva tag o digest.
+- Variables de entorno y secretos se inyectan en el **pod**, no se hornean en la imagen.
+- Kubernetes **descarga** la imagen del registro y la ejecuta en uno o más **pods** según el manifiesto YAML.
 
 ---
 
@@ -550,4 +545,4 @@ Lo que aprendes en este capítulo es **portable**: mismo Deployment YAML funcion
 - **Helm/Kustomize** gestionan complejidad de manifiestos; **RBAC/NetworkPolicy** aseguran el clúster.
 - **AKS/EKS** aplican este conocimiento en la nube; practica localmente con Minikube o kind.
 
-**Siguiente paso:** capítulo 08 — cómo **automatizar** build, test y despliegue con **CI/CD y DevOps**.
+**Siguiente paso:** capítulo 09 — cómo **automatizar** build, test y despliegue con **CI/CD y DevOps**.

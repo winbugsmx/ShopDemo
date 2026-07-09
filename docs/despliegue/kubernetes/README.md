@@ -22,6 +22,15 @@ Material para desplegar ShopDemo en **Kubernetes**: desarrollo local (Minikube) 
 | Teoría operaciones | [TEORIA-KUBERNETES-OPERACIONES.md](./TEORIA-KUBERNETES-OPERACIONES.md) |
 | Manifiestos | [k8s/README.md](../../../k8s/README.md) |
 
+## Tópicos de Estudio relacionados
+
+| # | Tópico | Enlace |
+|---|---|---|
+| 07 | Contenedores y Docker | [07-contenedores-docker.md](../../teoria-entrevistas/07-contenedores-docker.md) |
+| 08 | Kubernetes | [08-kubernetes-orquestacion.md](../../teoria-entrevistas/08-kubernetes-orquestacion.md) |
+
+Teoría lab: [TEORIA-KUBERNETES-OPERACIONES.md](./TEORIA-KUBERNETES-OPERACIONES.md) · Índice: [teoria-entrevistas/README.md](../../teoria-entrevistas/README.md)
+
 ## Nube (misma estructura 3 capas)
 
 | Entorno | Carpeta |

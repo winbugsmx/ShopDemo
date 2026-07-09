@@ -37,7 +37,7 @@ Piensa en la arquitectura de un edificio: no describe cada tornillo, pero define
 
 **Importante:** arquitectura ≠ tecnología. Puedes hacer microservicios en .NET o en Java; puedes hacer Clean Architecture con o sin Docker. La arquitectura es una **decisión de diseño**, no un producto comercial.
 
-Para un junior, la arquitectura también define **dónde pones el breakpoint** cuando depuras: en un monolito bien modular, un flujo de negocio puede seguirse en un solo proceso; en microservicios, ese mismo flujo cruza varios servicios y necesitas trazas distribuidas (capítulo 09).
+Para un junior, la arquitectura también define **dónde pones el breakpoint** cuando depuras: en un monolito bien modular, un flujo de negocio puede seguirse en un solo proceso; en microservicios, ese mismo flujo cruza varios servicios y necesitas trazas distribuidas (capítulo 10).
 
 ![Diagrama](./assets/images/diagrams/embedded-0639eb65cc37.png)
 

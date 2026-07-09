@@ -37,22 +37,7 @@ Desde la perspectiva de un desarrollador junior, Azure responde a preguntas como
 - ¿Cómo envío mensajes entre microservicios?
 - ¿Cómo autentico usuarios sin escribir todo el sistema de login yo solo?
 
-```mermaid
-flowchart TB
-  subgraph TU["Tu responsabilidad"]
-    APP[Código de la aplicación]
-    DAT[Modelo de datos y reglas de negocio]
-  end
-  subgraph AZURE["Azure gestiona"]
-    HW[Servidores físicos]
-    RED[Red y conmutación]
-    SO[Sistema operativo en IaaS/PaaS]
-    PATCH[Parches de seguridad]
-    BACK[Backups automáticos en PaaS]
-  end
-  APP --> AZURE
-  DAT --> AZURE
-```
+![Diagrama](./assets/images/diagrams/embedded-1953acd6bc1a.png)
 
 ### Cuándo usar Azure (y cuándo no)
 
@@ -96,20 +81,7 @@ En C# y ASP.NET:
 
 La imagen anterior muestra categorías equivalentes entre Azure y AWS. No son copias exactas, pero ayudan a ubicar servicios por función.
 
-```mermaid
-flowchart TB
-  subgraph CAPAS["Pila tecnológica"]
-    L1[Aplicación]
-    L2[Datos]
-    L3[Runtime .NET / contenedor]
-    L4[Sistema operativo]
-    L5[Virtualización]
-    L6[Servidores físicos]
-  end
-  IaaS[IaaS - VM] --> L4
-  PaaS[PaaS - App Service] --> L3
-  SaaS[SaaS - M365] --> L1
-```
+![Diagrama](./assets/images/diagrams/embedded-36e59796ba50.png)
 
 ### Cuándo elegir cada modelo
 
@@ -148,13 +120,7 @@ Conceptos clave para juniors:
 - **Always On:** evita que la app se "duerma" por inactividad (importante para WebJobs y tareas en background).
 - **Integración con Entra ID:** autenticación de usuarios sin implementar OAuth desde cero.
 
-```mermaid
-flowchart LR
-  DEV[Desarrollador] -->|git push / CI| AS[App Service]
-  USR[Cliente HTTP] -->|HTTPS| AS
-  AS --> DB[(Azure SQL)]
-  AS --> KV[Key Vault - secretos]
-```
+![Diagrama](./assets/images/diagrams/embedded-1c1af64aa20a.png)
 
 #### Cuándo usar App Service
 
@@ -189,14 +155,7 @@ Conceptos importantes:
 - **Cold start:** la primera invocación tras inactividad puede tardar más porque Azure "despierta" el runtime.
 - **Facturación Consumption:** por número de ejecuciones + GB-segundos de memoria.
 
-```mermaid
-flowchart LR
-  T1[Timer - cada hora] --> F[Azure Function]
-  T2[HTTP POST] --> F
-  T3[Mensaje en cola] --> F
-  F --> B[Blob Storage]
-  F --> SB[Service Bus]
-```
+![Diagrama](./assets/images/diagrams/embedded-f0c6c4e9570a.png)
 
 #### Cuándo usar Functions
 
@@ -231,22 +190,11 @@ Integraciones típicas en Azure:
 - **Workload Identity:** pods que obtienen tokens de Entra ID sin secretos en código.
 - **Azure Monitor / Application Insights:** métricas y trazas del clúster.
 
-```mermaid
-flowchart TB
-  subgraph AKS["Clúster AKS"]
-    CP[Control Plane - gestionado por Azure]
-    W1[Nodo worker 1]
-    W2[Nodo worker 2]
-    P1[Pod API]
-    P2[Pod API]
-    W1 --> P1
-    W2 --> P2
-  end
-  ACR[Container Registry] -->|pull imagen| AKS
-  DEV[Pipeline CI/CD] --> ACR
-```
+![Diagrama](./assets/images/diagrams/embedded-b4086093de13.png)
 
-Fuente editable del stack completo: [assets/diagrams/05-azure-stack.mermaid](./assets/diagrams/05-azure-stack.mermaid)
+![Diagrama: 05-azure-stack](./assets/images/diagrams/05-azure-stack.png)
+
+> *Fuente editable (Mermaid):* [05-azure-stack.mermaid](./assets/diagrams/05-azure-stack.mermaid)
 
 #### Cuándo usar AKS
 
@@ -275,14 +223,7 @@ Características distintivas:
 - **Dapr opcional:** sidecar para invocación entre servicios, pub/sub, state store (útil en microservicios).
 - **Entorno (Environment):** agrupa apps que comparten red y logs.
 
-```mermaid
-flowchart LR
-  INT[Internet] --> ING[Ingress integrado]
-  ING --> CA1[Container App - API v1]
-  ING --> CA2[Container App - API v2]
-  CA1 --> SB[Service Bus]
-  CA2 --> SB
-```
+![Diagrama](./assets/images/diagrams/embedded-adaed7ff2764.png)
 
 #### Cuándo usar Container Apps
 
@@ -341,12 +282,7 @@ Conceptos para juniors:
 - **Connection string:** igual que local, pero con firewall de Azure (debes permitir tu IP o usar Private Link).
 - **Elastic Pool:** varias bases comparten recursos — útil para muchas BD pequeñas.
 
-```mermaid
-flowchart LR
-  API[API .NET + EF Core] -->|T-SQL| SQL[(Azure SQL Database)]
-  SQL --> BAK[Backups automáticos]
-  SQL --> HA[Réplica secundaria - tier Premium]
-```
+![Diagrama](./assets/images/diagrams/embedded-436d3676634c.png)
 
 #### Cuándo usar Azure SQL
 
@@ -378,20 +314,7 @@ Conceptos clave:
 - **APIs:** puedes usar la API de MongoDB, Cassandra, Gremlin, Table o SQL (Core) según el modelo.
 - **Niveles de consistencia:** desde *Strong* (como SQL single-node) hasta *Eventual* (más rendimiento, menos garantía instantánea).
 
-```mermaid
-flowchart TB
-  subgraph REG1["Región Europa"]
-    W1[Escrituras]
-  end
-  subgraph REG2["Región USA"]
-    R1[Réplica lectura]
-  end
-  subgraph REG3["Región Asia"]
-    R2[Réplica lectura]
-  end
-  W1 --> R1
-  W1 --> R2
-```
+![Diagrama](./assets/images/diagrams/embedded-50aaae656414.png)
 
 #### Cuándo usar Cosmos DB
 
@@ -436,13 +359,7 @@ Redis guarda datos en **RAM**, mucho más rápido que disco. Casos típicos:
 
 En C# usarías `StackExchange.Redis` o `IDistributedCache`.
 
-```mermaid
-flowchart LR
-  API[API] -->|1. consulta cache| R[(Redis)]
-  R -->|miss| API
-  API -->|2. consulta BD| DB[(SQL)]
-  API -->|3. guarda en cache| R
-```
+![Diagrama](./assets/images/diagrams/embedded-07a22a123c30.png)
 
 #### Cuándo usar Redis
 
@@ -471,12 +388,7 @@ Un **blob** es un archivo: PDF, imagen, video, backup ZIP. Se organiza en **cont
 | **Cool** | Acceso ocasional (backups recientes) |
 | **Archive** | Retención larga, acceso raro (cumplimiento legal) |
 
-```mermaid
-flowchart TB
-  APP[Aplicación] -->|upload| BLOB[Blob Storage]
-  CDN[Azure CDN / Front Door] -->|serve estáticos| BLOB
-  EH[Event Hubs Capture] -->|archivo eventos| BLOB
-```
+![Diagrama](./assets/images/diagrams/embedded-867258a19e76.png)
 
 #### Cuándo usar Blob Storage
 
@@ -509,12 +421,7 @@ Conceptos:
 - **Sesiones:** mensajes con mismo `SessionId` se procesan en orden.
 - **Duplicate detection:** evita procesar el mismo mensaje dos veces (idempotencia a nivel broker).
 
-```mermaid
-flowchart LR
-  P[Productor - API Pedidos] --> Q[Cola orders-processing]
-  Q --> C1[Consumidor Inventario]
-  Q -->|fallo N veces| DLQ[Dead Letter Queue]
-```
+![Diagrama](./assets/images/diagrams/embedded-48866460545c.png)
 
 #### Cuándo usar Service Bus
 
@@ -544,14 +451,7 @@ Características:
 - **Retención:** días de eventos almacenados (no solo en tránsito).
 - **Capture:** exportación automática a Blob Storage para análisis batch.
 
-```mermaid
-flowchart LR
-  PROD1[App Web] --> EH[Event Hub]
-  PROD2[App Móvil] --> EH
-  PROD3[IoT Devices] --> EH
-  EH --> CG1[Consumer Group - Analytics]
-  EH --> CG2[Consumer Group - Alertas]
-```
+![Diagrama](./assets/images/diagrams/embedded-7d3605606be1.png)
 
 #### Cuándo usar Event Hubs
 
@@ -572,13 +472,7 @@ flowchart LR
 
 Event Grid reacciona a **hechos** ("se creó un blob", "se eliminó una VM") y dispara acciones automáticas. Es ideal para automatización reactiva de infraestructura, no para colas de trabajo pesadas.
 
-```mermaid
-flowchart LR
-  BLOB[Blob Storage] -->|BlobCreated| EG[Event Grid]
-  EG --> FN[Azure Function]
-  EG --> LA[Logic App]
-  EG --> WH[Webhook HTTP]
-```
+![Diagrama](./assets/images/diagrams/embedded-8f451797f645.png)
 
 #### Cuándo usar Event Grid
 
@@ -631,17 +525,7 @@ Flujo típico OAuth para API:
 3. Llama a tu API con `Authorization: Bearer <token>`.
 4. API valida firma y claims del token.
 
-```mermaid
-sequenceDiagram
-  participant U as Usuario
-  participant E as Entra ID
-  participant A as API .NET
-  U->>E: Login
-  E-->>U: Access Token JWT
-  U->>A: GET /orders + Bearer token
-  A->>A: Validar token
-  A-->>U: 200 OK
-```
+![Diagrama](./assets/images/diagrams/embedded-d9eb9aa90325.png)
 
 #### Cuándo usar Entra ID
 
@@ -667,12 +551,7 @@ sequenceDiagram
 - Permite rotación de secretos y certificados.
 - Se integra con App Service, Functions, AKS via referencias o CSI driver.
 
-```mermaid
-flowchart LR
-  APP[App Service / AKS Pod] -->|Managed Identity| KV[Key Vault]
-  KV --> SEC[Connection String SQL]
-  KV --> CERT[Certificado TLS]
-```
+![Diagrama](./assets/images/diagrams/embedded-1a87eb0dc04c.png)
 
 #### Cuándo usar Key Vault
 
@@ -755,13 +634,7 @@ Piensa en la VNet como tu "red de oficina" en la nube. Subnets segmentan recurso
 
 **Azure Front Door** es un servicio global de **CDN + balanceo anycast + WAF** que enruta usuarios al endpoint más cercano o saludable en múltiples regiones.
 
-```mermaid
-flowchart TB
-  U1[Usuario Europa] --> FD[Azure Front Door]
-  U2[Usuario USA] --> FD
-  FD --> R1[App - Europa]
-  FD --> R2[App - USA]
-```
+![Diagrama](./assets/images/diagrams/embedded-843c1ae04109.png)
 
 #### Cuándo usar Front Door vs Application Gateway
 
@@ -806,13 +679,7 @@ Recopila:
 
 En ASP.NET Core añades el SDK NuGet; automáticamente registras cada request, llamadas a SQL y errores. Con **correlation ID** (capítulo 04) puedes seguir una petición entre microservicios.
 
-```mermaid
-flowchart LR
-  API1[API Pedidos] -->|trace| AI[Application Insights]
-  API2[API Inventario] -->|trace| AI
-  AI --> LA[Log Analytics Workspace]
-  LA --> AL[Alertas]
-```
+![Diagrama](./assets/images/diagrams/embedded-d2ef552df079.png)
 
 ---
 
@@ -856,12 +723,7 @@ flowchart LR
 
 **OIDC federation** permite que un pipeline de GitHub Actions **asuma un rol** en Entra ID y despliegue en Azure **sin almacenar client secrets permanentes** en GitHub Secrets.
 
-```mermaid
-flowchart LR
-  GH[GitHub Actions] -->|OIDC token| EID[Entra ID]
-  EID -->|token Azure| ARM[Azure Resource Manager]
-  ARM --> AKS[AKS / App Service]
-```
+![Diagrama](./assets/images/diagrams/embedded-d5cfc51229ac.png)
 
 ---
 
@@ -869,18 +731,9 @@ flowchart LR
 
 Este diagrama resume cómo encajan servicios en un despliegue microservicios típico en Azure:
 
-```mermaid
-flowchart LR
-  DEV[Developer] --> GH[GitHub Actions]
-  GH --> ACR[Azure Container Registry]
-  GH --> AKS[Azure Kubernetes Service]
-  AKS --> KV[Key Vault]
-  AKS --> SB[Service Bus]
-  AKS --> SQL[Azure SQL]
-  AKS --> AI[Application Insights]
-```
+![Diagrama: 05-azure-stack](./assets/images/diagrams/05-azure-stack.png)
 
-Fuente editable: [assets/diagrams/05-azure-stack.mermaid](./assets/diagrams/05-azure-stack.mermaid)
+> *Fuente editable (Mermaid):* [05-azure-stack.mermaid](./assets/diagrams/05-azure-stack.mermaid)
 
 **Lectura del flujo:**
 

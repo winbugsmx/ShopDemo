@@ -82,13 +82,7 @@ La clasificación GoF organiza patrones según **la intención del diseño** (cr
 
 En backend moderno no usarás los 23 patrones con la misma frecuencia. Los más habituales en APIs enterprise son Factory/Builder (creación), Adapter/Decorator/Facade (estructura), Strategy/Observer/Command/Mediator/State (comportamiento), más Repository, Unit of Work, CQRS y Outbox (patrones de aplicación).
 
-```mermaid
-flowchart LR
-  CRE[Creacionales] --> ESTR[Estructurales]
-  ESTR --> COMP[Comportamiento]
-  COMP --> ENT[Enterprise]
-  ENT --> INT[Integracion]
-```
+![Diagrama](./assets/images/diagrams/embedded-8ee27147205f.png)
 
 ### Cuándo profundizar en cada familia
 
@@ -123,35 +117,9 @@ Estos patrones responden: **¿quién crea los objetos y cómo evitamos acoplar e
 
 En C#, el Factory Method suele aparecer como método `protected abstract` en una clase base que orquesta un flujo, delegando la creación del producto concreto a subclases. También puedes simularlo con una interfaz `INotificationFactory` y varias implementaciones registradas en DI — la idea es la misma: **el cliente no elige la clase concreta con `new`**.
 
-```mermaid
-classDiagram
-  class Creator {
-    <<abstract>>
-    +factoryMethod() Product
-    +operation()
-  }
-  class ConcreteCreatorA {
-    +factoryMethod() Product
-  }
-  class ConcreteCreatorB {
-    +factoryMethod() Product
-  }
-  class Product {
-    <<interface>>
-  }
-  class ConcreteProductA
-  class ConcreteProductB
+![Diagrama: 01-factory-method](./assets/images/diagrams/01-factory-method.png)
 
-  Creator <|-- ConcreteCreatorA
-  Creator <|-- ConcreteCreatorB
-  Product <|.. ConcreteProductA
-  Product <|.. ConcreteProductB
-  ConcreteCreatorA --> ConcreteProductA : crea
-  ConcreteCreatorB --> ConcreteProductB : crea
-  Creator ..> Product
-```
-
-Fuente editable: [assets/diagrams/01-factory-method.mermaid](./assets/diagrams/01-factory-method.mermaid)
+> *Fuente editable (Mermaid):* [01-factory-method.mermaid](./assets/diagrams/01-factory-method.mermaid)
 
 **Ejemplo conceptual (C#):**
 
@@ -204,45 +172,9 @@ La diferencia clave con Factory Method:
 
 En backend, un ejemplo típico es una fábrica por proveedor de infraestructura: `ICloudFactory` con `CreateBlobStorage()`, `CreateQueue()`, `CreateSecretStore()` — implementaciones `AzureFactory` y `AwsFactory` que nunca mezclan APIs de nubes distintas en un mismo flujo.
 
-```mermaid
-classDiagram
-  class AbstractFactory {
-    <<interface>>
-    +createProductA() AbstractProductA
-    +createProductB() AbstractProductB
-  }
-  class ConcreteFactory1 {
-    +createProductA() AbstractProductA
-    +createProductB() AbstractProductB
-  }
-  class ConcreteFactory2 {
-    +createProductA() AbstractProductA
-    +createProductB() AbstractProductB
-  }
-  class AbstractProductA {
-    <<interface>>
-  }
-  class AbstractProductB {
-    <<interface>>
-  }
-  class ProductA1
-  class ProductA2
-  class ProductB1
-  class ProductB2
+![Diagrama: 01-abstract-factory](./assets/images/diagrams/01-abstract-factory.png)
 
-  AbstractFactory <|.. ConcreteFactory1
-  AbstractFactory <|.. ConcreteFactory2
-  AbstractProductA <|.. ProductA1
-  AbstractProductA <|.. ProductA2
-  AbstractProductB <|.. ProductB1
-  AbstractProductB <|.. ProductB2
-  ConcreteFactory1 --> ProductA1
-  ConcreteFactory1 --> ProductB1
-  ConcreteFactory2 --> ProductA2
-  ConcreteFactory2 --> ProductB2
-```
-
-Fuente editable: [assets/diagrams/01-abstract-factory.mermaid](./assets/diagrams/01-abstract-factory.mermaid)
+> *Fuente editable (Mermaid):* [01-abstract-factory.mermaid](./assets/diagrams/01-abstract-factory.mermaid)
 
 **Ejemplo conceptual (C#):**
 
@@ -290,33 +222,9 @@ El Builder resuelve dos dolores a la vez:
 
 Opcionalmente existe un **Director** que conoce la secuencia de pasos para construcciones estándar ("pedido express", "pedido corporativo"). En muchos proyectos .NET el builder fluido sin Director es suficiente.
 
-```mermaid
-classDiagram
-  class Director {
-    +construct(builder)
-  }
-  class Builder {
-    <<interface>>
-    +reset()
-    +buildStepA()
-    +buildStepB()
-    +getResult() Product
-  }
-  class ConcreteBuilder {
-    +buildStepA()
-    +buildStepB()
-    +getResult() Product
-  }
-  class Product {
-    +parts
-  }
+![Diagrama: 01-builder](./assets/images/diagrams/01-builder.png)
 
-  Director --> Builder
-  Builder <|.. ConcreteBuilder
-  ConcreteBuilder --> Product : construye
-```
-
-Fuente editable: [assets/diagrams/01-builder.mermaid](./assets/diagrams/01-builder.mermaid)
+> *Fuente editable (Mermaid):* [01-builder.mermaid](./assets/diagrams/01-builder.mermaid)
 
 **Ejemplo:** `OrderBuilder.WithCustomer(id).AddLine(productId, qty).WithShippingAddress(addr).Build()` — cada paso valida parcialmente; `Build()` lanza excepción si faltan datos obligatorios.
 
@@ -396,14 +304,7 @@ El patrón original usaba constructor privado y `getInstance()` estático. Eso c
 
 **Hoy en .NET:** se prefiere registrar el servicio en el contenedor de **inyección de dependencias (DI)** con lifetime `Singleton`. El contenedor garantiza una instancia por aplicación sin antipatrón manual.
 
-```mermaid
-classDiagram
-  class Singleton {
-    -static instance
-    -Singleton()
-    +static getInstance() Singleton
-  }
-```
+![Diagrama](./assets/images/diagrams/embedded-9b0424ad3951.png)
 
 #### Cuándo usar
 
@@ -446,28 +347,9 @@ Hay dos variantes clásicas:
 
 En arquitectura enterprise, el Adapter suele vivir en la capa de **infraestructura** implementando un **puerto** definido en aplicación/dominio (hexagonal).
 
-```mermaid
-classDiagram
-  class Client {
-    +request(target)
-  }
-  class Target {
-    <<interface>>
-    +request()
-  }
-  class Adaptee {
-    +specificRequest()
-  }
-  class Adapter {
-    +request()
-  }
+![Diagrama: 01-adapter](./assets/images/diagrams/01-adapter.png)
 
-  Client --> Target
-  Target <|.. Adapter
-  Adapter --> Adaptee : traduce llamada
-```
-
-Fuente editable: [assets/diagrams/01-adapter.mermaid](./assets/diagrams/01-adapter.mermaid)
+> *Fuente editable (Mermaid):* [01-adapter.mermaid](./assets/diagrams/01-adapter.mermaid)
 
 #### Cuándo usar
 
@@ -549,30 +431,9 @@ El patrón distingue:
 
 **Analogía:** Un sistema de archivos: un archivo y una carpeta responden a "calcular tamaño" — la carpeta delega en sus hijos; el archivo devuelve su tamaño. El cliente no necesita saber si es hoja o composite.
 
-```mermaid
-classDiagram
-  class Component {
-    <<interface>>
-    +operation()
-    +add(c)
-    +remove(c)
-  }
-  class Leaf {
-    +operation()
-  }
-  class Composite {
-    -children: List~Component~
-    +operation()
-    +add(c)
-    +remove(c)
-  }
+![Diagrama: 01-composite](./assets/images/diagrams/01-composite.png)
 
-  Component <|.. Leaf
-  Component <|.. Composite
-  Composite o-- Component : contiene
-```
-
-Fuente editable: [assets/diagrams/01-composite.mermaid](./assets/diagrams/01-composite.mermaid)
+> *Fuente editable (Mermaid):* [01-composite.mermaid](./assets/diagrams/01-composite.mermaid)
 
 #### Cuándo usar
 
@@ -601,30 +462,9 @@ Fuente editable: [assets/diagrams/01-composite.mermaid](./assets/diagrams/01-com
 
 **Alternativa moderna:** pipeline behaviors en MediatR logran efecto similar para cross-cutting concerns en handlers.
 
-```mermaid
-classDiagram
-  class Component {
-    <<interface>>
-    +operation()
-  }
-  class ConcreteComponent {
-    +operation()
-  }
-  class Decorator {
-    -component: Component
-    +operation()
-  }
-  class ConcreteDecoratorA {
-    +operation()
-  }
+![Diagrama: 01-decorator](./assets/images/diagrams/01-decorator.png)
 
-  Component <|.. ConcreteComponent
-  Component <|.. Decorator
-  Decorator <|-- ConcreteDecoratorA
-  Decorator o-- Component
-```
-
-Fuente editable: [assets/diagrams/01-decorator.mermaid](./assets/diagrams/01-decorator.mermaid)
+> *Fuente editable (Mermaid):* [01-decorator.mermaid](./assets/diagrams/01-decorator.mermaid)
 
 #### Cuándo usar
 
@@ -659,22 +499,9 @@ La Facade **no añade lógica de negocio nueva** — coordina llamadas que ya ex
 | **Enfoque** | Un componente externo | Varios componentes internos |
 | **Dirección típica** | Hacia fuera (legacy, SDK) | Hacia dentro (módulos propios) |
 
-```mermaid
-flowchart TB
-  CLIENT[Cliente / Controller]
-  FACADE[Facade CheckoutService]
-  S1[Inventario]
-  S2[Pago]
-  S3[Envio]
-  S4[Factura]
-  CLIENT --> FACADE
-  FACADE --> S1
-  FACADE --> S2
-  FACADE --> S3
-  FACADE --> S4
-```
+![Diagrama: 01-facade](./assets/images/diagrams/01-facade.png)
 
-Fuente editable: [assets/diagrams/01-facade.mermaid](./assets/diagrams/01-facade.mermaid)
+> *Fuente editable (Mermaid):* [01-facade.mermaid](./assets/diagrams/01-facade.mermaid)
 
 #### Cuándo usar
 
@@ -707,30 +534,9 @@ Estos patrones responden: **¿cómo distribuyo algoritmos, estado y comunicació
 
 El **Context** (servicio de pedidos) delega en una interfaz `IStrategy`. Cambiar comportamiento = cambiar la implementación inyectada o seleccionada por reglas, **sin editar** el contexto.
 
-```mermaid
-classDiagram
-  class Context {
-    -strategy: Strategy
-    +setStrategy(s)
-    +executeStrategy()
-  }
-  class Strategy {
-    <<interface>>
-    +execute()
-  }
-  class ConcreteStrategyA {
-    +execute()
-  }
-  class ConcreteStrategyB {
-    +execute()
-  }
+![Diagrama: 01-strategy](./assets/images/diagrams/01-strategy.png)
 
-  Context --> Strategy
-  Strategy <|.. ConcreteStrategyA
-  Strategy <|.. ConcreteStrategyB
-```
-
-Fuente editable: [assets/diagrams/01-strategy.mermaid](./assets/diagrams/01-strategy.mermaid)
+> *Fuente editable (Mermaid):* [01-strategy.mermaid](./assets/diagrams/01-strategy.mermaid)
 
 **Ejemplo:** `IDiscountStrategy` con implementaciones `SeasonDiscount`, `VipDiscount`. El servicio recibe la estrategia por DI o la selecciona según reglas de negocio.
 
@@ -759,30 +565,9 @@ Fuente editable: [assets/diagrams/01-strategy.mermaid](./assets/diagrams/01-stra
 
 **En sistemas modernos:** evoluciona hacia **Domain Events** (dentro del dominio) y **mensajería** (entre servicios). El Observer local escala mal si hay muchos suscriptores en procesos distintos — ahí entra el bus de eventos (capítulo 04).
 
-```mermaid
-classDiagram
-  class Subject {
-    +attach(observer)
-    +detach(observer)
-    +notify()
-  }
-  class Observer {
-    <<interface>>
-    +update()
-  }
-  class ConcreteObserverA {
-    +update()
-  }
-  class ConcreteObserverB {
-    +update()
-  }
+![Diagrama: 01-observer](./assets/images/diagrams/01-observer.png)
 
-  Subject --> Observer : notifica
-  Observer <|.. ConcreteObserverA
-  Observer <|.. ConcreteObserverB
-```
-
-Fuente editable: [assets/diagrams/01-observer.mermaid](./assets/diagrams/01-observer.mermaid)
+> *Fuente editable (Mermaid):* [01-observer.mermaid](./assets/diagrams/01-observer.mermaid)
 
 #### Cuándo usar
 
@@ -811,31 +596,9 @@ Roles clásicos: **Invoker** (quien ejecuta), **Command** (la solicitud), **Rece
 
 **Relación con CQRS:** en CQRS, los **commands** son objetos que representan intenciones de cambio. No siempre implementan undo, pero comparten la idea de encapsular la solicitud.
 
-```mermaid
-classDiagram
-  class Invoker {
-    -command: Command
-    +setCommand(c)
-    +execute()
-  }
-  class Command {
-    <<interface>>
-    +execute()
-  }
-  class ConcreteCommand {
-    -receiver
-    +execute()
-  }
-  class Receiver {
-    +action()
-  }
+![Diagrama: 01-command](./assets/images/diagrams/01-command.png)
 
-  Invoker --> Command
-  Command <|.. ConcreteCommand
-  ConcreteCommand --> Receiver
-```
-
-Fuente editable: [assets/diagrams/01-command.mermaid](./assets/diagrams/01-command.mermaid)
+> *Fuente editable (Mermaid):* [01-command.mermaid](./assets/diagrams/01-command.mermaid)
 
 #### Cuándo usar
 
@@ -864,32 +627,9 @@ Cada estado implementa la misma interfaz (`IOrderState`) con métodos como `Conf
 
 **Analogía:** Una máquina expendedora: insertar moneda en estado "sin selección" habilita productos; en estado "sin stock" rechaza la compra. La máquina delega en el estado actual.
 
-```mermaid
-classDiagram
-  class Context {
-    -state: State
-    +setState(s)
-    +request()
-  }
-  class State {
-    <<interface>>
-    +handle(context)
-  }
-  class ConcreteStateA {
-    +handle(context)
-  }
-  class ConcreteStateB {
-    +handle(context)
-  }
+![Diagrama: 01-state](./assets/images/diagrams/01-state.png)
 
-  Context --> State
-  State <|.. ConcreteStateA
-  State <|.. ConcreteStateB
-  ConcreteStateA --> Context : puede cambiar estado
-  ConcreteStateB --> Context : puede cambiar estado
-```
-
-Fuente editable: [assets/diagrams/01-state.mermaid](./assets/diagrams/01-state.mermaid)
+> *Fuente editable (Mermaid):* [01-state.mermaid](./assets/diagrams/01-state.mermaid)
 
 **Ejemplo conceptual (C#):**
 
@@ -1025,20 +765,9 @@ public class StockValidationHandler : ValidationHandler
 
 **En .NET:** MediatR es la implementación más conocida. El controller no conoce handlers; solo envía un command o query al mediador. Los handlers no se referencian entre sí directamente — el mediador enruta.
 
-```mermaid
-flowchart TB
-  C1[Controller]
-  M[Mediator / MediatR]
-  H1[CreateOrderHandler]
-  H2[ValidateStockHandler]
-  H3[SendEmailHandler]
-  C1 -->|Send command| M
-  M --> H1
-  M --> H2
-  M --> H3
-```
+![Diagrama: 01-cqrs-mediator](./assets/images/diagrams/01-cqrs-mediator.png)
 
-Fuente editable: [assets/diagrams/01-cqrs-mediator.mermaid](./assets/diagrams/01-cqrs-mediator.mermaid)
+> *Fuente editable (Mermaid):* [01-cqrs-mediator.mermaid](./assets/diagrams/01-cqrs-mediator.mermaid)
 
 #### Cuándo usar
 
@@ -1075,22 +804,9 @@ Estos patrones no vienen del libro GoF original, pero son **estándar** en backe
 - Ocultar ORM, SQL, índices, paginación interna.
 - Permitir tests con un `FakeOrderRepository` en memoria.
 
-```mermaid
-flowchart LR
-  subgraph DOMINIO["Capa de dominio / aplicacion"]
-    S[Servicio de aplicacion]
-    IR[IOrderRepository interface]
-    S --> IR
-  end
-  subgraph INFRA["Infraestructura"]
-    EF[EfOrderRepository]
-    DB[(Base de datos)]
-    EF --> DB
-  end
-  IR -.->|implementa| EF
-```
+![Diagrama: 01-repository](./assets/images/diagrams/01-repository.png)
 
-Fuente editable: [assets/diagrams/01-repository.mermaid](./assets/diagrams/01-repository.mermaid)
+> *Fuente editable (Mermaid):* [01-repository.mermaid](./assets/diagrams/01-repository.mermaid)
 
 **Repository vs acceso directo a DbContext:**
 
@@ -1125,22 +841,9 @@ Fuente editable: [assets/diagrams/01-repository.mermaid](./assets/diagrams/01-re
 
 **En Entity Framework Core:** `DbContext.SaveChanges()` actúa como Unit of Work — rastrea cambios y los persiste en una transacción. No siempre necesitas una interfaz `IUnitOfWork` explícita si el DbContext ya delimita la unidad.
 
-```mermaid
-sequenceDiagram
-  participant App as Servicio aplicacion
-  participant UoW as Unit of Work
-  participant R1 as OrderRepository
-  participant R2 as CustomerRepository
-  participant DB as Base de datos
+![Diagrama: 01-unit-of-work](./assets/images/diagrams/01-unit-of-work.png)
 
-  App->>UoW: Begin
-  App->>R1: Update(order)
-  App->>R2: Update(customer)
-  App->>UoW: Commit()
-  UoW->>DB: transaccion unica
-```
-
-Fuente editable: [assets/diagrams/01-unit-of-work.mermaid](./assets/diagrams/01-unit-of-work.mermaid)
+> *Fuente editable (Mermaid):* [01-unit-of-work.mermaid](./assets/diagrams/01-unit-of-work.mermaid)
 
 #### Cuándo usar
 
@@ -1173,41 +876,13 @@ Fuente editable: [assets/diagrams/01-unit-of-work.mermaid](./assets/diagrams/01-
 | **CQRS lógico** | Mismas tablas; clases `CreateOrderCommand` / `GetOrdersQuery` separadas |
 | **CQRS físico** | Bases distintas: OLTP para escribir, proyección o BD de lectura |
 
-```mermaid
-flowchart TB
-  subgraph ESCRITURA["Lado comando"]
-    CMD[CreateOrderCommand]
-    CH[Command Handler]
-    DOM[Dominio + invariantes]
-    WR[(BD escritura)]
-    CMD --> CH --> DOM --> WR
-  end
-  subgraph LECTURA["Lado consulta"]
-    QRY[GetOrdersQuery]
-    QH[Query Handler]
-    RD[(BD lectura / proyeccion)]
-    QRY --> QH --> RD
-  end
-```
+![Diagrama: 01-cqrs-split](./assets/images/diagrams/01-cqrs-split.png)
 
-Fuente editable: [assets/diagrams/01-cqrs-split.mermaid](./assets/diagrams/01-cqrs-split.mermaid)
+> *Fuente editable (Mermaid):* [01-cqrs-split.mermaid](./assets/diagrams/01-cqrs-split.mermaid)
 
 **Flujo completo con Mediator:**
 
-```mermaid
-sequenceDiagram
-  participant API as API Controller
-  participant M as Mediator
-  participant H as Command Handler
-  participant D as Domain
-  participant R as Repository
-
-  API->>M: Send(CreateOrderCommand)
-  M->>H: dispatch
-  H->>D: apply business rules
-  H->>R: persist
-  H-->>API: result DTO
-```
+![Diagrama](./assets/images/diagrams/embedded-3d931326eae9.png)
 
 #### Cuándo usar
 
@@ -1258,24 +933,9 @@ Un **Domain Event** es algo que ocurrió en el dominio, expresado en lenguaje de
 
 **Inbox (complemento):** tabla de IDs de mensajes ya procesados para ignorar duplicados cuando el bus garantiza **at-least-once delivery**.
 
-```mermaid
-sequenceDiagram
-  participant H as Handler
-  participant DB as Base de datos
-  participant OB as Tabla Outbox
-  participant W as Outbox Worker
-  participant BUS as Message Bus
+![Diagrama: 01-outbox](./assets/images/diagrams/01-outbox.png)
 
-  H->>DB: BEGIN TRANSACTION
-  H->>DB: INSERT Order
-  H->>OB: INSERT OutboxMessage
-  H->>DB: COMMIT
-  W->>OB: poll pending messages
-  W->>BUS: publish
-  W->>OB: mark as sent
-```
-
-Fuente editable: [assets/diagrams/01-outbox.mermaid](./assets/diagrams/01-outbox.mermaid)
+> *Fuente editable (Mermaid):* [01-outbox.mermaid](./assets/diagrams/01-outbox.mermaid)
 
 #### Cuándo usar
 
@@ -1304,13 +964,7 @@ Fuente editable: [assets/diagrams/01-outbox.mermaid](./assets/diagrams/01-outbox
 
 La ACL traduce **en ambos sentidos** si hace falta: peticiones salientes al formato legacy y respuestas entrantes a tus value objects y entidades. Es Adapter a escala de **bounded context**.
 
-```mermaid
-flowchart LR
-  EXT[Sistema externo / Legacy]
-  ACL[Anti-Corruption Layer]
-  DOM[Tu dominio limpio]
-  EXT -->|modelo ajeno| ACL -->|modelo propio| DOM
-```
+![Diagrama](./assets/images/diagrams/embedded-4fdd620ad0f4.png)
 
 #### Cuándo usar
 
@@ -1340,15 +994,9 @@ Dos estilos (detalle en capítulo 04):
 | **Coreografía** | Cada servicio reacciona a eventos y emite el siguiente |
 | **Orquestación** | Un coordinador central define pasos y compensaciones |
 
-```mermaid
-flowchart LR
-  A[Crear pedido] --> B[Autorizar pago]
-  B --> C[Reservar stock]
-  C --> D[Confirmar pedido]
-  C -.->|fallo| X[Compensar pago]
-```
+![Diagrama: 01-saga-overview](./assets/images/diagrams/01-saga-overview.png)
 
-Fuente editable: [assets/diagrams/01-saga-overview.mermaid](./assets/diagrams/01-saga-overview.mermaid)
+> *Fuente editable (Mermaid):* [01-saga-overview.mermaid](./assets/diagrams/01-saga-overview.mermaid)
 
 #### Cuándo usar
 
@@ -1378,15 +1026,7 @@ Preguntas antes de introducir un patrón:
 3. ¿El equipo **entenderá** la estructura en seis meses?
 4. ¿Los tests serán **más fáciles** después?
 
-```mermaid
-flowchart TD
-  P[Problema recurrente?]
-  P -->|No| KISS[Mantener simple]
-  P -->|Si| S[Solucion minima]
-  S --> T[Tests mas claros?]
-  T -->|Si| OK[Aplicar patron]
-  T -->|No| REV[Revisar diseno]
-```
+![Diagrama](./assets/images/diagrams/embedded-b191abdf686d.png)
 
 ### Cuándo parar de añadir patrones
 

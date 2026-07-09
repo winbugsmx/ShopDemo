@@ -1,0 +1,17 @@
+﻿flowchart LR
+  subgraph V1["Versión 1"]
+    A1[Inst 1]
+    A2[Inst 2]
+    A3[Inst 3]
+  end
+  subgraph MIX["Transición"]
+    B1[v2]
+    B2[v1]
+    B3[v1]
+  end
+  subgraph V2["Versión 2"]
+    C1[v2]
+    C2[v2]
+    C3[v2]
+  end
+  V1 --> MIX --> V2

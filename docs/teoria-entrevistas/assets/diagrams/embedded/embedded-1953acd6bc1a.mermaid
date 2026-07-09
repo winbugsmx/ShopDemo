@@ -1,0 +1,14 @@
+﻿flowchart TB
+  subgraph TU["Tu responsabilidad"]
+    APP[Código de la aplicación]
+    DAT[Modelo de datos y reglas de negocio]
+  end
+  subgraph AZURE["Azure gestiona"]
+    HW[Servidores físicos]
+    RED[Red y conmutación]
+    SO[Sistema operativo en IaaS/PaaS]
+    PATCH[Parches de seguridad]
+    BACK[Backups automáticos en PaaS]
+  end
+  APP --> AZURE
+  DAT --> AZURE

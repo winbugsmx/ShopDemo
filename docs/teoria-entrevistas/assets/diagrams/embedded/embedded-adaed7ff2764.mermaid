@@ -1,0 +1,6 @@
+﻿flowchart LR
+  INT[Internet] --> ING[Ingress integrado]
+  ING --> CA1[Container App - API v1]
+  ING --> CA2[Container App - API v2]
+  CA1 --> SB[Service Bus]
+  CA2 --> SB

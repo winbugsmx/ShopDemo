@@ -1,0 +1,5 @@
+﻿flowchart LR
+  REQ[kubectl apply] --> API[API Server]
+  API --> ADM[Admission Controllers]
+  ADM -->|valid| ETCD[etcd]
+  ADM -->|reject| ERR[Error al usuario]

@@ -62,28 +62,9 @@ La síntesis te enseña a **encadenar decisiones**, no a recitar definiciones.
 
 Ningún capítulo vive aislado. Este diagrama muestra cómo se alimentan entre sí:
 
-```mermaid
-flowchart TB
-  P[01 Patrones] --> A[02 Arquitecturas]
-  A --> D[03 DDD]
-  D --> M[04 Microservicios]
-  A --> M
-  M --> O[09 Observabilidad]
-  M --> R[10 Resiliencia]
-  M --> AZ[05 Azure]
-  M --> AW[06 AWS]
-  AZ --> K[07 Kubernetes]
-  AW --> K
-  K --> C[08 CI/CD]
-  C --> O
-  I[11 IA y MCP] --> C
-  I --> O
-  O --> S[12 Síntesis]
-  R --> S
-  C --> S
-```
+![Diagrama: 12-chapter-map](./assets/images/diagrams/12-chapter-map.png)
 
-Fuente editable: [assets/diagrams/12-chapter-map.mermaid](./assets/diagrams/12-chapter-map.mermaid)
+> *Fuente editable (Mermaid):* [12-chapter-map.mermaid](./assets/diagrams/12-chapter-map.mermaid)
 
 ### Definición formal
 
@@ -118,19 +99,9 @@ Un **mapa de dependencias pedagógicas** indica qué conocimientos son **prerreq
 
 Imagina que tu equipo recibe el encargo de construir una plataforma de comercio online. No importa el lenguaje ni la nube — el **orden de pensamiento** es el mismo. Vamos etapa por etapa.
 
-```mermaid
-flowchart LR
-  D[Dominio y DDD] --> ARQ[Arquitectura del código]
-  ARQ --> COM[Comunicación entre servicios]
-  COM --> CL[Plataforma cloud]
-  CL --> K8[Orquestación K8s]
-  K8 --> CI[CI/CD]
-  CI --> OBS[Observabilidad]
-  OBS --> RES[Resiliencia]
-  RES --> IA[IA y MCP]
-```
+![Diagrama: 12-journey-production](./assets/images/diagrams/12-journey-production.png)
 
-Fuente editable: [assets/diagrams/12-journey-production.mermaid](./assets/diagrams/12-journey-production.mermaid)
+> *Fuente editable (Mermaid):* [12-journey-production.mermaid](./assets/diagrams/12-journey-production.mermaid)
 
 Cada etapa responde una pregunta distinta. Saltarte una — por ejemplo desplegar sin observabilidad — no impide el deploy, pero **multiplica el coste** de cada incidente posterior.
 
@@ -430,30 +401,9 @@ La IA no es una etapa "después" de todo lo demás — es una **capa transversal
 
 Este diagrama resume **preguntas en orden** — no respuestas únicas para todos los proyectos:
 
-```mermaid
-flowchart TB
-  START[Nuevo sistema de negocio]
-  START --> D1{Dominio entendido?}
-  D1 -->|No| MONO1[Monolito modular + DDD tactico]
-  D1 -->|Si| D2{Equipos autonomos y escala distinta?}
-  D2 -->|No| MONO2[Monolito modular con bounded contexts]
-  D2 -->|Si| MS[Microservicio por bounded context]
-  MONO1 --> ARQ[Clean o Hexagonal internamente]
-  MONO2 --> ARQ
-  MS --> COM{Consulta inmediata o reaccion?}
-  ARQ --> COM
-  COM -->|Inmediata| SYNC[HTTP/gRPC + timeout + CB]
-  COM -->|Reaccion| ASYNC[Cola/stream + idempotencia]
-  SYNC --> DEP{Control operativo maximo?}
-  ASYNC --> DEP
-  DEP -->|Si| K8S[Kubernetes + GitOps]
-  DEP -->|No| PAAS[PaaS serverless o Container Apps/ECS]
-  K8S --> OBS[OpenTelemetry + SLO]
-  PAAS --> OBS
-  OBS --> RES[Timeout retry CB bulkhead]
-```
+![Diagrama: 12-decision-tree](./assets/images/diagrams/12-decision-tree.png)
 
-Fuente editable: [assets/diagrams/12-decision-tree.mermaid](./assets/diagrams/12-decision-tree.mermaid)
+> *Fuente editable (Mermaid):* [12-decision-tree.mermaid](./assets/diagrams/12-decision-tree.mermaid)
 
 ### Explicación desarrollada
 
@@ -616,42 +566,9 @@ Dentro del monolito, **Pedidos** debe reaccionar cuando **Inventario** confirma 
 - Worker publica a cola cuando Inventario sea servicio externo.
 - **Por qué (cap. 01):** evitar "guardé pedido pero no avisé a nadie".
 
-```mermaid
-flowchart TB
-  subgraph DISENO["03 DDD + 02 Arquitectura"]
-    BC1[Contexto Catalogo]
-    BC2[Contexto Pedidos]
-    BC3[Contexto Inventario]
-    BC4[Contexto Pagos]
-  end
-  subgraph CODIGO["01 Patrones + 02 Clean"]
-    CMD[CreateOrderCommand]
-    AGG[Agregado Order]
-    REPO[Repository + UoW]
-    OUT[Outbox]
-  end
-  subgraph COM["04 Comunicacion"]
-    API[POST /orders]
-    EVT[OrderPlaced evento]
-    SAGA[Saga compensacion]
-  end
-  subgraph OPS["05-10 Cloud K8s CI Observabilidad"]
-    PIPE[Pipeline CI/CD]
-    K8[Deployment K8s]
-    TRACE[Trace distribuido]
-    CB[Circuit breaker]
-  end
-  BC2 --> CMD --> AGG --> REPO --> OUT
-  API --> CMD
-  OUT --> EVT
-  EVT --> BC3
-  EVT --> BC4
-  BC2 -.->|fallo stock| SAGA
-  PIPE --> K8 --> TRACE
-  API --> CB
-```
+![Diagrama: 12-order-system-flow](./assets/images/diagrams/12-order-system-flow.png)
 
-Fuente editable: [assets/diagrams/12-order-system-flow.mermaid](./assets/diagrams/12-order-system-flow.mermaid)
+> *Fuente editable (Mermaid):* [12-order-system-flow.mermaid](./assets/diagrams/12-order-system-flow.mermaid)
 
 ---
 
@@ -847,12 +764,7 @@ La teoría prepara; **la práctica consolida**. Ningún capítulo sustituye escr
 
 Pero ahora tienes algo que muchos juniors no tienen después de años de programar: un **vocabulario preciso**, un **mapa de decisiones** y el criterio para saber **cuándo** aplicar cada concepto — y, tan importante, **cuándo no**.
 
-```mermaid
-flowchart LR
-  T[Teoria 12 capitulos] --> P[Practica proyectos reales]
-  P --> R[Reflexion y ADRs]
-  R --> T
-```
+![Diagrama](./assets/images/diagrams/embedded-c4a8dcc52b0a.png)
 
 El ciclo no termina: cada proyecto real enriquece tu lectura de los capítulos individuales.
 

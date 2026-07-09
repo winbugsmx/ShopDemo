@@ -42,19 +42,7 @@ DevOps propone:
 
 Para un junior en .NET: DevOps significa que cuando haces merge a `main`, un pipeline compila tu solución, ejecuta tests, construye imagen Docker y despliega en staging — sin que alguien copie DLLs a mano.
 
-```mermaid
-flowchart LR
-  subgraph ANTES["Modelo tradicional"]
-    DEV1[Dev] -->|handoff manual| OPS1[Ops]
-    OPS1 --> PROD1[Producción]
-  end
-  subgraph DEVOPS["DevOps"]
-    DEV2[Dev + Ops colaboran]
-    AUTO[Automatización]
-    DEV2 --> AUTO
-    AUTO --> PROD2[Producción frecuente]
-  end
-```
+![Diagrama](./assets/images/diagrams/embedded-56a050e7cd6f.png)
 
 ### Cuándo adoptar prácticas DevOps
 
@@ -90,14 +78,7 @@ Siempre que entregues software más allá de tu laptop. Desde equipos de 2 perso
 - Sin aprobación manual: merge a `main` → producción.
 - Requiere tests muy sólidos, feature flags y observabilidad madura.
 
-```mermaid
-flowchart LR
-  CI[Continuous Integration] --> BUILD[Build + Test OK]
-  BUILD --> DEL[Continuous Delivery]
-  DEL -->|aprobación manual| PROD1[Producción]
-  BUILD --> DEP[Continuous Deployment]
-  DEP -->|automático| PROD2[Producción]
-```
+![Diagrama](./assets/images/diagrams/embedded-195a941fe555.png)
 
 **Analogía:** CI es revisar cada ingrediente al cocinar. Delivery es tener el plato listo en pass (aprobación del chef para servir). Deployment es servir directamente al cliente cada plato aprobado por la máquina.
 
@@ -119,18 +100,9 @@ Un **pipeline CI/CD** es una secuencia **automatizada** de pasos que transforma 
 
 ### Explicación desarrollada
 
-```mermaid
-flowchart LR
-  C[Commit] --> B[Build]
-  B --> T[Test]
-  T --> S[Security Scan]
-  S --> P[Publish Image]
-  P --> D[Deploy Staging]
-  D --> A[Approval]
-  A --> PR[Deploy Production]
-```
+![Diagrama: 08-cicd-pipeline](./assets/images/diagrams/08-cicd-pipeline.png)
 
-Fuente editable: [assets/diagrams/08-cicd-pipeline.mermaid](./assets/diagrams/08-cicd-pipeline.mermaid)
+> *Fuente editable (Mermaid):* [08-cicd-pipeline.mermaid](./assets/diagrams/08-cicd-pipeline.mermaid)
 
 #### Fase 1: Source (origen)
 
@@ -209,20 +181,7 @@ Mecanismos:
 - Tests E2E contra staging.
 - Canaries automáticos (métricas de error rate).
 
-```mermaid
-flowchart TB
-  subgraph PIPE["Pipeline completo"]
-    S1[Source] --> S2[Build]
-    S2 --> S3[Test]
-    S3 --> S4[Scan]
-    S4 --> S5[Publish]
-    S5 --> S6[Deploy Staging]
-    S6 --> S7[Verify]
-    S7 --> S8{¿Aprobado?}
-    S8 -->|Sí| S9[Deploy Prod]
-    S8 -->|No| STOP[Detener]
-  end
-```
+![Diagrama](./assets/images/diagrams/embedded-f44b4185c566.png)
 
 ### Cuándo añadir cada fase
 
@@ -273,14 +232,7 @@ jobs:
       - run: dotnet test
 ```
 
-```mermaid
-flowchart TB
-  PUSH[Push a main] --> WF[Workflow YAML]
-  WF --> JOB1[Job: build-test]
-  WF --> JOB2[Job: deploy]
-  JOB1 --> RUNNER[Runner ubuntu-latest]
-  JOB2 -->|needs: build-test| RUNNER2[Runner con credenciales cloud]
-```
+![Diagrama](./assets/images/diagrams/embedded-0a6d2832a6e3.png)
 
 ### Cuándo usar GitHub Actions
 
@@ -309,25 +261,7 @@ Default en Kubernetes Deployments (`maxSurge`, `maxUnavailable`). También en Ap
 | Simple, sin infra extra | Mezcla temporal de versiones (compatibilidad API) |
 | Sin downtime si readiness OK | Rollback toma minutos (rollout inverso) |
 
-```mermaid
-flowchart LR
-  subgraph V1["Versión 1"]
-    A1[Inst 1]
-    A2[Inst 2]
-    A3[Inst 3]
-  end
-  subgraph MIX["Transición"]
-    B1[v2]
-    B2[v1]
-    B3[v1]
-  end
-  subgraph V2["Versión 2"]
-    C1[v2]
-    C2[v2]
-    C3[v2]
-  end
-  V1 --> MIX --> V2
-```
+![Diagrama](./assets/images/diagrams/embedded-480b3b975ec4.png)
 
 #### Cuándo usar rolling update
 
@@ -353,14 +287,7 @@ Despliegues rutinarios, APIs backward-compatible, equipos sin service mesh.
 | Rollback instantáneo | **Doble coste** de infra mientras existen ambos |
 | Sin mezcla de versiones | Migraciones de BD deben ser compatibles forward/backward |
 
-```mermaid
-flowchart TB
-  LB[Load Balancer]
-  LB -->|100%| BLUE[Blue v1.0]
-  LB -.->|0%| GREEN[Green v1.1]
-  LB -->|switch| GREEN
-  LB -.-> BLUE
-```
+![Diagrama](./assets/images/diagrams/embedded-62f0706f66e7.png)
 
 #### Cuándo usar blue-green
 
@@ -388,15 +315,7 @@ Implementación:
 | Validación con tráfico real | Requiere métricas y alertas maduras |
 | Blast radius pequeño | Complejidad de routing |
 
-```mermaid
-flowchart LR
-  USR[Usuarios] --> LB[Load Balancer]
-  LB -->|95%| OLD[v1.0]
-  LB -->|5%| NEW[v1.1 canary]
-  NEW --> MET[Métricas OK?]
-  MET -->|Sí| EXPAND[Subir a 100%]
-  MET -->|No| ROLL[Rollback canary]
-```
+![Diagrama](./assets/images/diagrams/embedded-94ea1f9c4377.png)
 
 #### Cuándo usar canary
 
@@ -462,13 +381,7 @@ Principios:
 | **Automatizado** | Operador aplica sin `kubectl` manual |
 | **Continuo** | Reconciliación en bucle |
 
-```mermaid
-flowchart LR
-  DEV[Developer] -->|git push| REPO[Repo Git]
-  REPO --> ARGO[Argo CD / Flux]
-  ARGO -->|sync| K8S[Clúster Kubernetes]
-  K8S -->|drift detectado| ARGO
-```
+![Diagrama](./assets/images/diagrams/embedded-2735a4f67369.png)
 
 ### Cuándo usar GitOps
 
@@ -502,12 +415,7 @@ Beneficios:
 - **Detección de drift:** Terraform plan muestra diferencias.
 - **Disaster recovery:** recrear infra desde Git.
 
-```mermaid
-flowchart LR
-  DEV[Developer] -->|PR| IaC[Bicep / Terraform]
-  IaC -->|apply| ARM[Azure RM / AWS API]
-  ARM --> RES[Recursos cloud]
-```
+![Diagrama](./assets/images/diagrams/embedded-2b2b73e5a8b0.png)
 
 ### Cuándo usar IaC
 
@@ -533,17 +441,7 @@ Reglas de oro:
 
 Flujo OIDC (Azure ejemplo mental):
 
-```mermaid
-sequenceDiagram
-  participant GHA as GitHub Actions
-  participant OIDC as Proveedor OIDC
-  participant Cloud as Azure / AWS
-  GHA->>OIDC: Solicita token JWT
-  OIDC-->>GHA: Token firmado
-  GHA->>Cloud: Assume role con token
-  Cloud-->>GHA: Credenciales temporales
-  GHA->>Cloud: Deploy recursos
-```
+![Diagrama](./assets/images/diagrams/embedded-a8b05e2adc3c.png)
 
 ### Cuándo aplicar OIDC
 
@@ -604,19 +502,7 @@ image: myregistry/orders-api:1.2.0@sha256:abc123...
 | **Smoke tests post-deploy** | Tests mínimos tras despliegue | Detectar deploy roto rápido |
 | **Lint / analyzers** | Reglas estáticas de código | Estilo y bugs obvios |
 
-```mermaid
-flowchart TB
-  CODE[Código] --> SAST[SAST]
-  CODE --> UNIT[Unit Tests]
-  DEPS[Dependencias] --> SCA[SCA]
-  IMAGE[Imagen Docker] --> SCAN[Container Scan]
-  SAST --> GATE{Quality Gate}
-  UNIT --> GATE
-  SCA --> GATE
-  SCAN --> GATE
-  GATE -->|pass| DEPLOY[Deploy]
-  GATE -->|fail| BLOCK[Bloquear]
-```
+![Diagrama](./assets/images/diagrams/embedded-8e9dff6c1ed7.png)
 
 ---
 
@@ -657,36 +543,13 @@ Estas métricas **no** miden velocidad a costa de calidad. Equipos de alto rendi
 
 Para un junior: preguntar "¿cuál es nuestro lead time?" en una empresa te posiciona como alguien que piensa en el sistema completo.
 
-```mermaid
-flowchart LR
-  DF[Deployment Frequency] --> PERF[Alto rendimiento]
-  LT[Lead Time] --> PERF
-  CFR[Change Failure Rate] --> PERF
-  MTTR[MTTR] --> PERF
-```
+![Diagrama](./assets/images/diagrams/embedded-88590886ff01.png)
 
 ---
 
 ## 13. Pipeline .NET containerizado: ejemplo integrado
 
-```mermaid
-flowchart TB
-  subgraph CI["CI - cada PR"]
-    PR[Pull Request] --> BUILD[dotnet build + test]
-    BUILD --> SONAR[Análisis código]
-  end
-  subgraph CD["CD - merge main"]
-    MERGE[Merge main] --> DOCKER[docker build]
-    DOCKER --> TRIVY[Scan imagen]
-    TRIVY --> PUSH[Push ACR/ECR]
-    PUSH --> STG[Deploy staging K8s]
-    STG --> SMOKE[Smoke /health]
-    SMOKE --> APPROVE{Aprobación}
-    APPROVE --> PROD[Deploy prod]
-    PROD --> VERIFY[Métricas + alertas]
-  end
-  CI --> CD
-```
+![Diagrama](./assets/images/diagrams/embedded-1f56e1ec0750.png)
 
 **Lectura paso a paso:**
 

@@ -39,17 +39,7 @@ Piensa en la arquitectura de un edificio: no describe cada tornillo, pero define
 
 Para un junior, la arquitectura también define **dónde pones el breakpoint** cuando depuras: en un monolito bien modular, un flujo de negocio puede seguirse en un solo proceso; en microservicios, ese mismo flujo cruza varios servicios y necesitas trazas distribuidas (capítulo 09).
 
-```mermaid
-flowchart TB
-  subgraph PREGUNTAS["La arquitectura responde"]
-    Q1[Donde vive la logica de negocio?]
-    Q2[Quien puede llamar a quien?]
-    Q3[Como se despliega y escala?]
-  end
-  ARQ[Decisiones de arquitectura] --> Q1
-  ARQ --> Q2
-  ARQ --> Q3
-```
+![Diagrama](./assets/images/diagrams/embedded-0639eb65cc37.png)
 
 ### Cuándo pensar en arquitectura (y cuándo no obsesionarse)
 
@@ -90,18 +80,7 @@ Desventajas cuando el sistema crece sin disciplina:
 - Escalar "solo la parte de búsqueda" implica escalar **todo** el monolito.
 - Un solo equipo grande compite por el mismo repositorio y los releases se vuelven lentos.
 
-```mermaid
-flowchart TB
-  subgraph MONO["Monolito - un despliegue"]
-    WEB[Controllers / API]
-    APP[Application]
-    DOM[Domain]
-    INF[Infrastructure - EF, HTTP]
-  end
-  WEB --> APP --> DOM
-  APP --> INF
-  INF --> DB[(Una base de datos)]
-```
+![Diagrama](./assets/images/diagrams/embedded-49de804d0e2c.png)
 
 ### Cuándo usar monolito (y cuándo no)
 
@@ -149,21 +128,9 @@ src/
 
 Cada módulo expone solo lo necesario al exterior. Los módulos se comunican por **interfaces públicas** o **eventos de dominio in-process**, nunca accediendo directamente a las clases internas del otro.
 
-```mermaid
-flowchart TB
-  subgraph MONOLITO["Un solo despliegue"]
-    M1[Modulo Catalogo]
-    M2[Modulo Pedidos]
-    M3[Modulo Pagos]
-  end
-  M2 -->|solo via interfaz| M1
-  M2 -->|evento interno| M3
-  M1 --> DB[(BD compartida o esquemas separados)]
-  M2 --> DB
-  M3 --> DB
-```
+![Diagrama: 02-monolito-modular](./assets/images/diagrams/02-monolito-modular.png)
 
-Fuente editable: [assets/diagrams/02-monolito-modular.mermaid](./assets/diagrams/02-monolito-modular.mermaid)
+> *Fuente editable (Mermaid):* [02-monolito-modular.mermaid](./assets/diagrams/02-monolito-modular.mermaid)
 
 La diferencia con un monolito "Big Ball of Mud" es **disciplina**: si el módulo Pedidos necesita un producto, llama a `ICatalogService.GetProduct(id)`, no hace `JOIN` directo a tablas del módulo Catálogo ni instancia `ProductRepository` del otro módulo.
 
@@ -201,21 +168,9 @@ Para un junior en C#, un microservicio es típicamente:
 - Su **propia base de datos** (idealmente; ver anti-patrón más adelante).
 - Contratos HTTP o mensajes documentados para otros servicios.
 
-```mermaid
-flowchart LR
-  subgraph MS["Microservicios"]
-    CAT[Servicio Catalogo]
-    ORD[Servicio Pedidos]
-    PAY[Servicio Pagos]
-  end
-  CAT --- DBC[(BD Catalogo)]
-  ORD --- DBO[(BD Pedidos)]
-  PAY --- DBP[(BD Pagos)]
-  ORD -->|HTTP / evento| CAT
-  ORD -->|evento| PAY
-```
+![Diagrama: 02-microservicios](./assets/images/diagrams/02-microservicios.png)
 
-Fuente editable: [assets/diagrams/02-microservicios.mermaid](./assets/diagrams/02-microservicios.mermaid)
+> *Fuente editable (Mermaid):* [02-microservicios.mermaid](./assets/diagrams/02-microservicios.mermaid)
 
 Comparación directa con monolito modular:
 
@@ -258,26 +213,9 @@ Señales típicas que verás como junior:
 - Una cadena `A → B → C → D` síncrona donde si B tarda 5 segundos, todo el checkout falla.
 - "Microservicios" que comparten la misma librería de entidades EF Core con las mismas clases `Order` y `Product`.
 
-```mermaid
-flowchart TB
-  subgraph DEPLOY["Tres despliegues independientes"]
-    S1[Servicio Pedidos]
-    S2[Servicio Inventario]
-    S3[Servicio Pagos]
-  end
-  subgraph SHARED["Acoplamiento oculto"]
-    DB[(Base de datos compartida)]
-    SYNC[Llamadas sincronas en cadena]
-  end
-  S1 --> DB
-  S2 --> DB
-  S3 --> DB
-  S1 --> SYNC
-  S2 --> SYNC
-  S3 --> SYNC
-```
+![Diagrama: 02-distributed-monolith](./assets/images/diagrams/02-distributed-monolith.png)
 
-Fuente editable: [assets/diagrams/02-distributed-monolith.mermaid](./assets/diagrams/02-distributed-monolith.mermaid)
+> *Fuente editable (Mermaid):* [02-distributed-monolith.mermaid](./assets/diagrams/02-distributed-monolith.mermaid)
 
 ### Cuándo sospechar distributed monolith (y cómo evitarlo)
 
@@ -322,19 +260,9 @@ El flujo típico de una petición `POST /orders`:
 3. **Domain** valida reglas (cantidad > 0, producto existe).
 4. **Infrastructure** persiste en SQL con EF Core.
 
-```mermaid
-flowchart TB
-  P[Presentacion - Controllers]
-  A[Aplicacion - Casos de uso]
-  D[Dominio - Reglas negocio]
-  I[Infraestructura - EF, APIs]
-  P --> A
-  A --> D
-  A --> I
-  I -.->|implementa interfaces| D
-```
+![Diagrama: 02-layered](./assets/images/diagrams/02-layered.png)
 
-Fuente editable: [assets/diagrams/02-layered.mermaid](./assets/diagrams/02-layered.mermaid)
+> *Fuente editable (Mermaid):* [02-layered.mermaid](./assets/diagrams/02-layered.mermaid)
 
 **Problema clásico:** en muchos proyectos reales, la capa de dominio es **delgada o inexistente**. Toda la lógica vive en `OrderService`. Eso nos lleva al modelo anémico (siguiente sección).
 
@@ -368,18 +296,9 @@ order.Total = -100;
 
 La lógica que debería vivir en `Order.Confirm()` está dispersa en `OrderService.ConfirmOrder()`, el controller y quizá un job nocturno. **Nadie garantiza** que las invariantes se cumplan en todos los caminos.
 
-```mermaid
-flowchart LR
-  subgraph ANEMIC["Modelo anemico"]
-    E[Order - solo propiedades]
-    S[OrderService - toda la logica]
-  end
-  CTRL[Controller] --> S
-  S --> E
-  S --> DB[(Base de datos)]
-```
+![Diagrama: 02-anemic-domain](./assets/images/diagrams/02-anemic-domain.png)
 
-Fuente editable: [assets/diagrams/02-anemic-domain.mermaid](./assets/diagrams/02-anemic-domain.mermaid)
+> *Fuente editable (Mermaid):* [02-anemic-domain.mermaid](./assets/diagrams/02-anemic-domain.mermaid)
 
 **Contraste con dominio rico:**
 
@@ -440,37 +359,9 @@ Regla de oro:
 
 La imagen anterior contrasta Clean (anillos) con Hexagonal (puertos simétricos). Comparten el mismo principio: **proteger el dominio**.
 
-```mermaid
-flowchart TB
-  subgraph EXTERIOR["Anillo 4 - Frameworks y Drivers"]
-    WEB[ASP.NET Core]
-    EF[Entity Framework]
-    MSG[Cola de mensajes]
-  end
-  subgraph ADAPTERS["Anillo 3 - Interface Adapters"]
-    CTRL[Controllers]
-    REPO[Repositorios concretos EfOrderRepository]
-    GW[Gateways HTTP externos]
-  end
-  subgraph APP["Anillo 2 - Application"]
-    UC[Casos de uso / Handlers MediatR]
-    DTO[DTOs de entrada y salida]
-  end
-  subgraph DOM["Anillo 1 - Domain - nucleo"]
-    ENT[Entidades y reglas]
-    VO[Value Objects]
-    IFACE[IOrderRepository - interfaz]
-  end
-  WEB --> CTRL
-  CTRL --> UC
-  UC --> ENT
-  UC --> IFACE
-  REPO -.->|implementa| IFACE
-  EF --> REPO
-  MSG --> REPO
-```
+![Diagrama: 02-clean-architecture](./assets/images/diagrams/02-clean-architecture.png)
 
-Fuente editable: [assets/diagrams/02-clean-architecture.mermaid](./assets/diagrams/02-clean-architecture.mermaid)
+> *Fuente editable (Mermaid):* [02-clean-architecture.mermaid](./assets/diagrams/02-clean-architecture.mermaid)
 
 #### Ejemplo pedagógico: cambiar de SQL Server a MongoDB
 
@@ -522,20 +413,9 @@ Con inversión:
 
 La flecha de **compilación** va de Infrastructure hacia Domain (infra implementa la interfaz del dominio). En **runtime**, el handler usa la interfaz y DI resuelve la implementación concreta.
 
-```mermaid
-flowchart TB
-  subgraph HIGH["Modulo de alto nivel - Application"]
-    UC[Caso de uso CreateOrderHandler]
-    IFACE[IOrderRepository - interfaz en Domain]
-    UC --> IFACE
-  end
-  subgraph LOW["Modulo de bajo nivel - Infrastructure"]
-    EF[EfOrderRepository]
-  end
-  EF -.->|implementa| IFACE
-```
+![Diagrama: 02-dependency-inversion](./assets/images/diagrams/02-dependency-inversion.png)
 
-Fuente editable: [assets/diagrams/02-dependency-inversion.mermaid](./assets/diagrams/02-dependency-inversion.mermaid)
+> *Fuente editable (Mermaid):* [02-dependency-inversion.mermaid](./assets/diagrams/02-dependency-inversion.mermaid)
 
 En `Program.cs` registras la implementación:
 
@@ -573,32 +453,9 @@ Clean enfatiza **anillos concéntricos**; Hexagonal enfatiza **simetría entre e
 
 Analogía: el hexágono es un **enchufe universal**. Puedes conectar un adaptador REST, uno gRPC o uno de cola en el mismo puerto de entrada. Del lado de salida, cambias la BD sin tocar el núcleo.
 
-```mermaid
-flowchart TB
-  subgraph ADAPTADORES_ENTRADA["Adaptadores de entrada - driving"]
-    REST[API REST]
-    CONS[Consumer de cola]
-    CLI[Consola / job]
-  end
-  subgraph NUCLEO["Nucleo hexagonal"]
-    APP[Aplicacion - casos de uso]
-    DOM[Dominio - reglas]
-  end
-  subgraph ADAPTADORES_SALIDA["Adaptadores de salida - driven"]
-    BD[(Base de datos)]
-    BUS[Message bus]
-    PAY[Pasarela de pago]
-  end
-  REST --> APP
-  CONS --> APP
-  CLI --> APP
-  APP --> DOM
-  APP --> BD
-  APP --> BUS
-  APP --> PAY
-```
+![Diagrama: 02-hexagonal](./assets/images/diagrams/02-hexagonal.png)
 
-Fuente editable: [assets/diagrams/02-hexagonal.mermaid](./assets/diagrams/02-hexagonal.mermaid)
+> *Fuente editable (Mermaid):* [02-hexagonal.mermaid](./assets/diagrams/02-hexagonal.mermaid)
 
 #### Clean vs Hexagonal — ¿son lo mismo?
 
@@ -636,20 +493,9 @@ En un restaurante tradicional (síncrono), el camarero espera en cocina hasta qu
 
 Un **evento de integración** típico: `OrderCreated { orderId, customerId, total, occurredAt }`. El servicio Pedidos lo publica al bus. Inventario reserva stock; Analytics actualiza métricas; Notificaciones envía email. **Pedidos no conoce** a esos consumidores.
 
-```mermaid
-sequenceDiagram
-  participant P as Servicio Pedidos
-  participant B as Bus de eventos
-  participant I as Servicio Inventario
-  participant A as Servicio Analytics
+![Diagrama: 02-event-driven](./assets/images/diagrams/02-event-driven.png)
 
-  P->>B: OrderCreated
-  B->>I: OrderCreated
-  B->>A: OrderCreated
-  Note over P,A: Pedidos no conoce Inventario ni Analytics
-```
-
-Fuente editable: [assets/diagrams/02-event-driven.mermaid](./assets/diagrams/02-event-driven.mermaid)
+> *Fuente editable (Mermaid):* [02-event-driven.mermaid](./assets/diagrams/02-event-driven.mermaid)
 
 **Ventajas:**
 
@@ -704,17 +550,9 @@ Conceptos clave:
 - **Timeout:** límites estrictos (minutos, no horas).
 - **Stateless:** no guardes estado en memoria entre invocaciones; usa BD o blob.
 
-```mermaid
-flowchart LR
-  T1[HTTP trigger] --> F[Funcion serverless]
-  T2[Timer / cron] --> F
-  T3[Mensaje en cola] --> F
-  F --> OUT1[Blob / BD]
-  F --> OUT2[Cola de salida]
-  F -.->|escala a cero| IDLE[Sin coste compute activo]
-```
+![Diagrama: 02-serverless](./assets/images/diagrams/02-serverless.png)
 
-Fuente editable: [assets/diagrams/02-serverless.mermaid](./assets/diagrams/02-serverless.mermaid)
+> *Fuente editable (Mermaid):* [02-serverless.mermaid](./assets/diagrams/02-serverless.mermaid)
 
 ### Cuándo usar serverless (y cuándo no)
 
@@ -745,23 +583,9 @@ Sin BFF, la app móvil llama a 5 microservicios, combina JSON en el cliente y ex
 - **BFF Mobile** expone endpoints optimizados (menos campos, menos round-trips).
 - Los microservicios de negocio **no cambian** por cada tipo de UI.
 
-```mermaid
-flowchart LR
-  WEB[App Web SPA]
-  MOB[App Movil]
-  BFF_WEB[BFF Web]
-  BFF_MOB[BFF Movil]
-  API1[Servicio Catalogo]
-  API2[Servicio Pedidos]
-  WEB --> BFF_WEB
-  MOB --> BFF_MOB
-  BFF_WEB --> API1
-  BFF_WEB --> API2
-  BFF_MOB --> API1
-  BFF_MOB --> API2
-```
+![Diagrama: 02-bff](./assets/images/diagrams/02-bff.png)
 
-Fuente editable: [assets/diagrams/02-bff.mermaid](./assets/diagrams/02-bff.mermaid)
+> *Fuente editable (Mermaid):* [02-bff.mermaid](./assets/diagrams/02-bff.mermaid)
 
 ### Cuándo usar BFF (y cuándo no)
 
@@ -800,24 +624,9 @@ Funciones típicas:
 
 Ejemplos de productos: **Azure API Management**, **AWS API Gateway**, **Kong**, **NGINX Ingress** en Kubernetes.
 
-```mermaid
-flowchart TB
-  CLIENT[Clientes externos]
-  GW[API Gateway]
-  AUTH[Autenticacion]
-  RATE[Rate limiting]
-  S1[Servicio A]
-  S2[Servicio B]
-  S3[Servicio C]
-  CLIENT --> GW
-  GW --> AUTH
-  GW --> RATE
-  GW --> S1
-  GW --> S2
-  GW --> S3
-```
+![Diagrama: 02-api-gateway](./assets/images/diagrams/02-api-gateway.png)
 
-Fuente editable: [assets/diagrams/02-api-gateway.mermaid](./assets/diagrams/02-api-gateway.mermaid)
+> *Fuente editable (Mermaid):* [02-api-gateway.mermaid](./assets/diagrams/02-api-gateway.mermaid)
 
 #### BFF vs API Gateway — ¿son lo mismo?
 
@@ -856,22 +665,9 @@ No existe respuesta única. Estas preguntas las haría un arquitecto senior en l
 4. **¿Hay picos de carga muy variables en tareas concretas?** Serverless para esas tareas.
 5. **¿Varios tipos de cliente (web, móvil)?** BFF + posiblemente API Gateway.
 
-```mermaid
-flowchart TD
-  START[Proyecto nuevo] --> Q1{Equipo pequeno y dominio incierto?}
-  Q1 -->|Si| MONO[Monolito modular + Clean/Hexagonal]
-  Q1 -->|No| Q2{Equipos autonomos por area de negocio?}
-  Q2 -->|No| MONO
-  Q2 -->|Si| Q3{Releases independientes obligatorios?}
-  Q3 -->|No| MONO
-  Q3 -->|Si| MS[Microservicios por bounded context]
-  MONO --> Q4{Picos muy variables?}
-  MS --> Q5{Muchos clientes distintos?}
-  Q4 -->|Si| FN[Serverless para tareas puntuales]
-  Q5 -->|Si| BFF[BFF + API Gateway]
-```
+![Diagrama: 02-decision-tree](./assets/images/diagrams/02-decision-tree.png)
 
-Fuente editable: [assets/diagrams/02-decision-tree.mermaid](./assets/diagrams/02-decision-tree.mermaid)
+> *Fuente editable (Mermaid):* [02-decision-tree.mermaid](./assets/diagrams/02-decision-tree.mermaid)
 
 #### Tabla resumen de recomendaciones
 

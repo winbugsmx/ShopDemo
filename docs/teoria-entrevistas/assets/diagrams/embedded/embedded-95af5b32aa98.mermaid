@@ -1,0 +1,11 @@
+﻿flowchart TB
+  subgraph NS1["Namespace frontend"]
+    P1[Pod UI]
+  end
+  subgraph NS2["Namespace backend"]
+    SVC[Service API]
+    P2[Pod API]
+  end
+  P1 -->|DNS interno| SVC
+  SVC --> P2
+  NP[NetworkPolicy] -.->|filtra| P1

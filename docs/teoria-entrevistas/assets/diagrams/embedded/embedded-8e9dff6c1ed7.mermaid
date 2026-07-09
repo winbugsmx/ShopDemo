@@ -1,0 +1,11 @@
+﻿flowchart TB
+  CODE[Código] --> SAST[SAST]
+  CODE --> UNIT[Unit Tests]
+  DEPS[Dependencias] --> SCA[SCA]
+  IMAGE[Imagen Docker] --> SCAN[Container Scan]
+  SAST --> GATE{Quality Gate}
+  UNIT --> GATE
+  SCA --> GATE
+  SCAN --> GATE
+  GATE -->|pass| DEPLOY[Deploy]
+  GATE -->|fail| BLOCK[Bloquear]

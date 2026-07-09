@@ -1,0 +1,7 @@
+﻿flowchart TD
+  HYP[Hipótesis de resiliencia] --> EXP[Experimento controlado]
+  EXP --> OBS[Observabilidad activa]
+  OBS --> RESULT{¿Hipótesis confirmada?}
+  RESULT -->|Sí| CONF[Confianza en diseño]
+  RESULT -->|No| FIX[Corregir diseño - añadir patrones]
+  FIX --> HYP

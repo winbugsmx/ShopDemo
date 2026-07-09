@@ -55,25 +55,7 @@ La diferencia clave con la monitorización tradicional (que veremos en la siguie
 
 ### Diagrama
 
-```mermaid
-flowchart TB
-  subgraph SISTEMA["Sistema en producción"]
-    INT[Estado interno - desconocido desde fuera]
-    APP[Código + infraestructura]
-    INT --- APP
-  end
-  subgraph SALIDAS["Salidas externas observables"]
-    MET[Métricas]
-    LOG[Logs]
-    TRA[Trazas]
-  end
-  APP --> MET
-  APP --> LOG
-  APP --> TRA
-  MET --> INF[Inferencia del estado interno]
-  LOG --> INF
-  TRA --> INF
-```
+![Diagrama](./assets/images/diagrams/embedded-0808524c4598.png)
 
 ### Cuándo usar / Cuándo no
 
@@ -118,25 +100,9 @@ En la práctica, ambas conviven. Necesitas dashboards y alertas (monitorización
 
 ### Diagrama
 
-```mermaid
-flowchart TB
-  subgraph MON["Monitorización tradicional"]
-    M1[Métricas predefinidas]
-    M2[Umbrales fijos]
-    M3[Alertas conocidas]
-    M1 --> M2 --> M3
-  end
-  subgraph OBS["Observabilidad"]
-    O1[Métricas + logs + trazas]
-    O2[Alta cardinalidad]
-    O3[Consultas ad-hoc]
-    O4[Incidentes no anticipados]
-    O1 --> O2 --> O3 --> O4
-  end
-  MON -.->|complementa| OBS
-```
+![Diagrama: 09-monitoring-vs-observability](./assets/images/diagrams/09-monitoring-vs-observability.png)
 
-Fuente editable: [assets/diagrams/09-monitoring-vs-observability.mermaid](./assets/diagrams/09-monitoring-vs-observability.mermaid)
+> *Fuente editable (Mermaid):* [09-monitoring-vs-observability.mermaid](./assets/diagrams/09-monitoring-vs-observability.mermaid)
 
 ### Cuándo usar / Cuándo no
 
@@ -169,19 +135,7 @@ Ningún pilar sustituye a los otros. Las métricas te dan la vista de pájaro; l
 
 ### Diagrama
 
-```mermaid
-flowchart TB
-  subgraph PILARES["Tres pilares"]
-    MET[Métricas - agregación temporal]
-    LOG[Logs - eventos discretos]
-    TRA[Trazas - camino distribuido]
-  end
-  COR[Correlación via trace_id / correlation_id]
-  MET --> COR
-  LOG --> COR
-  TRA --> COR
-  COR --> DIAG[Diagnóstico de incidentes]
-```
+![Diagrama](./assets/images/diagrams/embedded-b716598431d6.png)
 
 ### Cuándo usar / Cuándo no
 
@@ -259,22 +213,7 @@ Con estos buckets, Prometheus calcula: "El 98 % de requests respondieron en meno
 
 ### Diagrama
 
-```mermaid
-flowchart LR
-  subgraph COUNTER["Counter - solo sube"]
-    C1[http_requests_total +1]
-    C2[errors_total +1]
-  end
-  subgraph GAUGE["Gauge - sube y baja"]
-    G1[memory_usage_bytes]
-    G2[queue_depth]
-  end
-  subgraph HIST["Histogram - buckets"]
-    H1["le=0.1 → 850"]
-    H2["le=0.5 → 980"]
-    H3["le=1.0 → 995"]
-  end
-```
+![Diagrama](./assets/images/diagrams/embedded-c8a0e3320a7c.png)
 
 ### Cuándo usar / Cuándo no
 
@@ -315,18 +254,7 @@ Google identificó que la mayoría de problemas de producción se manifiestan en
 
 ### Diagrama
 
-```mermaid
-flowchart TB
-  GS[Golden Signals]
-  GS --> L[Latency - ¿cuánto tarda?]
-  GS --> T[Traffic - ¿cuánta demanda?]
-  GS --> E[Errors - ¿cuántos fallos?]
-  GS --> S[Saturation - ¿cuánto margen queda?]
-  L --> ACT[Acción: optimizar, escalar, alertar]
-  T --> ACT
-  E --> ACT
-  S --> ACT
-```
+![Diagrama](./assets/images/diagrams/embedded-0ea7441a3f3e.png)
 
 ### Cuándo usar / Cuándo no
 
@@ -403,14 +331,7 @@ durationMs > 1000 AND service = "payments-api"
 
 ### Diagrama
 
-```mermaid
-flowchart LR
-  S1[Servicio A - log JSON] --> AGG[Agregador - Fluent Bit / Promtail]
-  S2[Servicio B - log JSON] --> AGG
-  S3[Servicio C - log JSON] --> AGG
-  AGG --> STORE[(Loki / Elasticsearch / Log Analytics)]
-  STORE --> QUERY[Consultas: correlationId, traceId, level]
-```
+![Diagrama](./assets/images/diagrams/embedded-e0ec388129c5.png)
 
 ### Cuándo usar / Cuándo no
 
@@ -473,23 +394,9 @@ Si B tarda 3 segundos en la query SQL, lo verás como un span largo — sin adiv
 
 ### Diagrama
 
-```mermaid
-sequenceDiagram
-  participant GW as API Gateway
-  participant A as Service A
-  participant B as Service B
-  participant DB as Database
+![Diagrama: 09-distributed-tracing](./assets/images/diagrams/09-distributed-tracing.png)
 
-  Note over GW: trace-id abc, span-id s1
-  GW->>A: traceparent abc-s1
-  Note over A: span-id s2 (parent s1)
-  A->>B: traceparent abc-s2
-  Note over B: span-id s3 (parent s2)
-  B->>DB: query (span s4)
-  Note over GW,DB: Un trace = varios spans en árbol
-```
-
-Fuente editable: [assets/diagrams/09-distributed-tracing.mermaid](./assets/diagrams/09-distributed-tracing.mermaid)
+> *Fuente editable (Mermaid):* [09-distributed-tracing.mermaid](./assets/diagrams/09-distributed-tracing.mermaid)
 
 ### Cuándo usar / Cuándo no
 
@@ -534,29 +441,9 @@ Antes de OpenTelemetry, cada herramienta (Jaeger, Zipkin, New Relic, Datadog) te
 
 ### Diagrama
 
-```mermaid
-flowchart LR
-  subgraph APP["Aplicación"]
-    SDK[OTel SDK - auto/manual instrumentación]
-  end
-  subgraph COL["OTel Collector"]
-    REC[Receivers]
-    PROC[Processors - batch, filter, sampling]
-    EXP[Exporters]
-    REC --> PROC --> EXP
-  end
-  subgraph BACK["Backends"]
-    PROM[Prometheus / Mimir]
-    LOKI[Loki / Elasticsearch]
-    TEMPO[Tempo / Jaeger]
-  end
-  SDK -->|OTLP| COL
-  EXP --> PROM
-  EXP --> LOKI
-  EXP --> TEMPO
-```
+![Diagrama: 09-opentelemetry](./assets/images/diagrams/09-opentelemetry.png)
 
-Fuente editable: [assets/diagrams/09-opentelemetry.mermaid](./assets/diagrams/09-opentelemetry.mermaid)
+> *Fuente editable (Mermaid):* [09-opentelemetry.mermaid](./assets/diagrams/09-opentelemetry.mermaid)
 
 ### Cuándo usar / Cuándo no
 
@@ -605,17 +492,9 @@ Si tu SLA promete 99.5 % de disponibilidad al cliente, tu SLO interno debería s
 
 ### Diagrama
 
-```mermaid
-flowchart LR
-  SLI[SLI: métrica medida] --> SLO[SLO: objetivo interno]
-  SLO --> SLA[SLA: compromiso contractual]
-  SLO --> EB[Error budget: margen de fallo]
-  EB --> DEC{¿Budget agotado?}
-  DEC -->|Sí| FIX[Priorizar fiabilidad]
-  DEC -->|No| FEAT[Priorizar features]
-```
+![Diagrama: 09-sli-slo-budget](./assets/images/diagrams/09-sli-slo-budget.png)
 
-Fuente editable: [assets/diagrams/09-sli-slo-budget.mermaid](./assets/diagrams/09-sli-slo-budget.mermaid)
+> *Fuente editable (Mermaid):* [09-sli-slo-budget.mermaid](./assets/diagrams/09-sli-slo-budget.mermaid)
 
 ### Cuándo usar / Cuándo no
 
@@ -665,14 +544,7 @@ El error budget equilibra **velocidad de desarrollo** y **fiabilidad**. No es so
 
 ### Diagrama
 
-```mermaid
-flowchart TB
-  SLO["SLO 99.9% mensual"] --> EB["Error budget: 43.2 min/mes"]
-  EB --> CONS[Consumo por incidentes y despliegues]
-  CONS --> REM[Budget restante]
-  REM -->|> 50%| FEAT[Priorizar features]
-  REM -->|< 20%| FIX[Priorizar fiabilidad - freeze deploys]
-```
+![Diagrama](./assets/images/diagrams/embedded-88d39f81a934.png)
 
 ### Cuándo usar / Cuándo no
 
@@ -721,18 +593,9 @@ En sistemas con millones de requests por hora, guardar el 100 % de las trazas es
 
 ### Diagrama
 
-```mermaid
-flowchart TB
-  REQ[Request entrante] --> HEAD{Head sampling}
-  HEAD -->|Descartada| DROP[No se almacena trace]
-  HEAD -->|Retenida| TRACE[Trace completo]
-  TRACE --> TAIL{Tail sampling}
-  TAIL -->|Latencia alta o error| KEEP[Retener en backend]
-  TAIL -->|Normal| SAMPLE[Descartar o muestrear]
-  KEEP --> STORE[(Almacenamiento)]
-```
+![Diagrama: 09-sampling-strategies](./assets/images/diagrams/09-sampling-strategies.png)
 
-Fuente editable: [assets/diagrams/09-sampling-strategies.mermaid](./assets/diagrams/09-sampling-strategies.mermaid)
+> *Fuente editable (Mermaid):* [09-sampling-strategies.mermaid](./assets/diagrams/09-sampling-strategies.mermaid)
 
 ### Cuándo usar / Cuándo no
 
@@ -772,18 +635,9 @@ Sin correlación, habrías mirado solo logs y perdido horas. Con correlación, l
 
 ### Diagrama
 
-```mermaid
-flowchart TD
-  A[Alerta: pico en error rate] --> B[Consultar métricas Golden Signals]
-  B --> C[Filtrar logs por correlation ID / trace ID]
-  C --> D[Abrir trace distribuido]
-  D --> E[Identificar span lento o con error]
-  E --> F[Revisar logs del servicio en ese timestamp]
-  F --> G[Correlacionar con saturación de recursos]
-  G --> H[Causa raíz identificada - acción correctiva]
-```
+![Diagrama: 09-observability-correlation](./assets/images/diagrams/09-observability-correlation.png)
 
-Fuente editable: [assets/diagrams/09-observability-correlation.mermaid](./assets/diagrams/09-observability-correlation.mermaid)
+> *Fuente editable (Mermaid):* [09-observability-correlation.mermaid](./assets/diagrams/09-observability-correlation.mermaid)
 
 ### Cuándo usar / Cuándo no
 
@@ -836,26 +690,9 @@ Después de dos semanas, el equipo **silencia** el canal o ignora las notificaci
 
 ### Diagrama
 
-```mermaid
-flowchart TD
-  A1[Alerta sin contexto] --> FAT[Fatiga de alertas]
-  A2[Demasiadas alertas duplicadas] --> FAT
-  A3[Sin runbook ni severidad] --> FAT
-  FAT --> IGNORE[Equipo ignora avisos]
-  IGNORE --> MISS[Incidente real no atendido]
-  subgraph FIX["Mitigación"]
-    R1[Agrupar y deduplicar]
-    R2[SLO-based alerting]
-    R3[Runbooks y severidad]
-    R4[Silencios programados]
-  end
-  R1 --> HEALTH[Alertas accionables]
-  R2 --> HEALTH
-  R3 --> HEALTH
-  R4 --> HEALTH
-```
+![Diagrama: 09-alert-fatigue](./assets/images/diagrams/09-alert-fatigue.png)
 
-Fuente editable: [assets/diagrams/09-alert-fatigue.mermaid](./assets/diagrams/09-alert-fatigue.mermaid)
+> *Fuente editable (Mermaid):* [09-alert-fatigue.mermaid](./assets/diagrams/09-alert-fatigue.mermaid)
 
 ### Cuándo usar / Cuándo no
 
@@ -905,13 +742,7 @@ La elección depende de dónde despliegas, presupuesto y expertise del equipo �
 
 ### Diagrama
 
-```mermaid
-flowchart LR
-  INS[Instrumentación - OTel SDK] --> COL[Colección - OTel Collector]
-  COL --> STO[Almacenamiento - Prometheus/Loki/Tempo]
-  STO --> VIS[Visualización - Grafana]
-  VIS --> ALT[Alertas - Alertmanager/PagerDuty]
-```
+![Diagrama](./assets/images/diagrams/embedded-5dfc984f8967.png)
 
 ### Cuándo usar / Cuándo no
 
@@ -957,18 +788,7 @@ Un error clásico de equipos junior: "Añadimos observabilidad cuando tengamos t
 
 ### Diagrama
 
-```mermaid
-flowchart TB
-  MVP[MVP Observabilidad]
-  MVP --> M[Golden Signals por servicio]
-  MVP --> L[Logs JSON con trace_id]
-  MVP --> T[Trazas con propagación W3C]
-  MVP --> S[SLO + alertas basadas en SLO]
-  M --> PROD[Despliegue a producción]
-  L --> PROD
-  T --> PROD
-  S --> PROD
-```
+![Diagrama](./assets/images/diagrams/embedded-190d8b134dc7.png)
 
 ### Cuándo usar / Cuándo no
 

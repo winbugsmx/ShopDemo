@@ -52,20 +52,7 @@ Esto no es pesimismo — es realismo profesional. Los patrones de este capítulo
 
 ### Diagrama
 
-```mermaid
-flowchart TB
-  subgraph LOCAL["Entorno local"]
-    L1[Todo predecible]
-    L2[Un solo proceso]
-    L3[Fallo = total]
-  end
-  subgraph PROD["Producción distribuida"]
-    P1[Fallos parciales]
-    P2[Red no confiable]
-    P3[Fallo contenido con patrones]
-  end
-  LOCAL -.->|salto| PROD
-```
+![Diagrama](./assets/images/diagrams/embedded-d023796fb5f7.png)
 
 ### Cuándo usar / Cuándo no
 
@@ -121,14 +108,7 @@ Si el timeout interno es mayor que el externo, el servicio externo ya habrá fal
 
 ### Diagrama
 
-```mermaid
-flowchart LR
-  C[Cliente 30s] --> GW[Gateway 25s]
-  GW --> A[Servicio A 20s]
-  A --> B[Servicio B 15s]
-  B --> DB[BD 10s]
-  DB -->|timeout| FAIL[Error rápido al llamador]
-```
+![Diagrama](./assets/images/diagrams/embedded-f2d4c0306ea2.png)
 
 ### Cuándo usar / Cuándo no
 
@@ -190,16 +170,7 @@ Si un POST "crear pedido" llega al servidor, se procesa, pero la respuesta se pi
 
 ### Diagrama
 
-```mermaid
-flowchart TD
-  CALL[Llamada a dependencia] --> OK{¿Éxito?}
-  OK -->|Sí| DONE[Retornar resultado]
-  OK -->|No transitorio 4xx| FAIL[Fallar inmediatamente]
-  OK -->|Transitorio| ATT{¿Intentos < max?}
-  ATT -->|Sí| WAIT[Espera backoff + jitter]
-  WAIT --> CALL
-  ATT -->|No| FAIL
-```
+![Diagrama](./assets/images/diagrams/embedded-52c309655639.png)
 
 ### Cuándo usar / Cuándo no
 
@@ -266,19 +237,9 @@ Orden mental: Rate Limit → Bulkhead → Timeout → Retry → Circuit Breaker 
 
 ### Diagrama
 
-```mermaid
-stateDiagram-v2
-  [*] --> Closed
-  Closed --> Open: failures exceed threshold
-  Open --> HalfOpen: after cooldown timeout
-  HalfOpen --> Closed: probe success
-  HalfOpen --> Open: probe failure
-  note right of Closed: Cuenta fallos - llamadas normales
-  note right of Open: Rechaza todo - fallback o error rápido
-  note right of HalfOpen: N probes de prueba
-```
+![Diagrama: 10-circuit-breaker](./assets/images/diagrams/10-circuit-breaker.png)
 
-Fuente editable: [assets/diagrams/10-circuit-breaker.mermaid](./assets/diagrams/10-circuit-breaker.mermaid)
+> *Fuente editable (Mermaid):* [10-circuit-breaker.mermaid](./assets/diagrams/10-circuit-breaker.mermaid)
 
 ### Cuándo usar / Cuándo no
 
@@ -329,15 +290,7 @@ Polly ofrece `BulkheadPolicy` que limita paralelismo concurrente y cola de esper
 
 ### Diagrama
 
-```mermaid
-flowchart TB
-  REQ[Requests entrantes]
-  REQ --> FAST[Pool GET - 50 threads]
-  REQ --> SLOW[Pool Reports - 10 threads]
-  FAST --> OK1[Consultas responden]
-  SLOW --> SAT[Saturado - solo reports afectados]
-  SAT -.->|sin bulkhead| ALL[Todo el servicio caído]
-```
+![Diagrama](./assets/images/diagrams/embedded-7b785517d20f.png)
 
 ### Cuándo usar / Cuándo no
 
@@ -401,19 +354,9 @@ Token bucket es el más usado en APIs públicas por su balance entre simplicidad
 
 ### Diagrama
 
-```mermaid
-flowchart LR
-  subgraph BUCKET["Token bucket"]
-    T[Tokens acumulados]
-    R[Refill rate - tokens/segundo]
-    R --> T
-  end
-  REQ[Request] -->|consume 1 token| T
-  T -->|token disponible| OK[Permitir]
-  T -->|sin tokens| REJ[429 Too Many Requests]
-```
+![Diagrama: 10-token-bucket](./assets/images/diagrams/10-token-bucket.png)
 
-Fuente editable: [assets/diagrams/10-token-bucket.mermaid](./assets/diagrams/10-token-bucket.mermaid)
+> *Fuente editable (Mermaid):* [10-token-bucket.mermaid](./assets/diagrams/10-token-bucket.mermaid)
 
 ### Cuándo usar / Cuándo no
 
@@ -466,20 +409,7 @@ El principio fundamental es:
 
 ### Diagrama
 
-```mermaid
-flowchart TD
-  REQ[Request] --> CB{Circuit Breaker}
-  CB -->|Closed| CALL[Llamada downstream]
-  CB -->|Open| FB[Fallback]
-  CALL -->|Éxito| OK[Respuesta completa]
-  CALL -->|Fallo| FB
-  FB --> CACHE[Cache stale]
-  FB --> DEFAULT[Valor por defecto]
-  FB --> ALT[Ruta alternativa]
-  CACHE --> PART[Respuesta parcial con aviso]
-  DEFAULT --> PART
-  ALT --> PART
-```
+![Diagrama](./assets/images/diagrams/embedded-39095431a7ad.png)
 
 ### Cuándo usar / Cuándo no
 
@@ -514,21 +444,9 @@ Estudia este diagrama hasta que puedas explicarlo sin mirar. Es la secuencia men
 
 ### Diagrama
 
-```mermaid
-flowchart TB
-  REQ[Request entrante] --> RL[Rate Limiting]
-  RL --> BH[Bulkhead: pool aislado]
-  BH --> TO[Timeout]
-  TO --> CB{Circuit Breaker}
-  CB -->|Closed| CALL[Llamada a dependencia]
-  CB -->|Open| FB[Fallback / error rápido]
-  CALL -->|Fallo transitorio| RET[Retry con backoff + jitter]
-  RET --> CALL
-  CALL -->|Éxito| OK[Respuesta]
-  CALL -->|Fallo persistente| FB
-```
+![Diagrama: 10-resilience-patterns](./assets/images/diagrams/10-resilience-patterns.png)
 
-Fuente editable: [assets/diagrams/10-resilience-patterns.mermaid](./assets/diagrams/10-resilience-patterns.mermaid)
+> *Fuente editable (Mermaid):* [10-resilience-patterns.mermaid](./assets/diagrams/10-resilience-patterns.mermaid)
 
 ### Cuándo usar / Cuándo no
 
@@ -572,17 +490,9 @@ Una **cascada de fallos** (failure cascade) ocurre cuando el fallo o lentitud de
 
 ### Diagrama
 
-```mermaid
-flowchart TD
-  B[Servicio B lento o caído] --> A[Servicio A acumula threads esperando]
-  A --> C[Servicio C depende de A y también falla]
-  B -. mitigación .-> T[Timeout]
-  B -. mitigación .-> CB[Circuit Breaker]
-  A -. mitigación .-> BH[Bulkhead]
-  C -. mitigación .-> RL[Rate Limiting]
-```
+![Diagrama: 10-failure-cascade](./assets/images/diagrams/10-failure-cascade.png)
 
-Fuente editable: [assets/diagrams/10-failure-cascade.mermaid](./assets/diagrams/10-failure-cascade.mermaid)
+> *Fuente editable (Mermaid):* [10-failure-cascade.mermaid](./assets/diagrams/10-failure-cascade.mermaid)
 
 ### Cuándo usar / Cuándo no
 
@@ -630,13 +540,7 @@ Ambos son complementarios.
 
 ### Diagrama
 
-```mermaid
-flowchart LR
-  PROD[Productor rápido] -->|sin backpressure| COLA[Cola crece infinitamente]
-  COLA --> OOM[OOM / latencia extrema]
-  PROD2[Productor] -->|con backpressure| SEM[Semáforo / ACK]
-  SEM --> CONS[Consumidor lento pero estable]
-```
+![Diagrama](./assets/images/diagrams/embedded-1c0d6d1a8001.png)
 
 ### Cuándo usar / Cuándo no
 
@@ -688,17 +592,7 @@ Descartar mensajes fallidos es tentador pero peligroso — pierdes datos. DLQ pr
 
 ### Diagrama
 
-```mermaid
-flowchart TD
-  MSG[Mensaje entrante] --> PROC[Procesar]
-  PROC -->|Éxito| OK[Completado]
-  PROC -->|Fallo| RET{Reintentos < max?}
-  RET -->|Sí| WAIT[Espera backoff]
-  WAIT --> PROC
-  RET -->|No| DLQ[Dead-Letter Queue]
-  DLQ --> ALERT[Alerta al equipo]
-  DLQ --> ANAL[Análisis manual / replay]
-```
+![Diagrama](./assets/images/diagrams/embedded-4b1d1dfdbee0.png)
 
 ### Cuándo usar / Cuándo no
 
@@ -758,19 +652,9 @@ Si el proceso está en deadlock o bucle infinito, liveness detecta que no respon
 
 ### Diagrama
 
-```mermaid
-flowchart TB
-  subgraph K8S["Kubernetes"]
-    SP[Startup probe] -->|OK| RP[Readiness probe]
-    RP -->|OK| LP[Liveness probe]
-    LP -->|falla| RESTART[Reinicia pod]
-    RP -->|falla| NO_TRAFFIC[Quita del Service]
-    SP -->|pendiente| WAIT[No evalúa liveness/readiness]
-  end
-  SVC[Service / Ingress] -->|solo pods Ready| RP
-```
+![Diagrama: 10-health-checks-k8s](./assets/images/diagrams/10-health-checks-k8s.png)
 
-Fuente editable: [assets/diagrams/10-health-checks-k8s.mermaid](./assets/diagrams/10-health-checks-k8s.mermaid)
+> *Fuente editable (Mermaid):* [10-health-checks-k8s.mermaid](./assets/diagrams/10-health-checks-k8s.mermaid)
 
 ### Cuándo usar / Cuándo no
 
@@ -817,13 +701,7 @@ RTO y RPO son **decisiones de negocio** que informan decisiones técnicas — no
 
 ### Diagrama
 
-```mermaid
-flowchart LR
-  FAIL[Desastre / fallo mayor] --> RTO[Tiempo hasta restaurar servicio]
-  FAIL --> RPO[Datos perdidos en ventana temporal]
-  RTO --> ARCH[Arquitectura de recuperación]
-  RPO --> BACK[Estrategia de backup/replicación]
-```
+![Diagrama](./assets/images/diagrams/embedded-a9168e726fb8.png)
 
 ### Cuándo usar / Cuándo no
 
@@ -871,18 +749,7 @@ Si dos regiones aceptan escrituras simultáneas, ¿cómo resolves conflictos? Op
 
 ### Diagrama
 
-```mermaid
-flowchart TB
-  subgraph REGION1["Región West Europe"]
-    AZ1[AZ 1 - Pod activo]
-    AZ2[AZ 2 - Pod activo]
-    AZ3[AZ 3 - Pod activo]
-  end
-  subgraph REGION2["Región East US - standby"]
-    AZ4[AZ 1 - Standby]
-  end
-  REGION1 -->|failover si desastre regional| REGION2
-```
+![Diagrama](./assets/images/diagrams/embedded-31210d417aa1.png)
 
 ### Cuándo usar / Cuándo no
 
@@ -936,15 +803,7 @@ Chaos engineering **no es "romper cosas por diversión"**. Todo experimento debe
 
 ### Diagrama
 
-```mermaid
-flowchart TD
-  HYP[Hipótesis de resiliencia] --> EXP[Experimento controlado]
-  EXP --> OBS[Observabilidad activa]
-  OBS --> RESULT{¿Hipótesis confirmada?}
-  RESULT -->|Sí| CONF[Confianza en diseño]
-  RESULT -->|No| FIX[Corregir diseño - añadir patrones]
-  FIX --> HYP
-```
+![Diagrama](./assets/images/diagrams/embedded-bbbf3dcca200.png)
 
 ### Cuándo usar / Cuándo no
 
@@ -1009,14 +868,7 @@ Ambos pueden coexistir — mesh para timeout/retry básico, Polly para fallback 
 
 ### Diagrama
 
-```mermaid
-flowchart LR
-  HC[HttpClient] --> RET[Polly Retry]
-  RET --> CB[Polly Circuit Breaker]
-  CB --> TO[Polly Timeout]
-  TO --> FB[Polly Fallback]
-  FB --> DEP[Dependencia downstream]
-```
+![Diagrama](./assets/images/diagrams/embedded-5bc4b2283304.png)
 
 ### Cuándo usar / Cuándo no
 
@@ -1061,13 +913,7 @@ Diseña ambos **desde el inicio**. Un circuit breaker sin métricas que muestre 
 
 ### Diagrama
 
-```mermaid
-flowchart LR
-  RES[Patrones de resiliencia] --> MET[Métricas de resiliencia]
-  MET --> DASH[Dashboards y alertas]
-  DASH --> CHAOS[Chaos engineering]
-  CHAOS -->|valida| RES
-```
+![Diagrama](./assets/images/diagrams/embedded-fbf0f38451b3.png)
 
 ### Cuándo usar / Cuándo no
 

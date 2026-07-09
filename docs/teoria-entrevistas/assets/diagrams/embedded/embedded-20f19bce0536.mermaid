@@ -1,0 +1,4 @@
+﻿flowchart TB
+  KUBE[kubelet] -->|liveness fail| RESTART[Reinicia contenedor]
+  KUBE -->|readiness fail| ENDPOINT[Quita de endpoints Service]
+  KUBE -->|startup OK| ACTIVE[Activa liveness/readiness]

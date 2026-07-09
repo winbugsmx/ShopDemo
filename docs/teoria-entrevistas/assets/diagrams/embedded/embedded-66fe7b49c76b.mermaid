@@ -1,0 +1,9 @@
+﻿flowchart TB
+  subgraph EKS["Amazon EKS"]
+    CP[Control Plane - gestionado]
+    N1[Nodo EC2 o Fargate]
+    P[Pods .NET]
+    N1 --> P
+  end
+  ECR[Elastic Container Registry] --> EKS
+  GHA[GitHub Actions] --> ECR

@@ -1,0 +1,4 @@
+﻿flowchart TB
+  APP[Aplicación] -->|upload| BLOB[Blob Storage]
+  CDN[Azure CDN / Front Door] -->|serve estáticos| BLOB
+  EH[Event Hubs Capture] -->|archivo eventos| BLOB

@@ -50,13 +50,7 @@ En un monolito, invocar `inventoryService.Reserve()` es una llamada a método en
 | El coste de transporte es cero | Serialización, egress billing |
 | La red es homogénea | Mezcla HTTP/1.1, HTTP/2, VPN, firewalls |
 
-```mermaid
-flowchart LR
-  MONO[Llamada in-process] -->|microsegundos| OK[Exito casi seguro]
-  MS[Llamada HTTP entre servicios] -->|ms a segundos| F1[Timeout]
-  MS --> F2[500 error]
-  MS --> F3[Respuesta lenta]
-```
+![Diagrama](./assets/images/diagrams/embedded-bad1eb429b00.png)
 
 ### Cuándo diseñar defensivamente (y qué implica)
 
@@ -84,19 +78,9 @@ flowchart LR
 
 **Asíncrono** = enviar email: pulsas enviar y sigues trabajando; el destinatario lee cuando puede.
 
-```mermaid
-flowchart LR
-  subgraph SYNC["Sincrono"]
-    A[Cliente] -->|espera respuesta| B[Servicio]
-  end
-  subgraph ASYNC["Asincrono"]
-    P[Productor] --> Q[Broker]
-    Q --> C1[Consumidor 1]
-    Q --> C2[Consumidor 2]
-  end
-```
+![Diagrama: 04-sync-vs-async](./assets/images/diagrams/04-sync-vs-async.png)
 
-Fuente editable: [assets/diagrams/04-sync-vs-async.mermaid](./assets/diagrams/04-sync-vs-async.mermaid)
+> *Fuente editable (Mermaid):* [04-sync-vs-async.mermaid](./assets/diagrams/04-sync-vs-async.mermaid)
 
 | Aspecto | Síncrono | Asíncrono |
 |---|---|---|
@@ -143,19 +127,9 @@ public async Task<ActionResult<OrderDto>> Get(Guid id) { ... }
 public async Task<ActionResult<OrderDto>> Create(CreateOrderRequest req) { ... }
 ```
 
-```mermaid
-flowchart LR
-  CLIENT[Cliente HTTP]
-  subgraph REST["Recursos REST"]
-    R1[/orders]
-    R2[/orders/42]
-    R3[/products/7]
-  end
-  CLIENT -->|GET POST PUT PATCH DELETE| REST
-  REST --> JSON[Representacion JSON]
-```
+![Diagrama: 04-rest-resources](./assets/images/diagrams/04-rest-resources.png)
 
-Fuente editable: [assets/diagrams/04-rest-resources.mermaid](./assets/diagrams/04-rest-resources.mermaid)
+> *Fuente editable (Mermaid):* [04-rest-resources.mermaid](./assets/diagrams/04-rest-resources.mermaid)
 
 **Buenas prácticas REST:**
 
@@ -217,19 +191,7 @@ Los **métodos HTTP** definen la **intención semántica** de una operación sob
 | **503 Service Unavailable** | Servicio caído / mantenimiento | Circuit breaker abierto |
 | **504 Gateway Timeout** | Upstream lento | Timeout en gateway |
 
-```mermaid
-sequenceDiagram
-  participant C as Cliente
-  participant API as API REST
-  C->>API: POST /orders - body JSON
-  alt Validacion OK
-    API-->>C: 201 Created + Location
-  else Input invalido
-    API-->>C: 400 Bad Request
-  else Regla negocio
-    API-->>C: 422 Unprocessable Entity
-  end
-```
+![Diagrama](./assets/images/diagrams/embedded-258f21fd36c3.png)
 
 ### Cuándo ser estricto con semántica HTTP
 
@@ -266,16 +228,9 @@ service InventoryService {
 }
 ```
 
-```mermaid
-sequenceDiagram
-  participant A as Cliente gRPC
-  participant B as Servicio gRPC
-  A->>B: GetStock(StockRequest) - HTTP/2
-  B-->>A: StockResponse - Protobuf binario
-  Note over A,B: Contrato definido en archivo .proto
-```
+![Diagrama: 04-grpc](./assets/images/diagrams/04-grpc.png)
 
-Fuente editable: [assets/diagrams/04-grpc.mermaid](./assets/diagrams/04-grpc.mermaid)
+> *Fuente editable (Mermaid):* [04-grpc.mermaid](./assets/diagrams/04-grpc.mermaid)
 
 En .NET: paquete `Grpc.AspNetCore`, servicio implementa clase generada desde `.proto`.
 
@@ -317,26 +272,7 @@ La **mensajería asíncrona** usa un **broker** intermediario que recibe mensaje
 
 **Streaming:** ideal para alto volumen, replay histórico, analytics en tiempo casi real.
 
-```mermaid
-flowchart TB
-  P[Productor]
-  subgraph QUEUE["Cola - competencia"]
-    Q[Queue]
-    C1[Worker 1]
-    C2[Worker 2]
-    P --> Q
-    Q --> C1
-    Q --> C2
-  end
-  subgraph PUBSUB["Pub/Sub - fan-out"]
-    T[Topic]
-    S1[Suscriptor A]
-    S2[Suscriptor B]
-    P --> T
-    T --> S1
-    T --> S2
-  end
-```
+![Diagrama](./assets/images/diagrams/embedded-ebd6c50c0552.png)
 
 Componentes básicos:
 
@@ -385,18 +321,9 @@ Transacciones concurrentes **no se interfieren** como si fueran secuenciales (ni
 
 Tras `COMMIT`, los datos **sobreviven** a fallos de energía o reinicio del servidor — persistidos en disco o réplica sincronizada.
 
-```mermaid
-flowchart TB
-  TX[Transaccion BEGIN]
-  A[Atomicidad - todo o nada]
-  C[Consistencia - reglas de negocio]
-  I[Aislamiento - sin lecturas sucias]
-  D[Durabilidad - sobrevive reinicio]
-  TX --> A --> C --> I --> D
-  D --> COMMIT[COMMIT o ROLLBACK]
-```
+![Diagrama: 04-acid](./assets/images/diagrams/04-acid.png)
 
-Fuente editable: [assets/diagrams/04-acid.mermaid](./assets/diagrams/04-acid.mermaid)
+> *Fuente editable (Mermaid):* [04-acid.mermaid](./assets/diagrams/04-acid.mermaid)
 
 **Alcance en microservicios:** ACID aplica **dentro de una sola base de datos de un servicio**. No existe `BEGIN TRANSACTION` global entre Pedidos SQL e Inventario SQL en servidores distintos sin protocolo especializado (2PC — raramente usado).
 
@@ -431,12 +358,7 @@ Flujo típico en microservicios:
 
 Entre paso 1 y 3, Inventario puede mostrar stock "sin reservar" aunque el pedido ya existe.
 
-```mermaid
-flowchart LR
-  S[Servicio Pedidos] -->|OrderCreated| Q[Cola / Bus]
-  Q --> I[Inventario - T+500ms]
-  Q --> A[Analytics - T+30s]
-```
+![Diagrama](./assets/images/diagrams/embedded-c036c581cd70.png)
 
 **No es un bug** si el negocio define SLAs aceptables ("stock reflejado en < 2 s").
 
@@ -471,17 +393,9 @@ En la práctica, **P es inevitable** en sistemas distribuidos (la red fallará).
 - **CP:** priorizas consistencia — algunas peticiones fallan (no disponibles) hasta reconciliar.
 - **AP:** priorizas disponibilidad — respondes aunque los datos puedan estar desactualizados.
 
-```mermaid
-flowchart TB
-  NET[Particion de red - nodos aislados]
-  NET --> CHOICE{Debes elegir}
-  CHOICE --> C[Consistencia - datos iguales al instante]
-  CHOICE --> A[Disponibilidad - siempre responde]
-  C -.->|ejemplo| CP[Sistemas CP - algunos bancos, etcd]
-  A -.->|ejemplo| AP[Sistemas AP - DNS, caches]
-```
+![Diagrama: 04-cap](./assets/images/diagrams/04-cap.png)
 
-Fuente editable: [assets/diagrams/04-cap.mermaid](./assets/diagrams/04-cap.mermaid)
+> *Fuente editable (Mermaid):* [04-cap.mermaid](./assets/diagrams/04-cap.mermaid)
 
 **Para juniors:** CAP no dice "elige 2 de 3 siempre". Dice: **durante partición**, no tienes las tres. En operación normal sin partición, puedes tener buena consistencia y disponibilidad.
 
@@ -520,16 +434,9 @@ Ejemplo — confirmar pedido:
 | 3 | Inventario | Reservar stock | Liberar reserva |
 | 4 | Pedidos | Confirmar pedido | — |
 
-```mermaid
-flowchart LR
-  S1[Paso 1: Crear pedido PENDING] --> S2[Paso 2: Autorizar pago]
-  S2 --> S3[Paso 3: Reservar stock]
-  S3 --> S4[Paso 4: Confirmar pedido]
-  S3 -.->|fallo stock| C2[Compensar: reembolsar pago]
-  C2 -.-> C1[Compensar: cancelar pedido]
-```
+![Diagrama: 04-saga-steps](./assets/images/diagrams/04-saga-steps.png)
 
-Fuente editable: [assets/diagrams/04-saga-steps.mermaid](./assets/diagrams/04-saga-steps.mermaid)
+> *Fuente editable (Mermaid):* [04-saga-steps.mermaid](./assets/diagrams/04-saga-steps.mermaid)
 
 **Compensación ≠ rollback técnico:** a menudo es otra operación de negocio (`IssueRefund`, no `DELETE FROM payments`).
 
@@ -559,40 +466,15 @@ Fuente editable: [assets/diagrams/04-saga-steps.mermaid](./assets/diagrams/04-sa
 
 #### Coreografía — diagrama de secuencia
 
-```mermaid
-sequenceDiagram
-  participant O as Pedidos
-  participant P as Pagos
-  participant I as Inventario
-  participant B as Bus de eventos
-  O->>B: OrderCreated
-  B->>P: OrderCreated
-  P->>B: PaymentAuthorized
-  B->>I: PaymentAuthorized
-  I->>B: StockReserved
-  B->>O: StockReserved
-  O->>O: Confirmar pedido
-```
+![Diagrama: 04-saga-choreography](./assets/images/diagrams/04-saga-choreography.png)
 
-Fuente editable: [assets/diagrams/04-saga-choreography.mermaid](./assets/diagrams/04-saga-choreography.mermaid)
+> *Fuente editable (Mermaid):* [04-saga-choreography.mermaid](./assets/diagrams/04-saga-choreography.mermaid)
 
 #### Orquestación — diagrama de secuencia
 
-```mermaid
-sequenceDiagram
-  participant O as Saga Orchestrator
-  participant P as Pedidos
-  participant PA as Pagos
-  participant I as Inventario
-  O->>P: CreateOrder
-  P-->>O: OrderCreated
-  O->>PA: AuthorizePayment
-  PA-->>O: PaymentFailed
-  O->>P: CancelOrder
-  O->>PA: RefundPayment
-```
+![Diagrama: 04-saga-orchestration-seq](./assets/images/diagrams/04-saga-orchestration-seq.png)
 
-Fuente editable: [assets/diagrams/04-saga-orchestration-seq.mermaid](./assets/diagrams/04-saga-orchestration-seq.mermaid)
+> *Fuente editable (Mermaid):* [04-saga-orchestration-seq.mermaid](./assets/diagrams/04-saga-orchestration-seq.mermaid)
 
 Comparación:
 
@@ -604,21 +486,9 @@ Comparación:
 | Debugging | Necesita trazas excelentes | Flujo lineal en orquestador |
 | Riesgo | "Coreografía accidental" difícil de seguir | Orquestador con demasiada lógica de negocio |
 
-```mermaid
-flowchart TB
-  subgraph COREO["Coreografia"]
-    P1[Pedidos] -->|evento| P2[Pagos]
-    P2 -->|evento| P3[Inventario]
-  end
-  subgraph ORQ["Orquestacion"]
-    SO[Saga Orchestrator]
-    SO --> P1
-    SO --> P2
-    SO --> P3
-  end
-```
+![Diagrama: 04-saga-orchestration](./assets/images/diagrams/04-saga-orchestration.png)
 
-Fuente editable: [assets/diagrams/04-saga-orchestration.mermaid](./assets/diagrams/04-saga-orchestration.mermaid)
+> *Fuente editable (Mermaid):* [04-saga-orchestration.mermaid](./assets/diagrams/04-saga-orchestration.mermaid)
 
 ### Cuándo elegir cada enfoque
 
@@ -650,24 +520,9 @@ El **Transactional Outbox Pattern** garantiza que la **actualización de la base
 
 Worker hace poll de `OutboxMessages WHERE status = pending`, publica al bus, marca `sent`.
 
-```mermaid
-sequenceDiagram
-  participant H as Handler
-  participant DB as Base de datos
-  participant OB as Tabla Outbox
-  participant W as Outbox Worker
-  participant BUS as Message Bus
+![Diagrama: 04-outbox](./assets/images/diagrams/04-outbox.png)
 
-  H->>DB: BEGIN TRANSACTION
-  H->>DB: INSERT entidad de negocio
-  H->>OB: INSERT OutboxMessage
-  H->>DB: COMMIT
-  W->>OB: poll pending
-  W->>BUS: publish
-  W->>OB: mark sent
-```
-
-Fuente editable: [assets/diagrams/04-outbox.mermaid](./assets/diagrams/04-outbox.mermaid)
+> *Fuente editable (Mermaid):* [04-outbox.mermaid](./assets/diagrams/04-outbox.mermaid)
 
 Referencia relacionada en patrones: [assets/diagrams/01-outbox.mermaid](./assets/diagrams/01-outbox.mermaid)
 
@@ -707,12 +562,7 @@ La mayoría de brokers (AWS SQS, Azure Service Bus, RabbitMQ con ack) ofrecen **
 - Deduplicación por `messageId` en ventana temporal.
 - Transacciones locales en consumidor.
 
-```mermaid
-flowchart LR
-  P[Productor] -->|at-least-once| B[Broker]
-  B -->|puede duplicar| C[Consumidor idempotente]
-  C --> DB[(BD)]
-```
+![Diagrama](./assets/images/diagrams/embedded-4547f8ff279d.png)
 
 ### Cuándo asumir cada garantía
 
@@ -768,19 +618,9 @@ public async Task Handle(OrderCreated message, CancellationToken ct)
 
 `INSERT ... ON CONFLICT DO NOTHING` o equivalente en EF.
 
-```mermaid
-sequenceDiagram
-  participant B as Broker
-  participant C as Consumidor
-  participant DB as BD local
-  B->>C: mensaje id=abc - 1ra vez
-  C->>DB: INSERT ProcessedMessages abc
-  C->>DB: aplicar efecto de negocio
-  B->>C: mensaje id=abc - duplicado
-  C->>DB: abc ya existe - ignorar
-```
+![Diagrama: 04-idempotency](./assets/images/diagrams/04-idempotency.png)
 
-Fuente editable: [assets/diagrams/04-idempotency.mermaid](./assets/diagrams/04-idempotency.mermaid)
+> *Fuente editable (Mermaid):* [04-idempotency.mermaid](./assets/diagrams/04-idempotency.mermaid)
 
 ### Cuándo implementar idempotencia (obligatorio vs opcional)
 
@@ -811,15 +651,9 @@ Flujo:
 3. Tras N fallos → mueve a DLQ.
 4. Equipo ops recibe alerta, inspecciona payload, corrige bug o reprocesa manualmente.
 
-```mermaid
-flowchart LR
-  P[Productor] --> Q[Cola principal]
-  Q --> C[Consumidor]
-  C -->|fallo tras N reintentos| DLQ[Dead-Letter Queue]
-  DLQ --> OPS[Equipo ops - analisis manual]
-```
+![Diagrama: 04-dlq](./assets/images/diagrams/04-dlq.png)
 
-Fuente editable: [assets/diagrams/04-dlq.mermaid](./assets/diagrams/04-dlq.mermaid)
+> *Fuente editable (Mermaid):* [04-dlq.mermaid](./assets/diagrams/04-dlq.mermaid)
 
 **Buenas prácticas:**
 
@@ -867,12 +701,7 @@ En ASP.NET Core: paquete `Asp.Versioning.Mvc`.
 - **Cambios non-breaking:** añadir campo opcional → misma versión suele bastar.
 - **Deprecation:** header `Sunset`, documentación, plazo antes de apagar v1.
 
-```mermaid
-flowchart LR
-  C1[Cliente v1] -->|GET /v1/orders| API[API]
-  C2[Cliente v2] -->|GET /v2/orders| API
-  API --> S[Servicio interno unificado o adaptadores]
-```
+![Diagrama](./assets/images/diagrams/embedded-e4bf0c60255c.png)
 
 ### Cuándo versionar (y cuándo no)
 
@@ -904,19 +733,9 @@ Usuario reporta error en checkout. Sin correlation ID, buscas en logs de 5 servi
 4. Logger enriquece cada línea: `CorrelationId=req-7f3a`.
 5. OpenTelemetry span usa mismo trace id (capítulo 09).
 
-```mermaid
-sequenceDiagram
-  participant U as Usuario
-  participant GW as API Gateway
-  participant A as Servicio A
-  participant B as Servicio B
-  U->>GW: X-Correlation-Id: req-99
-  GW->>A: X-Correlation-Id: req-99
-  A->>B: X-Correlation-Id: req-99
-  Note over U,B: Mismo ID en todos los logs
-```
+![Diagrama: 04-correlation-id](./assets/images/diagrams/04-correlation-id.png)
 
-Fuente editable: [assets/diagrams/04-correlation-id.mermaid](./assets/diagrams/04-correlation-id.mermaid)
+> *Fuente editable (Mermaid):* [04-correlation-id.mermaid](./assets/diagrams/04-correlation-id.mermaid)
 
 En .NET: `Activity.Current` / OpenTelemetry; middleware que lee header y pone en `HttpContext` + `ILogger` scope.
 
@@ -942,16 +761,9 @@ Una **cascada de fallos** (*failure cascade*) ocurre cuando el fallo o degradaci
 
 Servicio B lento (500 ms → 30 s por bug de BD). Servicio A llama a B **síncronamente** en cada request. A acumula threads bloqueados esperando. Pool de threads agotado → A deja de responder. Servicio C depende de A → también cae. **Un bug en B tumba A y C.**
 
-```mermaid
-flowchart LR
-  U[Usuario] --> A[Servicio A]
-  A --> B[Servicio B lento]
-  A -.->|threads agotados| X[A cae]
-  C[Servicio C] --> A
-  C -.->|falla| X
-```
+![Diagrama: 10-failure-cascade](./assets/images/diagrams/10-failure-cascade.png)
 
-Fuente editable: [assets/diagrams/10-failure-cascade.mermaid](./assets/diagrams/10-failure-cascade.mermaid)
+> *Fuente editable (Mermaid):* [10-failure-cascade.mermaid](./assets/diagrams/10-failure-cascade.mermaid)
 
 **Mitigaciones (introducción — capítulo 10 profundiza):**
 
@@ -964,18 +776,7 @@ Fuente editable: [assets/diagrams/10-failure-cascade.mermaid](./assets/diagrams/
 | **Fallback / degradación** | Respuesta parcial si B no disponible |
 | **Rate limiting** | Protege B de sobrecarga |
 
-```mermaid
-sequenceDiagram
-  participant A as Servicio A
-  participant CB as Circuit Breaker
-  participant B as Servicio B
-  A->>CB: Llamada
-  CB->>B: Forward
-  B-->>CB: Timeout
-  Note over CB: Fallos acumulados - OPEN
-  A->>CB: Nueva llamada
-  CB-->>A: Fail fast sin llamar a B
-```
+![Diagrama](./assets/images/diagrams/embedded-3a0d29f1e74c.png)
 
 ### Cuándo preocuparse por cascadas (señales)
 
@@ -999,16 +800,9 @@ Una **llamada HTTP síncrona entre microservicios** es una petición request/res
 
 Patrón típico en checkout: Pedidos llama `GET /stock/{productId}` a Inventario antes de confirmar.
 
-```mermaid
-sequenceDiagram
-  participant A as Servicio A
-  participant B as Servicio B
-  A->>B: HTTP GET /stock/123
-  B-->>A: 200 OK { quantity: 10 }
-  Note over A,B: Sincrono - A espera a B
-```
+![Diagrama: 04-sync-http](./assets/images/diagrams/04-sync-http.png)
 
-Fuente editable: [assets/diagrams/04-sync-http.mermaid](./assets/diagrams/04-sync-http.mermaid)
+> *Fuente editable (Mermaid):* [04-sync-http.mermaid](./assets/diagrams/04-sync-http.mermaid)
 
 **Checklist HttpClient en .NET:**
 

@@ -1,0 +1,12 @@
+﻿flowchart TB
+  subgraph CAPAS["Pila tecnológica"]
+    L1[Aplicación]
+    L2[Datos]
+    L3[Runtime .NET / contenedor]
+    L4[Sistema operativo]
+    L5[Virtualización]
+    L6[Servidores físicos]
+  end
+  IaaS[IaaS - VM] --> L4
+  PaaS[PaaS - App Service] --> L3
+  SaaS[SaaS - M365] --> L1

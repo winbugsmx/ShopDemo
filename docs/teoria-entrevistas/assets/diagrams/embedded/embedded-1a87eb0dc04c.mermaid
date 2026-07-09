@@ -1,0 +1,4 @@
+﻿flowchart LR
+  APP[App Service / AKS Pod] -->|Managed Identity| KV[Key Vault]
+  KV --> SEC[Connection String SQL]
+  KV --> CERT[Certificado TLS]

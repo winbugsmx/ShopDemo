@@ -1,0 +1,17 @@
+﻿flowchart TB
+  subgraph SISTEMA["Sistema en producción"]
+    INT[Estado interno - desconocido desde fuera]
+    APP[Código + infraestructura]
+    INT --- APP
+  end
+  subgraph SALIDAS["Salidas externas observables"]
+    MET[Métricas]
+    LOG[Logs]
+    TRA[Trazas]
+  end
+  APP --> MET
+  APP --> LOG
+  APP --> TRA
+  MET --> INF[Inferencia del estado interno]
+  LOG --> INF
+  TRA --> INF

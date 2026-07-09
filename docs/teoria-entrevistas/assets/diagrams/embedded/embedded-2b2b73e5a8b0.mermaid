@@ -1,0 +1,4 @@
+﻿flowchart LR
+  DEV[Developer] -->|PR| IaC[Bicep / Terraform]
+  IaC -->|apply| ARM[Azure RM / AWS API]
+  ARM --> RES[Recursos cloud]

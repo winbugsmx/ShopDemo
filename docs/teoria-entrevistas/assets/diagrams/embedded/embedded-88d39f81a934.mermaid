@@ -1,0 +1,6 @@
+﻿flowchart TB
+  SLO["SLO 99.9% mensual"] --> EB["Error budget: 43.2 min/mes"]
+  EB --> CONS[Consumo por incidentes y despliegues]
+  CONS --> REM[Budget restante]
+  REM -->|> 50%| FEAT[Priorizar features]
+  REM -->|< 20%| FIX[Priorizar fiabilidad - freeze deploys]

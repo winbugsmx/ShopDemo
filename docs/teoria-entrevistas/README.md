@@ -49,10 +49,13 @@ Bienvenido. Esta guía está escrita **como si asistieras a un curso de arquitec
 
 | Tipo | Ubicación |
 |---|---|
-| Diagramas dentro de cada capítulo | Bloques Mermaid (se ven en GitHub y en editores compatibles) |
-| Archivos fuente para editar | [assets/diagrams/](./assets/diagrams/) |
-| Imágenes de apoyo | [assets/images/](./assets/images/) |
-| Cómo exportar a draw.io | [assets/RECURSOS-GRAFICOS.md](./assets/RECURSOS-GRAFICOS.md) |
+| **Imágenes PNG activas** | `assets/images/diagrams/` — visibles en Cursor (sin bloques Mermaid en el MD) |
+| Fuentes Mermaid editables | [assets/diagrams/](./assets/diagrams/) |
+| Regenerar / activar imágenes | `scripts/docs/Activate-TeoriaDiagramImages.ps1` |
+| Complementar PNG + fuente editable | `scripts/docs/Complement-FuenteEditableImages.ps1` |
+| Guía de edición | [assets/RECURSOS-GRAFICOS.md](./assets/RECURSOS-GRAFICOS.md) |
+
+> **Visualización:** Cada diagrama usa **imagen incrustada** (`![alt](./assets/images/diagrams/....png)`). Abre la **vista previa Markdown** (`Ctrl+Shift+V`) para ver los diagramas renderizados. La línea *Fuente editable* enlaza solo al `.mermaid`.
 
 ---
 

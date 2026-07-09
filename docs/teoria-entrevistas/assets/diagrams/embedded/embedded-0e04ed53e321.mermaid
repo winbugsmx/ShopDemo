@@ -1,0 +1,5 @@
+﻿flowchart LR
+  APP[App custom] --> EB[EventBridge Bus]
+  EC2[Eventos AWS] --> EB
+  EB -->|regla OrderCreated| L[Lambda]
+  EB -->|regla| SQS[SQS]

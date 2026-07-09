@@ -1,0 +1,12 @@
+﻿flowchart TD
+  REQ[Request] --> CB{Circuit Breaker}
+  CB -->|Closed| CALL[Llamada downstream]
+  CB -->|Open| FB[Fallback]
+  CALL -->|Éxito| OK[Respuesta completa]
+  CALL -->|Fallo| FB
+  FB --> CACHE[Cache stale]
+  FB --> DEFAULT[Valor por defecto]
+  FB --> ALT[Ruta alternativa]
+  CACHE --> PART[Respuesta parcial con aviso]
+  DEFAULT --> PART
+  ALT --> PART

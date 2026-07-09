@@ -1,0 +1,4 @@
+﻿flowchart LR
+  POD[Pod StatefulSet] --> PVC[PVC 10Gi]
+  PVC --> SC[StorageClass gp3]
+  SC --> PV[PersistentVolume EBS]

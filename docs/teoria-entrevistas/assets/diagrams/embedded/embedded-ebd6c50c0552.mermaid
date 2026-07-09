@@ -1,0 +1,18 @@
+﻿flowchart TB
+  P[Productor]
+  subgraph QUEUE["Cola - competencia"]
+    Q[Queue]
+    C1[Worker 1]
+    C2[Worker 2]
+    P --> Q
+    Q --> C1
+    Q --> C2
+  end
+  subgraph PUBSUB["Pub/Sub - fan-out"]
+    T[Topic]
+    S1[Suscriptor A]
+    S2[Suscriptor B]
+    P --> T
+    T --> S1
+    T --> S2
+  end

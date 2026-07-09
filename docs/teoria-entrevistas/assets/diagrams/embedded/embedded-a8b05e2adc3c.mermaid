@@ -1,0 +1,9 @@
+﻿sequenceDiagram
+  participant GHA as GitHub Actions
+  participant OIDC as Proveedor OIDC
+  participant Cloud as Azure / AWS
+  GHA->>OIDC: Solicita token JWT
+  OIDC-->>GHA: Token firmado
+  GHA->>Cloud: Assume role con token
+  Cloud-->>GHA: Credenciales temporales
+  GHA->>Cloud: Deploy recursos

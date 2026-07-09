@@ -1,0 +1,12 @@
+﻿flowchart TB
+  subgraph LOCAL["Entorno local"]
+    L1[Todo predecible]
+    L2[Un solo proceso]
+    L3[Fallo = total]
+  end
+  subgraph PROD["Producción distribuida"]
+    P1[Fallos parciales]
+    P2[Red no confiable]
+    P3[Fallo contenido con patrones]
+  end
+  LOCAL -.->|salto| PROD

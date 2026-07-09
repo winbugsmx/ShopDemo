@@ -1,0 +1,10 @@
+﻿flowchart TB
+  GS[Golden Signals]
+  GS --> L[Latency - ¿cuánto tarda?]
+  GS --> T[Traffic - ¿cuánta demanda?]
+  GS --> E[Errors - ¿cuántos fallos?]
+  GS --> S[Saturation - ¿cuánto margen queda?]
+  L --> ACT[Acción: optimizar, escalar, alertar]
+  T --> ACT
+  E --> ACT
+  S --> ACT

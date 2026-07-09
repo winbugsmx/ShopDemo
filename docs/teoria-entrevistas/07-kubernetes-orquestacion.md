@@ -35,20 +35,7 @@ Imagina que tienes 5 microservicios .NET, cada uno en un contenedor Docker, y qu
 
 Hacer esto manualmente con `docker run` en varios servidores es frágil. Kubernetes lee archivos **declarativos** (YAML) que describen el **estado deseado** ("quiero 3 réplicas de esta imagen") y **controladores** trabajan continuamente para que la realidad coincida.
 
-```mermaid
-flowchart LR
-  subgraph SIN["Sin Kubernetes"]
-    D1[docker run manual]
-    D2[scripts bash frágiles]
-    D3[load balancer manual]
-  end
-  subgraph CON["Con Kubernetes"]
-    YML[YAML declarativo]
-    K8S[Controladores K8s]
-    YML --> K8S
-    K8S --> EST[Estado deseado = actual]
-  end
-```
+![Diagrama](./assets/images/diagrams/embedded-d1e9f6331151.png)
 
 ### Cuándo usar Kubernetes
 
@@ -109,30 +96,9 @@ Un **clúster Kubernetes** consta de un **control plane** (cerebro) y uno o más
 | **kube-proxy** | Proxy de red | Reglas iptables/IPVS para Services |
 | **Container runtime** | containerd, CRI-O | Ejecuta contenedores (estándar CRI) |
 
-```mermaid
-flowchart TB
-  subgraph CP["Control Plane"]
-    API[API Server]
-    ETCD[etcd]
-    SCH[Scheduler]
-    CM[Controller Manager]
-  end
-  subgraph WN["Worker Nodes"]
-    K1[kubelet + kube-proxy]
-    P1[Pods]
-    K2[kubelet + kube-proxy]
-    P2[Pods]
-    K1 --> P1
-    K2 --> P2
-  end
-  API --> K1
-  API --> K2
-  ETCD --> API
-  SCH --> API
-  CM --> API
-```
+![Diagrama: 07-k8s-architecture](./assets/images/diagrams/07-k8s-architecture.png)
 
-Fuente editable: [assets/diagrams/07-k8s-architecture.mermaid](./assets/diagrams/07-k8s-architecture.mermaid)
+> *Fuente editable (Mermaid):* [07-k8s-architecture.mermaid](./assets/diagrams/07-k8s-architecture.mermaid)
 
 **Analogía del instructor:** el control plane es la oficina de tráfico aéreo; los nodos son las pistas; los pods son los aviones. La API server es la torre de control; etcd es la libreta donde se anota quién está en el aire.
 
@@ -168,15 +134,7 @@ Patrón **sidecar:** contenedor auxiliar en el mismo pod:
 
 Los pods son **efímeros**: si mueren, otro pod con **IP distinta** los reemplaza. Por eso no llamas directamente a la IP del pod desde fuera.
 
-```mermaid
-flowchart TB
-  subgraph POD["Pod orders-api-xyz"]
-    C1[Contenedor API .NET]
-    C2[Sidecar - log shipper]
-    C1 --- C2
-  end
-  NODE[Nodo worker] --> POD
-```
+![Diagrama](./assets/images/diagrams/embedded-5b39ca7d4513.png)
 
 #### Cuándo crear pods directamente
 
@@ -207,14 +165,7 @@ Flujo de rolling update:
 
 **Rollback:** `kubectl rollout undo deployment/orders-api` vuelve a revisión anterior.
 
-```mermaid
-flowchart LR
-  DEP[Deployment v2] --> RS[ReplicaSet]
-  RS --> P1[Pod v2]
-  RS --> P2[Pod v2]
-  RS --> P3[Pod v2]
-  DEP -.->|rollback| DEPOLD[Deployment v1]
-```
+![Diagrama](./assets/images/diagrams/embedded-ba6191abce8d.png)
 
 #### Cuándo usar Deployment
 
@@ -256,13 +207,7 @@ Tipos:
 | **LoadBalancer** | Provisión de LB externo via cloud | Exponer API a internet (AKS/EKS crean ALB/Azure LB) |
 | **ExternalName** | CNAME DNS a servicio fuera del clúster | Alias a BD managed externa |
 
-```mermaid
-flowchart LR
-  CLIENT[Otro pod / Ingress] --> SVC[Service orders-api ClusterIP]
-  SVC --> P1[Pod 1]
-  SVC --> P2[Pod 2]
-  SVC --> P3[Pod 3]
-```
+![Diagrama](./assets/images/diagrams/embedded-1c14673bea6c.png)
 
 #### Cuándo usar cada tipo
 
@@ -290,15 +235,7 @@ Funciones adicionales (según controller):
 - Terminación TLS (cert-manager + Let's Encrypt).
 - Rate limiting, WAF (con anotaciones o IngressClass avanzada).
 
-```mermaid
-flowchart TB
-  INT[Internet] --> IC[Ingress Controller NGINX]
-  IC --> ING[Ingress rules]
-  ING --> S1[Service orders]
-  ING --> S2[Service catalog]
-  S1 --> P1[Pods]
-  S2 --> P2[Pods]
-```
+![Diagrama](./assets/images/diagrams/embedded-f18f477b6732.png)
 
 #### Cuándo usar Ingress
 
@@ -330,13 +267,7 @@ Equivalente mental a `appsettings.json` vs credenciales:
 - Mejor aún: **External Secrets Operator** sincroniza desde Key Vault / Secrets Manager.
 - **Nunca** commitear Secrets en Git en texto plano.
 
-```mermaid
-flowchart LR
-  CM[ConfigMap appsettings] --> POD[Pod API]
-  SEC[Secret db-password] --> POD
-  ESO[External Secrets Operator] --> SEC
-  KV[Key Vault / Secrets Manager] --> ESO
-```
+![Diagrama](./assets/images/diagrams/embedded-ecfca9027fbc.png)
 
 #### Cuándo usar cada uno
 
@@ -380,12 +311,7 @@ Requisitos:
 - Metrics Server instalado (CPU/memoria básica).
 - Requests/limits de CPU definidos en pods (HPA usa requests como referencia).
 
-```mermaid
-flowchart LR
-  MET[Metrics Server] --> HPA[HPA]
-  HPA -->|scale| DEP[Deployment]
-  DEP --> PODS[Más pods]
-```
+![Diagrama](./assets/images/diagrams/embedded-c4bd13826763.png)
 
 #### Cuándo usar HPA
 
@@ -428,12 +354,7 @@ En ASP.NET Core típicamente apuntas a `/health` o `/alive`:
 - **readiness:** incluye check de SQL (si BD caída, no recibir tráfico).
 - **liveness:** check ligero (proceso responde); **conservador** — no reinicies por lentitud temporal.
 
-```mermaid
-flowchart TB
-  KUBE[kubelet] -->|liveness fail| RESTART[Reinicia contenedor]
-  KUBE -->|readiness fail| ENDPOINT[Quita de endpoints Service]
-  KUBE -->|startup OK| ACTIVE[Activa liveness/readiness]
-```
+![Diagrama](./assets/images/diagrams/embedded-20f19bce0536.png)
 
 ### Cuándo configurar cada probe
 
@@ -462,19 +383,7 @@ Conceptos:
 - **NetworkPolicy:** firewall declarativo entre pods (allow/deny por labels y namespaces).
 - **CNI plugins:** implementan red real (Calico, Azure CNI, Amazon VPC CNI, Flannel).
 
-```mermaid
-flowchart TB
-  subgraph NS1["Namespace frontend"]
-    P1[Pod UI]
-  end
-  subgraph NS2["Namespace backend"]
-    SVC[Service API]
-    P2[Pod API]
-  end
-  P1 -->|DNS interno| SVC
-  SVC --> P2
-  NP[NetworkPolicy] -.->|filtra| P1
-```
+![Diagrama](./assets/images/diagrams/embedded-95af5b32aa98.png)
 
 ### Cuándo usar NetworkPolicy
 
@@ -502,12 +411,7 @@ Flujo:
 2. PVC pendiente → StorageClass provisiona PV → bound.
 3. Pod monta disco en `/var/lib/postgresql/data`.
 
-```mermaid
-flowchart LR
-  POD[Pod StatefulSet] --> PVC[PVC 10Gi]
-  PVC --> SC[StorageClass gp3]
-  SC --> PV[PersistentVolume EBS]
-```
+![Diagrama](./assets/images/diagrams/embedded-4d6fc258ed0c.png)
 
 ### Cuándo usar almacenamiento persistente
 
@@ -545,12 +449,7 @@ helm upgrade --install orders-api ./charts/orders -f values-prod.yaml
 
 Base común + overlay prod cambia réplicas, imagen tag, recursos. Integrado en `kubectl apply -k`.
 
-```mermaid
-flowchart TB
-  BASE[YAML base] --> KUST[Kustomize overlay prod]
-  KUST --> OUT[Manifiestos finales]
-  OUT --> K8S[Clúster]
-```
+![Diagrama](./assets/images/diagrams/embedded-f595cf0ae50d.png)
 
 ### Cuándo usar Helm vs Kustomize
 
@@ -597,33 +496,13 @@ Un **ServiceAccount** es una identidad **dentro del clúster** para pods. Es la 
 
 **Admission Controllers** interceptan requests al API server para **validar** o **mutar** objetos antes de persistirlos (ej. OPA Gatekeeper, Pod Security Admission).
 
-```mermaid
-flowchart LR
-  REQ[kubectl apply] --> API[API Server]
-  API --> ADM[Admission Controllers]
-  ADM -->|valid| ETCD[etcd]
-  ADM -->|reject| ERR[Error al usuario]
-```
+![Diagrama](./assets/images/diagrams/embedded-5fdde0e4d9ef.png)
 
 ---
 
 ## 10. Flujo completo: desplegar una API .NET
 
-```mermaid
-sequenceDiagram
-  participant Dev as Desarrollador
-  participant Reg as Container Registry
-  participant K8S as Kubernetes
-  participant Ing as Ingress
-  participant User as Usuario HTTP
-  Dev->>Reg: docker push orders-api:1.0
-  Dev->>K8S: kubectl apply Deployment + Service + Ingress
-  K8S->>Reg: pull imagen
-  K8S->>K8S: ReplicaSet crea 3 pods
-  User->>Ing: GET /orders
-  Ing->>K8S: Service orders-api
-  K8S->>User: 200 JSON
-```
+![Diagrama](./assets/images/diagrams/embedded-384e6f2ab347.png)
 
 **Pasos resumidos:**
 

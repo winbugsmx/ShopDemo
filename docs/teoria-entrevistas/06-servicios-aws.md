@@ -40,14 +40,7 @@ Vocabulario esencial:
 | **Account** | Contenedor de facturación y recursos (como una "suscripción" Azure) |
 | **IAM** | Identity and Access Management — permisos en todo AWS |
 
-```mermaid
-flowchart TB
-  ACC[AWS Account]
-  ACC --> R1[Región eu-west-1]
-  R1 --> AZ1[AZ-a]
-  R1 --> AZ2[AZ-b]
-  R1 --> AZ3[AZ-c]
-```
+![Diagrama](./assets/images/diagrams/embedded-45b9b1cef572.png)
 
 ![Mapa conceptual de servicios equivalentes Azure y AWS](./assets/images/azure-vs-aws-servicios.png)
 
@@ -80,20 +73,7 @@ En C# / .NET en AWS desplegarías típicamente:
 | SQL managed | RDS PostgreSQL o Aurora |
 | Cola entre servicios | SQS |
 
-```mermaid
-flowchart LR
-  subgraph IAAS["IaaS"]
-    EC2[EC2 - VM]
-  end
-  subgraph PAAS["PaaS"]
-    RDS[RDS]
-    L[Lambda]
-    F[Fargate]
-  end
-  DEV[Código .NET] --> F
-  DEV --> L
-  DEV --> EC2
-```
+![Diagrama](./assets/images/diagrams/embedded-c7c13de92f37.png)
 
 ---
 
@@ -117,14 +97,7 @@ EC2 es el equivalente AWS de **Azure Virtual Machines**. Conceptos clave:
 
 Para un junior: EC2 es "un servidor remoto al que te conectas por RDP/SSH e instalas .NET Runtime".
 
-```mermaid
-flowchart TB
-  EC2[Instancia EC2]
-  EC2 --> EBS[Disco EBS]
-  EC2 --> SG[Security Group]
-  SG --> INT[Internet / VPC]
-  DEV[Desarrollador] -->|RDP/SSH| EC2
-```
+![Diagrama](./assets/images/diagrams/embedded-ff28aa1168c0.png)
 
 #### Cuándo usar EC2
 
@@ -155,13 +128,7 @@ ECS introduce vocabulario propio:
 
 **Fargate** elimina la gestión de instancias EC2 como nodos. Defines: "quiero 0.5 vCPU y 1 GB RAM" y AWS coloca el contenedor.
 
-```mermaid
-flowchart LR
-  ECR[ECR - imagen] --> TD[Task Definition]
-  TD --> FARG[Fargate]
-  FARG --> ALB[Application Load Balancer]
-  ALB --> USR[Usuarios HTTP]
-```
+![Diagrama](./assets/images/diagrams/embedded-0c7cedcde2e0.png)
 
 #### Cuándo usar ECS/Fargate
 
@@ -188,19 +155,11 @@ EKS es el equivalente directo de **AKS**. Integraciones importantes:
 - **VPC CNI:** cada pod puede tener IP de VPC.
 - **CloudWatch Container Insights:** métricas del clúster.
 
-```mermaid
-flowchart TB
-  subgraph EKS["Amazon EKS"]
-    CP[Control Plane - gestionado]
-    N1[Nodo EC2 o Fargate]
-    P[Pods .NET]
-    N1 --> P
-  end
-  ECR[Elastic Container Registry] --> EKS
-  GHA[GitHub Actions] --> ECR
-```
+![Diagrama](./assets/images/diagrams/embedded-66fe7b49c76b.png)
 
-Fuente editable del stack: [assets/diagrams/06-aws-stack.mermaid](./assets/diagrams/06-aws-stack.mermaid)
+![Diagrama: 06-aws-stack](./assets/images/diagrams/06-aws-stack.png)
+
+> *Fuente editable (Mermaid):* [06-aws-stack.mermaid](./assets/diagrams/06-aws-stack.mermaid)
 
 #### Cuándo usar EKS
 
@@ -235,13 +194,7 @@ Triggers comunes:
 | SQS | Consumir cola de mensajes |
 | EventBridge | Reaccionar a evento de negocio |
 
-```mermaid
-flowchart LR
-  APIGW[API Gateway] --> L[Lambda]
-  S3[S3 PutObject] --> L
-  SQS[SQS mensaje] --> L
-  L --> DDB[(DynamoDB)]
-```
+![Diagrama](./assets/images/diagrams/embedded-6c9402550f64.png)
 
 #### Cuándo usar Lambda
 
@@ -276,12 +229,7 @@ Usos típicos:
 - Hosting estático de SPA.
 - Artefactos de build y logs archivados.
 
-```mermaid
-flowchart LR
-  APP[API .NET] -->|PutObject| S3[(S3 Bucket)]
-  CF[CloudFront CDN] -->|GetObject| S3
-  L[Lambda] -->|trigger| S3
-```
+![Diagrama](./assets/images/diagrams/embedded-d8a63998d1ef.png)
 
 #### Cuándo usar S3
 
@@ -309,13 +257,7 @@ Conceptos:
 - **Parameter Group:** configuración del motor (max_connections, etc.).
 - **Subnet Group:** subnets donde puede vivir la BD (siempre privadas en producción).
 
-```mermaid
-flowchart TB
-  APP[API + EF Core] -->|write/read| RDS[(RDS Primary)]
-  RDS -->|sync| MULTI[Réplica Multi-AZ]
-  RDS -->|async| RR[Read Replica]
-  APP -->|read only| RR
-```
+![Diagrama](./assets/images/diagrams/embedded-88dcaed156f2.png)
 
 #### Cuándo usar RDS
 
@@ -365,12 +307,7 @@ Conceptos:
 - **DynamoDB Streams:** cambio de datos capturado (CDC) para Lambda.
 - **Global Tables:** réplicas multi-región activo-activo.
 
-```mermaid
-flowchart LR
-  API[API] -->|GetItem/PutItem| DDB[(DynamoDB)]
-  DDB --> STR[Streams]
-  STR --> L[Lambda procesador]
-```
+![Diagrama](./assets/images/diagrams/embedded-21358fa9eb4e.png)
 
 #### Cuándo usar DynamoDB
 
@@ -416,12 +353,7 @@ Conceptos esenciales para juniors:
 - **Dead-Letter Queue (DLQ):** cola destino para mensajes que fallaron `maxReceiveCount` veces.
 - **Long polling:** reduce requests vacíos y coste.
 
-```mermaid
-flowchart LR
-  PROD[Productor API] --> Q[SQS Standard Queue]
-  Q --> CON[Consumidor Lambda/ECS]
-  Q -->|N fallos| DLQ[Dead Letter Queue]
-```
+![Diagrama](./assets/images/diagrams/embedded-d32bfabd56b1.png)
 
 #### Cuándo usar SQS
 
@@ -444,13 +376,7 @@ Un publicador envía a un **topic**; SNS entrega copias a todos los suscriptores
 
 Equivalente parcial: **Service Bus Topic** o combinación **Event Grid + handlers** en Azure.
 
-```mermaid
-flowchart TB
-  P[Publicador] --> T[SNS Topic]
-  T --> Q1[SQS Inventario]
-  T --> Q2[SQS Email]
-  T --> L[Lambda Analytics]
-```
+![Diagrama](./assets/images/diagrams/embedded-ac009e015c0c.png)
 
 #### Cuándo usar SNS
 
@@ -474,13 +400,7 @@ Equivalente cercano a **Azure Event Grid**. EventBridge conecta:
 
 Las **reglas** filtran por patrón JSON y envían a targets (Lambda, SQS, Step Functions).
 
-```mermaid
-flowchart LR
-  APP[App custom] --> EB[EventBridge Bus]
-  EC2[Eventos AWS] --> EB
-  EB -->|regla OrderCreated| L[Lambda]
-  EB -->|regla| SQS[SQS]
-```
+![Diagrama](./assets/images/diagrams/embedded-0e04ed53e321.png)
 
 #### Cuándo usar EventBridge
 
@@ -504,13 +424,7 @@ Equivalente a **Azure Event Hubs**. Modelo de **log particionado** para alto thr
 | **Kinesis Firehose** | ETL managed hacia S3, OpenSearch, etc. |
 | **Kinesis Analytics** | Consultas SQL en streaming (Managed Service for Apache Flink) |
 
-```mermaid
-flowchart LR
-  PROD[Productores] --> KS[Kinesis Data Streams]
-  KS --> C1[Consumer App]
-  KS --> FH[Firehose]
-  FH --> S3[(S3 Data Lake)]
-```
+![Diagrama](./assets/images/diagrams/embedded-94c1cd717adc.png)
 
 #### Cuándo usar Kinesis
 
@@ -544,12 +458,7 @@ Principio **least privilege:** concede solo permisos mínimos necesarios.
 
 Ejemplo mental de policy: "Lambda role X puede `sqs:ReceiveMessage` en cola Y y `dynamodb:PutItem` en tabla Z".
 
-```mermaid
-flowchart TB
-  DEV[Developer IAM User] -->|AssumeRole| R[Deployment Role]
-  L[Lambda] -->|Execution Role| S3[S3 Read]
-  POD[Pod EKS] -->|IRSA| R2[App Role]
-```
+![Diagrama](./assets/images/diagrams/embedded-85db5ca4cc7a.png)
 
 #### Cuándo aplicar IAM correctamente
 
@@ -611,19 +520,7 @@ Equivalente a **Azure VNet**. Patrón típico producción:
 - Subnet **pública:** load balancers, NAT Gateway.
 - Subnet **privada:** EC2, ECS tasks, RDS (sin IP pública directa).
 
-```mermaid
-flowchart TB
-  IGW[Internet Gateway]
-  subgraph VPC["VPC 10.0.0.0/16"]
-    PUB[Subnet pública]
-    PRIV[Subnet privada]
-    ALB[ALB] --> PUB
-    APP[ECS Tasks] --> PRIV
-    RDS[(RDS)] --> PRIV
-  end
-  IGW --> PUB
-  PRIV --> NAT[NAT Gateway] --> IGW
-```
+![Diagrama](./assets/images/diagrams/embedded-8788c7467f39.png)
 
 ---
 
@@ -692,15 +589,7 @@ Equivalente central a **Azure Monitor**. Componentes:
 
 Equivalente a **Application Insights** para trazas. SDK X-Ray en .NET propaga segmentos entre API → SQS → Lambda → DynamoDB.
 
-```mermaid
-flowchart LR
-  API[API Gateway] --> L1[Lambda]
-  L1 --> DDB[(DynamoDB)]
-  L1 --> SQS[SQS]
-  XRAY[X-Ray] -.->|traces| API
-  XRAY -.-> L1
-  XRAY -.-> DDB
-```
+![Diagrama](./assets/images/diagrams/embedded-1e5e436bcb30.png)
 
 ---
 
@@ -810,20 +699,7 @@ Ejemplo: RDS Multi-AZ mantiene réplica sincrónica en otra AZ; si primary falla
 
 Complejidad: replicación de datos, conflictos de escritura, coste duplicado.
 
-```mermaid
-flowchart TB
-  subgraph R1["Región eu-west-1"]
-    APP1[App]
-    DB1[(RDS)]
-  end
-  subgraph R2["Región us-east-1"]
-    APP2[App]
-    DB2[(Réplica / Global Table)]
-  end
-  DB1 -.->|replicación| DB2
-  R53[Route 53 Latency Routing] --> APP1
-  R53 --> APP2
-```
+![Diagrama](./assets/images/diagrams/embedded-70557c91f63e.png)
 
 ---
 
@@ -839,18 +715,9 @@ flowchart TB
 
 ## 12. Diagrama: stack típico con EKS
 
-```mermaid
-flowchart LR
-  DEV[Developer] --> GHA[GitHub Actions]
-  GHA --> ECR[Elastic Container Registry]
-  GHA --> EKS[Elastic Kubernetes Service]
-  EKS --> SM[Secrets Manager]
-  EKS --> SQS[Amazon SQS]
-  EKS --> RDS[Amazon RDS]
-  EKS --> CW[CloudWatch]
-```
+![Diagrama: 06-aws-stack](./assets/images/diagrams/06-aws-stack.png)
 
-Fuente editable: [assets/diagrams/06-aws-stack.mermaid](./assets/diagrams/06-aws-stack.mermaid)
+> *Fuente editable (Mermaid):* [06-aws-stack.mermaid](./assets/diagrams/06-aws-stack.mermaid)
 
 **Lectura del flujo:**
 

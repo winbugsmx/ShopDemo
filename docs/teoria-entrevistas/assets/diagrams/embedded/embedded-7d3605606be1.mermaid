@@ -1,0 +1,6 @@
+﻿flowchart LR
+  PROD1[App Web] --> EH[Event Hub]
+  PROD2[App Móvil] --> EH
+  PROD3[IoT Devices] --> EH
+  EH --> CG1[Consumer Group - Analytics]
+  EH --> CG2[Consumer Group - Alertas]

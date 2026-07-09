@@ -1,0 +1,7 @@
+﻿flowchart TD
+  P[Problema recurrente?]
+  P -->|No| KISS[Mantener simple]
+  P -->|Si| S[Solucion minima]
+  S --> T[Tests mas claros?]
+  T -->|Si| OK[Aplicar patron]
+  T -->|No| REV[Revisar diseno]

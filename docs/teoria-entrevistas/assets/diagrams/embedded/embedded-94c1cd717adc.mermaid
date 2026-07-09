@@ -1,0 +1,5 @@
+﻿flowchart LR
+  PROD[Productores] --> KS[Kinesis Data Streams]
+  KS --> C1[Consumer App]
+  KS --> FH[Firehose]
+  FH --> S3[(S3 Data Lake)]

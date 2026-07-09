@@ -1,0 +1,62 @@
+﻿classDiagram
+  class Director {
+    +construct(builder)
+  }
+  class Builder {
+    <<interface>>
+    +reset()
+    +buildStepA()
+    +buildStepB()
+    +getResult() Product
+  }
+  class ConcreteBuilder {
+    +buildStepA()
+    +buildStepB()
+    +getResult() Product
+  }
+  class Product {
+    +parts
+  }
+
+  Director --> Builder
+  Builder <|.. ConcreteBuilder
+  ConcreteBuilder --> Product : construye
+```
+
+Fuente editable: [assets/diagrams/01-builder.mermaid](./assets/diagrams/01-builder.mermaid)
+
+**Ejemplo:** `OrderBuilder.WithCustomer(id).AddLine(productId, qty).WithShippingAddress(addr).Build()` — cada paso valida parcialmente; `Build()` lanza excepción si faltan datos obligatorios.
+
+#### Cuándo usar
+
+- Objetos con **muchos parámetros opcionales** o construcción en **varios pasos**.
+- Necesitas **distintas representaciones** del mismo proceso (DTO vs entidad de dominio).
+- Quieres evitar telescoping constructors (constructores encadenados ilegibles).
+
+#### Cuándo no
+
+- Objeto con 3–4 propiedades obligatorias — un constructor o record basta.
+- La construcción es trivial y estable — no añadas builder "por estilo".
+
+---
+
+### 3.4 Prototype (Prototipo)
+
+**Problema:** Crear una instancia desde cero es costoso (consultas, cálculos) o quieres clonar un objeto existente como plantilla, modificando solo algunos campos.
+
+#### Definición formal
+
+**Prototype** especifica los tipos de objetos a crear mediante una instancia **prototípica**, y crea nuevos objetos **copiando** ese prototipo en lugar de instanciar clases concretas repetidamente.
+
+#### Explicación desarrollada
+
+**Analogía:** En un estudio de diseño guardas una plantilla de presupuesto con logo, tipografía y secciones. Para cada cliente clonas la plantilla y cambias nombre y partidas — no rediseñas desde cero.
+
+En software:
+
+- **Clonación superficial:** copia referencias — rápida pero peligrosa si objetos mutables se comparten.
+- **Clonación profunda:** copia recursivamente — más segura para agregados complejos.
+
+En .NET, `MemberwiseClone()` es superficial; para dominio rico suele preferirse un método explícito `Clone()` o un mapper que construya una copia con reglas claras.
+
+**Ejemplo conceptual (C#):**

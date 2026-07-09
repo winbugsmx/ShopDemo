@@ -47,14 +47,7 @@ Integrar IA no es "pegar ChatGPT en el IDE". Implica decisiones sobre qué datos
 
 ### Diagrama
 
-```mermaid
-flowchart TB
-  HUM[Desarrollador humano] --> CRIT[Criterio y diseño]
-  IA[IA generativa] --> AMP[Amplifica productividad]
-  CRIT --> DEC[Decisiones finales]
-  AMP --> DEC
-  DEC --> PROD[Software en producción]
-```
+![Diagrama](./assets/images/diagrams/embedded-6632434bcc7a.png)
 
 ### Cuándo usar / Cuándo no
 
@@ -99,21 +92,9 @@ La flecha punteada en el diagrama indica que la IA **asiste** en cada fase, no l
 
 ### Diagrama
 
-```mermaid
-flowchart LR
-  D[Diseño] --> I[Implementación]
-  I --> T[Pruebas]
-  T --> O[Operaciones]
-  O --> DOC[Documentación]
-  DOC --> D
-  IA[IA generativa] -.-> D
-  IA -.-> I
-  IA -.-> T
-  IA -.-> O
-  IA -.-> DOC
-```
+![Diagrama: 11-sdlc-ai](./assets/images/diagrams/11-sdlc-ai.png)
 
-Fuente editable: [assets/diagrams/11-sdlc-ai.mermaid](./assets/diagrams/11-sdlc-ai.mermaid)
+> *Fuente editable (Mermaid):* [11-sdlc-ai.mermaid](./assets/diagrams/11-sdlc-ai.mermaid)
 
 ### Cuándo usar / Cuándo no
 
@@ -223,17 +204,7 @@ Restricciones:
 
 ### Diagrama
 
-```mermaid
-flowchart TD
-  TASK[Tarea definida] --> CTX[Contexto relevante]
-  CTX --> CONST[Restricciones explícitas]
-  CONST --> EX[Ejemplos few-shot si aplica]
-  EX --> PROMPT[Prompt estructurado]
-  PROMPT --> LLM[Modelo generativo]
-  LLM --> OUT[Salida]
-  OUT -->|insuficiente| ITER[Iterar prompt]
-  ITER --> PROMPT
-```
+![Diagrama](./assets/images/diagrams/embedded-75964d21b230.png)
 
 ### Cuándo usar / Cuándo no
 
@@ -300,32 +271,15 @@ El modelo no "sabe" tu documentación interna por entrenamiento — la **lee en 
 
 ### Diagrama
 
-```mermaid
-flowchart LR
-  Q[Consulta del usuario] --> E[Embedding del query]
-  E --> S[Búsqueda vectorial / keyword]
-  S --> K[Top-K documentos relevantes]
-  K --> P[Prompt enriquecido con contexto]
-  P --> LLM[Modelo generativo]
-  LLM --> R[Respuesta con citas de fuente]
-```
+![Diagrama: 11-rag-flow](./assets/images/diagrams/11-rag-flow.png)
 
-Fuente editable: [assets/diagrams/11-rag-flow.mermaid](./assets/diagrams/11-rag-flow.mermaid)
+> *Fuente editable (Mermaid):* [11-rag-flow.mermaid](./assets/diagrams/11-rag-flow.mermaid)
 
 **Pipeline de indexación (complementario):**
 
-```mermaid
-flowchart LR
-  DOC[Documentos fuente] --> CH[Chunking - trozos 500-1000 tokens]
-  CH --> EMB[Embedding por chunk]
-  EMB --> VDB[(Vector DB)]
-  Q[Query usuario] --> EQ[Embedding query]
-  EQ --> SEARCH[Búsqueda top-K]
-  VDB --> SEARCH
-  SEARCH --> CTX[Contexto inyectado en prompt]
-```
+![Diagrama: 11-chunking-rag](./assets/images/diagrams/11-chunking-rag.png)
 
-Fuente editable: [assets/diagrams/11-chunking-rag.mermaid](./assets/diagrams/11-chunking-rag.mermaid)
+> *Fuente editable (Mermaid):* [11-chunking-rag.mermaid](./assets/diagrams/11-chunking-rag.mermaid)
 
 ### Cuándo usar / Cuándo no
 
@@ -382,23 +336,9 @@ Fine-tuning ligero para estilo/formato + RAG para conocimiento factual actualiza
 
 ### Diagrama
 
-```mermaid
-flowchart TB
-  subgraph RAG["RAG"]
-    R1[Conocimiento externo indexado]
-    R2[Recuperación en tiempo de consulta]
-    R3[Sin reentrenar modelo]
-  end
-  subgraph FT["Fine-tuning"]
-    F1[Datos etiquetados del dominio]
-    F2[Adaptación de pesos del modelo]
-    F3[Conocimiento internalizado]
-  end
-  Q[Pregunta] --> RAG
-  Q --> FT
-```
+![Diagrama: 11-fine-tuning-vs-rag](./assets/images/diagrams/11-fine-tuning-vs-rag.png)
 
-Fuente editable: [assets/diagrams/11-fine-tuning-vs-rag.mermaid](./assets/diagrams/11-fine-tuning-vs-rag.mermaid)
+> *Fuente editable (Mermaid):* [11-fine-tuning-vs-rag.mermaid](./assets/diagrams/11-fine-tuning-vs-rag.mermaid)
 
 ### Cuándo usar / Cuándo no
 
@@ -475,17 +415,9 @@ Iteración 6: Agente → respuesta final al usuario con resumen del fix
 
 ### Diagrama
 
-```mermaid
-flowchart TD
-  G[Objetivo del usuario] --> P[Planificación]
-  P --> A{¿Necesita acción externa?}
-  A -->|Sí| T[Invocar tool vía MCP]
-  T --> O[Observar resultado]
-  O --> P
-  A -->|No| R[Respuesta final al usuario]
-```
+![Diagrama: 11-agent-loop](./assets/images/diagrams/11-agent-loop.png)
 
-Fuente editable: [assets/diagrams/11-agent-loop.mermaid](./assets/diagrams/11-agent-loop.mermaid)
+> *Fuente editable (Mermaid):* [11-agent-loop.mermaid](./assets/diagrams/11-agent-loop.mermaid)
 
 ### Cuándo usar / Cuándo no
 
@@ -564,16 +496,9 @@ Especialmente útil para juniors que aún no dominan herramientas de diagramaci�
 
 ### Diagrama
 
-```mermaid
-flowchart LR
-  IDE[IDE / Agent Host] --> MCP[MCP Client]
-  MCP --> S1[Server: GitHub]
-  MCP --> S2[Server: Draw.io]
-  MCP --> S3[Server: Database RO]
-  MCP --> S4[Server: Browser]
-```
+![Diagrama: 11-mcp-architecture](./assets/images/diagrams/11-mcp-architecture.png)
 
-Fuente editable: [assets/diagrams/11-mcp-architecture.mermaid](./assets/diagrams/11-mcp-architecture.mermaid)
+> *Fuente editable (Mermaid):* [11-mcp-architecture.mermaid](./assets/diagrams/11-mcp-architecture.mermaid)
 
 ### Cuándo usar / Cuándo no
 
@@ -630,17 +555,7 @@ Con un context window de 128K tokens, puedes incluir ~30–50 archivos medianos 
 
 ### Diagrama
 
-```mermaid
-flowchart TB
-  CW[Context window finito]
-  CW --> SYS[System prompt]
-  CW --> RULES[Reglas del proyecto]
-  CW --> HIST[Historial de chat]
-  CW --> RAG_CTX[RAG context]
-  CW --> FILES[Archivos referenciados]
-  CW --> RESP[Respuesta generada]
-  OVER[Overflow - contexto excedido] -.->|evitar| PRI[Priorizar contexto relevante]
-```
+![Diagrama](./assets/images/diagrams/embedded-1a496fd35bd9.png)
 
 ### Cuándo usar / Cuándo no
 
@@ -697,18 +612,7 @@ Integrar IA en flujos de desarrollo introduce riesgos que no existen con un comp
 
 ### Diagrama
 
-```mermaid
-flowchart TD
-  INPUT[Input del desarrollador] --> CLASS{Clasificación de datos}
-  CLASS -->|Público| OK[Enviar a modelo]
-  CLASS -->|Propietario| POL{Política de empresa}
-  CLASS -->|Secreto/PII| BLOCK[Bloquear - no enviar]
-  POL -->|Permitido con DPA| ENT[Modelo enterprise]
-  POL -->|Prohibido| BLOCK
-  OK --> REV[Revisión humana del output]
-  ENT --> REV
-  REV --> CI[Pipeline CI/CD estándar]
-```
+![Diagrama](./assets/images/diagrams/embedded-2a5ac000509e.png)
 
 ### Cuándo usar / Cuándo no
 
@@ -759,13 +663,7 @@ La IA también asiste en operaciones — complementando la observabilidad del ca
 
 ### Diagrama
 
-```mermaid
-flowchart LR
-  SIG[Señales - métricas, logs, trazas] --> AI[AIOps - correlación, anomalías]
-  AI --> INS[Insights - causa raiz sugerida]
-  INS --> HUM[Humano decide acción]
-  HUM --> ACT[Remediación - rollback, escalar, fix]
-```
+![Diagrama](./assets/images/diagrams/embedded-74b86054b28a.png)
 
 ### Cuándo usar / Cuándo no
 
@@ -817,15 +715,7 @@ Un caso de uso concreto de MCP: servidores de diagramación conectados al agente
 
 ### Diagrama
 
-```mermaid
-flowchart LR
-  DESC[Descripción en lenguaje natural] --> AGENT[Agente IA]
-  AGENT --> MCP_DRAW[MCP Server: Draw.io]
-  MCP_DRAW --> DIAG[Diagrama generado]
-  DIAG --> REV[Revisión humana]
-  REV -->|correcciones| AGENT
-  REV -->|aprobado| EXPORT[Export PNG/SVG para docs]
-```
+![Diagrama](./assets/images/diagrams/embedded-fa3a0f7073ef.png)
 
 ### Cuándo usar / Cuándo no
 
@@ -865,19 +755,7 @@ Lo que **no** cambia:
 
 ### Diagrama
 
-```mermaid
-flowchart TB
-  FUT[Futuro: IA + MCP + Agentes]
-  FUT --> NOW[Presente: fundamentos sólidos]
-  NOW --> ARCH[Arquitectura]
-  NOW --> OBS[Observabilidad]
-  NOW --> RES[Resiliencia]
-  NOW --> SEC[Seguridad]
-  ARCH --> DEV[Desarrollador amplificado]
-  OBS --> DEV
-  RES --> DEV
-  SEC --> DEV
-```
+![Diagrama](./assets/images/diagrams/embedded-7813402378a6.png)
 
 ### Cuándo usar / Cuándo no
 

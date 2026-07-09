@@ -96,7 +96,43 @@ Diagramas de apoyo para los capítulos 01–12. Cada archivo `.mermaid` en `asse
 
 ---
 
-## Imágenes PNG
+## Visualización en Cursor / VS Code
+
+| Problema | Solución |
+|---|---|
+| Solo ves código `flowchart TB...` en gris | Los capítulos **no usan bloques Mermaid** en el markdown |
+| Ver diagramas sin configurar nada | Abre **vista previa Markdown** (`Ctrl+Shift+V`) en cada capítulo |
+| Editar un diagrama | Abre el `.mermaid` enlazado bajo *Fuente editable* |
+| Regenerar PNG tras editar | `scripts/docs/Export-TeoriaDiagrams.ps1` y luego `Activate-TeoriaDiagramImages.ps1` |
+
+### Formato en cada capítulo
+
+```markdown
+![Diagrama: 02-monolito-modular](./assets/images/diagrams/02-monolito-modular.png)
+
+> *Fuente editable (Mermaid):* [02-monolito-modular.mermaid](./assets/diagrams/02-monolito-modular.mermaid)
+```
+
+- **Imagen incrustada:** sintaxis Markdown `![alt](ruta.png)` — visible en la vista previa del capítulo.
+- **Fuente Mermaid:** enlace solo al `.mermaid` para editar y reexportar (la PNG ya está arriba).
+
+Carpeta PNG activa en documentación: **`assets/images/diagrams/`** (servida en los capítulos).
+
+Carpeta fuente de exportación: `assets/diagrams/png/` (generada por el script).
+
+```powershell
+cd I:\Curso\ShopDemo\scripts\docs
+npm install                              # primera vez
+.\Export-TeoriaDiagrams.ps1              # .mermaid -> PNG
+.\Activate-TeoriaDiagramImages.ps1       # copia PNG, convierte refs, complementa Fuente editable
+.\Embed-TeoriaDiagramImages.ps1          # asegura sintaxis ![alt](png) incrustada
+```
+
+Visor de ayuda: [visor-diagramas.html](../visor-diagramas.html)
+
+---
+
+## Imágenes PNG (infografías)
 
 | Archivo | Capítulos |
 |---|---|

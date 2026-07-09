@@ -52,12 +52,7 @@ Para un junior en C#, DDD cambia preguntas como "¿qué tablas necesito?" por "�
 
 **No es obligatorio** en todo proyecto. Un panel de administración interno simple puede funcionar con capas y entidades anémicas sin DDD completo.
 
-```mermaid
-flowchart LR
-  EXP[Experto de dominio] <-->|Ubiquitous Language| DEV[Desarrolladores]
-  DEV --> CODE[Modelo en codigo]
-  CODE -->|refleja| DOM[Dominio real]
-```
+![Diagrama](./assets/images/diagrams/embedded-9a8b12422143.png)
 
 ### Cuándo aplicar DDD (y cuándo no)
 
@@ -86,26 +81,9 @@ Analogía: construir una ciudad. **Estratégico** decide dónde están el barrio
 | **Estratégico** | ¿Dónde están los límites del sistema? | Subdominios, bounded contexts, context map |
 | **Táctico** | ¿Cómo modelamos dentro de un límite? | Entity, VO, Aggregate, Repository, Events |
 
-```mermaid
-flowchart TB
-  subgraph ESTRATEGICO["DDD Estrategico - macro"]
-    BC[Bounded Contexts]
-    CM[Context Map]
-    UL[Ubiquitous Language]
-    SD[Subdominios]
-  end
-  subgraph TACTICO["DDD Tactico - micro"]
-    AG[Aggregates]
-    VO[Value Objects]
-    RE[Repositories]
-    DE[Domain Events]
-    DS[Domain Services]
-    FA[Factories]
-  end
-  ESTRATEGICO --> TACTICO
-```
+![Diagrama: 03-ddd-levels](./assets/images/diagrams/03-ddd-levels.png)
 
-Fuente editable: [assets/diagrams/03-ddd-levels.mermaid](./assets/diagrams/03-ddd-levels.mermaid)
+> *Fuente editable (Mermaid):* [03-ddd-levels.mermaid](./assets/diagrams/03-ddd-levels.mermaid)
 
 **Orden recomendado para juniors:** primero estratégico (¿dónde corto?). Luego táctico (¿cómo modelo Pedidos dentro de Ventas?). Modelar agregados perfectos en un sistema sin bounded contexts claros es decoración inútil.
 
@@ -137,19 +115,9 @@ Una tienda online tiene subdominios: catálogo, ventas, logística, facturación
 | **Supporting (soporte)** | Necesario para operar pero **no único**; custom pero no diferenciador | Moderada — modelo propio, menos ceremonia | Gestión de pedidos estándar |
 | **Generic (genérico)** | **Commodity** — solución estándar del mercado | Mínima — comprar o integrar SaaS | Email transaccional, autenticación OAuth |
 
-```mermaid
-flowchart TB
-  subgraph DOMINIO["Dominio del negocio - tienda online"]
-    CORE[Core - recomendaciones personalizadas]
-    SUP[Supporting - gestion de pedidos]
-    GEN[Generic - envio de email]
-  end
-  CORE -->|maximo esfuerzo de modelado| DDD[DDD profundo]
-  SUP -->|modelado custom moderado| MOD[Modelo propio]
-  GEN -->|comprar o usar SaaS| SAAS[SendGrid / Auth0]
-```
+![Diagrama: 03-subdomains](./assets/images/diagrams/03-subdomains.png)
 
-Fuente editable: [assets/diagrams/03-subdomains.mermaid](./assets/diagrams/03-subdomains.mermaid)
+> *Fuente editable (Mermaid):* [03-subdomains.mermaid](./assets/diagrams/03-subdomains.mermaid)
 
 **Ejemplo numérico de esfuerzo:** en un equipo de 10 desarrolladores, quizá 6 trabajan en core, 3 en supporting y 1 integra genéricos. Invertir 6 meses modelando "envío de email" con agregados perfectos es desperdicio si SendGrid resuelve el 99%.
 
@@ -186,25 +154,9 @@ Es la idea más importante de DDD estratégico. El mismo concepto del mundo real
 
 Es el **mismo producto físico**, pero cuatro modelos distintos — y **cuatro clases distintas** en código (o cuatro servicios con DTOs distintos). Compartir una sola clase `Product` con 40 propiedades para todos es una receta para acoplamiento.
 
-```mermaid
-flowchart TB
-  subgraph VENTAS["Contexto Ventas"]
-    P[Pedido]
-    L[LineaPedido]
-  end
-  subgraph CATALOGO["Contexto Catalogo"]
-    PR[Producto comercial]
-    PRE[Precio]
-  end
-  subgraph LOGISTICA["Contexto Logistica"]
-    S[Stock]
-    R[Reserva]
-  end
-  VENTAS -->|ProductId| CATALOGO
-  VENTAS -->|comando reservar| LOGISTICA
-```
+![Diagrama: 03-bounded-contexts](./assets/images/diagrams/03-bounded-contexts.png)
 
-Fuente editable: [assets/diagrams/03-bounded-contexts.mermaid](./assets/diagrams/03-bounded-contexts.mermaid)
+> *Fuente editable (Mermaid):* [03-bounded-contexts.mermaid](./assets/diagrams/03-bounded-contexts.mermaid)
 
 **Regla de oro:** no compartas la misma clase de entidad entre contextos. Comparte **identificadores** (`ProductId` como GUID) y **contratos** (API REST, eventos de integración).
 
@@ -295,21 +247,9 @@ A continuación, **todas** las relaciones principales del libro de Evans y la co
 
 **Definición:** Relación **caótica** sin límites claros — anti-patrón documentado en el mapa como advertencia, no como elección consciente.
 
-```mermaid
-flowchart LR
-  CAT[Catalogo - upstream OHS]
-  VEN[Ventas - downstream ACL]
-  LOG[Logistica - downstream]
-  LEG[Sistema legacy]
-  CAT -->|API publicada| VEN
-  CAT -->|eventos| LOG
-  VEN -->|ACL| LEG
-  SK[Shared Kernel - solo IDs]
-  CAT --- SK
-  VEN --- SK
-```
+![Diagrama: 03-context-map](./assets/images/diagrams/03-context-map.png)
 
-Fuente editable: [assets/diagrams/03-context-map.mermaid](./assets/diagrams/03-context-map.mermaid)
+> *Fuente editable (Mermaid):* [03-context-map.mermaid](./assets/diagrams/03-context-map.mermaid)
 
 ### Cuándo actualizar el Context Map
 
@@ -347,14 +287,7 @@ DDD no es solo patrones técnicos; es **comunicación**. Si en la reunión el ne
 
 El lenguaje ubicuo **evoluciona**. Cuando el negocio descubre un matiz ("pedido pendiente de fraude" vs "pendiente de pago"), el código debe reflejarlo con nuevos términos o estados nombrados, no con `Status = 7`.
 
-```mermaid
-flowchart LR
-  REU[Reunion con negocio] --> TERM[Terminos acordados]
-  TERM --> CODE[Nombres en codigo]
-  TERM --> TEST[Nombres en tests]
-  TERM --> API[Endpoints y eventos]
-  CODE --> REU
-```
+![Diagrama](./assets/images/diagrams/embedded-3e797f0af8e8.png)
 
 ### Cuándo reforzar el lenguaje ubicuo (y señales de rotura)
 
@@ -396,16 +329,7 @@ public class Order
 }
 ```
 
-```mermaid
-classDiagram
-  class Order {
-    +OrderId Id
-    +OrderStatus Status
-    +Confirm()
-    +Cancel()
-  }
-  note for Order "Identidad = OrderId"
-```
+![Diagrama](./assets/images/diagrams/embedded-bc1882174596.png)
 
 **Ejemplo:** dos pedidos con `Id = 5` en la misma BD es un error de datos — deben ser uno solo. Dos direcciones con la misma calle en pedidos distintos **no** son la misma entidad de negocio (salvo que modeles `Address` como entidad con su propio Id).
 
@@ -447,27 +371,9 @@ public record Money(decimal Amount, string Currency)
 
 Usar `record` en C# facilita inmutabilidad e igualdad por valor.
 
-```mermaid
-classDiagram
-  class Order {
-    +OrderId Id
-    +Confirm()
-  }
-  class Money {
-    +decimal Amount
-    +string Currency
-    +Add(Money)
-  }
-  class Email {
-    +string Value
-  }
-  Order --> Money : total
-  Order --> Email : customerEmail
-  note for Money "Value Object - igualdad por valor"
-  note for Order "Entity - identidad por Id"
-```
+![Diagrama: 03-entity-vo](./assets/images/diagrams/03-entity-vo.png)
 
-Fuente editable: [assets/diagrams/03-entity-vo.mermaid](./assets/diagrams/03-entity-vo.mermaid)
+> *Fuente editable (Mermaid):* [03-entity-vo.mermaid](./assets/diagrams/03-entity-vo.mermaid)
 
 **Por qué importa:** en lugar de pasar `decimal amount, string currency` por todo el código (primitivos obsesivos), encapsulas validación: `Money` no permite moneda vacía; `Email` valida formato en el constructor.
 
@@ -499,19 +405,9 @@ Un **Aggregate** (agregado) es un **cluster** de entidades y value objects con *
 
 Analogía: un **pedido** es un sobre cerrado con líneas de pedido dentro. Desde fuera solo hablas con la **portada** (la raíz `Order`). No metes la mano entre las hojas (`OrderLine`) directamente desde otro módulo — pides a `Order` que añada una línea.
 
-```mermaid
-flowchart TB
-  ROOT[Order - Aggregate Root]
-  LINE1[OrderLine]
-  LINE2[OrderLine]
-  ADDR[Address - Value Object]
-  ROOT --> LINE1
-  ROOT --> LINE2
-  ROOT --> ADDR
-  EXT[Servicio externo] -->|solo modifica via| ROOT
-```
+![Diagrama: 03-aggregate](./assets/images/diagrams/03-aggregate.png)
 
-Fuente editable: [assets/diagrams/03-aggregate.mermaid](./assets/diagrams/03-aggregate.mermaid)
+> *Fuente editable (Mermaid):* [03-aggregate.mermaid](./assets/diagrams/03-aggregate.mermaid)
 
 ### Reglas del agregado (obligatorias)
 
@@ -572,19 +468,9 @@ Flujo típico:
 3. Registra `OrderConfirmed` en colección interna del agregado.
 4. Al persistir, dispatcher publica handlers (email, proyección read model).
 
-```mermaid
-sequenceDiagram
-  participant AR as Aggregate Root
-  participant DOM as Dominio interno
-  participant DISP as Dispatcher
-  participant H as Handler
-  AR->>DOM: Confirm()
-  DOM->>DOM: validar invariantes
-  AR->>DISP: OrderConfirmed
-  DISP->>H: notificar handler interno
-```
+![Diagrama: 03-domain-event](./assets/images/diagrams/03-domain-event.png)
 
-Fuente editable: [assets/diagrams/03-domain-event.mermaid](./assets/diagrams/03-domain-event.mermaid)
+> *Fuente editable (Mermaid):* [03-domain-event.mermaid](./assets/diagrams/03-domain-event.mermaid)
 
 **No confundir con:**
 
@@ -700,15 +586,9 @@ public static Order Create(CustomerId customerId, IReadOnlyList<OrderLineDraft> 
 }
 ```
 
-```mermaid
-flowchart TB
-  APP[Caso de uso] --> FAC[OrderFactory]
-  FAC --> VAL[Validar reglas de creacion]
-  VAL --> AGG[Order - Aggregate Root]
-  AGG --> REPO[Repository.Add]
-```
+![Diagrama: 03-factory](./assets/images/diagrams/03-factory.png)
 
-Fuente editable: [assets/diagrams/03-factory.mermaid](./assets/diagrams/03-factory.mermaid)
+> *Fuente editable (Mermaid):* [03-factory.mermaid](./assets/diagrams/03-factory.mermaid)
 
 **Factory vs Builder (patrón GoF):** Builder construye paso a paso objetos complejos con muchas variantes; Factory en DDD enfatiza **validez del agregado** al nacer.
 
@@ -753,17 +633,9 @@ No es una fase opcional "para arquitectos". Es la forma más rápida de alinear 
 4. Añadir políticas lavanda (evento → comando en otro agregado).
 5. Detectar bounded contexts cuando el vocabulario diverge.
 
-```mermaid
-flowchart LR
-  ACT[Actor Cliente] -->|ConfirmarPedido| CMD[Comando]
-  CMD --> AGG[Agregado Pedido]
-  AGG --> EVT1[Evento PedidoConfirmado]
-  EVT1 --> POL[Politica ReservarStock]
-  POL --> CMD2[Comando ReservarStock]
-  CMD2 --> AGG2[Agregado Inventario]
-```
+![Diagrama: 03-event-storming](./assets/images/diagrams/03-event-storming.png)
 
-Fuente editable: [assets/diagrams/03-event-storming.mermaid](./assets/diagrams/03-event-storming.mermaid)
+> *Fuente editable (Mermaid):* [03-event-storming.mermaid](./assets/diagrams/03-event-storming.mermaid)
 
 **Duración típica:** medio día para un flujo; 2–3 días para un subdominio core.
 
@@ -800,17 +672,7 @@ Conocer anti-patrones te ahorra meses de refactor.
 | **Ubiquitous Language solo en wiki** | Código con nombres técnicos opacos | Renombrar hacia glosario |
 | **Context Map decorativo** | Diagrama desactualizado | Revisión trimestral con equipos |
 
-```mermaid
-flowchart TB
-  AP[Anti-patrones] --> BBM[Big Ball of Mud]
-  AP --> ADM[Anemic Domain Model]
-  AP --> SDB[Shared Database]
-  AP --> GAG[Giant Aggregate]
-  BBM --> FIX1[Bounded contexts]
-  ADM --> FIX2[Rich domain model]
-  SDB --> FIX3[Database per context]
-  GAG --> FIX4[Smaller aggregates + IDs]
-```
+![Diagrama](./assets/images/diagrams/embedded-c8bcf4f18d9a.png)
 
 ### Cuándo auditar anti-patrones
 

@@ -1,0 +1,9 @@
+﻿sequenceDiagram
+  participant U as Usuario
+  participant E as Entra ID
+  participant A as API .NET
+  U->>E: Login
+  E-->>U: Access Token JWT
+  U->>A: GET /orders + Bearer token
+  A->>A: Validar token
+  A-->>U: 200 OK

@@ -1,0 +1,4 @@
+﻿flowchart TB
+  BASE[YAML base] --> KUST[Kustomize overlay prod]
+  KUST --> OUT[Manifiestos finales]
+  OUT --> K8S[Clúster]

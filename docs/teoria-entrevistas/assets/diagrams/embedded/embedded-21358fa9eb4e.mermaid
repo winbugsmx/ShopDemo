@@ -1,0 +1,4 @@
+﻿flowchart LR
+  API[API] -->|GetItem/PutItem| DDB[(DynamoDB)]
+  DDB --> STR[Streams]
+  STR --> L[Lambda procesador]

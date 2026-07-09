@@ -1,0 +1,10 @@
+﻿flowchart TD
+  INPUT[Input del desarrollador] --> CLASS{Clasificación de datos}
+  CLASS -->|Público| OK[Enviar a modelo]
+  CLASS -->|Propietario| POL{Política de empresa}
+  CLASS -->|Secreto/PII| BLOCK[Bloquear - no enviar]
+  POL -->|Permitido con DPA| ENT[Modelo enterprise]
+  POL -->|Prohibido| BLOCK
+  OK --> REV[Revisión humana del output]
+  ENT --> REV
+  REV --> CI[Pipeline CI/CD estándar]

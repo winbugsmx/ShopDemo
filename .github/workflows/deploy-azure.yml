@@ -12,12 +12,12 @@ on:
   push:
     branches: [master]
     paths:
-      - 'Catalog/**'
-      - 'Orders/**'
-      - 'Inventory/**'
-      - 'Aspire/ShopDemo.Analytics.Api/**'
-      - 'AI/ShopDemo.Mcp.Api/**'
-      - 'ShopDemo.Shared/**'
+      - 'Source/Catalog/**'
+      - 'Source/Orders/**'
+      - 'Source/Inventory/**'
+      - 'Source/Aspire/ShopDemo.Analytics.Api/**'
+      - 'Source/AI/ShopDemo.Mcp.Api/**'
+      - 'Source/ShopDemo.Shared/**'
       - '.github/workflows/deploy-azure.yml'
       - '.github/scripts/**'
 
@@ -33,23 +33,23 @@ jobs:
       matrix:
         include:
           - service: catalog
-            dockerfile: Catalog/ShopDemo.Catalog.Api/Dockerfile
+            dockerfile: Source/Catalog/ShopDemo.Catalog.Api/Dockerfile
             image: shopdemo-catalog
             containerapp: ca-shopdemo-catalog
           - service: orders
-            dockerfile: Orders/ShopDemo.Orders.Api/Dockerfile
+            dockerfile: Source/Orders/ShopDemo.Orders.Api/Dockerfile
             image: shopdemo-orders
             containerapp: ca-shopdemo-orders
           - service: inventory
-            dockerfile: Inventory/ShopDemo.Inventory.Api/Dockerfile
+            dockerfile: Source/Inventory/ShopDemo.Inventory.Api/Dockerfile
             image: shopdemo-inventory
             containerapp: ca-shopdemo-inventory
           - service: analytics
-            dockerfile: Aspire/ShopDemo.Analytics.Api/Dockerfile
+            dockerfile: Source/Aspire/ShopDemo.Analytics.Api/Dockerfile
             image: shopdemo-analytics
             containerapp: ca-shopdemo-analytics
           - service: mcp
-            dockerfile: AI/ShopDemo.Mcp.Api/Dockerfile
+            dockerfile: Source/AI/ShopDemo.Mcp.Api/Dockerfile
             image: shopdemo-mcp
             containerapp: ca-shopdemo-mcp
 
@@ -67,7 +67,7 @@ jobs:
       - name: Build and push image
         run: |
           ACR_LOGIN=$(az acr show --name ${{ env.ACR_NAME }} --query loginServer -o tsv)
-          docker build -f ${{ matrix.dockerfile }} -t "$ACR_LOGIN/${{ matrix.image }}:${{ github.sha }}" .
+          docker build -f ${{ matrix.dockerfile }} -t "$ACR_LOGIN/${{ matrix.image }}:${{ github.sha }}" Source
           docker push "$ACR_LOGIN/${{ matrix.image }}:${{ github.sha }}"
           echo "ACR_LOGIN=$ACR_LOGIN" >> "$GITHUB_ENV"
 

@@ -1,12 +1,12 @@
 ---
 description: Scripts PowerShell Azure/AWS — modos, post-script y alineación K8s
-globs: scripts/**/*.ps1,scripts/**/README.md
+globs: Source/scripts/**/*.ps1,Source/scripts/**/README.md
 alwaysApply: false
 ---
 
 # Scripts de release
 
-## Azure — `scripts/azure/Deploy-AzureShopDemo.ps1`
+## Azure — `Source/scripts/azure/Deploy-AzureShopDemo.ps1`
 
 | Modo | Crea |
 |---|---|
@@ -16,7 +16,7 @@ alwaysApply: false
 
 **No hace build/push Docker.** Post-AKS: apply compartidos + `k8s/azure/` — ver [k8s/README.md](../../k8s/README.md).
 
-## AWS — `scripts/aws/Deploy-AwsShopDemo.ps1`
+## AWS — `Source/scripts/aws/Deploy-AwsShopDemo.ps1`
 
 | Modo | Crea |
 |---|---|
@@ -32,4 +32,4 @@ alwaysApply: false
 - Event Hubs: siempre Azure (cross-cloud en AWS).
 - Mensajes post-script deben apuntar a `k8s/{azure|aws}/`, no a `k8s/catalog/` completo.
 
-Al cambiar scripts, actualizar `scripts/*/README.md` y guías Script en `docs/despliegue/`.
+Al cambiar scripts, actualizar `Source/scripts/*/README.md` y guías Script en `Documentación del Proyecto/despliegue/`.

@@ -12,10 +12,10 @@ description: Work from ShopDemo SPEC files before coding. Use when implementing 
    - Technical: `ANEXO-ESPECIFICACION-TECNICA-*.md`, `ANEXO-HISTORIAS-TECNICAS-*.md`
    - Implementation: `IMPLEMENTACION-*.md`
 4. Copy **CA-N** and **CA-T** criteria into a checklist
-5. Implement minimal diff; build `dotnet build ShopDemo.slnx`
+5. Implement minimal diff; build `dotnet build Source/ShopDemo.slnx`
 6. Point to Postman or k8s verification
 
 Specs index: `spec-driven/specs/README.md`  
-Structure guide: `docs/GUIA-ESTRUCTURA-DOCUMENTACION.md`
+Structure guide: `Documentación del Proyecto/GUIA-ESTRUCTURA-DOCUMENTACION.md`
 
 Cloud: if deployment is in scope, use **deploy-azure** or **deploy-aws** skill — never both in one flow unless user asks.

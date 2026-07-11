@@ -102,7 +102,7 @@ Usa **Environments** separados para aprobar despliegues por plataforma.
 
 ### Permisos IAM (rol OIDC o user)
 
-Políticas de lab: `scripts/aws/iam-policy-shopdemo-lab-ecs.json`, `iam-policy-shopdemo-lab-eks.json`  
+Políticas de lab: `Source/scripts/aws/iam-policy-shopdemo-lab-ecs.json`, `iam-policy-shopdemo-lab-eks.json`  
 EKS adicional: `kubectl` vía `aws eks update-kubeconfig` (Cluster access en IAM).
 
 ---
@@ -175,6 +175,6 @@ Después, los pushes a `main` con cambios de código solo ejecutan **build → p
 - [GH-CLI-COMMANDS.md](GH-CLI-COMMANDS.md) — comandos `gh secret set` por environment (lab)
 - [SETUP-GITHUB.md](SETUP-GITHUB.md) — configuración paso a paso en GitHub
 - [SETUP-GITHUB-PORTAL.md](SETUP-GITHUB-PORTAL.md) — portal web (environments, secrets, Actions)
-- [docs/despliegue/ALCANCE-LAB-RELEASE.md](../docs/despliegue/ALCANCE-LAB-RELEASE.md)
-- [scripts/azure/.env.azure.example](../scripts/azure/.env.azure.example)
-- [scripts/aws/.env.aws.example](../scripts/aws/.env.aws.example)
+- [Documentación del Proyecto/despliegue/ALCANCE-LAB-RELEASE.md](../Documentación del Proyecto/despliegue/ALCANCE-LAB-RELEASE.md)
+- [Source/scripts/azure/.env.azure.example](../Source/scripts/azure/.env.azure.example)
+- [Source/scripts/aws/.env.aws.example](../Source/scripts/aws/.env.aws.example)

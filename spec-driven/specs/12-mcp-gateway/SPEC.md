@@ -8,21 +8,21 @@ Desplegar y consumir el MCP Server que expone tools sobre Catalog, Inventory y A
 
 | Capa | Documento |
 |---|---|
-| **A — Negocio** | [REQUERIMIENTOS-DESPLIEGUE-MCP.md](../../../docs/integracion-ia/REQUERIMIENTOS-DESPLIEGUE-MCP.md) |
-| **A — Negocio** | [HISTORIAS-USUARIO-DESPLIEGUE-MCP.md](../../../docs/integracion-ia/HISTORIAS-USUARIO-DESPLIEGUE-MCP.md) |
-| **B — Técnica** | [ANEXO-ESPECIFICACION-TECNICA-DESPLIEGUE-MCP.md](../../../docs/integracion-ia/ANEXO-ESPECIFICACION-TECNICA-DESPLIEGUE-MCP.md) |
-| **B — Técnica** | [ANEXO-HISTORIAS-TECNICAS-DESPLIEGUE-MCP.md](../../../docs/integracion-ia/ANEXO-HISTORIAS-TECNICAS-DESPLIEGUE-MCP.md) |
-| **C — Pedagogía** | [ANEXO-PEDAGOGIA-DESPLIEGUE-MCP.md](../../../docs/integracion-ia/ANEXO-PEDAGOGIA-DESPLIEGUE-MCP.md) |
-| Implementación | [IMPLEMENTACION-MCP-GATEWAY.md](../../../docs/integracion-ia/IMPLEMENTACION-MCP-GATEWAY.md) |
-| Deploy Azure | [IMPLEMENTACION-DESPLIEGUE-MCP-AZURE.md](../../../docs/integracion-ia/IMPLEMENTACION-DESPLIEGUE-MCP-AZURE.md) |
-| Deploy AWS | [IMPLEMENTACION-DESPLIEGUE-MCP-AWS.md](../../../docs/integracion-ia/IMPLEMENTACION-DESPLIEGUE-MCP-AWS.md) |
-| Código | [ANEXO-CODIGO-MCP.md](../../../docs/integracion-ia/ANEXO-CODIGO-MCP.md) |
+| **A — Negocio** | [REQUERIMIENTOS-DESPLIEGUE-MCP.md](../../../Documentación del Proyecto/integracion-ia/REQUERIMIENTOS-DESPLIEGUE-MCP.md) |
+| **A — Negocio** | [HISTORIAS-USUARIO-DESPLIEGUE-MCP.md](../../../Documentación del Proyecto/integracion-ia/HISTORIAS-USUARIO-DESPLIEGUE-MCP.md) |
+| **B — Técnica** | [ANEXO-ESPECIFICACION-TECNICA-DESPLIEGUE-MCP.md](../../../Documentación del Proyecto/integracion-ia/ANEXO-ESPECIFICACION-TECNICA-DESPLIEGUE-MCP.md) |
+| **B — Técnica** | [ANEXO-HISTORIAS-TECNICAS-DESPLIEGUE-MCP.md](../../../Documentación del Proyecto/integracion-ia/ANEXO-HISTORIAS-TECNICAS-DESPLIEGUE-MCP.md) |
+| **C — Pedagogía** | [ANEXO-PEDAGOGIA-DESPLIEGUE-MCP.md](../../../Documentación del Proyecto/integracion-ia/ANEXO-PEDAGOGIA-DESPLIEGUE-MCP.md) |
+| Implementación | [IMPLEMENTACION-MCP-GATEWAY.md](../../../Documentación del Proyecto/integracion-ia/IMPLEMENTACION-MCP-GATEWAY.md) |
+| Deploy Azure | [IMPLEMENTACION-DESPLIEGUE-MCP-AZURE.md](../../../Documentación del Proyecto/integracion-ia/IMPLEMENTACION-DESPLIEGUE-MCP-AZURE.md) |
+| Deploy AWS | [IMPLEMENTACION-DESPLIEGUE-MCP-AWS.md](../../../Documentación del Proyecto/integracion-ia/IMPLEMENTACION-DESPLIEGUE-MCP-AWS.md) |
+| Código | [ANEXO-CODIGO-MCP.md](../../../Documentación del Proyecto/integracion-ia/ANEXO-CODIGO-MCP.md) |
 
-Guía: [GUIA-ESTRUCTURA-DOCUMENTACION.md](../../../docs/GUIA-ESTRUCTURA-DOCUMENTACION.md)
+Guía: [GUIA-ESTRUCTURA-DOCUMENTACION.md](../../../Documentación del Proyecto/GUIA-ESTRUCTURA-DOCUMENTACION.md)
 
 ## Alcance (agente)
 
-- Código: `AI/ShopDemo.Mcp.Api/`
+- Código: `Source/AI/ShopDemo.Mcp.Api/`
 - Endpoint `/mcp`, tools HTTP hacia Catalog, Inventory, Analytics
 - Despliegue: ACA, AKS, ECS, EKS o `k8s/*/mcp/`
 

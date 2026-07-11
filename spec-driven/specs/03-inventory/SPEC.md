@@ -8,20 +8,20 @@ Extender casos de uso de stock/reservas manteniendo puertos y adaptadores.
 
 | Capa | Documento |
 |---|---|
-| **A — Negocio** | [REQUERIMIENTOS-INVENTORY.md](../../../docs/inventory/REQUERIMIENTOS-INVENTORY.md) |
-| **A — Negocio** | [HISTORIAS-USUARIO-INVENTORY.md](../../../docs/inventory/HISTORIAS-USUARIO-INVENTORY.md) |
-| **B — Técnica** | [ANEXO-ESPECIFICACION-TECNICA-INVENTORY.md](../../../docs/inventory/ANEXO-ESPECIFICACION-TECNICA-INVENTORY.md) |
-| **B — Técnica** | [ANEXO-HISTORIAS-TECNICAS-INVENTORY.md](../../../docs/inventory/ANEXO-HISTORIAS-TECNICAS-INVENTORY.md) |
-| **C — Pedagogía** | [ANEXO-PEDAGOGIA-INVENTORY.md](../../../docs/inventory/ANEXO-PEDAGOGIA-INVENTORY.md) |
-| Implementación | [IMPLEMENTACION-INVENTORY.md](../../../docs/inventory/IMPLEMENTACION-INVENTORY.md) |
+| **A — Negocio** | [REQUERIMIENTOS-INVENTORY.md](../../../Documentación del Proyecto/inventory/REQUERIMIENTOS-INVENTORY.md) |
+| **A — Negocio** | [HISTORIAS-USUARIO-INVENTORY.md](../../../Documentación del Proyecto/inventory/HISTORIAS-USUARIO-INVENTORY.md) |
+| **B — Técnica** | [ANEXO-ESPECIFICACION-TECNICA-INVENTORY.md](../../../Documentación del Proyecto/inventory/ANEXO-ESPECIFICACION-TECNICA-INVENTORY.md) |
+| **B — Técnica** | [ANEXO-HISTORIAS-TECNICAS-INVENTORY.md](../../../Documentación del Proyecto/inventory/ANEXO-HISTORIAS-TECNICAS-INVENTORY.md) |
+| **C — Pedagogía** | [ANEXO-PEDAGOGIA-INVENTORY.md](../../../Documentación del Proyecto/inventory/ANEXO-PEDAGOGIA-INVENTORY.md) |
+| Implementación | [IMPLEMENTACION-INVENTORY.md](../../../Documentación del Proyecto/inventory/IMPLEMENTACION-INVENTORY.md) |
 
-Guía: [GUIA-ESTRUCTURA-DOCUMENTACION.md](../../../docs/GUIA-ESTRUCTURA-DOCUMENTACION.md)
+Guía: [GUIA-ESTRUCTURA-DOCUMENTACION.md](../../../Documentación del Proyecto/GUIA-ESTRUCTURA-DOCUMENTACION.md)
 
 ## Alcance (agente)
 
 - Stock, reservas, liberaciones
 - Consumer Event Hubs (`CatalogEventsProcessor`) si aplica
-- Código: `Inventory/ShopDemo.Inventory.Api/Adapters/`
+- Código: `Source/Inventory/ShopDemo.Inventory.Api/Adapters/`
 
 ## Criterios de aceptación
 

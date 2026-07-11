@@ -12,7 +12,7 @@
 
 ### Criterios (CA-T)
 
-- [ ] **CA-T-SDD-01:** Enlaces a `docs/*/REQUERIMIENTOS-*.md` y anexos técnicos.
+- [ ] **CA-T-SDD-01:** Enlaces a `Documentación del Proyecto/*/REQUERIMIENTOS-*.md` y anexos técnicos.
 
 ---
 

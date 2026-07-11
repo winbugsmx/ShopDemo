@@ -32,7 +32,7 @@
 - Repo ShopDemo clonado
 - [Cursor](https://cursor.com) y/o [Claude Code](https://docs.anthropic.com/en/docs/claude-code) instalado
 - .NET 10 SDK, Docker (para validar builds)
-- Opcional: MCP Gateway local (`dotnet run --project AI/ShopDemo.Mcp.Api`)
+- Opcional: MCP Gateway local (`dotnet run --project Source/AI/ShopDemo.Mcp.Api`)
 
 ---
 
@@ -45,7 +45,7 @@
 | 1 | Abrir [specs/README.md](./specs/README.md) |
 | 2 | Elegir el módulo del curso (ej. `06-deploy-azure`) |
 | 3 | Leer `spec-driven/specs/<módulo>/SPEC.md` |
-| 4 | Abrir los enlaces a `docs/` indicados en el SPEC |
+| 4 | Abrir los enlaces a `Documentación del Proyecto/` indicados en el SPEC |
 
 **Explicación:** El agente debe recibir siempre un SPEC concreto en el prompt; no improvisar sobre todo el monorepo.
 
@@ -63,7 +63,7 @@ New-Item -ItemType Directory -Force -Path .cursor\rules
 Copy-Item spec-driven\cursor\templates\rules\*.mdc .cursor\rules\
 ```
 
-**Explicación:** Los archivos `.mdc` aplican convenciones por glob (`Catalog/**`, `k8s/**`, etc.).
+**Explicación:** Los archivos `.mdc` aplican convenciones por glob (`Source/Catalog/**`, `k8s/**`, etc.).
 
 ### Paso 2.2 — Skills (proyecto)
 
@@ -83,7 +83,7 @@ Copy-Item spec-driven\cursor\templates\AGENTS.md .\AGENTS.md
 | # | En Cursor IDE |
 |---|---|
 | 1 | **Settings** → **Rules** — deben aparecer rules del proyecto |
-| 2 | Abrir `Catalog/` — rule `dotnet-csharp` debe aplicar |
+| 2 | Abrir `Source/Catalog/` — rule `dotnet-csharp` debe aplicar |
 | 3 | Prompt de prueba: *"Resume el SPEC 01-catalog y qué archivos no debo tocar"* |
 
 ---
@@ -143,7 +143,7 @@ Archivos:
 
 ### Perfil Azure ACA
 
-Sustituir URL por `https://<fqdn-ca-shopdemo-mcp>/mcp` (ver [IMPLEMENTACION-DESPLIEGUE-MCP-AZURE.md](../docs/integracion-ia/IMPLEMENTACION-DESPLIEGUE-MCP-AZURE.md)).
+Sustituir URL por `https://<fqdn-ca-shopdemo-mcp>/mcp` (ver [IMPLEMENTACION-DESPLIEGUE-MCP-AZURE.md](../Documentación del Proyecto/integracion-ia/IMPLEMENTACION-DESPLIEGUE-MCP-AZURE.md)).
 
 ### Perfil AWS ECS
 
@@ -164,7 +164,7 @@ sequenceDiagram
 
     U->>S: Abre spec del módulo
     U->>A: Prompt + ruta SPEC
-    A->>S: Lee criterios y docs/
+    A->>S: Lee criterios y Documentación del Proyecto/
     A->>C: Cambio mínimo
     A->>U: Valida CA-* del SPEC
 ```
@@ -187,8 +187,8 @@ Responde al usuario en español.
 | 1 | Abrir [specs/06-deploy-azure/SPEC.md](./specs/06-deploy-azure/SPEC.md) |
 | 2 | Cursor: invocar skill `deploy-azure` o rule equivalente |
 | 3 | Claude Code: `/deploy-azure` |
-| 4 | Seguir [IMPLEMENTACION-DESPLIEGUE-AZURE.md](../docs/despliegue/azure/IMPLEMENTACION-DESPLIEGUE-AZURE.md) — Portal **y** CLI |
-| 5 | MCP: [IMPLEMENTACION-DESPLIEGUE-MCP-AZURE.md](../docs/integracion-ia/IMPLEMENTACION-DESPLIEGUE-MCP-AZURE.md) |
+| 4 | Seguir [IMPLEMENTACION-DESPLIEGUE-AZURE.md](../Documentación del Proyecto/despliegue/azure/IMPLEMENTACION-DESPLIEGUE-AZURE.md) — Portal **y** CLI |
+| 5 | MCP: [IMPLEMENTACION-DESPLIEGUE-MCP-AZURE.md](../Documentación del Proyecto/integracion-ia/IMPLEMENTACION-DESPLIEGUE-MCP-AZURE.md) |
 
 **Explicación:** El spec obliga a no mezclar comandos `aws` en la misma tarea.
 
@@ -200,8 +200,8 @@ Responde al usuario en español.
 |---|---|
 | 1 | [specs/07-deploy-aws/SPEC.md](./specs/07-deploy-aws/SPEC.md) |
 | 2 | Claude: `/deploy-aws` |
-| 3 | [IMPLEMENTACION-DESPLIEGUE-AWS.md](../docs/despliegue/aws/IMPLEMENTACION-DESPLIEGUE-AWS.md) |
-| 4 | MCP: [IMPLEMENTACION-DESPLIEGUE-MCP-AWS.md](../docs/integracion-ia/IMPLEMENTACION-DESPLIEGUE-MCP-AWS.md) |
+| 3 | [IMPLEMENTACION-DESPLIEGUE-AWS.md](../Documentación del Proyecto/despliegue/aws/IMPLEMENTACION-DESPLIEGUE-AWS.md) |
+| 4 | MCP: [IMPLEMENTACION-DESPLIEGUE-MCP-AWS.md](../Documentación del Proyecto/integracion-ia/IMPLEMENTACION-DESPLIEGUE-MCP-AWS.md) |
 
 ---
 

@@ -12,4 +12,4 @@
 - Swagger at `/swagger` in Development
 - Postman variables: `catalogBaseUrl`, `ordersBaseUrl`, etc.
 
-Full guide: `docs/GUIA-ENDPOINTS.md`
+Full guide: `Documentación del Proyecto/GUIA-ENDPOINTS.md`

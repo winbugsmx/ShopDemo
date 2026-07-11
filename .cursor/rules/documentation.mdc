@@ -1,6 +1,6 @@
 ---
 description: Documentación del curso — coherencia, rutas K8s y pasos completos
-globs: docs/**/*.md,README.md,AGENTS.md
+globs: Documentación del Proyecto/**/*.md,README.md,AGENTS.md
 alwaysApply: false
 ---
 
@@ -10,7 +10,7 @@ Audiencia: **alumnos**. Cada guía debe ser ejecutable sin saltos ni rutas obsol
 
 ## Al actualizar docs de despliegue
 
-- Mencionar **script primero** ([ALCANCE-LAB-RELEASE.md](../../docs/despliegue/ALCANCE-LAB-RELEASE.md)).
+- Mencionar **script primero** ([ALCANCE-LAB-RELEASE.md](../../Documentación del Proyecto/despliegue/ALCANCE-LAB-RELEASE.md)).
 - K8s: compartidos + carpeta cloud (`local/`, `azure/`, `aws/`); nunca solo `kubectl apply -f k8s/`.
 - Mantener orden de pasos numerados; no eliminar pasos post-script (Ingress, consumer groups, hosts, Swagger).
 

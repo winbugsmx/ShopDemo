@@ -2,27 +2,27 @@
 
 ## Objetivo
 
-Cambios en Analytics/AppHost sin modificar Program.cs de Catalog/Orders/Inventory salvo que el SPEC lo indique.
+Cambios en Analytics/AppHost sin modificar Program.cs de Source/Catalog, Source/Orders, Source/Inventory salvo que el SPEC lo indique.
 
 ## Documentación (3 capas)
 
 | Capa | Documento |
 |---|---|
-| **A — Negocio** | [REQUERIMIENTOS-ANALYTICS-ASPIRE.md](../../../docs/analytics/REQUERIMIENTOS-ANALYTICS-ASPIRE.md) |
-| **A — Negocio** | [HISTORIAS-USUARIO-ANALYTICS-ASPIRE.md](../../../docs/analytics/HISTORIAS-USUARIO-ANALYTICS-ASPIRE.md) |
-| **B — Técnica** | [ANEXO-ESPECIFICACION-TECNICA-ANALYTICS-ASPIRE.md](../../../docs/analytics/ANEXO-ESPECIFICACION-TECNICA-ANALYTICS-ASPIRE.md) |
-| **B — Técnica** | [ANEXO-HISTORIAS-TECNICAS-ANALYTICS-ASPIRE.md](../../../docs/analytics/ANEXO-HISTORIAS-TECNICAS-ANALYTICS-ASPIRE.md) |
-| **C — Pedagogía** | [ANEXO-PEDAGOGIA-ANALYTICS-ASPIRE.md](../../../docs/analytics/ANEXO-PEDAGOGIA-ANALYTICS-ASPIRE.md) |
-| Implementación | [IMPLEMENTACION-ANALYTICS-ASPIRE.md](../../../docs/analytics/IMPLEMENTACION-ANALYTICS-ASPIRE.md) |
-| Aspire (guía) | [INTEGRACION-ASPIRE.md](../../../docs/INTEGRACION-ASPIRE.md) |
+| **A — Negocio** | [REQUERIMIENTOS-ANALYTICS-ASPIRE.md](../../../Documentación del Proyecto/analytics/REQUERIMIENTOS-ANALYTICS-ASPIRE.md) |
+| **A — Negocio** | [HISTORIAS-USUARIO-ANALYTICS-ASPIRE.md](../../../Documentación del Proyecto/analytics/HISTORIAS-USUARIO-ANALYTICS-ASPIRE.md) |
+| **B — Técnica** | [ANEXO-ESPECIFICACION-TECNICA-ANALYTICS-ASPIRE.md](../../../Documentación del Proyecto/analytics/ANEXO-ESPECIFICACION-TECNICA-ANALYTICS-ASPIRE.md) |
+| **B — Técnica** | [ANEXO-HISTORIAS-TECNICAS-ANALYTICS-ASPIRE.md](../../../Documentación del Proyecto/analytics/ANEXO-HISTORIAS-TECNICAS-ANALYTICS-ASPIRE.md) |
+| **C — Pedagogía** | [ANEXO-PEDAGOGIA-ANALYTICS-ASPIRE.md](../../../Documentación del Proyecto/analytics/ANEXO-PEDAGOGIA-ANALYTICS-ASPIRE.md) |
+| Implementación | [IMPLEMENTACION-ANALYTICS-ASPIRE.md](../../../Documentación del Proyecto/analytics/IMPLEMENTACION-ANALYTICS-ASPIRE.md) |
+| Aspire (guía) | [INTEGRACION-ASPIRE.md](../../../Documentación del Proyecto/INTEGRACION-ASPIRE.md) |
 
-Guía: [GUIA-ESTRUCTURA-DOCUMENTACION.md](../../../docs/GUIA-ESTRUCTURA-DOCUMENTACION.md)
+Guía: [GUIA-ESTRUCTURA-DOCUMENTACION.md](../../../Documentación del Proyecto/GUIA-ESTRUCTURA-DOCUMENTACION.md)
 
 ## Alcance (agente)
 
 - AppHost, ServiceDefaults, Analytics API
 - Consumer group `analytics-service` en Event Hubs
-- Código: `Aspire/`
+- Código: `Source/Aspire/`
 
 ## Criterios de aceptación
 

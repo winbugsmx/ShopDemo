@@ -14,9 +14,9 @@
     Event Hubs: connection string de Azure (cross-cloud) - ver INTEGRACION-AZURE-EVENT-HUBS.md
 
     Documentación:
-      - Documentación del Proyecto/despliegue/aws/IMPLEMENTACION-DESPLIEGUE-AWS.md
-      - Documentación del Proyecto/despliegue/eks/IMPLEMENTACION-DESPLIEGUE-EKS.md
-      - Documentación del Proyecto/integracion-ia/IMPLEMENTACION-DESPLIEGUE-MCP-AWS.md
+      - Documentación_Del_Proyecto/despliegue/aws/IMPLEMENTACION-DESPLIEGUE-AWS.md
+      - Documentación_Del_Proyecto/despliegue/eks/IMPLEMENTACION-DESPLIEGUE-EKS.md
+      - Documentación_Del_Proyecto/integracion-ia/IMPLEMENTACION-DESPLIEGUE-MCP-AWS.md
       - Source/scripts/aws/README.md
 
 .PARAMETER Mode
@@ -346,7 +346,7 @@ function New-K8sSecretsFile {
     @"
 # GENERADO por Deploy-AwsShopDemo.ps1 - NO COMMITEAR
 # Aplicar: kubectl apply -f k8s/secrets.yaml
-# Guía: Documentación del Proyecto/despliegue/eks/IMPLEMENTACION-DESPLIEGUE-EKS.md
+# Guía: Documentación_Del_Proyecto/despliegue/eks/IMPLEMENTACION-DESPLIEGUE-EKS.md
 
 apiVersion: v1
 kind: Secret
@@ -643,7 +643,7 @@ function New-PostgresDatabases {
 # Inicio
 # -----------------------------------------------------------------------------
 Write-Host "`nShopDemo - Provisionamiento AWS (modo: $Mode)" -ForegroundColor White
-Write-Host "Ref: Documentación del Proyecto/despliegue/aws/IMPLEMENTACION-DESPLIEGUE-AWS.md" -ForegroundColor DarkGray
+Write-Host "Ref: Documentación_Del_Proyecto/despliegue/aws/IMPLEMENTACION-DESPLIEGUE-AWS.md" -ForegroundColor DarkGray
 
 $cfg = Import-EnvFile -Path $EnvFile
 $repoRoot = (Resolve-Path (Join-Path $PSScriptRoot '..\..\..')).Path
@@ -1190,6 +1190,6 @@ if ($deployEks -and $state.eksCluster) {
     }
 }
 Write-Host 'Event Hubs: Azure (cross-cloud) - connection string en k8s/secrets.yaml' -ForegroundColor DarkGray
-Write-Host 'Validación: Documentación del Proyecto/GUIA-ENDPOINTS.md' -ForegroundColor DarkGray
+Write-Host 'Validación: Documentación_Del_Proyecto/GUIA-ENDPOINTS.md' -ForegroundColor DarkGray
 Write-Host 'Limpieza:   .\Remove-AwsShopDemo.ps1' -ForegroundColor DarkGray
 Write-Host ''

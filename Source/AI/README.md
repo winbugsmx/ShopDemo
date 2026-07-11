@@ -28,6 +28,6 @@ docker compose up --build
 
 ## Documentación
 
-- [Documentación del Proyecto/integracion-ia/README.md](../Documentación del Proyecto/integracion-ia/README.md)
-- **Tópico 12:** [12-integracion-ia-mcp.md](../Documentación de Estudio del Curso/12-integracion-ia-mcp.md)
-- **Despliegue en nube:** [IMPLEMENTACION-DESPLIEGUE-MCP-AZURE.md](../Documentación del Proyecto/integracion-ia/IMPLEMENTACION-DESPLIEGUE-MCP-AZURE.md) · [AWS](../Documentación del Proyecto/integracion-ia/IMPLEMENTACION-DESPLIEGUE-MCP-AWS.md)
+- [Documentación_Del_Proyecto/integracion-ia/README.md](../../Documentación_Del_Proyecto/integracion-ia/README.md)
+- **Tópico 12:** [12-integracion-ia-mcp.md](../../Documentación_De_Estudio_Del_Curso/12-integracion-ia-mcp.md)
+- **Despliegue en nube:** [IMPLEMENTACION-DESPLIEGUE-MCP-AZURE.md](../../Documentación_Del_Proyecto/integracion-ia/IMPLEMENTACION-DESPLIEGUE-MCP-AZURE.md) · [AWS](../../Documentación_Del_Proyecto/integracion-ia/IMPLEMENTACION-DESPLIEGUE-MCP-AWS.md)

@@ -8,17 +8,17 @@ Documentar y configurar detección de anomalías en logs, Semantic Kernel y aler
 
 | Capa | Documento |
 |---|---|
-| **A — Negocio** | [REQUERIMIENTOS-INTEGRACION-IA.md](../../../Documentación del Proyecto/integracion-ia/REQUERIMIENTOS-INTEGRACION-IA.md) |
-| **A — Negocio** | [HISTORIAS-USUARIO-INTEGRACION-IA.md](../../../Documentación del Proyecto/integracion-ia/HISTORIAS-USUARIO-INTEGRACION-IA.md) |
-| **B — Técnica** | [ANEXO-ESPECIFICACION-TECNICA-INTEGRACION-IA.md](../../../Documentación del Proyecto/integracion-ia/ANEXO-ESPECIFICACION-TECNICA-INTEGRACION-IA.md) |
-| **B — Técnica** | [ANEXO-HISTORIAS-TECNICAS-INTEGRACION-IA.md](../../../Documentación del Proyecto/integracion-ia/ANEXO-HISTORIAS-TECNICAS-INTEGRACION-IA.md) |
-| **C — Pedagogía** | [ANEXO-PEDAGOGIA-INTEGRACION-IA.md](../../../Documentación del Proyecto/integracion-ia/ANEXO-PEDAGOGIA-INTEGRACION-IA.md) |
-| Teoría | [TEORIA-INTEGRACION-IA.md](../../../Documentación del Proyecto/integracion-ia/TEORIA-INTEGRACION-IA.md) |
-| Impl. Azure | [azure/IMPLEMENTACION-INTEGRACION-IA-AZURE.md](../../../Documentación del Proyecto/integracion-ia/azure/IMPLEMENTACION-INTEGRACION-IA-AZURE.md) |
-| Impl. AWS | [aws/IMPLEMENTACION-INTEGRACION-IA-AWS.md](../../../Documentación del Proyecto/integracion-ia/aws/IMPLEMENTACION-INTEGRACION-IA-AWS.md) |
-| MCP Gateway | [IMPLEMENTACION-MCP-GATEWAY.md](../../../Documentación del Proyecto/integracion-ia/IMPLEMENTACION-MCP-GATEWAY.md) |
+| **A — Negocio** | [REQUERIMIENTOS-INTEGRACION-IA.md](../../../Documentación_Del_Proyecto/integracion-ia/REQUERIMIENTOS-INTEGRACION-IA.md) |
+| **A — Negocio** | [HISTORIAS-USUARIO-INTEGRACION-IA.md](../../../Documentación_Del_Proyecto/integracion-ia/HISTORIAS-USUARIO-INTEGRACION-IA.md) |
+| **B — Técnica** | [ANEXO-ESPECIFICACION-TECNICA-INTEGRACION-IA.md](../../../Documentación_Del_Proyecto/integracion-ia/ANEXO-ESPECIFICACION-TECNICA-INTEGRACION-IA.md) |
+| **B — Técnica** | [ANEXO-HISTORIAS-TECNICAS-INTEGRACION-IA.md](../../../Documentación_Del_Proyecto/integracion-ia/ANEXO-HISTORIAS-TECNICAS-INTEGRACION-IA.md) |
+| **C — Pedagogía** | [ANEXO-PEDAGOGIA-INTEGRACION-IA.md](../../../Documentación_Del_Proyecto/integracion-ia/ANEXO-PEDAGOGIA-INTEGRACION-IA.md) |
+| Teoría | [TEORIA-INTEGRACION-IA.md](../../../Documentación_Del_Proyecto/integracion-ia/TEORIA-INTEGRACION-IA.md) |
+| Impl. Azure | [azure/IMPLEMENTACION-INTEGRACION-IA-AZURE.md](../../../Documentación_Del_Proyecto/integracion-ia/azure/IMPLEMENTACION-INTEGRACION-IA-AZURE.md) |
+| Impl. AWS | [aws/IMPLEMENTACION-INTEGRACION-IA-AWS.md](../../../Documentación_Del_Proyecto/integracion-ia/aws/IMPLEMENTACION-INTEGRACION-IA-AWS.md) |
+| MCP Gateway | [IMPLEMENTACION-MCP-GATEWAY.md](../../../Documentación_Del_Proyecto/integracion-ia/IMPLEMENTACION-MCP-GATEWAY.md) |
 
-Guía: [GUIA-ESTRUCTURA-DOCUMENTACION.md](../../../Documentación del Proyecto/GUIA-ESTRUCTURA-DOCUMENTACION.md)
+Guía: [GUIA-ESTRUCTURA-DOCUMENTACION.md](../../../Documentación_Del_Proyecto/GUIA-ESTRUCTURA-DOCUMENTACION.md)
 
 ## Alcance (agente)
 

@@ -8,17 +8,17 @@ Desplegar y consumir el MCP Server que expone tools sobre Catalog, Inventory y A
 
 | Capa | Documento |
 |---|---|
-| **A — Negocio** | [REQUERIMIENTOS-DESPLIEGUE-MCP.md](../../../Documentación del Proyecto/integracion-ia/REQUERIMIENTOS-DESPLIEGUE-MCP.md) |
-| **A — Negocio** | [HISTORIAS-USUARIO-DESPLIEGUE-MCP.md](../../../Documentación del Proyecto/integracion-ia/HISTORIAS-USUARIO-DESPLIEGUE-MCP.md) |
-| **B — Técnica** | [ANEXO-ESPECIFICACION-TECNICA-DESPLIEGUE-MCP.md](../../../Documentación del Proyecto/integracion-ia/ANEXO-ESPECIFICACION-TECNICA-DESPLIEGUE-MCP.md) |
-| **B — Técnica** | [ANEXO-HISTORIAS-TECNICAS-DESPLIEGUE-MCP.md](../../../Documentación del Proyecto/integracion-ia/ANEXO-HISTORIAS-TECNICAS-DESPLIEGUE-MCP.md) |
-| **C — Pedagogía** | [ANEXO-PEDAGOGIA-DESPLIEGUE-MCP.md](../../../Documentación del Proyecto/integracion-ia/ANEXO-PEDAGOGIA-DESPLIEGUE-MCP.md) |
-| Implementación | [IMPLEMENTACION-MCP-GATEWAY.md](../../../Documentación del Proyecto/integracion-ia/IMPLEMENTACION-MCP-GATEWAY.md) |
-| Deploy Azure | [IMPLEMENTACION-DESPLIEGUE-MCP-AZURE.md](../../../Documentación del Proyecto/integracion-ia/IMPLEMENTACION-DESPLIEGUE-MCP-AZURE.md) |
-| Deploy AWS | [IMPLEMENTACION-DESPLIEGUE-MCP-AWS.md](../../../Documentación del Proyecto/integracion-ia/IMPLEMENTACION-DESPLIEGUE-MCP-AWS.md) |
-| Código | [ANEXO-CODIGO-MCP.md](../../../Documentación del Proyecto/integracion-ia/ANEXO-CODIGO-MCP.md) |
+| **A — Negocio** | [REQUERIMIENTOS-DESPLIEGUE-MCP.md](../../../Documentación_Del_Proyecto/integracion-ia/REQUERIMIENTOS-DESPLIEGUE-MCP.md) |
+| **A — Negocio** | [HISTORIAS-USUARIO-DESPLIEGUE-MCP.md](../../../Documentación_Del_Proyecto/integracion-ia/HISTORIAS-USUARIO-DESPLIEGUE-MCP.md) |
+| **B — Técnica** | [ANEXO-ESPECIFICACION-TECNICA-DESPLIEGUE-MCP.md](../../../Documentación_Del_Proyecto/integracion-ia/ANEXO-ESPECIFICACION-TECNICA-DESPLIEGUE-MCP.md) |
+| **B — Técnica** | [ANEXO-HISTORIAS-TECNICAS-DESPLIEGUE-MCP.md](../../../Documentación_Del_Proyecto/integracion-ia/ANEXO-HISTORIAS-TECNICAS-DESPLIEGUE-MCP.md) |
+| **C — Pedagogía** | [ANEXO-PEDAGOGIA-DESPLIEGUE-MCP.md](../../../Documentación_Del_Proyecto/integracion-ia/ANEXO-PEDAGOGIA-DESPLIEGUE-MCP.md) |
+| Implementación | [IMPLEMENTACION-MCP-GATEWAY.md](../../../Documentación_Del_Proyecto/integracion-ia/IMPLEMENTACION-MCP-GATEWAY.md) |
+| Deploy Azure | [IMPLEMENTACION-DESPLIEGUE-MCP-AZURE.md](../../../Documentación_Del_Proyecto/integracion-ia/IMPLEMENTACION-DESPLIEGUE-MCP-AZURE.md) |
+| Deploy AWS | [IMPLEMENTACION-DESPLIEGUE-MCP-AWS.md](../../../Documentación_Del_Proyecto/integracion-ia/IMPLEMENTACION-DESPLIEGUE-MCP-AWS.md) |
+| Código | [ANEXO-CODIGO-MCP.md](../../../Documentación_Del_Proyecto/integracion-ia/ANEXO-CODIGO-MCP.md) |
 
-Guía: [GUIA-ESTRUCTURA-DOCUMENTACION.md](../../../Documentación del Proyecto/GUIA-ESTRUCTURA-DOCUMENTACION.md)
+Guía: [GUIA-ESTRUCTURA-DOCUMENTACION.md](../../../Documentación_Del_Proyecto/GUIA-ESTRUCTURA-DOCUMENTACION.md)
 
 ## Alcance (agente)
 

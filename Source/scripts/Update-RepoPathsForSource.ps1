@@ -24,7 +24,7 @@ function Invoke-Replacements([string]$text) {
 }
 
 $includeRoots = @(
-    (Join-Path $RepoRoot 'Documentación del Proyecto'),
+    (Join-Path $RepoRoot 'Documentación_Del_Proyecto'),
     (Join-Path $RepoRoot 'spec-driven'),
     (Join-Path $RepoRoot 'k8s'),
     (Join-Path $RepoRoot '.github'),

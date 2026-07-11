@@ -236,12 +236,12 @@ Para muchos secrets repetidos, la alternativa rápida es el script [sync-github-
 | URLs MCP / Inventory (ACA) | Portal Azure → Container Apps → **Application Url** (FQDN) |
 | URLs MCP (ECS) | Consola AWS → EC2 → Load Balancers → DNS name |
 | Service Principal | [SETUP-GITHUB.md §6](SETUP-GITHUB.md#6-service-principal-azure-resumen) |
-| OIDC AWS | [PREPARACION-AMBIENTE-AWS.md](../Documentación del Proyecto/despliegue/aws/PREPARACION-AMBIENTE-AWS.md) |
+| OIDC AWS | [PREPARACION-AMBIENTE-AWS.md](../Documentación_Del_Proyecto/despliegue/aws/PREPARACION-AMBIENTE-AWS.md) |
 
 Documentación MCP:
 
-- Azure: [IMPLEMENTACION-DESPLIEGUE-MCP-AZURE.md](../Documentación del Proyecto/integracion-ia/IMPLEMENTACION-DESPLIEGUE-MCP-AZURE.md)
-- AWS: [IMPLEMENTACION-DESPLIEGUE-MCP-AWS.md](../Documentación del Proyecto/integracion-ia/IMPLEMENTACION-DESPLIEGUE-MCP-AWS.md)
+- Azure: [IMPLEMENTACION-DESPLIEGUE-MCP-AZURE.md](../Documentación_Del_Proyecto/integracion-ia/IMPLEMENTACION-DESPLIEGUE-MCP-AZURE.md)
+- AWS: [IMPLEMENTACION-DESPLIEGUE-MCP-AWS.md](../Documentación_Del_Proyecto/integracion-ia/IMPLEMENTACION-DESPLIEGUE-MCP-AWS.md)
 
 ---
 
@@ -341,4 +341,4 @@ Marca cuando completes cada bloque en el **portal**:
 | GitHub CLI (alternativa) | [GH-CLI-COMMANDS.md](GH-CLI-COMMANDS.md) |
 | Checklist secrets | [SECRETS-CHECKLIST.md](SECRETS-CHECKLIST.md) |
 | Índice workflows | [README.md](README.md) |
-| Alcance lab release | [ALCANCE-LAB-RELEASE.md](../Documentación del Proyecto/despliegue/ALCANCE-LAB-RELEASE.md) |
+| Alcance lab release | [ALCANCE-LAB-RELEASE.md](../Documentación_Del_Proyecto/despliegue/ALCANCE-LAB-RELEASE.md) |

@@ -3,7 +3,7 @@
     Elimina todos los recursos de ShopDemo en Azure (Resource Group completo).
 
 .DESCRIPTION
-    Ref: Documentación del Proyecto/despliegue/azure/IMPLEMENTACION-DESPLIEGUE-AZURE.md §16
+    Ref: Documentación_Del_Proyecto/despliegue/azure/IMPLEMENTACION-DESPLIEGUE-AZURE.md §16
 
     ADVERTENCIA: borra el Resource Group configurado en .env.azure, incluyendo
     ACR, Event Hubs, Storage, AKS, Container Apps y PostgreSQL ACI.
@@ -48,7 +48,7 @@ $rg = $cfg.RESOURCE_GROUP
 Write-Host ""
 Write-Host "Eliminar Resource Group: $rg" -ForegroundColor Yellow
 Write-Host "Esto borra TODOS los recursos del laboratorio ShopDemo en Azure." -ForegroundColor Yellow
-Write-Host "Ref: Documentación del Proyecto/despliegue/azure/IMPLEMENTACION-DESPLIEGUE-AZURE.md §16" -ForegroundColor DarkGray
+Write-Host "Ref: Documentación_Del_Proyecto/despliegue/azure/IMPLEMENTACION-DESPLIEGUE-AZURE.md §16" -ForegroundColor DarkGray
 Write-Host ""
 
 if (-not $Force) {

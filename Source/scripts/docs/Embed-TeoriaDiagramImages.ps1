@@ -11,7 +11,7 @@ param()
 
 $ErrorActionPreference = 'Stop'
 $Root = (Resolve-Path (Join-Path $PSScriptRoot '..\..\..')).Path
-$DocsDir = Join-Path $Root 'Documentación de Estudio del Curso'
+$DocsDir = Join-Path $Root 'Documentación_De_Estudio_Del_Curso'
 
 function Convert-Content {
     param([string]$Text)

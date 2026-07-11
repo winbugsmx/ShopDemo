@@ -6,15 +6,15 @@ Automatización del laboratorio Azure del curso Lite Thinking. Complementa la do
 
 | Tema | Documento |
 |---|---|
-| Preparación IAM/cuotas | [PREPARACION-AMBIENTE-AZURE.md](../../Documentación del Proyecto/despliegue/azure/PREPARACION-AMBIENTE-AZURE.md) |
-| **Script** | [GUIA-RELEASE-SCRIPT-AZURE.md](../../Documentación del Proyecto/despliegue/azure/GUIA-RELEASE-SCRIPT-AZURE.md) |
-| Portal visual | [GUIA-RELEASE-PORTAL-AZURE.md](../../Documentación del Proyecto/despliegue/azure/GUIA-RELEASE-PORTAL-AZURE.md) |
-| Azure CLI manual | [GUIA-RELEASE-CLI-AZURE.md](../../Documentación del Proyecto/despliegue/azure/GUIA-RELEASE-CLI-AZURE.md) |
-| AKS + Kubernetes | [GUIA-RELEASE-KUBERNETES.md](../../Documentación del Proyecto/despliegue/kubernetes/GUIA-RELEASE-KUBERNETES.md) |
-| Event Hubs | [INTEGRACION-AZURE-EVENT-HUBS.md](../../Documentación del Proyecto/INTEGRACION-AZURE-EVENT-HUBS.md) |
+| Preparación IAM/cuotas | [PREPARACION-AMBIENTE-AZURE.md](../../../Documentación_Del_Proyecto/despliegue/azure/PREPARACION-AMBIENTE-AZURE.md) |
+| **Script** | [GUIA-RELEASE-SCRIPT-AZURE.md](../../../Documentación_Del_Proyecto/despliegue/azure/GUIA-RELEASE-SCRIPT-AZURE.md) |
+| Portal visual | [GUIA-RELEASE-PORTAL-AZURE.md](../../../Documentación_Del_Proyecto/despliegue/azure/GUIA-RELEASE-PORTAL-AZURE.md) |
+| Azure CLI manual | [GUIA-RELEASE-CLI-AZURE.md](../../../Documentación_Del_Proyecto/despliegue/azure/GUIA-RELEASE-CLI-AZURE.md) |
+| AKS + Kubernetes | [GUIA-RELEASE-KUBERNETES.md](../../../Documentación_Del_Proyecto/despliegue/kubernetes/GUIA-RELEASE-KUBERNETES.md) |
+| Event Hubs | [INTEGRACION-AZURE-EVENT-HUBS.md](../../../Documentación_Del_Proyecto/INTEGRACION-AZURE-EVENT-HUBS.md) |
 | Reporte AKS lab | [deploy-aks-report.json](./deploy-aks-report.json) |
-| CI/CD GitHub | [.github/workflows/deploy-azure.yml](../../.github/workflows/deploy-azure.yml) · [deploy-aks.yml](../../.github/workflows/deploy-aks.yml) · [SETUP-GITHUB.md](../../.github/SETUP-GITHUB.md) |
-| Tópicos de Estudio | [05 Azure](../../Documentación de Estudio del Curso/05-servicios-azure.md) · [07 Docker](../../Documentación de Estudio del Curso/07-contenedores-docker.md) · [09 CI/CD](../../Documentación de Estudio del Curso/09-ci-cd-devops.md) · [Índice](../../Documentación de Estudio del Curso/README.md) |
+| CI/CD GitHub | [.github/workflows/deploy-azure.yml](../../../.github/workflows/deploy-azure.yml) · [deploy-aks.yml](../../../.github/workflows/deploy-aks.yml) · [SETUP-GITHUB.md](../../../.github/SETUP-GITHUB.md) |
+| Tópicos de Estudio | [05 Azure](../../../Documentación_De_Estudio_Del_Curso/05-servicios-azure.md) · [07 Docker](../../../Documentación_De_Estudio_Del_Curso/07-contenedores-docker.md) · [09 CI/CD](../../../Documentación_De_Estudio_Del_Curso/09-ci-cd-devops.md) · [Índice](../../../Documentación_De_Estudio_Del_Curso/README.md) |
 
 ## Archivos
 
@@ -27,7 +27,7 @@ Automatización del laboratorio Azure del curso Lite Thinking. Complementa la do
 
 ## Prerrequisitos
 
-1. [PREPARACION-AMBIENTE-AZURE.md](../../Documentación del Proyecto/despliegue/azure/PREPARACION-AMBIENTE-AZURE.md)
+1. [PREPARACION-AMBIENTE-AZURE.md](../../../Documentación_Del_Proyecto/despliegue/azure/PREPARACION-AMBIENTE-AZURE.md)
 2. Permiso **Contributor** en suscripción o RG
 3. Para **AKS**: `kubectl`, `helm`
 4. **Imágenes en ACR** antes de probar APIs

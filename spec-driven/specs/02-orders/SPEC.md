@@ -8,14 +8,14 @@ Cambios en pedidos respetando integración con Inventory y eventos de dominio.
 
 | Capa | Documento |
 |---|---|
-| **A — Negocio** | [REQUERIMIENTOS-ORDERS.md](../../../Documentación del Proyecto/orders/REQUERIMIENTOS-ORDERS.md) |
-| **A — Negocio** | [HISTORIAS-USUARIO-ORDERS.md](../../../Documentación del Proyecto/orders/HISTORIAS-USUARIO-ORDERS.md) |
-| **B — Técnica** | [ANEXO-ESPECIFICACION-TECNICA-ORDERS.md](../../../Documentación del Proyecto/orders/ANEXO-ESPECIFICACION-TECNICA-ORDERS.md) |
-| **B — Técnica** | [ANEXO-HISTORIAS-TECNICAS-ORDERS.md](../../../Documentación del Proyecto/orders/ANEXO-HISTORIAS-TECNICAS-ORDERS.md) |
-| **C — Pedagogía** | [ANEXO-PEDAGOGIA-ORDERS.md](../../../Documentación del Proyecto/orders/ANEXO-PEDAGOGIA-ORDERS.md) |
-| Implementación | [IMPLEMENTACION-ORDERS.md](../../../Documentación del Proyecto/orders/IMPLEMENTACION-ORDERS.md) |
+| **A — Negocio** | [REQUERIMIENTOS-ORDERS.md](../../../Documentación_Del_Proyecto/orders/REQUERIMIENTOS-ORDERS.md) |
+| **A — Negocio** | [HISTORIAS-USUARIO-ORDERS.md](../../../Documentación_Del_Proyecto/orders/HISTORIAS-USUARIO-ORDERS.md) |
+| **B — Técnica** | [ANEXO-ESPECIFICACION-TECNICA-ORDERS.md](../../../Documentación_Del_Proyecto/orders/ANEXO-ESPECIFICACION-TECNICA-ORDERS.md) |
+| **B — Técnica** | [ANEXO-HISTORIAS-TECNICAS-ORDERS.md](../../../Documentación_Del_Proyecto/orders/ANEXO-HISTORIAS-TECNICAS-ORDERS.md) |
+| **C — Pedagogía** | [ANEXO-PEDAGOGIA-ORDERS.md](../../../Documentación_Del_Proyecto/orders/ANEXO-PEDAGOGIA-ORDERS.md) |
+| Implementación | [IMPLEMENTACION-ORDERS.md](../../../Documentación_Del_Proyecto/orders/IMPLEMENTACION-ORDERS.md) |
 
-Guía: [GUIA-ESTRUCTURA-DOCUMENTACION.md](../../../Documentación del Proyecto/GUIA-ESTRUCTURA-DOCUMENTACION.md)
+Guía: [GUIA-ESTRUCTURA-DOCUMENTACION.md](../../../Documentación_Del_Proyecto/GUIA-ESTRUCTURA-DOCUMENTACION.md)
 
 ## Alcance (agente)
 

@@ -15,7 +15,7 @@
 
 ### Criterios (CA-N)
 
-- [ ] **CA-N-SDD-01:** 13 specs con enlaces válidos a `Documentación del Proyecto/`.
+- [ ] **CA-N-SDD-01:** 13 specs con enlaces válidos a `Documentación_Del_Proyecto/`.
 
 ---
 

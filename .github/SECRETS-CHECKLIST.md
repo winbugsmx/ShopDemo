@@ -175,6 +175,6 @@ Después, los pushes a `main` con cambios de código solo ejecutan **build → p
 - [GH-CLI-COMMANDS.md](GH-CLI-COMMANDS.md) — comandos `gh secret set` por environment (lab)
 - [SETUP-GITHUB.md](SETUP-GITHUB.md) — configuración paso a paso en GitHub
 - [SETUP-GITHUB-PORTAL.md](SETUP-GITHUB-PORTAL.md) — portal web (environments, secrets, Actions)
-- [Documentación del Proyecto/despliegue/ALCANCE-LAB-RELEASE.md](../Documentación del Proyecto/despliegue/ALCANCE-LAB-RELEASE.md)
+- [Documentación_Del_Proyecto/despliegue/ALCANCE-LAB-RELEASE.md](../Documentación_Del_Proyecto/despliegue/ALCANCE-LAB-RELEASE.md)
 - [Source/scripts/azure/.env.azure.example](../Source/scripts/azure/.env.azure.example)
 - [Source/scripts/aws/.env.aws.example](../Source/scripts/aws/.env.aws.example)

@@ -12,10 +12,10 @@
       All  - ACA + AKS (laboratorio completo)
 
     Documentación:
-      - Documentación del Proyecto/despliegue/azure/IMPLEMENTACION-DESPLIEGUE-AZURE.md
-      - Documentación del Proyecto/despliegue/aks/IMPLEMENTACION-DESPLIEGUE-AKS.md
-      - Documentación del Proyecto/INTEGRACION-AZURE-EVENT-HUBS.md
-      - Documentación del Proyecto/integracion-ia/IMPLEMENTACION-DESPLIEGUE-MCP-AZURE.md
+      - Documentación_Del_Proyecto/despliegue/azure/IMPLEMENTACION-DESPLIEGUE-AZURE.md
+      - Documentación_Del_Proyecto/despliegue/aks/IMPLEMENTACION-DESPLIEGUE-AKS.md
+      - Documentación_Del_Proyecto/INTEGRACION-AZURE-EVENT-HUBS.md
+      - Documentación_Del_Proyecto/integracion-ia/IMPLEMENTACION-DESPLIEGUE-MCP-AZURE.md
       - Source/scripts/azure/README.md
 
 .PARAMETER Mode
@@ -220,7 +220,7 @@ function New-K8sSecretsFile {
     $content = @"
 # GENERADO por Deploy-AzureShopDemo.ps1 - NO COMMITEAR
 # Aplicar: kubectl apply -f k8s/secrets.yaml
-# Guía: Documentación del Proyecto/despliegue/aks/IMPLEMENTACION-DESPLIEGUE-AKS.md
+# Guía: Documentación_Del_Proyecto/despliegue/aks/IMPLEMENTACION-DESPLIEGUE-AKS.md
 
 apiVersion: v1
 kind: Secret
@@ -329,7 +329,7 @@ function Get-ContainerAppFqdn {
 
 Write-Host ""
 Write-Host "ShopDemo - Provisionamiento Azure (modo: $Mode)" -ForegroundColor White
-Write-Host "Ref: Documentación del Proyecto/despliegue/azure/IMPLEMENTACION-DESPLIEGUE-AZURE.md" -ForegroundColor DarkGray
+Write-Host "Ref: Documentación_Del_Proyecto/despliegue/azure/IMPLEMENTACION-DESPLIEGUE-AZURE.md" -ForegroundColor DarkGray
 
 $cfg = Import-EnvFile -Path $EnvFile
 $repoRoot = (Resolve-Path (Join-Path $PSScriptRoot '..\..\..')).Path
@@ -803,7 +803,7 @@ if ($deployAks) {
     Write-Info "  # Imágenes ACR ya en k8s/azure/*/deployment.yaml; set-image solo si cambias tag"
     Write-Info "  APPLY_INFRA=true bash .github/scripts/apply-k8s-manifests.sh k8s azure"
     Write-Info "  # O paso a paso: ver k8s/README.md (compartidos + k8s/azure/)"
-    Write-Info "Guía: Documentación del Proyecto/despliegue/aks/IMPLEMENTACION-DESPLIEGUE-AKS.md §7-8"
+    Write-Info "Guía: Documentación_Del_Proyecto/despliegue/aks/IMPLEMENTACION-DESPLIEGUE-AKS.md §7-8"
 }
 
 # -----------------------------------------------------------------------------
@@ -829,6 +829,6 @@ Write-Host "Event Hubs connection string guardada en recursos ACA (secreto eh-co
 Write-Host "Storage (ACA checkpoints): $($cfg.STORAGE_ACCOUNT_NAME)" -ForegroundColor DarkGray
 Write-Host "ACR: $($acr.LoginServer)" -ForegroundColor DarkGray
 Write-Host ""
-Write-Host "Validación: Documentación del Proyecto/GUIA-ENDPOINTS.md (sustituir localhost por FQDN ACA)" -ForegroundColor DarkGray
+Write-Host "Validación: Documentación_Del_Proyecto/GUIA-ENDPOINTS.md (sustituir localhost por FQDN ACA)" -ForegroundColor DarkGray
 Write-Host "Limpieza:   .\Remove-AzureShopDemo.ps1" -ForegroundColor DarkGray
 Write-Host ""

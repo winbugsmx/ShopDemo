@@ -24,10 +24,10 @@ Release: **Azure** (ACA/AKS) y **AWS** (ECS/EKS) + **Minikube**.
 | Manifiestos K8s | `k8s/` | Compartidos + `local/` \| `azure/` \| `aws/` |
 | Scripts release | `Source/scripts/azure/`, `Source/scripts/aws/` | PowerShell; no hacen build Docker |
 | CI/CD | `.github/workflows/` | 4 workflows tras merge a `main` |
-| Curso / release | `Documentación del Proyecto/` | Guías del lab ShopDemo (implementación, despliegue) |
-| Tópicos de Estudio | `Documentación de Estudio del Curso/` | Teoría general (13 capítulos), independiente del lab |
+| Curso / release | `Documentación_Del_Proyecto/` | Guías del lab ShopDemo (implementación, despliegue) |
+| Tópicos de Estudio | `Documentación_De_Estudio_Del_Curso/` | Teoría general (13 capítulos), independiente del lab |
 | Specs agente | `spec-driven/specs/` | Leer SPEC antes de implementar |
-| Alcance lab | `Documentación del Proyecto/despliegue/ALCANCE-LAB-RELEASE.md` | Qué es obligatorio vs opcional |
+| Alcance lab | `Documentación_Del_Proyecto/despliegue/ALCANCE-LAB-RELEASE.md` | Qué es obligatorio vs opcional |
 
 ## Arquitectura de despliegue (decisión rápida)
 
@@ -69,7 +69,7 @@ Orden y scripts: [k8s/README.md](k8s/README.md) · `APPLY_INFRA=true bash .githu
 4. Validar criterios CA-N (negocio) y CA-T (técnico) del módulo.
 5. **No mezclar** comandos Azure CLI y AWS CLI en una misma tarea salvo petición explícita.
 
-**Guía documental:** [Documentación del Proyecto/GUIA-ESTRUCTURA-DOCUMENTACION.md](Documentación del Proyecto/GUIA-ESTRUCTURA-DOCUMENTACION.md)
+**Guía documental:** [Documentación_Del_Proyecto/GUIA-ESTRUCTURA-DOCUMENTACION.md](Documentación_Del_Proyecto/GUIA-ESTRUCTURA-DOCUMENTACION.md)
 
 ## Build y verificación
 
@@ -77,7 +77,7 @@ Orden y scripts: [k8s/README.md](k8s/README.md) · `APPLY_INFRA=true bash .githu
 dotnet build Source/ShopDemo.slnx
 ```
 
-Post-release: `GET /health` por servicio · Postman carpeta **Flujo integrado (E2E)** · [Documentación del Proyecto/GUIA-ENDPOINTS.md](Documentación del Proyecto/GUIA-ENDPOINTS.md)
+Post-release: `GET /health` por servicio · Postman carpeta **Flujo integrado (E2E)** · [Documentación_Del_Proyecto/GUIA-ENDPOINTS.md](Documentación_Del_Proyecto/GUIA-ENDPOINTS.md)
 
 ## Secretos — nunca commitear
 
@@ -95,7 +95,7 @@ Al cambiar estructura K8s, workflows o scripts, actualizar **en el mismo PR**:
 | `k8s/**` | `k8s/README.md`, guías AKS/EKS/Minikube, `ALCANCE-LAB-RELEASE.md`, README release |
 | `.github/**` | `SECRETS-CHECKLIST.md`, `SETUP-GITHUB*.md`, `.github/README.md` |
 | `scripts/**/*.ps1` | `scripts/*/README.md`, guías Script Azure/AWS |
-| MCP / Ingress | `Documentación del Proyecto/integracion-ia/`, `k8s/ingress/` |
+| MCP / Ingress | `Documentación_Del_Proyecto/integracion-ia/`, `k8s/ingress/` |
 
 Evitar rutas obsoletas: `k8s/catalog/deployment.yaml`, `kubectl apply -f k8s/` genérico, “mismos YAML en todos los clouds”.
 
@@ -124,10 +124,10 @@ Consumer groups Event Hubs obligatorios: `analytics-service`, `inventory-service
 
 | Necesito… | Documento |
 |---|---|
-| Elegir ruta release | [ALCANCE-LAB-RELEASE.md](Documentación del Proyecto/despliegue/ALCANCE-LAB-RELEASE.md) |
-| Script Azure | [GUIA-RELEASE-SCRIPT-AZURE.md](Documentación del Proyecto/despliegue/azure/GUIA-RELEASE-SCRIPT-AZURE.md) |
-| Script AWS | [GUIA-RELEASE-SCRIPT-AWS.md](Documentación del Proyecto/despliegue/aws/GUIA-RELEASE-SCRIPT-AWS.md) |
-| K8s local/AKS/EKS | [GUIA-RELEASE-KUBERNETES.md](Documentación del Proyecto/despliegue/kubernetes/GUIA-RELEASE-KUBERNETES.md) |
+| Elegir ruta release | [ALCANCE-LAB-RELEASE.md](Documentación_Del_Proyecto/despliegue/ALCANCE-LAB-RELEASE.md) |
+| Script Azure | [GUIA-RELEASE-SCRIPT-AZURE.md](Documentación_Del_Proyecto/despliegue/azure/GUIA-RELEASE-SCRIPT-AZURE.md) |
+| Script AWS | [GUIA-RELEASE-SCRIPT-AWS.md](Documentación_Del_Proyecto/despliegue/aws/GUIA-RELEASE-SCRIPT-AWS.md) |
+| K8s local/AKS/EKS | [GUIA-RELEASE-KUBERNETES.md](Documentación_Del_Proyecto/despliegue/kubernetes/GUIA-RELEASE-KUBERNETES.md) |
 | Configurar GitHub | [SETUP-GITHUB-PORTAL.md](.github/SETUP-GITHUB-PORTAL.md) |
-| Arquitectura completa | [Documentación del Proyecto/ARQUITECTURA.md](Documentación del Proyecto/ARQUITECTURA.md) |
-| Tópicos de Estudio | [Documentación de Estudio del Curso/README.md](Documentación de Estudio del Curso/README.md) — teoría general (13 tópicos, independiente del lab) |
+| Arquitectura completa | [Documentación_Del_Proyecto/ARQUITECTURA.md](Documentación_Del_Proyecto/ARQUITECTURA.md) |
+| Tópicos de Estudio | [Documentación_De_Estudio_Del_Curso/README.md](Documentación_De_Estudio_Del_Curso/README.md) — teoría general (13 tópicos, independiente del lab) |

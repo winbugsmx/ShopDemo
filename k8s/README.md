@@ -107,7 +107,7 @@ az eventhubs eventhub consumer-group create --resource-group rg-shopdemo-lab \
 
 Si el Load Balancer del Ingress no responde externamente:
 
-1. Instalar Ingress NGINX con Helm (ver [GUIA-RELEASE-SCRIPT-AZURE §5.2](../Documentación del Proyecto/despliegue/azure/GUIA-RELEASE-SCRIPT-AZURE.md))
+1. Instalar Ingress NGINX con Helm (ver [GUIA-RELEASE-SCRIPT-AZURE §5.2](../Documentación_Del_Proyecto/despliegue/azure/GUIA-RELEASE-SCRIPT-AZURE.md))
 2. Anotar el Service del controller:
 
 ```yaml
@@ -127,20 +127,20 @@ Con 4× `t3.micro` (~16 pods) suele bastar solo Catalog + Orders + Inventory. Ve
 
 | Entorno | Guía |
 |---|---|
-| Minikube (local) | [IMPLEMENTACION-KUBERNETES-LOCAL](../Documentación del Proyecto/despliegue/kubernetes/IMPLEMENTACION-KUBERNETES-LOCAL.md) |
-| Elección de ruta | [GUIA-RELEASE-KUBERNETES](../Documentación del Proyecto/despliegue/kubernetes/GUIA-RELEASE-KUBERNETES.md) |
-| Azure AKS | [IMPLEMENTACION-DESPLIEGUE-AKS](../Documentación del Proyecto/despliegue/aks/IMPLEMENTACION-DESPLIEGUE-AKS.md) |
-| Amazon EKS | [IMPLEMENTACION-DESPLIEGUE-EKS](../Documentación del Proyecto/despliegue/eks/IMPLEMENTACION-DESPLIEGUE-EKS.md) |
+| Minikube (local) | [IMPLEMENTACION-KUBERNETES-LOCAL](../Documentación_Del_Proyecto/despliegue/kubernetes/IMPLEMENTACION-KUBERNETES-LOCAL.md) |
+| Elección de ruta | [GUIA-RELEASE-KUBERNETES](../Documentación_Del_Proyecto/despliegue/kubernetes/GUIA-RELEASE-KUBERNETES.md) |
+| Azure AKS | [IMPLEMENTACION-DESPLIEGUE-AKS](../Documentación_Del_Proyecto/despliegue/aks/IMPLEMENTACION-DESPLIEGUE-AKS.md) |
+| Amazon EKS | [IMPLEMENTACION-DESPLIEGUE-EKS](../Documentación_Del_Proyecto/despliegue/eks/IMPLEMENTACION-DESPLIEGUE-EKS.md) |
 | Script Azure AKS | [Source/scripts/azure/README.md](../Source/scripts/azure/README.md) |
 | Script AWS EKS | [Source/scripts/aws/README.md](../Source/scripts/aws/README.md) |
 | CI/CD AKS/EKS | [.github/workflows/deploy-aks.yml](../.github/workflows/deploy-aks.yml) · [deploy-eks.yml](../.github/workflows/deploy-eks.yml) |
-| MCP Gateway | [IMPLEMENTACION-DESPLIEGUE-MCP-AZURE](../Documentación del Proyecto/integracion-ia/IMPLEMENTACION-DESPLIEGUE-MCP-AZURE.md) |
+| MCP Gateway | [IMPLEMENTACION-DESPLIEGUE-MCP-AZURE](../Documentación_Del_Proyecto/integracion-ia/IMPLEMENTACION-DESPLIEGUE-MCP-AZURE.md) |
 
 ## Tópicos de Estudio
 
 | # | Tópico | Enlace |
 |---|---|---|
-| 07 | Contenedores y Docker | [07-contenedores-docker.md](../Documentación de Estudio del Curso/07-contenedores-docker.md) |
-| 08 | Kubernetes | [08-kubernetes-orquestacion.md](../Documentación de Estudio del Curso/08-kubernetes-orquestacion.md) |
+| 07 | Contenedores y Docker | [07-contenedores-docker.md](../Documentación_De_Estudio_Del_Curso/07-contenedores-docker.md) |
+| 08 | Kubernetes | [08-kubernetes-orquestacion.md](../Documentación_De_Estudio_Del_Curso/08-kubernetes-orquestacion.md) |
 
-Índice completo: [DocumentaciÃ³n de Estudio del Curso/README.md](../Documentación de Estudio del Curso/README.md)
+Índice completo: [Documentación_De_Estudio_Del_Curso/README.md](../Documentación_De_Estudio_Del_Curso/README.md)

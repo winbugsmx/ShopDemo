@@ -6,8 +6,8 @@ alwaysApply: true
 # ShopDemo core
 
 - Read `spec-driven/specs/<relevant>/SPEC.md` before implementation.
-- Course documentation lives under `docs/` (Spanish). Link to it when explaining.
-- Solution file: `ShopDemo.slnx`. Target framework: net10.0.
+- Course documentation lives under `Documentación del Proyecto/` (Spanish). Link to it when explaining.
+- Solution file: `Source/ShopDemo.slnx`. Target framework: net10.0.
 - Never commit secrets. Use `.env.example` patterns only in repo.
 - User communication: Spanish. Identifiers and rules: English.
 
@@ -23,6 +23,6 @@ alwaysApply: true
 
 ## Architecture
 
-- Catalog/Orders: Clean Architecture + CQRS + MediatR
+- Source/Catalog/Orders: Clean Architecture + CQRS + MediatR
 - Inventory: Hexagonal (ports/adapters)
 - Analytics: Aspire ServiceDefaults + Event Hubs consumer

@@ -2,9 +2,9 @@
 
 | Artifact | Path |
 |---|---|
-| ECS guide | `docs/despliegue/aws/IMPLEMENTACION-DESPLIEGUE-AWS.md` |
-| EKS guide | `docs/despliegue/eks/IMPLEMENTACION-DESPLIEGUE-EKS.md` |
-| MCP AWS | `docs/integracion-ia/IMPLEMENTACION-DESPLIEGUE-MCP-AWS.md` |
+| ECS guide | `Documentación del Proyecto/despliegue/aws/IMPLEMENTACION-DESPLIEGUE-AWS.md` |
+| EKS guide | `Documentación del Proyecto/despliegue/eks/IMPLEMENTACION-DESPLIEGUE-EKS.md` |
+| MCP AWS | `Documentación del Proyecto/integracion-ia/IMPLEMENTACION-DESPLIEGUE-MCP-AWS.md` |
 | CI workflow | `.github/workflows/deploy-aws.yml` |
 | K8s manifests | `k8s/` |
 | SPEC | `spec-driven/specs/07-deploy-aws/SPEC.md` |

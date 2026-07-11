@@ -8,16 +8,16 @@ Configurar agregación de logs, consultas, métricas y alertas en Azure y AWS.
 
 | Capa | Documento |
 |---|---|
-| **A — Negocio** | [REQUERIMIENTOS-OBSERVABILIDAD.md](../../../docs/observabilidad/REQUERIMIENTOS-OBSERVABILIDAD.md) |
-| **A — Negocio** | [HISTORIAS-USUARIO-OBSERVABILIDAD.md](../../../docs/observabilidad/HISTORIAS-USUARIO-OBSERVABILIDAD.md) |
-| **B — Técnica** | [ANEXO-ESPECIFICACION-TECNICA-OBSERVABILIDAD.md](../../../docs/observabilidad/ANEXO-ESPECIFICACION-TECNICA-OBSERVABILIDAD.md) |
-| **B — Técnica** | [ANEXO-HISTORIAS-TECNICAS-OBSERVABILIDAD.md](../../../docs/observabilidad/ANEXO-HISTORIAS-TECNICAS-OBSERVABILIDAD.md) |
-| **C — Pedagogía** | [ANEXO-PEDAGOGIA-OBSERVABILIDAD.md](../../../docs/observabilidad/ANEXO-PEDAGOGIA-OBSERVABILIDAD.md) |
-| Impl. Azure | [azure/IMPLEMENTACION-OBSERVABILIDAD-AZURE.md](../../../docs/observabilidad/azure/IMPLEMENTACION-OBSERVABILIDAD-AZURE.md) |
-| Impl. AWS | [aws/IMPLEMENTACION-OBSERVABILIDAD-AWS.md](../../../docs/observabilidad/aws/IMPLEMENTACION-OBSERVABILIDAD-AWS.md) |
-| Teoría | [TEORIA-OBSERVABILIDAD.md](../../../docs/observabilidad/TEORIA-OBSERVABILIDAD.md) |
+| **A — Negocio** | [REQUERIMIENTOS-OBSERVABILIDAD.md](../../../Documentación del Proyecto/observabilidad/REQUERIMIENTOS-OBSERVABILIDAD.md) |
+| **A — Negocio** | [HISTORIAS-USUARIO-OBSERVABILIDAD.md](../../../Documentación del Proyecto/observabilidad/HISTORIAS-USUARIO-OBSERVABILIDAD.md) |
+| **B — Técnica** | [ANEXO-ESPECIFICACION-TECNICA-OBSERVABILIDAD.md](../../../Documentación del Proyecto/observabilidad/ANEXO-ESPECIFICACION-TECNICA-OBSERVABILIDAD.md) |
+| **B — Técnica** | [ANEXO-HISTORIAS-TECNICAS-OBSERVABILIDAD.md](../../../Documentación del Proyecto/observabilidad/ANEXO-HISTORIAS-TECNICAS-OBSERVABILIDAD.md) |
+| **C — Pedagogía** | [ANEXO-PEDAGOGIA-OBSERVABILIDAD.md](../../../Documentación del Proyecto/observabilidad/ANEXO-PEDAGOGIA-OBSERVABILIDAD.md) |
+| Impl. Azure | [azure/IMPLEMENTACION-OBSERVABILIDAD-AZURE.md](../../../Documentación del Proyecto/observabilidad/azure/IMPLEMENTACION-OBSERVABILIDAD-AZURE.md) |
+| Impl. AWS | [aws/IMPLEMENTACION-OBSERVABILIDAD-AWS.md](../../../Documentación del Proyecto/observabilidad/aws/IMPLEMENTACION-OBSERVABILIDAD-AWS.md) |
+| Teoría | [TEORIA-OBSERVABILIDAD.md](../../../Documentación del Proyecto/observabilidad/TEORIA-OBSERVABILIDAD.md) |
 
-Guía: [GUIA-ESTRUCTURA-DOCUMENTACION.md](../../../docs/GUIA-ESTRUCTURA-DOCUMENTACION.md)
+Guía: [GUIA-ESTRUCTURA-DOCUMENTACION.md](../../../Documentación del Proyecto/GUIA-ESTRUCTURA-DOCUMENTACION.md)
 
 ## Alcance (agente)
 

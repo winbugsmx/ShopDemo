@@ -158,7 +158,7 @@ gh secret set POSTGRES_USER --env "$ENV" --body "ShopDemo"
 gh secret set POSTGRES_PASSWORD --env "$ENV" --body "ShopDemo123!"
 ```
 
-Referencia lab AKS: `scripts/azure/deploy-aks-report.json` (Ingress `20.42.38.69` / `shopdemo.local`).
+Referencia lab AKS: `Source/scripts/azure/deploy-aks-report.json` (Ingress `20.42.38.69` / `shopdemo.local`).
 
 ### 2.4 Environment `aws` (deploy-aws.yml — ECS)
 
@@ -241,7 +241,7 @@ gh secret set POSTGRES_USER --env "$ENV" --body "ShopDemo"
 gh secret set POSTGRES_PASSWORD --env "$ENV" --body "ShopDemo123!"
 ```
 
-Referencia lab EKS: `scripts/aws/deploy-eks-report.json`.
+Referencia lab EKS: `Source/scripts/aws/deploy-eks-report.json`.
 
 ---
 
@@ -303,6 +303,6 @@ Parámetros útiles:
 
 ## Referencias
 
-- [docs/integracion-ia/IMPLEMENTACION-DESPLIEGUE-MCP-AZURE.md](../docs/integracion-ia/IMPLEMENTACION-DESPLIEGUE-MCP-AZURE.md) — URLs MCP en ACA
-- [docs/integracion-ia/IMPLEMENTACION-DESPLIEGUE-MCP-AWS.md](../docs/integracion-ia/IMPLEMENTACION-DESPLIEGUE-MCP-AWS.md) — URLs MCP en ECS
+- [Documentación del Proyecto/integracion-ia/IMPLEMENTACION-DESPLIEGUE-MCP-AZURE.md](../Documentación del Proyecto/integracion-ia/IMPLEMENTACION-DESPLIEGUE-MCP-AZURE.md) — URLs MCP en ACA
+- [Documentación del Proyecto/integracion-ia/IMPLEMENTACION-DESPLIEGUE-MCP-AWS.md](../Documentación del Proyecto/integracion-ia/IMPLEMENTACION-DESPLIEGUE-MCP-AWS.md) — URLs MCP en ECS
 - [k8s/secrets.example.yaml](../k8s/secrets.example.yaml) — connection strings in-cluster

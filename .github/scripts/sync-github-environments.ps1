@@ -4,8 +4,8 @@
 
 .DESCRIPTION
     Crea environments si faltan y escribe secrets desde:
-      - scripts/azure/.env.azure
-      - scripts/aws/.env.aws
+      - Source/scripts/azure/.env.azure
+      - Source/scripts/aws/.env.aws
       - k8s/secrets.example.yaml (PG + Azurite in-cluster)
       - Azure CLI (FQDNs MCP/Inventory en environment azure, si az está logueado)
 

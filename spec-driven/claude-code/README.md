@@ -62,4 +62,4 @@ Guía detallada: [IMPLEMENTACION-SPEC-DRIVEN-DEVELOPMENT.md](../IMPLEMENTACION-S
 
 Specs compartidos: `spec-driven/specs/`
 
-**Tópicos de Estudio:** [teoria-entrevistas/README.md](../../docs/teoria-entrevistas/README.md)
+**Tópicos de Estudio:** [DocumentaciÃ³n de Estudio del Curso/README.md](../../Documentación de Estudio del Curso/README.md)

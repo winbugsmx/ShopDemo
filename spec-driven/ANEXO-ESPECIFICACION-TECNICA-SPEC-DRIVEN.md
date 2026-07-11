@@ -19,7 +19,7 @@ spec-driven/
 
 ## 2. Specs por módulo
 
-| Carpeta | Enlace a docs/ |
+| Carpeta | Enlace a Documentación del Proyecto/ |
 |---|---|
 | `00-vision` | Visión E2E |
 | `01-catalog` … `12-mcp-gateway` | Módulos 1–14 del curso |

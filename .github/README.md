@@ -11,7 +11,7 @@ Despliegue automático tras **merge a `main`** (no en apertura de PR). También 
 
 **Checklist de secrets y prerequisitos:** [SECRETS-CHECKLIST.md](SECRETS-CHECKLIST.md) · **Guía de configuración:** [SETUP-GITHUB.md](SETUP-GITHUB.md) · **Portal web (alumnos):** [SETUP-GITHUB-PORTAL.md](SETUP-GITHUB-PORTAL.md) · **Comandos `gh` CLI:** [GH-CLI-COMMANDS.md](GH-CLI-COMMANDS.md)
 
-**Tópicos de Estudio:** [09 — CI/CD y DevOps](../docs/teoria-entrevistas/09-ci-cd-devops.md) · [Índice](../docs/teoria-entrevistas/README.md)
+**Tópicos de Estudio:** [09 — CI/CD y DevOps](../Documentación de Estudio del Curso/09-ci-cd-devops.md) · [Índice](../Documentación de Estudio del Curso/README.md)
 
 ## Scripts auxiliares
 
@@ -29,15 +29,15 @@ Despliegue automático tras **merge a `main`** (no en apertura de PR). También 
 
 Los workflows **actualizan imágenes y configuración**; no crean VPC, clusters ni Container Apps desde cero:
 
-- Azure ACA: `scripts/azure/Deploy-AzureShopDemo.ps1 -Mode ACA`
-- Azure AKS: `scripts/azure/Deploy-AzureShopDemo.ps1 -Mode AKS` + pasos post-script (Ingress, consumer groups)
-- AWS ECS: `scripts/aws/Deploy-AwsShopDemo.ps1 -Mode ECS`
-- AWS EKS: `scripts/aws/Deploy-AwsShopDemo.ps1 -Mode EKS` + perfil free-tier si aplica
+- Azure ACA: `Source/scripts/azure/Deploy-AzureShopDemo.ps1 -Mode ACA`
+- Azure AKS: `Source/scripts/azure/Deploy-AzureShopDemo.ps1 -Mode AKS` + pasos post-script (Ingress, consumer groups)
+- AWS ECS: `Source/scripts/aws/Deploy-AwsShopDemo.ps1 -Mode ECS`
+- AWS EKS: `Source/scripts/aws/Deploy-AwsShopDemo.ps1 -Mode EKS` + perfil free-tier si aplica
 
 ## Trigger unificado (rama `main`)
 
 | Cambios en… | Workflows que pueden ejecutarse |
 |---|---|
-| `Catalog/`, `Orders/`, `Inventory/`, `Analytics`, `MCP`, `Shared` | Los 4 (según secrets/environments configurados) |
+| `Source/Catalog/`, `Source/Orders/`, `Source/Inventory/`, `Analytics`, `MCP`, `Shared` | Los 4 (según secrets/environments configurados) |
 | `k8s/**` | Solo `deploy-aks` (`k8s/azure/`), `deploy-eks` (`k8s/aws/`) |
 | Solo docs | Ninguno |

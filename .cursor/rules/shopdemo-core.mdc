@@ -28,13 +28,13 @@ Consultar [AGENTS.md](../../AGENTS.md) para mapa del repo.
 ## Antes de implementar
 
 1. Leer `spec-driven/specs/<área>/SPEC.md` si existe para el módulo.
-2. Leer `REQUERIMIENTOS` + `IMPLEMENTACION` en `docs/` enlazados.
+2. Leer `REQUERIMIENTOS` + `IMPLEMENTACION` en `Documentación del Proyecto/` enlazados.
 3. Una nube por tarea (Azure **o** AWS) salvo comparación explícita.
 
 ## Validación habitual
 
 ```powershell
-dotnet build ShopDemo.slnx
+dotnet build Source/ShopDemo.slnx
 ```
 
-Release: `/health` · Postman E2E · [docs/GUIA-ENDPOINTS.md](../../docs/GUIA-ENDPOINTS.md)
+Release: `/health` · Postman E2E · [Documentación del Proyecto/GUIA-ENDPOINTS.md](../../Documentación del Proyecto/GUIA-ENDPOINTS.md)

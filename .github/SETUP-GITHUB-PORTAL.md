@@ -34,11 +34,11 @@ Antes de tocar GitHub, completa **en tu máquina**:
 
 1. Fork o clon del repo `ShopDemo` en tu cuenta de GitHub.
 2. Infraestructura cloud provisionada con los scripts PowerShell del curso:
-   - Azure: `scripts/azure/Deploy-AzureShopDemo.ps1`
-   - AWS: `scripts/aws/Deploy-AwsShopDemo.ps1`
+   - Azure: `Source/scripts/azure/Deploy-AzureShopDemo.ps1`
+   - AWS: `Source/scripts/aws/Deploy-AwsShopDemo.ps1`
 3. Archivos locales con valores de lab (no se suben al repo):
-   - `scripts/azure/.env.azure`
-   - `scripts/aws/.env.aws`
+   - `Source/scripts/azure/.env.azure`
+   - `Source/scripts/aws/.env.aws`
 4. Rama **`main`** como rama por defecto (los workflows escuchan `main`, no `master`).
 
 > Los workflows **no crean** VPC, clusters ni Container Apps. Solo construyen imágenes y actualizan despliegues existentes.
@@ -228,20 +228,20 @@ Para muchos secrets repetidos, la alternativa rápida es el script [sync-github-
 
 | Tipo de secret | Dónde obtenerlo |
 |---|---|
-| Infra Azure (ACR, RG, ACA, AKS) | `scripts/azure/.env.azure` o reportes `scripts/azure/deploy-*-report.json` |
-| Infra AWS (región, cluster ECS/EKS) | `scripts/aws/.env.aws` o `scripts/aws/deploy-eks-report.json` |
+| Infra Azure (ACR, RG, ACA, AKS) | `Source/scripts/azure/.env.azure` o reportes `Source/scripts/azure/deploy-*-report.json` |
+| Infra AWS (región, cluster ECS/EKS) | `Source/scripts/aws/.env.aws` o `Source/scripts/aws/deploy-eks-report.json` |
 | Event Hubs | Azure Portal → namespace → Shared access policies |
 | PostgreSQL ACA/ECS | Salida del script de deploy o consola cloud |
 | PostgreSQL / Azurite K8s | Plantilla [k8s/secrets.example.yaml](../k8s/secrets.example.yaml) |
 | URLs MCP / Inventory (ACA) | Portal Azure → Container Apps → **Application Url** (FQDN) |
 | URLs MCP (ECS) | Consola AWS → EC2 → Load Balancers → DNS name |
 | Service Principal | [SETUP-GITHUB.md §6](SETUP-GITHUB.md#6-service-principal-azure-resumen) |
-| OIDC AWS | [PREPARACION-AMBIENTE-AWS.md](../docs/despliegue/aws/PREPARACION-AMBIENTE-AWS.md) |
+| OIDC AWS | [PREPARACION-AMBIENTE-AWS.md](../Documentación del Proyecto/despliegue/aws/PREPARACION-AMBIENTE-AWS.md) |
 
 Documentación MCP:
 
-- Azure: [IMPLEMENTACION-DESPLIEGUE-MCP-AZURE.md](../docs/integracion-ia/IMPLEMENTACION-DESPLIEGUE-MCP-AZURE.md)
-- AWS: [IMPLEMENTACION-DESPLIEGUE-MCP-AWS.md](../docs/integracion-ia/IMPLEMENTACION-DESPLIEGUE-MCP-AWS.md)
+- Azure: [IMPLEMENTACION-DESPLIEGUE-MCP-AZURE.md](../Documentación del Proyecto/integracion-ia/IMPLEMENTACION-DESPLIEGUE-MCP-AZURE.md)
+- AWS: [IMPLEMENTACION-DESPLIEGUE-MCP-AWS.md](../Documentación del Proyecto/integracion-ia/IMPLEMENTACION-DESPLIEGUE-MCP-AWS.md)
 
 ---
 
@@ -341,4 +341,4 @@ Marca cuando completes cada bloque en el **portal**:
 | GitHub CLI (alternativa) | [GH-CLI-COMMANDS.md](GH-CLI-COMMANDS.md) |
 | Checklist secrets | [SECRETS-CHECKLIST.md](SECRETS-CHECKLIST.md) |
 | Índice workflows | [README.md](README.md) |
-| Alcance lab release | [ALCANCE-LAB-RELEASE.md](../docs/despliegue/ALCANCE-LAB-RELEASE.md) |
+| Alcance lab release | [ALCANCE-LAB-RELEASE.md](../Documentación del Proyecto/despliegue/ALCANCE-LAB-RELEASE.md) |

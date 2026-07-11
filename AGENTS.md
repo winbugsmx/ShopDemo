@@ -16,16 +16,18 @@ Release: **Azure** (ACA/AKS) y **AWS** (ECS/EKS) + **Minikube**.
 
 | Área | Ruta | Notas |
 |---|---|---|
-| APIs negocio | `Catalog/`, `Orders/`, `Inventory/` | Clean/Hexagonal + CQRS |
-| Analytics | `Aspire/ShopDemo.Analytics.Api/` | Consumidor Event Hubs |
-| MCP Gateway | `AI/ShopDemo.Mcp.Api/` | Puerto 8005, `/mcp` |
-| Shared kernel | `ShopDemo.Shared/` | Eventos, DDD compartido |
+| APIs negocio | `Source/Catalog/`, `Source/Orders/`, `Source/Inventory/` | Clean/Hexagonal + CQRS |
+| Analytics | `Source/Aspire/ShopDemo.Analytics.Api/` | Consumidor Event Hubs |
+| MCP Gateway | `Source/AI/ShopDemo.Mcp.Api/` | Puerto 8005, `/mcp` |
+| Shared kernel | `Source/ShopDemo.Shared/` | Eventos, DDD compartido |
+| Solución .NET | `Source/ShopDemo.slnx` | 17 proyectos; build desde raíz o desde `Source/` |
 | Manifiestos K8s | `k8s/` | Compartidos + `local/` \| `azure/` \| `aws/` |
-| Scripts release | `scripts/azure/`, `scripts/aws/` | PowerShell; no hacen build Docker |
+| Scripts release | `Source/scripts/azure/`, `Source/scripts/aws/` | PowerShell; no hacen build Docker |
 | CI/CD | `.github/workflows/` | 4 workflows tras merge a `main` |
-| Curso / release | `docs/` | Fuente de verdad pedagógica |
+| Curso / release | `Documentación del Proyecto/` | Guías del lab ShopDemo (implementación, despliegue) |
+| Tópicos de Estudio | `Documentación de Estudio del Curso/` | Teoría general (13 capítulos), independiente del lab |
 | Specs agente | `spec-driven/specs/` | Leer SPEC antes de implementar |
-| Alcance lab | `docs/despliegue/ALCANCE-LAB-RELEASE.md` | Qué es obligatorio vs opcional |
+| Alcance lab | `Documentación del Proyecto/despliegue/ALCANCE-LAB-RELEASE.md` | Qué es obligatorio vs opcional |
 
 ## Arquitectura de despliegue (decisión rápida)
 
@@ -67,19 +69,19 @@ Orden y scripts: [k8s/README.md](k8s/README.md) · `APPLY_INFRA=true bash .githu
 4. Validar criterios CA-N (negocio) y CA-T (técnico) del módulo.
 5. **No mezclar** comandos Azure CLI y AWS CLI en una misma tarea salvo petición explícita.
 
-**Guía documental:** [docs/GUIA-ESTRUCTURA-DOCUMENTACION.md](docs/GUIA-ESTRUCTURA-DOCUMENTACION.md)
+**Guía documental:** [Documentación del Proyecto/GUIA-ESTRUCTURA-DOCUMENTACION.md](Documentación del Proyecto/GUIA-ESTRUCTURA-DOCUMENTACION.md)
 
 ## Build y verificación
 
 ```powershell
-dotnet build ShopDemo.slnx
+dotnet build Source/ShopDemo.slnx
 ```
 
-Post-release: `GET /health` por servicio · Postman carpeta **Flujo integrado (E2E)** · [docs/GUIA-ENDPOINTS.md](docs/GUIA-ENDPOINTS.md)
+Post-release: `GET /health` por servicio · Postman carpeta **Flujo integrado (E2E)** · [Documentación del Proyecto/GUIA-ENDPOINTS.md](Documentación del Proyecto/GUIA-ENDPOINTS.md)
 
 ## Secretos — nunca commitear
 
-- `scripts/azure/.env.azure`, `scripts/aws/.env.aws`
+- `Source/scripts/azure/.env.azure`, `Source/scripts/aws/.env.aws`
 - `k8s/secrets.yaml` (generado por scripts)
 - Connection strings, PATs, API keys
 - `.vs/`, `bin/`, `obj/`
@@ -93,7 +95,7 @@ Al cambiar estructura K8s, workflows o scripts, actualizar **en el mismo PR**:
 | `k8s/**` | `k8s/README.md`, guías AKS/EKS/Minikube, `ALCANCE-LAB-RELEASE.md`, README release |
 | `.github/**` | `SECRETS-CHECKLIST.md`, `SETUP-GITHUB*.md`, `.github/README.md` |
 | `scripts/**/*.ps1` | `scripts/*/README.md`, guías Script Azure/AWS |
-| MCP / Ingress | `docs/integracion-ia/`, `k8s/ingress/` |
+| MCP / Ingress | `Documentación del Proyecto/integracion-ia/`, `k8s/ingress/` |
 
 Evitar rutas obsoletas: `k8s/catalog/deployment.yaml`, `kubectl apply -f k8s/` genérico, “mismos YAML en todos los clouds”.
 
@@ -122,10 +124,10 @@ Consumer groups Event Hubs obligatorios: `analytics-service`, `inventory-service
 
 | Necesito… | Documento |
 |---|---|
-| Elegir ruta release | [ALCANCE-LAB-RELEASE.md](docs/despliegue/ALCANCE-LAB-RELEASE.md) |
-| Script Azure | [GUIA-RELEASE-SCRIPT-AZURE.md](docs/despliegue/azure/GUIA-RELEASE-SCRIPT-AZURE.md) |
-| Script AWS | [GUIA-RELEASE-SCRIPT-AWS.md](docs/despliegue/aws/GUIA-RELEASE-SCRIPT-AWS.md) |
-| K8s local/AKS/EKS | [GUIA-RELEASE-KUBERNETES.md](docs/despliegue/kubernetes/GUIA-RELEASE-KUBERNETES.md) |
+| Elegir ruta release | [ALCANCE-LAB-RELEASE.md](Documentación del Proyecto/despliegue/ALCANCE-LAB-RELEASE.md) |
+| Script Azure | [GUIA-RELEASE-SCRIPT-AZURE.md](Documentación del Proyecto/despliegue/azure/GUIA-RELEASE-SCRIPT-AZURE.md) |
+| Script AWS | [GUIA-RELEASE-SCRIPT-AWS.md](Documentación del Proyecto/despliegue/aws/GUIA-RELEASE-SCRIPT-AWS.md) |
+| K8s local/AKS/EKS | [GUIA-RELEASE-KUBERNETES.md](Documentación del Proyecto/despliegue/kubernetes/GUIA-RELEASE-KUBERNETES.md) |
 | Configurar GitHub | [SETUP-GITHUB-PORTAL.md](.github/SETUP-GITHUB-PORTAL.md) |
-| Arquitectura completa | [docs/ARQUITECTURA.md](docs/ARQUITECTURA.md) |
-| Tópicos de Estudio | [docs/teoria-entrevistas/README.md](docs/teoria-entrevistas/README.md) — teoría general (13 tópicos, independiente del lab) |
+| Arquitectura completa | [Documentación del Proyecto/ARQUITECTURA.md](Documentación del Proyecto/ARQUITECTURA.md) |
+| Tópicos de Estudio | [Documentación de Estudio del Curso/README.md](Documentación de Estudio del Curso/README.md) — teoría general (13 tópicos, independiente del lab) |

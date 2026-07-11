@@ -10,24 +10,24 @@ Aplicar o modificar manifiestos en `k8s/` para local, AKS y EKS.
 
 | Capa | Documento |
 |---|---|
-| **A — Negocio** | [REQUERIMIENTOS-KUBERNETES.md](../../../Documentación del Proyecto/despliegue/kubernetes/REQUERIMIENTOS-KUBERNETES.md) |
-| **A — Negocio** | [HISTORIAS-USUARIO-KUBERNETES.md](../../../Documentación del Proyecto/despliegue/kubernetes/HISTORIAS-USUARIO-KUBERNETES.md) |
-| **B — Técnica** | [ANEXO-ESPECIFICACION-TECNICA-KUBERNETES.md](../../../Documentación del Proyecto/despliegue/kubernetes/ANEXO-ESPECIFICACION-TECNICA-KUBERNETES.md) |
-| **B — Técnica** | [ANEXO-HISTORIAS-TECNICAS-KUBERNETES.md](../../../Documentación del Proyecto/despliegue/kubernetes/ANEXO-HISTORIAS-TECNICAS-KUBERNETES.md) |
-| **C — Pedagogía** | [ANEXO-PEDAGOGIA-KUBERNETES.md](../../../Documentación del Proyecto/despliegue/kubernetes/ANEXO-PEDAGOGIA-KUBERNETES.md) |
-| Implementación | [IMPLEMENTACION-KUBERNETES-LOCAL.md](../../../Documentación del Proyecto/despliegue/kubernetes/IMPLEMENTACION-KUBERNETES-LOCAL.md) |
+| **A — Negocio** | [REQUERIMIENTOS-KUBERNETES.md](../../../Documentación_Del_Proyecto/despliegue/kubernetes/REQUERIMIENTOS-KUBERNETES.md) |
+| **A — Negocio** | [HISTORIAS-USUARIO-KUBERNETES.md](../../../Documentación_Del_Proyecto/despliegue/kubernetes/HISTORIAS-USUARIO-KUBERNETES.md) |
+| **B — Técnica** | [ANEXO-ESPECIFICACION-TECNICA-KUBERNETES.md](../../../Documentación_Del_Proyecto/despliegue/kubernetes/ANEXO-ESPECIFICACION-TECNICA-KUBERNETES.md) |
+| **B — Técnica** | [ANEXO-HISTORIAS-TECNICAS-KUBERNETES.md](../../../Documentación_Del_Proyecto/despliegue/kubernetes/ANEXO-HISTORIAS-TECNICAS-KUBERNETES.md) |
+| **C — Pedagogía** | [ANEXO-PEDAGOGIA-KUBERNETES.md](../../../Documentación_Del_Proyecto/despliegue/kubernetes/ANEXO-PEDAGOGIA-KUBERNETES.md) |
+| Implementación | [IMPLEMENTACION-KUBERNETES-LOCAL.md](../../../Documentación_Del_Proyecto/despliegue/kubernetes/IMPLEMENTACION-KUBERNETES-LOCAL.md) |
 
 ### AKS / EKS (despliegue en cluster nube)
 
 | Entorno | Anexo técnico |
 |---|---|
-| AKS | [ANEXO-ESPECIFICACION-TECNICA-DESPLIEGUE-AKS.md](../../../Documentación del Proyecto/despliegue/aks/ANEXO-ESPECIFICACION-TECNICA-DESPLIEGUE-AKS.md) |
-| EKS | [ANEXO-ESPECIFICACION-TECNICA-DESPLIEGUE-EKS.md](../../../Documentación del Proyecto/despliegue/eks/ANEXO-ESPECIFICACION-TECNICA-DESPLIEGUE-EKS.md) |
+| AKS | [ANEXO-ESPECIFICACION-TECNICA-DESPLIEGUE-AKS.md](../../../Documentación_Del_Proyecto/despliegue/aks/ANEXO-ESPECIFICACION-TECNICA-DESPLIEGUE-AKS.md) |
+| EKS | [ANEXO-ESPECIFICACION-TECNICA-DESPLIEGUE-EKS.md](../../../Documentación_Del_Proyecto/despliegue/eks/ANEXO-ESPECIFICACION-TECNICA-DESPLIEGUE-EKS.md) |
 
 | Recurso | Documento |
 |---|---|
 | Manifiestos | [k8s/README.md](../../../k8s/README.md) |
-| Guía | [GUIA-ESTRUCTURA-DOCUMENTACION.md](../../../Documentación del Proyecto/GUIA-ESTRUCTURA-DOCUMENTACION.md) |
+| Guía | [GUIA-ESTRUCTURA-DOCUMENTACION.md](../../../Documentación_Del_Proyecto/GUIA-ESTRUCTURA-DOCUMENTACION.md) |
 
 ## Alcance (agente)
 

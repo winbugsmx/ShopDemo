@@ -12,4 +12,4 @@ alwaysApply: false
 - Images: `IfNotPresent` for Minikube local build; ACR/ECR full path in cloud.
 - Ingress host: `shopdemo.local` (local); cloud uses LB IP/DNS.
 
-Reference: `Documentación del Proyecto/despliegue/kubernetes/IMPLEMENTACION-KUBERNETES-LOCAL.md`
+Reference: `Documentación_Del_Proyecto/despliegue/kubernetes/IMPLEMENTACION-KUBERNETES-LOCAL.md`

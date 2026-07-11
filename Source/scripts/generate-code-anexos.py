@@ -6,7 +6,7 @@ from pathlib import Path
 
 REPO_ROOT = Path(__file__).resolve().parents[2]
 SOURCE_ROOT = REPO_ROOT / "Source"
-DOCS_ROOT = REPO_ROOT / "Documentación del Proyecto"
+DOCS_ROOT = REPO_ROOT / "Documentación_Del_Proyecto"
 FENCE = "```"
 
 

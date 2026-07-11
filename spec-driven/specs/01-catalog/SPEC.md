@@ -8,14 +8,14 @@ Evolucionar el bounded context Catalog sin violar capas Domain → Application �
 
 | Capa | Documento |
 |---|---|
-| **A — Negocio** | [REQUERIMIENTOS-CATALOG.md](../../../Documentación del Proyecto/catalog/REQUERIMIENTOS-CATALOG.md) |
-| **A — Negocio** | [HISTORIAS-USUARIO-CATALOG.md](../../../Documentación del Proyecto/catalog/HISTORIAS-USUARIO-CATALOG.md) |
-| **B — Técnica** | [ANEXO-ESPECIFICACION-TECNICA-CATALOG.md](../../../Documentación del Proyecto/catalog/ANEXO-ESPECIFICACION-TECNICA-CATALOG.md) |
-| **B — Técnica** | [ANEXO-HISTORIAS-TECNICAS-CATALOG.md](../../../Documentación del Proyecto/catalog/ANEXO-HISTORIAS-TECNICAS-CATALOG.md) |
-| **C — Pedagogía** | [ANEXO-PEDAGOGIA-CATALOG.md](../../../Documentación del Proyecto/catalog/ANEXO-PEDAGOGIA-CATALOG.md) |
-| Implementación | [IMPLEMENTACION-CATALOG.md](../../../Documentación del Proyecto/catalog/IMPLEMENTACION-CATALOG.md) |
+| **A — Negocio** | [REQUERIMIENTOS-CATALOG.md](../../../Documentación_Del_Proyecto/catalog/REQUERIMIENTOS-CATALOG.md) |
+| **A — Negocio** | [HISTORIAS-USUARIO-CATALOG.md](../../../Documentación_Del_Proyecto/catalog/HISTORIAS-USUARIO-CATALOG.md) |
+| **B — Técnica** | [ANEXO-ESPECIFICACION-TECNICA-CATALOG.md](../../../Documentación_Del_Proyecto/catalog/ANEXO-ESPECIFICACION-TECNICA-CATALOG.md) |
+| **B — Técnica** | [ANEXO-HISTORIAS-TECNICAS-CATALOG.md](../../../Documentación_Del_Proyecto/catalog/ANEXO-HISTORIAS-TECNICAS-CATALOG.md) |
+| **C — Pedagogía** | [ANEXO-PEDAGOGIA-CATALOG.md](../../../Documentación_Del_Proyecto/catalog/ANEXO-PEDAGOGIA-CATALOG.md) |
+| Implementación | [IMPLEMENTACION-CATALOG.md](../../../Documentación_Del_Proyecto/catalog/IMPLEMENTACION-CATALOG.md) |
 
-Guía: [GUIA-ESTRUCTURA-DOCUMENTACION.md](../../../Documentación del Proyecto/GUIA-ESTRUCTURA-DOCUMENTACION.md)
+Guía: [GUIA-ESTRUCTURA-DOCUMENTACION.md](../../../Documentación_Del_Proyecto/GUIA-ESTRUCTURA-DOCUMENTACION.md)
 
 ## Alcance (agente)
 

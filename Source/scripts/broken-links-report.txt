@@ -1,0 +1,3 @@
+Documentación_De_Estudio_Del_Curso\README.md:59	./assets/images/diagrams/....png	Documentación_De_Estudio_Del_Curso\assets\images\diagrams\....png
+Documentación_De_Estudio_Del_Curso\assets\RECURSOS-GRAFICOS.md:116	ruta.png	Documentación_De_Estudio_Del_Curso\assets\ruta.png
+Documentación_De_Estudio_Del_Curso\assets\RECURSOS-GRAFICOS.md:128	png	Documentación_De_Estudio_Del_Curso\assets\png

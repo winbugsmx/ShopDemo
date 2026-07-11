@@ -2,39 +2,39 @@ param(
     [string]$RepoRoot = (Resolve-Path (Join-Path $PSScriptRoot '..\..')).Path
 )
 
-$EstudioPlaceholder = 'DocumentaciÃ³n de Estudio del Curso'
-$NewFolder = 'Documentación del Proyecto'
+$EstudioPlaceholder = 'Documentación_De_Estudio_Del_Curso'
+$NewFolder = 'Documentación_Del_Proyecto'
 
 function Invoke-FixText([string]$text) {
-    $text = $text.Replace('Documentación de Estudio del Curso', $EstudioPlaceholder)
+    $text = $text.Replace('Documentación_De_Estudio_Del_Curso', $EstudioPlaceholder)
 
     $pairs = @(
-        @('../../../../Documentación del Proyecto/', "../../../../$NewFolder/"),
-        @('../../../Documentación del Proyecto/', "../../../$NewFolder/"),
-        @('../../Documentación del Proyecto/', "../../$NewFolder/"),
-        @('../Documentación del Proyecto/', "../$NewFolder/"),
-        @('Documentación del Proyecto/', "$NewFolder/"),
-        @('..\..\..\..\Documentación del Proyecto\', "..\..\..\..\$NewFolder\"),
-        @('..\..\..\Documentación del Proyecto\', "..\..\..\$NewFolder\"),
-        @('..\..\Documentación del Proyecto\', "..\..\$NewFolder\"),
-        @('..\Documentación del Proyecto\', "..\$NewFolder\"),
-        @('\Documentación del Proyecto\', "\$NewFolder\"),
-        @('I:\Curso\ShopDemo\Documentación del Proyecto\', "I:\Curso\ShopDemo\$NewFolder\"),
-        @('I:\Curso\ShopDemo\Documentación del Proyecto/', "I:\Curso\ShopDemo/$NewFolder/"),
-        @('ShopDemo\Documentación del Proyecto\', "ShopDemo\$NewFolder\"),
-        @('ShopDemo/Documentación del Proyecto/', "ShopDemo/$NewFolder/"),
-        @('| `Documentación del Proyecto/` |', "| ``$NewFolder/` |"),
-        @('REPO_ROOT / "Documentación del Proyecto"', "REPO_ROOT / `"$NewFolder`""),
-        @("REPO_ROOT / 'Documentación del Proyecto'", "REPO_ROOT / '$NewFolder'"),
+        @('../../../../Documentación_Del_Proyecto/', "../../../../$NewFolder/"),
+        @('../../../Documentación_Del_Proyecto/', "../../../$NewFolder/"),
+        @('../../Documentación_Del_Proyecto/', "../../$NewFolder/"),
+        @('../Documentación_Del_Proyecto/', "../$NewFolder/"),
+        @('Documentación_Del_Proyecto/', "$NewFolder/"),
+        @('..\..\..\..\Documentación_Del_Proyecto\', "..\..\..\..\$NewFolder\"),
+        @('..\..\..\Documentación_Del_Proyecto\', "..\..\..\$NewFolder\"),
+        @('..\..\Documentación_Del_Proyecto\', "..\..\$NewFolder\"),
+        @('..\Documentación_Del_Proyecto\', "..\$NewFolder\"),
+        @('\Documentación_Del_Proyecto\', "\$NewFolder\"),
+        @('I:\Curso\ShopDemo\Documentación_Del_Proyecto\', "I:\Curso\ShopDemo\$NewFolder\"),
+        @('I:\Curso\ShopDemo\Documentación_Del_Proyecto/', "I:\Curso\ShopDemo/$NewFolder/"),
+        @('ShopDemo\Documentación_Del_Proyecto\', "ShopDemo\$NewFolder\"),
+        @('ShopDemo/Documentación_Del_Proyecto/', "ShopDemo/$NewFolder/"),
+        @('| `Documentación_Del_Proyecto/` |', "| ``$NewFolder/` |"),
+        @('REPO_ROOT / "Documentación_Del_Proyecto"', "REPO_ROOT / `"$NewFolder`""),
+        @("REPO_ROOT / 'Documentación_Del_Proyecto'", "REPO_ROOT / '$NewFolder'"),
         @('DocumentaciÃ³n del Proyecto/', "$NewFolder/"),
-        @('Documentación del Proyecto\', "$NewFolder\")
+        @('Documentación_Del_Proyecto\', "$NewFolder\")
     )
 
     foreach ($p in $pairs) {
         $text = $text.Replace($p[0], $p[1])
     }
 
-    $text = $text.Replace($EstudioPlaceholder, 'Documentación de Estudio del Curso')
+    $text = $text.Replace($EstudioPlaceholder, 'Documentación_De_Estudio_Del_Curso')
 
     while ($text.Contains("$NewFolder/$NewFolder/")) {
         $text = $text.Replace("$NewFolder/$NewFolder/", "$NewFolder/")

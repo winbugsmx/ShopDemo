@@ -10,7 +10,7 @@ Deploy targets: **Azure** (ACA, AKS) and **AWS** (ECS, EKS). Messaging: Azure Ev
 Before any implementation:
 
 1. Open `spec-driven/specs/<module>/SPEC.md`
-2. Read linked documents under `Documentación del Proyecto/`
+2. Read linked documents under `Documentación_Del_Proyecto/`
 3. Satisfy acceptance criteria listed in the SPEC
 
 Specs index: `spec-driven/specs/README.md`

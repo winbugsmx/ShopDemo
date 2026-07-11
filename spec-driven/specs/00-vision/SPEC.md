@@ -8,13 +8,13 @@ Mantener coherencia entre los microservicios ShopDemo y validar el flujo de comp
 
 | Capa | Documento |
 |---|---|
-| Visión global | [RETO-TECNICO-SHOPDEMO.md](../../../Documentación del Proyecto/RETO-TECNICO-SHOPDEMO.md) |
-| Guía estructural | [GUIA-ESTRUCTURA-DOCUMENTACION.md](../../../Documentación del Proyecto/GUIA-ESTRUCTURA-DOCUMENTACION.md) |
-| Contratos API | [GUIA-ENDPOINTS.md](../../../Documentación del Proyecto/GUIA-ENDPOINTS.md) |
-| Arquitectura | [ARQUITECTURA.md](../../../Documentación del Proyecto/ARQUITECTURA.md) |
-| Postman E2E | [ShopDemo.postman_collection.json](../../../Documentación del Proyecto/ShopDemo.postman_collection.json) |
+| Visión global | [RETO-TECNICO-SHOPDEMO.md](../../../Documentación_Del_Proyecto/RETO-TECNICO-SHOPDEMO.md) |
+| Guía estructural | [GUIA-ESTRUCTURA-DOCUMENTACION.md](../../../Documentación_Del_Proyecto/GUIA-ESTRUCTURA-DOCUMENTACION.md) |
+| Contratos API | [GUIA-ENDPOINTS.md](../../../Documentación_Del_Proyecto/GUIA-ENDPOINTS.md) |
+| Arquitectura | [ARQUITECTURA.md](../../../Documentación_Del_Proyecto/ARQUITECTURA.md) |
+| Postman E2E | [ShopDemo.postman_collection.json](../../../Documentación_Del_Proyecto/ShopDemo.postman_collection.json) |
 
-**Por módulo:** cada servicio tiene `REQUERIMIENTOS` + `HISTORIAS-USUARIO` (negocio) y `ANEXO-ESPECIFICACION-TECNICA` + `ANEXO-HISTORIAS-TECNICAS` (técnico). Ver README de `Documentación del Proyecto/catalog/`, `Documentación del Proyecto/orders/`, etc.
+**Por módulo:** cada servicio tiene `REQUERIMIENTOS` + `HISTORIAS-USUARIO` (negocio) y `ANEXO-ESPECIFICACION-TECNICA` + `ANEXO-HISTORIAS-TECNICAS` (técnico). Ver README de `Documentación_Del_Proyecto/catalog/`, `Documentación_Del_Proyecto/orders/`, etc.
 
 ## Alcance
 
@@ -40,8 +40,8 @@ Mantener coherencia entre los microservicios ShopDemo y validar el flujo de comp
 
 ## Instrucciones para el agente
 
-1. Leer [RETO-TECNICO-SHOPDEMO.md](../../../Documentación del Proyecto/RETO-TECNICO-SHOPDEMO.md) y [GUIA-ENDPOINTS.md](../../../Documentación del Proyecto/GUIA-ENDPOINTS.md) antes de cambios cross-service.
+1. Leer [RETO-TECNICO-SHOPDEMO.md](../../../Documentación_Del_Proyecto/RETO-TECNICO-SHOPDEMO.md) y [GUIA-ENDPOINTS.md](../../../Documentación_Del_Proyecto/GUIA-ENDPOINTS.md) antes de cambios cross-service.
 2. No romper contratos HTTP documentados.
-3. Antes de cambios entre servicios, leer [ARQUITECTURA.md](../../../Documentación del Proyecto/ARQUITECTURA.md) §4.
+3. Antes de cambios entre servicios, leer [ARQUITECTURA.md](../../../Documentación_Del_Proyecto/ARQUITECTURA.md) §4.
 4. Para un módulo concreto, leer su `REQUERIMIENTOS` (negocio) y `ANEXO-ESPECIFICACION-TECNICA`.
 5. Responder en español al usuario; código y rules en inglés.

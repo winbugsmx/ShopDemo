@@ -11,6 +11,6 @@ Audit for:
 - Event Hubs SAS scope
 - Ingress TLS and path rules
 
-Reference: `Documentación del Proyecto/integracion-ia/`, `k8s/ingress/`
+Reference: `Documentación_Del_Proyecto/integracion-ia/`, `k8s/ingress/`
 
 Report in Spanish with remediation steps.

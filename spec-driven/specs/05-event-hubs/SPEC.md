@@ -8,14 +8,14 @@ Configurar o extender mensajería sin commitear secretos.
 
 | Capa | Documento |
 |---|---|
-| Guía principal | [INTEGRACION-AZURE-EVENT-HUBS.md](../../../Documentación del Proyecto/INTEGRACION-AZURE-EVENT-HUBS.md) |
-| Código referencia | [ANEXO-CODIGO-EVENT-HUBS.md](../../../Documentación del Proyecto/ANEXO-CODIGO-EVENT-HUBS.md) |
-| Negocio Catalog | [REQUERIMIENTOS-CATALOG.md](../../../Documentación del Proyecto/catalog/REQUERIMIENTOS-CATALOG.md) (RF-04, HU-CAT-02) |
-| Negocio Inventory | [REQUERIMIENTOS-INVENTORY.md](../../../Documentación del Proyecto/inventory/REQUERIMIENTOS-INVENTORY.md) |
-| Técnica Inventory | [ANEXO-ESPECIFICACION-TECNICA-INVENTORY.md](../../../Documentación del Proyecto/inventory/ANEXO-ESPECIFICACION-TECNICA-INVENTORY.md) |
-| Técnica Analytics | [ANEXO-ESPECIFICACION-TECNICA-ANALYTICS-ASPIRE.md](../../../Documentación del Proyecto/analytics/ANEXO-ESPECIFICACION-TECNICA-ANALYTICS-ASPIRE.md) |
+| Guía principal | [INTEGRACION-AZURE-EVENT-HUBS.md](../../../Documentación_Del_Proyecto/INTEGRACION-AZURE-EVENT-HUBS.md) |
+| Código referencia | [ANEXO-CODIGO-EVENT-HUBS.md](../../../Documentación_Del_Proyecto/ANEXO-CODIGO-EVENT-HUBS.md) |
+| Negocio Catalog | [REQUERIMIENTOS-CATALOG.md](../../../Documentación_Del_Proyecto/catalog/REQUERIMIENTOS-CATALOG.md) (RF-04, HU-CAT-02) |
+| Negocio Inventory | [REQUERIMIENTOS-INVENTORY.md](../../../Documentación_Del_Proyecto/inventory/REQUERIMIENTOS-INVENTORY.md) |
+| Técnica Inventory | [ANEXO-ESPECIFICACION-TECNICA-INVENTORY.md](../../../Documentación_Del_Proyecto/inventory/ANEXO-ESPECIFICACION-TECNICA-INVENTORY.md) |
+| Técnica Analytics | [ANEXO-ESPECIFICACION-TECNICA-ANALYTICS-ASPIRE.md](../../../Documentación_Del_Proyecto/analytics/ANEXO-ESPECIFICACION-TECNICA-ANALYTICS-ASPIRE.md) |
 
-Guía: [GUIA-ESTRUCTURA-DOCUMENTACION.md](../../../Documentación del Proyecto/GUIA-ESTRUCTURA-DOCUMENTACION.md)
+Guía: [GUIA-ESTRUCTURA-DOCUMENTACION.md](../../../Documentación_Del_Proyecto/GUIA-ESTRUCTURA-DOCUMENTACION.md)
 
 > Event Hubs no tiene módulo `REQUERIMIENTOS` propio; requisitos repartidos entre Catalog, Inventory, Analytics y la guía de integración.
 
@@ -40,7 +40,7 @@ Guía: [GUIA-ESTRUCTURA-DOCUMENTACION.md](../../../Documentación del Proyecto/G
 
 ## Instrucciones para el agente
 
-1. Leer [INTEGRACION-AZURE-EVENT-HUBS.md](../../../Documentación del Proyecto/INTEGRACION-AZURE-EVENT-HUBS.md) completo.
+1. Leer [INTEGRACION-AZURE-EVENT-HUBS.md](../../../Documentación_Del_Proyecto/INTEGRACION-AZURE-EVENT-HUBS.md) completo.
 2. Consultar anexos técnicos de Inventory y Analytics para consumers.
 3. Nunca commitear connection strings ni claves SAS.
 4. Validar flujo crear producto → evento visible en Analytics si aplica.

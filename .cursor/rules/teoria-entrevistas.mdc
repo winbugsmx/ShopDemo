@@ -1,6 +1,6 @@
 ---
 description: Teoria tecnica — material de estudio para desarrolladores junior
-globs: Documentación de Estudio del Curso/**
+globs: Documentación_De_Estudio_Del_Curso/**
 alwaysApply: false
 ---
 

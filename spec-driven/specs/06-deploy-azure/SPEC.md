@@ -10,29 +10,29 @@ Desplegar o actualizar ShopDemo en Azure Container Apps y/o AKS siguiendo la doc
 
 | Capa | Documento |
 |---|---|
-| **A — Negocio** | [REQUERIMIENTOS-DESPLIEGUE-AZURE.md](../../../Documentación del Proyecto/despliegue/azure/REQUERIMIENTOS-DESPLIEGUE-AZURE.md) |
-| **A — Negocio** | [HISTORIAS-USUARIO-DESPLIEGUE-AZURE.md](../../../Documentación del Proyecto/despliegue/azure/HISTORIAS-USUARIO-DESPLIEGUE-AZURE.md) |
-| **B — Técnica** | [ANEXO-ESPECIFICACION-TECNICA-DESPLIEGUE-AZURE.md](../../../Documentación del Proyecto/despliegue/azure/ANEXO-ESPECIFICACION-TECNICA-DESPLIEGUE-AZURE.md) |
-| **B — Técnica** | [ANEXO-HISTORIAS-TECNICAS-DESPLIEGUE-AZURE.md](../../../Documentación del Proyecto/despliegue/azure/ANEXO-HISTORIAS-TECNICAS-DESPLIEGUE-AZURE.md) |
-| **C — Pedagogía** | [ANEXO-PEDAGOGIA-DESPLIEGUE-AZURE.md](../../../Documentación del Proyecto/despliegue/azure/ANEXO-PEDAGOGIA-DESPLIEGUE-AZURE.md) |
-| Implementación | [IMPLEMENTACION-DESPLIEGUE-AZURE.md](../../../Documentación del Proyecto/despliegue/azure/IMPLEMENTACION-DESPLIEGUE-AZURE.md) |
+| **A — Negocio** | [REQUERIMIENTOS-DESPLIEGUE-AZURE.md](../../../Documentación_Del_Proyecto/despliegue/azure/REQUERIMIENTOS-DESPLIEGUE-AZURE.md) |
+| **A — Negocio** | [HISTORIAS-USUARIO-DESPLIEGUE-AZURE.md](../../../Documentación_Del_Proyecto/despliegue/azure/HISTORIAS-USUARIO-DESPLIEGUE-AZURE.md) |
+| **B — Técnica** | [ANEXO-ESPECIFICACION-TECNICA-DESPLIEGUE-AZURE.md](../../../Documentación_Del_Proyecto/despliegue/azure/ANEXO-ESPECIFICACION-TECNICA-DESPLIEGUE-AZURE.md) |
+| **B — Técnica** | [ANEXO-HISTORIAS-TECNICAS-DESPLIEGUE-AZURE.md](../../../Documentación_Del_Proyecto/despliegue/azure/ANEXO-HISTORIAS-TECNICAS-DESPLIEGUE-AZURE.md) |
+| **C — Pedagogía** | [ANEXO-PEDAGOGIA-DESPLIEGUE-AZURE.md](../../../Documentación_Del_Proyecto/despliegue/azure/ANEXO-PEDAGOGIA-DESPLIEGUE-AZURE.md) |
+| Implementación | [IMPLEMENTACION-DESPLIEGUE-AZURE.md](../../../Documentación_Del_Proyecto/despliegue/azure/IMPLEMENTACION-DESPLIEGUE-AZURE.md) |
 
 ### Azure AKS (si aplica)
 
 | Capa | Documento |
 |---|---|
-| **A — Negocio** | [REQUERIMIENTOS-DESPLIEGUE-AKS.md](../../../Documentación del Proyecto/despliegue/aks/REQUERIMIENTOS-DESPLIEGUE-AKS.md) |
-| **B — Técnica** | [ANEXO-ESPECIFICACION-TECNICA-DESPLIEGUE-AKS.md](../../../Documentación del Proyecto/despliegue/aks/ANEXO-ESPECIFICACION-TECNICA-DESPLIEGUE-AKS.md) |
-| Implementación | [IMPLEMENTACION-DESPLIEGUE-AKS.md](../../../Documentación del Proyecto/despliegue/aks/IMPLEMENTACION-DESPLIEGUE-AKS.md) |
+| **A — Negocio** | [REQUERIMIENTOS-DESPLIEGUE-AKS.md](../../../Documentación_Del_Proyecto/despliegue/aks/REQUERIMIENTOS-DESPLIEGUE-AKS.md) |
+| **B — Técnica** | [ANEXO-ESPECIFICACION-TECNICA-DESPLIEGUE-AKS.md](../../../Documentación_Del_Proyecto/despliegue/aks/ANEXO-ESPECIFICACION-TECNICA-DESPLIEGUE-AKS.md) |
+| Implementación | [IMPLEMENTACION-DESPLIEGUE-AKS.md](../../../Documentación_Del_Proyecto/despliegue/aks/IMPLEMENTACION-DESPLIEGUE-AKS.md) |
 
 ### MCP en Azure
 
 | Documento |
 |---|
-| [REQUERIMIENTOS-DESPLIEGUE-MCP.md](../../../Documentación del Proyecto/integracion-ia/REQUERIMIENTOS-DESPLIEGUE-MCP.md) |
-| [IMPLEMENTACION-DESPLIEGUE-MCP-AZURE.md](../../../Documentación del Proyecto/integracion-ia/IMPLEMENTACION-DESPLIEGUE-MCP-AZURE.md) |
+| [REQUERIMIENTOS-DESPLIEGUE-MCP.md](../../../Documentación_Del_Proyecto/integracion-ia/REQUERIMIENTOS-DESPLIEGUE-MCP.md) |
+| [IMPLEMENTACION-DESPLIEGUE-MCP-AZURE.md](../../../Documentación_Del_Proyecto/integracion-ia/IMPLEMENTACION-DESPLIEGUE-MCP-AZURE.md) |
 
-Guía: [GUIA-ESTRUCTURA-DOCUMENTACION.md](../../../Documentación del Proyecto/GUIA-ESTRUCTURA-DOCUMENTACION.md)
+Guía: [GUIA-ESTRUCTURA-DOCUMENTACION.md](../../../Documentación_Del_Proyecto/GUIA-ESTRUCTURA-DOCUMENTACION.md)
 
 ## Alcance (agente)
 

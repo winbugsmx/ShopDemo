@@ -1,6 +1,6 @@
 <#
 .SYNOPSIS
-    Exporta todos los .mermaid de Documentación de Estudio del Curso a PNG para visualización en Cursor/VS Code.
+    Exporta todos los .mermaid de Documentación_De_Estudio_Del_Curso a PNG para visualización en Cursor/VS Code.
 
 .DESCRIPTION
     Usa @mermaid-js/mermaid-cli (mmdc). Los PNG se guardan en assets/diagrams/png/.
@@ -17,9 +17,9 @@ param(
 
 $ErrorActionPreference = 'Continue'
 $Root = (Resolve-Path (Join-Path $PSScriptRoot '..\..\..')).Path
-$DiagramsDir = Join-Path $Root 'Documentación de Estudio del Curso\assets\diagrams'
+$DiagramsDir = Join-Path $Root 'Documentación_De_Estudio_Del_Curso\assets\diagrams'
 $PngDir = Join-Path $DiagramsDir 'png'
-$DocsDir = Join-Path $Root 'Documentación de Estudio del Curso'
+$DocsDir = Join-Path $Root 'Documentación_De_Estudio_Del_Curso'
 
 New-Item -ItemType Directory -Force -Path $PngDir | Out-Null
 

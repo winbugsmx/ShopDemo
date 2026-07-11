@@ -6,9 +6,9 @@ description: Run and validate ShopDemo E2E purchase flow with Postman collection
 # E2E Postman flow
 
 1. Ensure services running (local, Aspire, or cloud URLs in Postman variables)
-2. Collection: `Documentación del Proyecto/ShopDemo.postman_collection.json`
+2. Collection: `Documentación_Del_Proyecto/ShopDemo.postman_collection.json`
 3. Run folder **Flujo integrado (E2E)** in order
 4. Update `productId` and `orderId` from responses
 5. With Event Hubs: optional step 2 (stock); use Analytics step 2b
 
-Reference: `Documentación del Proyecto/GUIA-ENDPOINTS.md`
+Reference: `Documentación_Del_Proyecto/GUIA-ENDPOINTS.md`

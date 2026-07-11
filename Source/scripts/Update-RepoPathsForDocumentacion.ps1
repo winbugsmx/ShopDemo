@@ -3,52 +3,52 @@ param(
 )
 
 $ScriptsDocsPlaceholder = 'Source/scripts/docs/'
-$DocsFolder = 'Documentación del Proyecto'
+$DocsFolder = 'Documentación_Del_Proyecto'
 
 function Invoke-FixText([string]$text) {
     $text = $text.Replace('Source/scripts/docs/', $ScriptsDocsPlaceholder)
 
     $pairs = @(
-        @('../../../../Documentación del Proyecto/', '../../../../Documentación del Proyecto/'),
-        @('../../../Documentación del Proyecto/', '../../../Documentación del Proyecto/'),
-        @('../../Documentación del Proyecto/', '../../Documentación del Proyecto/'),
-        @('../Documentación del Proyecto/', '../Documentación del Proyecto/'),
-        @('..\..\..\..\Documentación del Proyecto\', '..\..\..\..\Documentación del Proyecto\'),
-        @('..\..\..\Documentación del Proyecto\', '..\..\..\Documentación del Proyecto\'),
-        @('..\..\Documentación del Proyecto\', '..\..\Documentación del Proyecto\'),
-        @('..\Documentación del Proyecto\', '..\Documentación del Proyecto\'),
-        @('\Documentación del Proyecto\', '\Documentación del Proyecto\'),
-        @('(Documentación del Proyecto/', '(Documentación del Proyecto/'),
-        @('](Documentación del Proyecto/', '](Documentación del Proyecto/'),
-        @('- Documentación del Proyecto/', '- Documentación del Proyecto/'),
-        @('| `Documentación del Proyecto/', '| `Documentación del Proyecto/'),
-        @('`Documentación del Proyecto/', '`Documentación del Proyecto/'),
-        @('"Documentación del Proyecto/', '"Documentación del Proyecto/'),
-        @("'Documentación del Proyecto/", "'Documentación del Proyecto/"),
-        @('I:\Curso\ShopDemo\Documentación del Proyecto\', 'I:\Curso\ShopDemo\Documentación del Proyecto\'),
-        @('I:\Curso\ShopDemo\Documentación del Proyecto/', 'I:\Curso\ShopDemo\Documentación del Proyecto/'),
-        @('ShopDemo\Documentación del Proyecto\', 'ShopDemo\Documentación del Proyecto\'),
-        @('ShopDemo/Documentación del Proyecto/', 'ShopDemo/Documentación del Proyecto/'),
-        @('| `Documentación del Proyecto/` |', '| `Documentación del Proyecto/` |'),
-        @('Documentación del Proyecto/despliegue', 'Documentación del Proyecto/despliegue'),
-        @('Documentación del Proyecto/teoria-entrevistas', 'Documentación de Estudio del Curso'),
-        @('Documentación del Proyecto/catalog', 'Documentación del Proyecto/catalog'),
-        @('Documentación del Proyecto/orders', 'Documentación del Proyecto/orders'),
-        @('Documentación del Proyecto/inventory', 'Documentación del Proyecto/inventory'),
-        @('Documentación del Proyecto/analytics', 'Documentación del Proyecto/analytics'),
-        @('Documentación del Proyecto/integracion-ia', 'Documentación del Proyecto/integracion-ia'),
-        @('Documentación del Proyecto/cheat-sheets', 'Documentación del Proyecto/cheat-sheets'),
-        @('Documentación del Proyecto/observabilidad', 'Documentación del Proyecto/observabilidad'),
-        @('Documentación del Proyecto/resiliencia', 'Documentación del Proyecto/resiliencia'),
-        @('Documentación del Proyecto/GUIA-', 'Documentación del Proyecto/GUIA-'),
-        @('Documentación del Proyecto/ANEXO-', 'Documentación del Proyecto/ANEXO-'),
-        @('Documentación del Proyecto/ARQUITECTURA', 'Documentación del Proyecto/ARQUITECTURA'),
-        @('Documentación del Proyecto/INTEGRACION-', 'Documentación del Proyecto/INTEGRACION-'),
-        @('Documentación del Proyecto/TEORIA-', 'Documentación del Proyecto/TEORIA-'),
-        @('Documentación del Proyecto/ShopDemo.postman', 'Documentación del Proyecto/ShopDemo.postman'),
-        @('Documentación del Proyecto/README', 'Documentación del Proyecto/README'),
-        @('├── docs/', '├── Documentación del Proyecto/'),
-        @('Documentación del Proyecto/ |', 'Documentación del Proyecto/ |'),
+        @('../../../../Documentación_Del_Proyecto/', '../../../../Documentación_Del_Proyecto/'),
+        @('../../../Documentación_Del_Proyecto/', '../../../Documentación_Del_Proyecto/'),
+        @('../../Documentación_Del_Proyecto/', '../../Documentación_Del_Proyecto/'),
+        @('../Documentación_Del_Proyecto/', '../Documentación_Del_Proyecto/'),
+        @('..\..\..\..\Documentación_Del_Proyecto\', '..\..\..\..\Documentación_Del_Proyecto\'),
+        @('..\..\..\Documentación_Del_Proyecto\', '..\..\..\Documentación_Del_Proyecto\'),
+        @('..\..\Documentación_Del_Proyecto\', '..\..\Documentación_Del_Proyecto\'),
+        @('..\Documentación_Del_Proyecto\', '..\Documentación_Del_Proyecto\'),
+        @('\Documentación_Del_Proyecto\', '\Documentación_Del_Proyecto\'),
+        @('(Documentación_Del_Proyecto/', '(Documentación_Del_Proyecto/'),
+        @('](Documentación_Del_Proyecto/', '](Documentación_Del_Proyecto/'),
+        @('- Documentación_Del_Proyecto/', '- Documentación_Del_Proyecto/'),
+        @('| `Documentación_Del_Proyecto/', '| `Documentación_Del_Proyecto/'),
+        @('`Documentación_Del_Proyecto/', '`Documentación_Del_Proyecto/'),
+        @('"Documentación_Del_Proyecto/', '"Documentación_Del_Proyecto/'),
+        @("'Documentación_Del_Proyecto/", "'Documentación_Del_Proyecto/"),
+        @('I:\Curso\ShopDemo\Documentación_Del_Proyecto\', 'I:\Curso\ShopDemo\Documentación_Del_Proyecto\'),
+        @('I:\Curso\ShopDemo\Documentación_Del_Proyecto/', 'I:\Curso\ShopDemo\Documentación_Del_Proyecto/'),
+        @('ShopDemo\Documentación_Del_Proyecto\', 'ShopDemo\Documentación_Del_Proyecto\'),
+        @('ShopDemo/Documentación_Del_Proyecto/', 'ShopDemo/Documentación_Del_Proyecto/'),
+        @('| `Documentación_Del_Proyecto/` |', '| `Documentación_Del_Proyecto/` |'),
+        @('Documentación_Del_Proyecto/despliegue', 'Documentación_Del_Proyecto/despliegue'),
+        @('Documentación_Del_Proyecto/teoria-entrevistas', 'Documentación_De_Estudio_Del_Curso'),
+        @('Documentación_Del_Proyecto/catalog', 'Documentación_Del_Proyecto/catalog'),
+        @('Documentación_Del_Proyecto/orders', 'Documentación_Del_Proyecto/orders'),
+        @('Documentación_Del_Proyecto/inventory', 'Documentación_Del_Proyecto/inventory'),
+        @('Documentación_Del_Proyecto/analytics', 'Documentación_Del_Proyecto/analytics'),
+        @('Documentación_Del_Proyecto/integracion-ia', 'Documentación_Del_Proyecto/integracion-ia'),
+        @('Documentación_Del_Proyecto/cheat-sheets', 'Documentación_Del_Proyecto/cheat-sheets'),
+        @('Documentación_Del_Proyecto/observabilidad', 'Documentación_Del_Proyecto/observabilidad'),
+        @('Documentación_Del_Proyecto/resiliencia', 'Documentación_Del_Proyecto/resiliencia'),
+        @('Documentación_Del_Proyecto/GUIA-', 'Documentación_Del_Proyecto/GUIA-'),
+        @('Documentación_Del_Proyecto/ANEXO-', 'Documentación_Del_Proyecto/ANEXO-'),
+        @('Documentación_Del_Proyecto/ARQUITECTURA', 'Documentación_Del_Proyecto/ARQUITECTURA'),
+        @('Documentación_Del_Proyecto/INTEGRACION-', 'Documentación_Del_Proyecto/INTEGRACION-'),
+        @('Documentación_Del_Proyecto/TEORIA-', 'Documentación_Del_Proyecto/TEORIA-'),
+        @('Documentación_Del_Proyecto/ShopDemo.postman', 'Documentación_Del_Proyecto/ShopDemo.postman'),
+        @('Documentación_Del_Proyecto/README', 'Documentación_Del_Proyecto/README'),
+        @('├── docs/', '├── Documentación_Del_Proyecto/'),
+        @('Documentación_Del_Proyecto/ |', 'Documentación_Del_Proyecto/ |'),
         @('Source/scripts/docs/', 'Source/scripts/docs/'),
         @('Documentación', 'Documentación'),
         @("Join-Path `$RepoRoot 'docs'", "Join-Path `$RepoRoot 'Documentación'"),
@@ -62,8 +62,8 @@ function Invoke-FixText([string]$text) {
 
     $text = $text.Replace($ScriptsDocsPlaceholder, 'Source/scripts/docs/')
 
-    while ($text.Contains('Documentación del Proyecto/')) {
-        $text = $text.Replace('Documentación del Proyecto/', 'Documentación del Proyecto/')
+    while ($text.Contains('Documentación_Del_Proyecto/')) {
+        $text = $text.Replace('Documentación_Del_Proyecto/', 'Documentación_Del_Proyecto/')
     }
 
     return $text

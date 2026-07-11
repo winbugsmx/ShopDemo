@@ -7,7 +7,7 @@ param()
 
 $ErrorActionPreference = 'Continue'
 $Root = (Resolve-Path (Join-Path $PSScriptRoot '..\..\..')).Path
-$DocsDir = Join-Path $Root 'Documentación de Estudio del Curso'
+$DocsDir = Join-Path $Root 'Documentación_De_Estudio_Del_Curso'
 $DiagramsDir = Join-Path $DocsDir 'assets\diagrams'
 $PngDir = Join-Path $DiagramsDir 'png'
 $EmbeddedDir = Join-Path $DiagramsDir 'embedded'

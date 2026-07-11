@@ -8,7 +8,7 @@ Orchestration: Aspire (local). Messaging: Azure Event Hubs. Deploy: Azure (ACA/A
 ## Spec-driven workflow
 
 1. **Always** read the relevant `spec-driven/specs/<area>/SPEC.md` before coding.
-2. Follow linked `Documentación del Proyecto/**/REQUERIMIENTOS` and `IMPLEMENTACION` documents.
+2. Follow linked `Documentación_Del_Proyecto/**/REQUERIMIENTOS` and `IMPLEMENTACION` documents.
 3. Validate acceptance criteria in the SPEC when done.
 4. User-facing replies: **Spanish**. Code comments: English, minimal.
 
@@ -25,7 +25,7 @@ dotnet build Source/ShopDemo.slnx
 | Specs | `spec-driven/specs/` |
 | K8s | `k8s/` |
 | MCP | `Source/AI/ShopDemo.Mcp.Api/` |
-| Course docs | `Documentación del Proyecto/` |
+| Course docs | `Documentación_Del_Proyecto/` |
 
 ## Deploy commands
 

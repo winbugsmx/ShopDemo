@@ -8,14 +8,14 @@ Extender casos de uso de stock/reservas manteniendo puertos y adaptadores.
 
 | Capa | Documento |
 |---|---|
-| **A — Negocio** | [REQUERIMIENTOS-INVENTORY.md](../../../Documentación del Proyecto/inventory/REQUERIMIENTOS-INVENTORY.md) |
-| **A — Negocio** | [HISTORIAS-USUARIO-INVENTORY.md](../../../Documentación del Proyecto/inventory/HISTORIAS-USUARIO-INVENTORY.md) |
-| **B — Técnica** | [ANEXO-ESPECIFICACION-TECNICA-INVENTORY.md](../../../Documentación del Proyecto/inventory/ANEXO-ESPECIFICACION-TECNICA-INVENTORY.md) |
-| **B — Técnica** | [ANEXO-HISTORIAS-TECNICAS-INVENTORY.md](../../../Documentación del Proyecto/inventory/ANEXO-HISTORIAS-TECNICAS-INVENTORY.md) |
-| **C — Pedagogía** | [ANEXO-PEDAGOGIA-INVENTORY.md](../../../Documentación del Proyecto/inventory/ANEXO-PEDAGOGIA-INVENTORY.md) |
-| Implementación | [IMPLEMENTACION-INVENTORY.md](../../../Documentación del Proyecto/inventory/IMPLEMENTACION-INVENTORY.md) |
+| **A — Negocio** | [REQUERIMIENTOS-INVENTORY.md](../../../Documentación_Del_Proyecto/inventory/REQUERIMIENTOS-INVENTORY.md) |
+| **A — Negocio** | [HISTORIAS-USUARIO-INVENTORY.md](../../../Documentación_Del_Proyecto/inventory/HISTORIAS-USUARIO-INVENTORY.md) |
+| **B — Técnica** | [ANEXO-ESPECIFICACION-TECNICA-INVENTORY.md](../../../Documentación_Del_Proyecto/inventory/ANEXO-ESPECIFICACION-TECNICA-INVENTORY.md) |
+| **B — Técnica** | [ANEXO-HISTORIAS-TECNICAS-INVENTORY.md](../../../Documentación_Del_Proyecto/inventory/ANEXO-HISTORIAS-TECNICAS-INVENTORY.md) |
+| **C — Pedagogía** | [ANEXO-PEDAGOGIA-INVENTORY.md](../../../Documentación_Del_Proyecto/inventory/ANEXO-PEDAGOGIA-INVENTORY.md) |
+| Implementación | [IMPLEMENTACION-INVENTORY.md](../../../Documentación_Del_Proyecto/inventory/IMPLEMENTACION-INVENTORY.md) |
 
-Guía: [GUIA-ESTRUCTURA-DOCUMENTACION.md](../../../Documentación del Proyecto/GUIA-ESTRUCTURA-DOCUMENTACION.md)
+Guía: [GUIA-ESTRUCTURA-DOCUMENTACION.md](../../../Documentación_Del_Proyecto/GUIA-ESTRUCTURA-DOCUMENTACION.md)
 
 ## Alcance (agente)
 

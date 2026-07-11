@@ -6,16 +6,16 @@ Automatización del laboratorio AWS del curso Lite Thinking. Complementa la docu
 
 | Tema | Documento |
 |---|---|
-| **Script + IAM (recomendado)** | [GUIA-RELEASE-SCRIPT-AWS.md](../../Documentación del Proyecto/despliegue/aws/GUIA-RELEASE-SCRIPT-AWS.md) |
-| Preparación IAM/cuotas | [PREPARACION-AMBIENTE-AWS.md](../../Documentación del Proyecto/despliegue/aws/PREPARACION-AMBIENTE-AWS.md) |
-| Consola visual + IAM | [GUIA-RELEASE-PORTAL-AWS.md](../../Documentación del Proyecto/despliegue/aws/GUIA-RELEASE-PORTAL-AWS.md) |
-| AWS CLI manual | [GUIA-RELEASE-CLI-AWS.md](../../Documentación del Proyecto/despliegue/aws/GUIA-RELEASE-CLI-AWS.md) |
-| EKS + Kubernetes | [GUIA-RELEASE-KUBERNETES.md](../../Documentación del Proyecto/despliegue/kubernetes/GUIA-RELEASE-KUBERNETES.md) |
-| Event Hubs (Azure, cross-cloud) | [INTEGRACION-AZURE-EVENT-HUBS.md](../../Documentación del Proyecto/INTEGRACION-AZURE-EVENT-HUBS.md) |
-| MCP Gateway | [IMPLEMENTACION-DESPLIEGUE-MCP-AWS.md](../../Documentación del Proyecto/integracion-ia/IMPLEMENTACION-DESPLIEGUE-MCP-AWS.md) |
-| Guía de desarrollo | [GUIA-DESARROLLO-INTEGRACIONES.md](../../Documentación del Proyecto/GUIA-DESARROLLO-INTEGRACIONES.md) |
-| CI/CD GitHub | [.github/workflows/deploy-aws.yml](../../.github/workflows/deploy-aws.yml) · [deploy-eks.yml](../../.github/workflows/deploy-eks.yml) · [SETUP-GITHUB.md](../../.github/SETUP-GITHUB.md) · [SECRETS-CHECKLIST.md](../../.github/SECRETS-CHECKLIST.md) |
-| Tópicos de Estudio | [06 AWS](../../Documentación de Estudio del Curso/06-servicios-aws.md) · [07 Docker](../../Documentación de Estudio del Curso/07-contenedores-docker.md) · [09 CI/CD](../../Documentación de Estudio del Curso/09-ci-cd-devops.md) · [Índice](../../Documentación de Estudio del Curso/README.md) |
+| **Script + IAM (recomendado)** | [GUIA-RELEASE-SCRIPT-AWS.md](../../../Documentación_Del_Proyecto/despliegue/aws/GUIA-RELEASE-SCRIPT-AWS.md) |
+| Preparación IAM/cuotas | [PREPARACION-AMBIENTE-AWS.md](../../../Documentación_Del_Proyecto/despliegue/aws/PREPARACION-AMBIENTE-AWS.md) |
+| Consola visual + IAM | [GUIA-RELEASE-PORTAL-AWS.md](../../../Documentación_Del_Proyecto/despliegue/aws/GUIA-RELEASE-PORTAL-AWS.md) |
+| AWS CLI manual | [GUIA-RELEASE-CLI-AWS.md](../../../Documentación_Del_Proyecto/despliegue/aws/GUIA-RELEASE-CLI-AWS.md) |
+| EKS + Kubernetes | [GUIA-RELEASE-KUBERNETES.md](../../../Documentación_Del_Proyecto/despliegue/kubernetes/GUIA-RELEASE-KUBERNETES.md) |
+| Event Hubs (Azure, cross-cloud) | [INTEGRACION-AZURE-EVENT-HUBS.md](../../../Documentación_Del_Proyecto/INTEGRACION-AZURE-EVENT-HUBS.md) |
+| MCP Gateway | [IMPLEMENTACION-DESPLIEGUE-MCP-AWS.md](../../../Documentación_Del_Proyecto/integracion-ia/IMPLEMENTACION-DESPLIEGUE-MCP-AWS.md) |
+| Guía de desarrollo | [GUIA-DESARROLLO-INTEGRACIONES.md](../../../Documentación_Del_Proyecto/GUIA-DESARROLLO-INTEGRACIONES.md) |
+| CI/CD GitHub | [.github/workflows/deploy-aws.yml](../../../.github/workflows/deploy-aws.yml) · [deploy-eks.yml](../../../.github/workflows/deploy-eks.yml) · [SETUP-GITHUB.md](../../../.github/SETUP-GITHUB.md) · [SECRETS-CHECKLIST.md](../../../.github/SECRETS-CHECKLIST.md) |
+| Tópicos de Estudio | [06 AWS](../../../Documentación_De_Estudio_Del_Curso/06-servicios-aws.md) · [07 Docker](../../../Documentación_De_Estudio_Del_Curso/07-contenedores-docker.md) · [09 CI/CD](../../../Documentación_De_Estudio_Del_Curso/09-ci-cd-devops.md) · [Índice](../../../Documentación_De_Estudio_Del_Curso/README.md) |
 
 ## Archivos
 
@@ -29,7 +29,7 @@ Automatización del laboratorio AWS del curso Lite Thinking. Complementa la docu
 ## Prerrequisitos
 
 1. [AWS CLI v2](https://docs.aws.amazon.com/cli/latest/userguide/getting-started-install.html) + `aws configure`
-2. **Usuario IAM** con permisos del lab — ver [GUIA-RELEASE-PORTAL-AWS §0](../../Documentación del Proyecto/despliegue/aws/GUIA-RELEASE-PORTAL-AWS.md#0-usuario-iam-y-permisos)
+2. **Usuario IAM** con permisos del lab — ver [GUIA-RELEASE-PORTAL-AWS §0](../../../Documentación_Del_Proyecto/despliegue/aws/GUIA-RELEASE-PORTAL-AWS.md#0-usuario-iam-y-permisos)
 3. **Event Hubs en Azure** — connection string en `.env.aws` (mensajería cross-cloud)
 4. Para modo **EKS**: [eksctl](https://eksctl.io/) y [kubectl](https://kubernetes.io/docs/tasks/tools/)
 5. **Imágenes en ECR** antes de que arranquen las tareas ECS
@@ -41,7 +41,7 @@ Automatización del laboratorio AWS del curso Lite Thinking. Complementa la docu
 | ECS | `ShopDemoLabECS` | [iam-policy-shopdemo-lab-ecs.json](iam-policy-shopdemo-lab-ecs.json) |
 | EKS | `ShopDemoLabEKS` | [iam-policy-shopdemo-lab-eks.json](iam-policy-shopdemo-lab-eks.json) |
 
-Detalle completo: [PREPARACION-AMBIENTE-AWS.md](../../Documentación del Proyecto/despliegue/aws/PREPARACION-AMBIENTE-AWS.md)
+Detalle completo: [PREPARACION-AMBIENTE-AWS.md](../../../Documentación_Del_Proyecto/despliegue/aws/PREPARACION-AMBIENTE-AWS.md)
 
 ## Valores que debes obtener o definir
 
@@ -58,7 +58,7 @@ Detalle completo: [PREPARACION-AMBIENTE-AWS.md](../../Documentación del Proyect
 |---|---|
 | `EVENT_HUBS_CONNECTION_STRING` | Event Hubs namespace → Shared access policies → **RootManageSharedAccessKey** → Primary Connection String |
 
-Ref: [INTEGRACION-AZURE-EVENT-HUBS.md](../../Documentación del Proyecto/INTEGRACION-AZURE-EVENT-HUBS.md) §4.4
+Ref: [INTEGRACION-AZURE-EVENT-HUBS.md](../../../Documentación_Del_Proyecto/INTEGRACION-AZURE-EVENT-HUBS.md) §4.4
 
 ### Valores que defines tú (en `.env.aws`)
 
@@ -92,7 +92,7 @@ Ref: [INTEGRACION-AZURE-EVENT-HUBS.md](../../Documentación del Proyecto/INTEGRA
 
 ## Uso rápido
 
-> **Documentación:** [GUIA-RELEASE-SCRIPT-AWS](../../Documentación del Proyecto/despliegue/aws/GUIA-RELEASE-SCRIPT-AWS.md) · [README principal](../../README.md#release-aws)
+> **Documentación:** [GUIA-RELEASE-SCRIPT-AWS](../../../Documentación_Del_Proyecto/despliegue/aws/GUIA-RELEASE-SCRIPT-AWS.md) · [README principal](../../../README.md#release-aws)
 
 ```powershell
 cd I:\Curso\ShopDemo\Source\scripts\aws
@@ -135,7 +135,7 @@ Event Hubs siempre es **Azure** (cross-cloud).
 2. `Deploy-AwsShopDemo.ps1 -Mode ECS`
 3. Publicar 5 imágenes en ECR
 4. Esperar tasks `RUNNING` → probar con Postman / GUIA-ENDPOINTS
-5. (Opcional) `-Mode EKS` + perfil [eks-free-tier-lab](../../Documentación del Proyecto/despliegue/aws/GUIA-RELEASE-SCRIPT-AWS.md#6-perfil-eks-eks-free-tier-lab-ajustes-post-script)
+5. (Opcional) `-Mode EKS` + perfil [eks-free-tier-lab](../../../Documentación_Del_Proyecto/despliegue/aws/GUIA-RELEASE-SCRIPT-AWS.md#6-perfil-eks-eks-free-tier-lab-ajustes-post-script)
 
 ## Solución de problemas
 

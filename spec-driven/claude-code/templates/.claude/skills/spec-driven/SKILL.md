@@ -16,6 +16,6 @@ description: Work from ShopDemo SPEC files before coding. Use when implementing 
 6. Point to Postman or k8s verification
 
 Specs index: `spec-driven/specs/README.md`  
-Structure guide: `Documentación del Proyecto/GUIA-ESTRUCTURA-DOCUMENTACION.md`
+Structure guide: `Documentación_Del_Proyecto/GUIA-ESTRUCTURA-DOCUMENTACION.md`
 
 Cloud: if deployment is in scope, use **deploy-azure** or **deploy-aws** skill — never both in one flow unless user asks.

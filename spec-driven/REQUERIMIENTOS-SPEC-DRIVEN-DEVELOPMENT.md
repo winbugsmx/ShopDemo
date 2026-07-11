@@ -67,7 +67,7 @@ Establecer **qué debe lograr** el enfoque spec-driven en ShopDemo: alinear docu
 
 | ID | Criterio |
 |---|---|
-| CA-N-SDD-01 | Las 13 áreas del curso tienen spec enlazada a su documentación en `Documentación del Proyecto/` |
+| CA-N-SDD-01 | Las 13 áreas del curso tienen spec enlazada a su documentación en `Documentación_Del_Proyecto/` |
 | CA-N-SDD-02 | Un miembro del equipo activa Cursor copiando plantillas sin pasos ambiguos |
 | CA-N-SDD-03 | Un miembro del equipo activa Claude Code con `CLAUDE.md` y configuración operativa |
 | CA-N-SDD-04 | La plantilla MCP describe tres entornos (local, Azure, AWS) |
@@ -77,6 +77,6 @@ Establecer **qué debe lograr** el enfoque spec-driven en ShopDemo: alinear docu
 
 ## 6. Referencias
 
-- [GUIA-ESTRUCTURA-DOCUMENTACION.md](../Documentación del Proyecto/GUIA-ESTRUCTURA-DOCUMENTACION.md)
+- [GUIA-ESTRUCTURA-DOCUMENTACION.md](../Documentación_Del_Proyecto/GUIA-ESTRUCTURA-DOCUMENTACION.md)
 - [specs/README.md](./specs/README.md)
 - [IMPLEMENTACION-SPEC-DRIVEN-DEVELOPMENT.md](./IMPLEMENTACION-SPEC-DRIVEN-DEVELOPMENT.md)

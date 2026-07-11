@@ -1,12 +1,12 @@
-"""Actualiza rutas Documentación del Proyecto/ -> Documentación del Proyecto/ preservando Estudio del Curso."""
+"""Actualiza rutas Documentación_Del_Proyecto/ -> Documentación_Del_Proyecto/ preservando Estudio del Curso."""
 from __future__ import annotations
 
 from pathlib import Path
 
 REPO_ROOT = Path(__file__).resolve().parents[2]
-ESTUDIO = "Documentación de Estudio del Curso"
-PLACEHOLDER = "Documentación de Estudio del Curso"
-NEW_FOLDER = "Documentación del Proyecto"
+ESTUDIO = "Documentación_De_Estudio_Del_Curso"
+PLACEHOLDER = "Documentación_De_Estudio_Del_Curso"
+NEW_FOLDER = "Documentación_Del_Proyecto"
 EXTENSIONS = {".md", ".yml", ".yaml", ".ps1", ".py", ".mdc", ".json", ".slnx", ".html", ".env.example"}
 SKIP_DIRS = {"node_modules", "bin", "obj", ".vs", ".git"}
 
@@ -14,24 +14,24 @@ SKIP_DIRS = {"node_modules", "bin", "obj", ".vs", ".git"}
 def fix_text(text: str) -> str:
     text = text.replace(ESTUDIO, PLACEHOLDER)
     pairs = [
-        ("../../../../Documentación del Proyecto/", f"../../../../{NEW_FOLDER}/"),
-        ("../../../Documentación del Proyecto/", f"../../../{NEW_FOLDER}/"),
-        ("../../Documentación del Proyecto/", f"../../{NEW_FOLDER}/"),
-        ("../Documentación del Proyecto/", f"../{NEW_FOLDER}/"),
-        ("Documentación del Proyecto/", f"{NEW_FOLDER}/"),
-        ("..\\..\\..\\..\\Documentación del Proyecto\\", f"..\\..\\..\\..\\{NEW_FOLDER}\\"),
-        ("..\\..\\..\\Documentación del Proyecto\\", f"..\\..\\..\\{NEW_FOLDER}\\"),
-        ("..\\..\\Documentación del Proyecto\\", f"..\\..\\{NEW_FOLDER}\\"),
-        ("..\\Documentación del Proyecto\\", f"..\\{NEW_FOLDER}\\"),
-        ("\\Documentación del Proyecto\\", f"\\{NEW_FOLDER}\\"),
-        (r"I:\Curso\ShopDemo\Documentación del Proyecto\\", rf"I:\Curso\ShopDemo\{NEW_FOLDER}\\"),
-        (r"I:\Curso\ShopDemo\Documentación del Proyecto/", rf"I:\Curso\ShopDemo/{NEW_FOLDER}/"),
-        ("ShopDemo\\Documentación del Proyecto\\", f"ShopDemo\\{NEW_FOLDER}\\"),
-        ("ShopDemo/Documentación del Proyecto/", f"ShopDemo/{NEW_FOLDER}/"),
-        ('REPO_ROOT / "Documentación del Proyecto"', f'REPO_ROOT / "{NEW_FOLDER}"'),
-        ("REPO_ROOT / 'Documentación del Proyecto'", f"REPO_ROOT / '{NEW_FOLDER}'"),
-        ("Documentación del Proyecto/", f"{NEW_FOLDER}/"),
-        ("Documentación del Proyecto\\", f"{NEW_FOLDER}\\"),
+        ("../../../../Documentación_Del_Proyecto/", f"../../../../{NEW_FOLDER}/"),
+        ("../../../Documentación_Del_Proyecto/", f"../../../{NEW_FOLDER}/"),
+        ("../../Documentación_Del_Proyecto/", f"../../{NEW_FOLDER}/"),
+        ("../Documentación_Del_Proyecto/", f"../{NEW_FOLDER}/"),
+        ("Documentación_Del_Proyecto/", f"{NEW_FOLDER}/"),
+        ("..\\..\\..\\..\\Documentación_Del_Proyecto\\", f"..\\..\\..\\..\\{NEW_FOLDER}\\"),
+        ("..\\..\\..\\Documentación_Del_Proyecto\\", f"..\\..\\..\\{NEW_FOLDER}\\"),
+        ("..\\..\\Documentación_Del_Proyecto\\", f"..\\..\\{NEW_FOLDER}\\"),
+        ("..\\Documentación_Del_Proyecto\\", f"..\\{NEW_FOLDER}\\"),
+        ("\\Documentación_Del_Proyecto\\", f"\\{NEW_FOLDER}\\"),
+        (r"I:\Curso\ShopDemo\Documentación_Del_Proyecto\\", rf"I:\Curso\ShopDemo\{NEW_FOLDER}\\"),
+        (r"I:\Curso\ShopDemo\Documentación_Del_Proyecto/", rf"I:\Curso\ShopDemo/{NEW_FOLDER}/"),
+        ("ShopDemo\\Documentación_Del_Proyecto\\", f"ShopDemo\\{NEW_FOLDER}\\"),
+        ("ShopDemo/Documentación_Del_Proyecto/", f"ShopDemo/{NEW_FOLDER}/"),
+        ('REPO_ROOT / "Documentación_Del_Proyecto"', f'REPO_ROOT / "{NEW_FOLDER}"'),
+        ("REPO_ROOT / 'Documentación_Del_Proyecto'", f"REPO_ROOT / '{NEW_FOLDER}'"),
+        ("Documentación_Del_Proyecto/", f"{NEW_FOLDER}/"),
+        ("Documentación_Del_Proyecto\\", f"{NEW_FOLDER}\\"),
     ]
     for old, new in pairs:
         text = text.replace(old, new)

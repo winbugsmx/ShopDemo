@@ -47,13 +47,13 @@ docker build -f Source/Catalog/ShopDemo.Catalog.Api/Dockerfile -t shopdemo-catal
 | Azure | [scripts/azure/](scripts/azure/) |
 | AWS | [scripts/aws/](scripts/aws/) |
 
-Documentación: [Documentación del Proyecto/despliegue/](../Documentación del Proyecto/despliegue/README.md)
+Documentación: [Documentación_Del_Proyecto/despliegue/](../Documentación_Del_Proyecto/despliegue/README.md)
 
 ## Qué permanece fuera de Source/
 
 | Carpeta | Contenido |
 |---|---|
-| `Documentación del Proyecto/` | Requerimientos, implementación, Tópicos de Estudio |
+| `Documentación_Del_Proyecto/` | Requerimientos, implementación, Tópicos de Estudio |
 | `k8s/` | Manifiestos Kubernetes |
 | `spec-driven/` | SPECs para agentes IA |
 | `.github/` | Workflows CI/CD |

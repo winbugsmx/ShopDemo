@@ -8,16 +8,16 @@ Health checks, réplicas, HPA y pruebas de recuperación ante fallos.
 
 | Capa | Documento |
 |---|---|
-| **A — Negocio** | [REQUERIMIENTOS-RESILIENCIA.md](../../../Documentación del Proyecto/resiliencia/REQUERIMIENTOS-RESILIENCIA.md) |
-| **A — Negocio** | [HISTORIAS-USUARIO-RESILIENCIA.md](../../../Documentación del Proyecto/resiliencia/HISTORIAS-USUARIO-RESILIENCIA.md) |
-| **B — Técnica** | [ANEXO-ESPECIFICACION-TECNICA-RESILIENCIA.md](../../../Documentación del Proyecto/resiliencia/ANEXO-ESPECIFICACION-TECNICA-RESILIENCIA.md) |
-| **B — Técnica** | [ANEXO-HISTORIAS-TECNICAS-RESILIENCIA.md](../../../Documentación del Proyecto/resiliencia/ANEXO-HISTORIAS-TECNICAS-RESILIENCIA.md) |
-| **C — Pedagogía** | [ANEXO-PEDAGOGIA-RESILIENCIA.md](../../../Documentación del Proyecto/resiliencia/ANEXO-PEDAGOGIA-RESILIENCIA.md) |
-| Impl. Azure | [azure/IMPLEMENTACION-RESILIENCIA-AZURE.md](../../../Documentación del Proyecto/resiliencia/azure/IMPLEMENTACION-RESILIENCIA-AZURE.md) |
-| Impl. AWS | [aws/IMPLEMENTACION-RESILIENCIA-AWS.md](../../../Documentación del Proyecto/resiliencia/aws/IMPLEMENTACION-RESILIENCIA-AWS.md) |
-| Teoría | [TEORIA-RESILIENCIA.md](../../../Documentación del Proyecto/resiliencia/TEORIA-RESILIENCIA.md) |
+| **A — Negocio** | [REQUERIMIENTOS-RESILIENCIA.md](../../../Documentación_Del_Proyecto/resiliencia/REQUERIMIENTOS-RESILIENCIA.md) |
+| **A — Negocio** | [HISTORIAS-USUARIO-RESILIENCIA.md](../../../Documentación_Del_Proyecto/resiliencia/HISTORIAS-USUARIO-RESILIENCIA.md) |
+| **B — Técnica** | [ANEXO-ESPECIFICACION-TECNICA-RESILIENCIA.md](../../../Documentación_Del_Proyecto/resiliencia/ANEXO-ESPECIFICACION-TECNICA-RESILIENCIA.md) |
+| **B — Técnica** | [ANEXO-HISTORIAS-TECNICAS-RESILIENCIA.md](../../../Documentación_Del_Proyecto/resiliencia/ANEXO-HISTORIAS-TECNICAS-RESILIENCIA.md) |
+| **C — Pedagogía** | [ANEXO-PEDAGOGIA-RESILIENCIA.md](../../../Documentación_Del_Proyecto/resiliencia/ANEXO-PEDAGOGIA-RESILIENCIA.md) |
+| Impl. Azure | [azure/IMPLEMENTACION-RESILIENCIA-AZURE.md](../../../Documentación_Del_Proyecto/resiliencia/azure/IMPLEMENTACION-RESILIENCIA-AZURE.md) |
+| Impl. AWS | [aws/IMPLEMENTACION-RESILIENCIA-AWS.md](../../../Documentación_Del_Proyecto/resiliencia/aws/IMPLEMENTACION-RESILIENCIA-AWS.md) |
+| Teoría | [TEORIA-RESILIENCIA.md](../../../Documentación_Del_Proyecto/resiliencia/TEORIA-RESILIENCIA.md) |
 
-Guía: [GUIA-ESTRUCTURA-DOCUMENTACION.md](../../../Documentación del Proyecto/GUIA-ESTRUCTURA-DOCUMENTACION.md)
+Guía: [GUIA-ESTRUCTURA-DOCUMENTACION.md](../../../Documentación_Del_Proyecto/GUIA-ESTRUCTURA-DOCUMENTACION.md)
 
 ## Alcance (agente)
 

@@ -11,7 +11,7 @@ Get-ChildItem -LiteralPath $RepoRoot -Recurse -File | Where-Object {
 } | ForEach-Object {
     $c = [IO.File]::ReadAllText($_.FullName)
     if (-not $c.Contains('DocumentaciÃ³n')) { return }
-    $n = $c.Replace('DocumentaciÃ³n de Estudio del Curso', 'Documentación de Estudio del Curso')
+    $n = $c.Replace('Documentación_De_Estudio_Del_Curso', 'Documentación_De_Estudio_Del_Curso')
     $n = $n.Replace('DocumentaciÃ³n', 'Documentación')
     if ($n -ne $c) {
         [IO.File]::WriteAllText($_.FullName, $n, $utf8)

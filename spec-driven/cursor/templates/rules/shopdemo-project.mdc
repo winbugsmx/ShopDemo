@@ -6,7 +6,7 @@ alwaysApply: true
 # ShopDemo core
 
 - Read `spec-driven/specs/<relevant>/SPEC.md` before implementation.
-- Course documentation lives under `Documentación del Proyecto/` (Spanish). Link to it when explaining.
+- Course documentation lives under `Documentación_Del_Proyecto/` (Spanish). Link to it when explaining.
 - Solution file: `Source/ShopDemo.slnx`. Target framework: net10.0.
 - Never commit secrets. Use `.env.example` patterns only in repo.
 - User communication: Spanish. Identifiers and rules: English.

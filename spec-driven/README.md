@@ -14,7 +14,7 @@ Estructura versionada para desarrollo guiado por especificaciones con **Cursor**
 | **B — Técnica** | [ANEXO-HISTORIAS-TECNICAS-SPEC-DRIVEN.md](./ANEXO-HISTORIAS-TECNICAS-SPEC-DRIVEN.md) | Alumno |
 | **C — Pedagogía** | [ANEXO-PEDAGOGIA-SPEC-DRIVEN.md](./ANEXO-PEDAGOGIA-SPEC-DRIVEN.md) | Instructor / alumno |
 
-**Guía:** [GUIA-ESTRUCTURA-DOCUMENTACION.md](../Documentación del Proyecto/GUIA-ESTRUCTURA-DOCUMENTACION.md)
+**Guía:** [GUIA-ESTRUCTURA-DOCUMENTACION.md](../Documentación_Del_Proyecto/GUIA-ESTRUCTURA-DOCUMENTACION.md)
 
 ---
 
@@ -23,11 +23,11 @@ Estructura versionada para desarrollo guiado por especificaciones con **Cursor**
 | Tipo | Enlace |
 |---|---|
 | Teoría lab | [TEORIA-SPEC-DRIVEN-DEVELOPMENT.md](./TEORIA-SPEC-DRIVEN-DEVELOPMENT.md) |
-| Tópico 12 (IA/MCP) | [12-integracion-ia-mcp.md](../Documentación de Estudio del Curso/12-integracion-ia-mcp.md) |
-| Tópico 13 (síntesis) | [13-sintesis-integracion.md](../Documentación de Estudio del Curso/13-sintesis-integracion.md) |
+| Tópico 12 (IA/MCP) | [12-integracion-ia-mcp.md](../Documentación_De_Estudio_Del_Curso/12-integracion-ia-mcp.md) |
+| Tópico 13 (síntesis) | [13-sintesis-integracion.md](../Documentación_De_Estudio_Del_Curso/13-sintesis-integracion.md) |
 | Implementación | [IMPLEMENTACION-SPEC-DRIVEN-DEVELOPMENT.md](./IMPLEMENTACION-SPEC-DRIVEN-DEVELOPMENT.md) |
 | Specs por módulo | [specs/](./specs/) |
-| Tópicos de Estudio (índice) | [DocumentaciÃ³n de Estudio del Curso/README.md](../Documentación de Estudio del Curso/README.md) |
+| Tópicos de Estudio (índice) | [Documentación_De_Estudio_Del_Curso/README.md](../Documentación_De_Estudio_Del_Curso/README.md) |
 
 ---
 

@@ -2,28 +2,28 @@ param(
     [string]$RepoRoot = (Resolve-Path (Join-Path $PSScriptRoot '..\..')).Path
 )
 
-$NewFolder = 'Documentación de Estudio del Curso'
+$NewFolder = 'Documentación_De_Estudio_Del_Curso'
 
 function Invoke-FixText([string]$text) {
     $pairs = @(
-        @('../../../../Documentación del Proyecto/DocumentaciÃ³n de Estudio del Curso/', "../../../../$NewFolder/"),
-        @('../../../Documentación del Proyecto/DocumentaciÃ³n de Estudio del Curso/', "../../../$NewFolder/"),
-        @('../../Documentación del Proyecto/DocumentaciÃ³n de Estudio del Curso/', "../../$NewFolder/"),
-        @('../Documentación del Proyecto/DocumentaciÃ³n de Estudio del Curso/', "../$NewFolder/"),
-        @('Documentación del Proyecto/DocumentaciÃ³n de Estudio del Curso/', "$NewFolder/"),
+        @('../../../../Documentación_Del_Proyecto/Documentación_De_Estudio_Del_Curso/', "../../../../$NewFolder/"),
+        @('../../../Documentación_Del_Proyecto/Documentación_De_Estudio_Del_Curso/', "../../../$NewFolder/"),
+        @('../../Documentación_Del_Proyecto/Documentación_De_Estudio_Del_Curso/', "../../$NewFolder/"),
+        @('../Documentación_Del_Proyecto/Documentación_De_Estudio_Del_Curso/', "../$NewFolder/"),
+        @('Documentación_Del_Proyecto/Documentación_De_Estudio_Del_Curso/', "$NewFolder/"),
         @('Documentación\teoria-entrevistas\', "$NewFolder\"),
-        @('I:\Curso\ShopDemo\Documentación del Proyecto\teoria-entrevistas\', "I:\Curso\ShopDemo\$NewFolder\"),
-        @('I:\Curso\ShopDemo\Documentación del Proyecto\DocumentaciÃ³n de Estudio del Curso/', "I:\Curso\ShopDemo/$NewFolder/"),
-        @('ShopDemo\Documentación del Proyecto\teoria-entrevistas\', "ShopDemo\$NewFolder\"),
-        @('ShopDemo/Documentación del Proyecto/DocumentaciÃ³n de Estudio del Curso/', "ShopDemo/$NewFolder/"),
-        @('../../../../../DocumentaciÃ³n de Estudio del Curso/', "../../../../../$NewFolder/"),
-        @('../../../../DocumentaciÃ³n de Estudio del Curso/', "../../../../$NewFolder/"),
-        @('../../../DocumentaciÃ³n de Estudio del Curso/', "../../../$NewFolder/"),
-        @('../../DocumentaciÃ³n de Estudio del Curso/', "../../$NewFolder/"),
-        @('DocumentaciÃ³n de Estudio del Curso/', "$NewFolder/"),
+        @('I:\Curso\ShopDemo\Documentación_Del_Proyecto\teoria-entrevistas\', "I:\Curso\ShopDemo\$NewFolder\"),
+        @('I:\Curso\ShopDemo\Documentación_Del_Proyecto\Documentación_De_Estudio_Del_Curso/', "I:\Curso\ShopDemo/$NewFolder/"),
+        @('ShopDemo\Documentación_Del_Proyecto\teoria-entrevistas\', "ShopDemo\$NewFolder\"),
+        @('ShopDemo/Documentación_Del_Proyecto/Documentación_De_Estudio_Del_Curso/', "ShopDemo/$NewFolder/"),
+        @('../../../../../Documentación_De_Estudio_Del_Curso/', "../../../../../$NewFolder/"),
+        @('../../../../Documentación_De_Estudio_Del_Curso/', "../../../../$NewFolder/"),
+        @('../../../Documentación_De_Estudio_Del_Curso/', "../../../$NewFolder/"),
+        @('../../Documentación_De_Estudio_Del_Curso/', "../../$NewFolder/"),
+        @('Documentación_De_Estudio_Del_Curso/', "$NewFolder/"),
         @("Join-Path `$Root 'Documentación\teoria-entrevistas", "Join-Path `$Root '$NewFolder"),
-        @("Join-Path `$Root 'Documentación del Proyecto/teoria-entrevistas", "Join-Path `$Root '$NewFolder"),
-        @('globs: Documentación del Proyecto/DocumentaciÃ³n de Estudio del Curso/**', "globs: $NewFolder/**"),
+        @("Join-Path `$Root 'Documentación_Del_Proyecto/teoria-entrevistas", "Join-Path `$Root '$NewFolder"),
+        @('globs: Documentación_Del_Proyecto/Documentación_De_Estudio_Del_Curso/**', "globs: $NewFolder/**"),
         @('globs: Documentación\teoria-entrevistas\**', "globs: $NewFolder/**")
     )
 

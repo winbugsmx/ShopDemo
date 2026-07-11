@@ -32,4 +32,4 @@ alwaysApply: false
 - Event Hubs: siempre Azure (cross-cloud en AWS).
 - Mensajes post-script deben apuntar a `k8s/{azure|aws}/`, no a `k8s/catalog/` completo.
 
-Al cambiar scripts, actualizar `Source/scripts/*/README.md` y guías Script en `Documentación del Proyecto/despliegue/`.
+Al cambiar scripts, actualizar `Source/scripts/*/README.md` y guías Script en `Documentación_Del_Proyecto/despliegue/`.

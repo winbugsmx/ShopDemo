@@ -65,7 +65,7 @@ flowchart TB
 | **Aspire** | AppHost, ServiceDefaults, Analytics |
 | **AI** | MCP Gateway HTTP (`/mcp`) para herramientas de agentes |
 
-**Documentación técnica completa:** [Documentación del Proyecto/ARQUITECTURA.md](Documentación del Proyecto/ARQUITECTURA.md)
+**Documentación técnica completa:** [Documentación_Del_Proyecto/ARQUITECTURA.md](Documentación_Del_Proyecto/ARQUITECTURA.md)
 
 ---
 
@@ -79,7 +79,7 @@ Cada módulo del curso separa **negocio**, **especificación técnica** y **peda
 | **B — Técnica** | `ANEXO-ESPECIFICACION-TECNICA-*.md`, `ANEXO-HISTORIAS-TECNICAS-*.md` | Desarrollador implementador |
 | **C — Pedagogía** | `ANEXO-PEDAGOGIA-*.md` | Instructor y alumno del curso |
 
-**Guía completa:** [Documentación del Proyecto/GUIA-ESTRUCTURA-DOCUMENTACION.md](Documentación del Proyecto/GUIA-ESTRUCTURA-DOCUMENTACION.md)
+**Guía completa:** [Documentación_Del_Proyecto/GUIA-ESTRUCTURA-DOCUMENTACION.md](Documentación_Del_Proyecto/GUIA-ESTRUCTURA-DOCUMENTACION.md)
 
 **Orden sugerido (alumno):** Requerimientos (negocio) → Historias → Anexo técnico → Implementación → Anexo pedagogía.
 
@@ -87,33 +87,33 @@ Cada módulo del curso separa **negocio**, **especificación técnica** y **peda
 
 ## Etapas del curso (roadmap)
 
-Cada etapa tiene documentación en **3 capas**: **requerimientos de negocio** (qué debe lograr el sistema), **anexos técnicos** (cómo implementarlo) e **implementación** (paso a paso). Ver [GUIA-ESTRUCTURA-DOCUMENTACION.md](Documentación del Proyecto/GUIA-ESTRUCTURA-DOCUMENTACION.md).
+Cada etapa tiene documentación en **3 capas**: **requerimientos de negocio** (qué debe lograr el sistema), **anexos técnicos** (cómo implementarlo) e **implementación** (paso a paso). Ver [GUIA-ESTRUCTURA-DOCUMENTACION.md](Documentación_Del_Proyecto/GUIA-ESTRUCTURA-DOCUMENTACION.md).
 
-**Guía de desarrollo con código para copiar/integrar (recomendada para alumnos):** [GUIA-DESARROLLO-INTEGRACIONES.md](Documentación del Proyecto/GUIA-DESARROLLO-INTEGRACIONES.md) — paso a paso por etapa, anexos con `.cs` completos y checklist de validación.
+**Guía de desarrollo con código para copiar/integrar (recomendada para alumnos):** [GUIA-DESARROLLO-INTEGRACIONES.md](Documentación_Del_Proyecto/GUIA-DESARROLLO-INTEGRACIONES.md) — paso a paso por etapa, anexos con `.cs` completos y checklist de validación.
 
 | Etapa | Tema | Requerimientos | Implementación | Cómo validar |
 |---|---|---|---|---|
-| **0** | Visión y endpoints | — | [GUIA-ENDPOINTS](Documentación del Proyecto/GUIA-ENDPOINTS.md) | Postman E2E |
-| **1** | Catalog (Clean + CQRS) | [REQUERIMIENTOS-CATALOG](Documentación del Proyecto/catalog/REQUERIMIENTOS-CATALOG.md) | [IMPLEMENTACION-CATALOG](Documentación del Proyecto/catalog/IMPLEMENTACION-CATALOG.md) | `POST /api/products` |
-| **2** | Orders (Clean + CQRS) | [REQUERIMIENTOS-ORDERS](Documentación del Proyecto/orders/REQUERIMIENTOS-ORDERS.md) | [IMPLEMENTACION-ORDERS](Documentación del Proyecto/orders/IMPLEMENTACION-ORDERS.md) | Crear y confirmar pedido |
-| **3** | Inventory (Hexagonal) | [REQUERIMIENTOS-INVENTORY](Documentación del Proyecto/inventory/REQUERIMIENTOS-INVENTORY.md) | [IMPLEMENTACION-INVENTORY](Documentación del Proyecto/inventory/IMPLEMENTACION-INVENTORY.md) | Stock y reservas |
-| **4** | Integración E2E | [GUIA-ENDPOINTS](Documentación del Proyecto/GUIA-ENDPOINTS.md) | [ARQUITECTURA §4](Documentación del Proyecto/ARQUITECTURA.md#4-integración-entre-bounded-contexts) | Flujo compra completo |
-| **5** | Azure Event Hubs | [INTEGRACION-AZURE-EVENT-HUBS](Documentación del Proyecto/INTEGRACION-AZURE-EVENT-HUBS.md) | Mismo doc (paso a paso) | Auto-stock + eventos en log |
-| **6** | Aspire + Analytics | [REQUERIMIENTOS-ANALYTICS-ASPIRE](Documentación del Proyecto/analytics/REQUERIMIENTOS-ANALYTICS-ASPIRE.md) | [IMPLEMENTACION-ANALYTICS-ASPIRE](Documentación del Proyecto/analytics/IMPLEMENTACION-ANALYTICS-ASPIRE.md) | `GET /api/analytics/events` |
-| **7** | Docker → Azure | [REQUERIMIENTOS-DESPLIEGUE-AZURE](Documentación del Proyecto/despliegue/azure/REQUERIMIENTOS-DESPLIEGUE-AZURE.md) | [IMPLEMENTACION-DESPLIEGUE-AZURE](Documentación del Proyecto/despliegue/azure/IMPLEMENTACION-DESPLIEGUE-AZURE.md) · [Script/CLI/Portal](Documentación del Proyecto/despliegue/azure/GUIA-RELEASE-SCRIPT-AZURE.md) | Swagger en 5 Container Apps |
-| **8** | Docker → AWS | [REQUERIMIENTOS-DESPLIEGUE-AWS](Documentación del Proyecto/despliegue/aws/REQUERIMIENTOS-DESPLIEGUE-AWS.md) | [IMPLEMENTACION-DESPLIEGUE-AWS](Documentación del Proyecto/despliegue/aws/IMPLEMENTACION-DESPLIEGUE-AWS.md) · [Script/CLI/Portal](Documentación del Proyecto/despliegue/aws/GUIA-RELEASE-SCRIPT-AWS.md) | Swagger en ALB ECS |
-| **9** | Kubernetes local (Minikube) | [REQUERIMIENTOS-KUBERNETES](Documentación del Proyecto/despliegue/kubernetes/REQUERIMIENTOS-KUBERNETES.md) | [IMPLEMENTACION-KUBERNETES-LOCAL](Documentación del Proyecto/despliegue/kubernetes/IMPLEMENTACION-KUBERNETES-LOCAL.md) · [Teoría K8s](Documentación del Proyecto/despliegue/kubernetes/TEORIA-KUBERNETES-OPERACIONES.md) | `kubectl get hpa -n shopdemo` |
-| **10** | Azure AKS | [REQUERIMIENTOS-DESPLIEGUE-AKS](Documentación del Proyecto/despliegue/aks/REQUERIMIENTOS-DESPLIEGUE-AKS.md) | [IMPLEMENTACION-DESPLIEGUE-AKS](Documentación del Proyecto/despliegue/aks/IMPLEMENTACION-DESPLIEGUE-AKS.md) · [Script `-Mode AKS`](Source/scripts/azure/README.md) | Swagger vía Ingress o LB `:8080` |
-| **11** | Amazon EKS | [REQUERIMIENTOS-DESPLIEGUE-EKS](Documentación del Proyecto/despliegue/eks/REQUERIMIENTOS-DESPLIEGUE-EKS.md) | [IMPLEMENTACION-DESPLIEGUE-EKS](Documentación del Proyecto/despliegue/eks/IMPLEMENTACION-DESPLIEGUE-EKS.md) · [Script `-Mode EKS`](Source/scripts/aws/README.md) | Swagger vía LB `:8080` (perfil free-tier) |
-| **12** | Observabilidad | [REQUERIMIENTOS-OBSERVABILIDAD](Documentación del Proyecto/observabilidad/REQUERIMIENTOS-OBSERVABILIDAD.md) | [Azure](Documentación del Proyecto/observabilidad/azure/IMPLEMENTACION-OBSERVABILIDAD-AZURE.md) · [AWS](Documentación del Proyecto/observabilidad/aws/IMPLEMENTACION-OBSERVABILIDAD-AWS.md) | Logs + alerta + traceId |
-| **13** | Resiliencia | [REQUERIMIENTOS-RESILIENCIA](Documentación del Proyecto/resiliencia/REQUERIMIENTOS-RESILIENCIA.md) | [Azure](Documentación del Proyecto/resiliencia/azure/IMPLEMENTACION-RESILIENCIA-AZURE.md) · [AWS](Documentación del Proyecto/resiliencia/aws/IMPLEMENTACION-RESILIENCIA-AWS.md) | Recuperación tras fallo de pod/tarea |
-| **14** | Integración IA | [REQUERIMIENTOS-INTEGRACION-IA](Documentación del Proyecto/integracion-ia/REQUERIMIENTOS-INTEGRACION-IA.md) | [IMPLEMENTACION-MCP-GATEWAY](Documentación del Proyecto/integracion-ia/IMPLEMENTACION-MCP-GATEWAY.md) · [Azure](Documentación del Proyecto/integracion-ia/azure/IMPLEMENTACION-INTEGRACION-IA-AZURE.md) · [AWS](Documentación del Proyecto/integracion-ia/aws/IMPLEMENTACION-INTEGRACION-IA-AWS.md) | MCP tool + alerta KQL/Insights |
-| **14b** | Despliegue MCP Gateway | [REQUERIMIENTOS-DESPLIEGUE-MCP](Documentación del Proyecto/integracion-ia/REQUERIMIENTOS-DESPLIEGUE-MCP.md) | [Azure ACA/AKS](Documentación del Proyecto/integracion-ia/IMPLEMENTACION-DESPLIEGUE-MCP-AZURE.md) · [AWS ECS/EKS](Documentación del Proyecto/integracion-ia/IMPLEMENTACION-DESPLIEGUE-MCP-AWS.md) | `curl .../mcp` + agente |
+| **0** | Visión y endpoints | — | [GUIA-ENDPOINTS](Documentación_Del_Proyecto/GUIA-ENDPOINTS.md) | Postman E2E |
+| **1** | Catalog (Clean + CQRS) | [REQUERIMIENTOS-CATALOG](Documentación_Del_Proyecto/catalog/REQUERIMIENTOS-CATALOG.md) | [IMPLEMENTACION-CATALOG](Documentación_Del_Proyecto/catalog/IMPLEMENTACION-CATALOG.md) | `POST /api/products` |
+| **2** | Orders (Clean + CQRS) | [REQUERIMIENTOS-ORDERS](Documentación_Del_Proyecto/orders/REQUERIMIENTOS-ORDERS.md) | [IMPLEMENTACION-ORDERS](Documentación_Del_Proyecto/orders/IMPLEMENTACION-ORDERS.md) | Crear y confirmar pedido |
+| **3** | Inventory (Hexagonal) | [REQUERIMIENTOS-INVENTORY](Documentación_Del_Proyecto/inventory/REQUERIMIENTOS-INVENTORY.md) | [IMPLEMENTACION-INVENTORY](Documentación_Del_Proyecto/inventory/IMPLEMENTACION-INVENTORY.md) | Stock y reservas |
+| **4** | Integración E2E | [GUIA-ENDPOINTS](Documentación_Del_Proyecto/GUIA-ENDPOINTS.md) | [ARQUITECTURA §4](Documentación_Del_Proyecto/ARQUITECTURA.md#4-integración-entre-bounded-contexts) | Flujo compra completo |
+| **5** | Azure Event Hubs | [INTEGRACION-AZURE-EVENT-HUBS](Documentación_Del_Proyecto/INTEGRACION-AZURE-EVENT-HUBS.md) | Mismo doc (paso a paso) | Auto-stock + eventos en log |
+| **6** | Aspire + Analytics | [REQUERIMIENTOS-ANALYTICS-ASPIRE](Documentación_Del_Proyecto/analytics/REQUERIMIENTOS-ANALYTICS-ASPIRE.md) | [IMPLEMENTACION-ANALYTICS-ASPIRE](Documentación_Del_Proyecto/analytics/IMPLEMENTACION-ANALYTICS-ASPIRE.md) | `GET /api/analytics/events` |
+| **7** | Docker → Azure | [REQUERIMIENTOS-DESPLIEGUE-AZURE](Documentación_Del_Proyecto/despliegue/azure/REQUERIMIENTOS-DESPLIEGUE-AZURE.md) | [IMPLEMENTACION-DESPLIEGUE-AZURE](Documentación_Del_Proyecto/despliegue/azure/IMPLEMENTACION-DESPLIEGUE-AZURE.md) · [Script/CLI/Portal](Documentación_Del_Proyecto/despliegue/azure/GUIA-RELEASE-SCRIPT-AZURE.md) | Swagger en 5 Container Apps |
+| **8** | Docker → AWS | [REQUERIMIENTOS-DESPLIEGUE-AWS](Documentación_Del_Proyecto/despliegue/aws/REQUERIMIENTOS-DESPLIEGUE-AWS.md) | [IMPLEMENTACION-DESPLIEGUE-AWS](Documentación_Del_Proyecto/despliegue/aws/IMPLEMENTACION-DESPLIEGUE-AWS.md) · [Script/CLI/Portal](Documentación_Del_Proyecto/despliegue/aws/GUIA-RELEASE-SCRIPT-AWS.md) | Swagger en ALB ECS |
+| **9** | Kubernetes local (Minikube) | [REQUERIMIENTOS-KUBERNETES](Documentación_Del_Proyecto/despliegue/kubernetes/REQUERIMIENTOS-KUBERNETES.md) | [IMPLEMENTACION-KUBERNETES-LOCAL](Documentación_Del_Proyecto/despliegue/kubernetes/IMPLEMENTACION-KUBERNETES-LOCAL.md) · [Teoría K8s](Documentación_Del_Proyecto/despliegue/kubernetes/TEORIA-KUBERNETES-OPERACIONES.md) | `kubectl get hpa -n shopdemo` |
+| **10** | Azure AKS | [REQUERIMIENTOS-DESPLIEGUE-AKS](Documentación_Del_Proyecto/despliegue/aks/REQUERIMIENTOS-DESPLIEGUE-AKS.md) | [IMPLEMENTACION-DESPLIEGUE-AKS](Documentación_Del_Proyecto/despliegue/aks/IMPLEMENTACION-DESPLIEGUE-AKS.md) · [Script `-Mode AKS`](Source/scripts/azure/README.md) | Swagger vía Ingress o LB `:8080` |
+| **11** | Amazon EKS | [REQUERIMIENTOS-DESPLIEGUE-EKS](Documentación_Del_Proyecto/despliegue/eks/REQUERIMIENTOS-DESPLIEGUE-EKS.md) | [IMPLEMENTACION-DESPLIEGUE-EKS](Documentación_Del_Proyecto/despliegue/eks/IMPLEMENTACION-DESPLIEGUE-EKS.md) · [Script `-Mode EKS`](Source/scripts/aws/README.md) | Swagger vía LB `:8080` (perfil free-tier) |
+| **12** | Observabilidad | [REQUERIMIENTOS-OBSERVABILIDAD](Documentación_Del_Proyecto/observabilidad/REQUERIMIENTOS-OBSERVABILIDAD.md) | [Azure](Documentación_Del_Proyecto/observabilidad/azure/IMPLEMENTACION-OBSERVABILIDAD-AZURE.md) · [AWS](Documentación_Del_Proyecto/observabilidad/aws/IMPLEMENTACION-OBSERVABILIDAD-AWS.md) | Logs + alerta + traceId |
+| **13** | Resiliencia | [REQUERIMIENTOS-RESILIENCIA](Documentación_Del_Proyecto/resiliencia/REQUERIMIENTOS-RESILIENCIA.md) | [Azure](Documentación_Del_Proyecto/resiliencia/azure/IMPLEMENTACION-RESILIENCIA-AZURE.md) · [AWS](Documentación_Del_Proyecto/resiliencia/aws/IMPLEMENTACION-RESILIENCIA-AWS.md) | Recuperación tras fallo de pod/tarea |
+| **14** | Integración IA | [REQUERIMIENTOS-INTEGRACION-IA](Documentación_Del_Proyecto/integracion-ia/REQUERIMIENTOS-INTEGRACION-IA.md) | [IMPLEMENTACION-MCP-GATEWAY](Documentación_Del_Proyecto/integracion-ia/IMPLEMENTACION-MCP-GATEWAY.md) · [Azure](Documentación_Del_Proyecto/integracion-ia/azure/IMPLEMENTACION-INTEGRACION-IA-AZURE.md) · [AWS](Documentación_Del_Proyecto/integracion-ia/aws/IMPLEMENTACION-INTEGRACION-IA-AWS.md) | MCP tool + alerta KQL/Insights |
+| **14b** | Despliegue MCP Gateway | [REQUERIMIENTOS-DESPLIEGUE-MCP](Documentación_Del_Proyecto/integracion-ia/REQUERIMIENTOS-DESPLIEGUE-MCP.md) | [Azure ACA/AKS](Documentación_Del_Proyecto/integracion-ia/IMPLEMENTACION-DESPLIEGUE-MCP-AZURE.md) · [AWS ECS/EKS](Documentación_Del_Proyecto/integracion-ia/IMPLEMENTACION-DESPLIEGUE-MCP-AWS.md) | `curl .../mcp` + agente |
 | **15** | Spec-driven (Cursor + Claude Code) | [REQUERIMIENTOS-SPEC-DRIVEN](spec-driven/REQUERIMIENTOS-SPEC-DRIVEN-DEVELOPMENT.md) | [IMPLEMENTACION-SPEC-DRIVEN](spec-driven/IMPLEMENTACION-SPEC-DRIVEN-DEVELOPMENT.md) | Agente sigue `spec-driven/specs/<módulo>/SPEC.md` |
 
-**Tópicos de Estudio (teoría general):** [Índice — 13 tópicos](Documentación de Estudio del Curso/README.md) (patrones, arquitectura, DDD, microservicios, Azure, AWS, contenedores/Docker, K8s, CI/CD, observabilidad, resiliencia, IA/MCP, síntesis)
+**Tópicos de Estudio (teoría general):** [Índice — 13 tópicos](Documentación_De_Estudio_Del_Curso/README.md) (patrones, arquitectura, DDD, microservicios, Azure, AWS, contenedores/Docker, K8s, CI/CD, observabilidad, resiliencia, IA/MCP, síntesis)
 
-**Teoría práctica ShopDemo (lab):** [Docker/K8s/AOT](Documentación del Proyecto/TEORIA-DOCKER-KUBERNETES-AOT.md) · [Observabilidad](Documentación del Proyecto/observabilidad/TEORIA-OBSERVABILIDAD.md) · [Resiliencia](Documentación del Proyecto/resiliencia/TEORIA-RESILIENCIA.md) · [Integración IA](Documentación del Proyecto/integracion-ia/TEORIA-INTEGRACION-IA.md) · [Spec-driven](spec-driven/TEORIA-SPEC-DRIVEN-DEVELOPMENT.md) · [AKS](Documentación del Proyecto/despliegue/aks/TEORIA-AKS.md) · [EKS](Documentación del Proyecto/despliegue/eks/TEORIA-EKS.md) · [Azure ACA](Documentación del Proyecto/despliegue/azure/TEORIA-CONTENEDORES-AZURE.md) · [AWS ECS](Documentación del Proyecto/despliegue/aws/TEORIA-CONTENEDORES-AWS.md)
+**Teoría práctica ShopDemo (lab):** [Docker/K8s/AOT](Documentación_Del_Proyecto/TEORIA-DOCKER-KUBERNETES-AOT.md) · [Observabilidad](Documentación_Del_Proyecto/observabilidad/TEORIA-OBSERVABILIDAD.md) · [Resiliencia](Documentación_Del_Proyecto/resiliencia/TEORIA-RESILIENCIA.md) · [Integración IA](Documentación_Del_Proyecto/integracion-ia/TEORIA-INTEGRACION-IA.md) · [Spec-driven](spec-driven/TEORIA-SPEC-DRIVEN-DEVELOPMENT.md) · [AKS](Documentación_Del_Proyecto/despliegue/aks/TEORIA-AKS.md) · [EKS](Documentación_Del_Proyecto/despliegue/eks/TEORIA-EKS.md) · [Azure ACA](Documentación_Del_Proyecto/despliegue/azure/TEORIA-CONTENEDORES-AZURE.md) · [AWS ECS](Documentación_Del_Proyecto/despliegue/aws/TEORIA-CONTENEDORES-AWS.md)
 
 ---
 
@@ -131,8 +131,8 @@ Cada plataforma tiene **Script**, **CLI** y **Portal** con el mismo alcance. El 
 
 | Nube | Preparación | Script (recomendado) | CLI manual | Portal visual |
 |---|---|---|---|---|
-| **Azure** | [PREPARACION-AMBIENTE-AZURE](Documentación del Proyecto/despliegue/azure/PREPARACION-AMBIENTE-AZURE.md) | [GUIA-RELEASE-SCRIPT-AZURE](Documentación del Proyecto/despliegue/azure/GUIA-RELEASE-SCRIPT-AZURE.md) | [GUIA-RELEASE-CLI-AZURE](Documentación del Proyecto/despliegue/azure/GUIA-RELEASE-CLI-AZURE.md) | [GUIA-RELEASE-PORTAL-AZURE](Documentación del Proyecto/despliegue/azure/GUIA-RELEASE-PORTAL-AZURE.md) |
-| **AWS** | [PREPARACION-AMBIENTE-AWS](Documentación del Proyecto/despliegue/aws/PREPARACION-AMBIENTE-AWS.md) | [GUIA-RELEASE-SCRIPT-AWS](Documentación del Proyecto/despliegue/aws/GUIA-RELEASE-SCRIPT-AWS.md) | [GUIA-RELEASE-CLI-AWS](Documentación del Proyecto/despliegue/aws/GUIA-RELEASE-CLI-AWS.md) | [GUIA-RELEASE-PORTAL-AWS](Documentación del Proyecto/despliegue/aws/GUIA-RELEASE-PORTAL-AWS.md) |
+| **Azure** | [PREPARACION-AMBIENTE-AZURE](Documentación_Del_Proyecto/despliegue/azure/PREPARACION-AMBIENTE-AZURE.md) | [GUIA-RELEASE-SCRIPT-AZURE](Documentación_Del_Proyecto/despliegue/azure/GUIA-RELEASE-SCRIPT-AZURE.md) | [GUIA-RELEASE-CLI-AZURE](Documentación_Del_Proyecto/despliegue/azure/GUIA-RELEASE-CLI-AZURE.md) | [GUIA-RELEASE-PORTAL-AZURE](Documentación_Del_Proyecto/despliegue/azure/GUIA-RELEASE-PORTAL-AZURE.md) |
+| **AWS** | [PREPARACION-AMBIENTE-AWS](Documentación_Del_Proyecto/despliegue/aws/PREPARACION-AMBIENTE-AWS.md) | [GUIA-RELEASE-SCRIPT-AWS](Documentación_Del_Proyecto/despliegue/aws/GUIA-RELEASE-SCRIPT-AWS.md) | [GUIA-RELEASE-CLI-AWS](Documentación_Del_Proyecto/despliegue/aws/GUIA-RELEASE-CLI-AWS.md) | [GUIA-RELEASE-PORTAL-AWS](Documentación_Del_Proyecto/despliegue/aws/GUIA-RELEASE-PORTAL-AWS.md) |
 | **Kubernetes** | Manifiestos `k8s/` | Script `-Mode AKS` / `-Mode EKS` | Secciones AKS/EKS en guías CLI | Secciones AKS/EKS en guías Portal |
 
 **Reportes de release validados (lab):** [AKS](Source/scripts/azure/deploy-aks-report.json) · [EKS free-tier](Source/scripts/aws/deploy-eks-free-tier-report.json) · [EKS completo](Source/scripts/aws/deploy-eks-report.json)
@@ -219,7 +219,7 @@ docker --version            # Docker Desktop en ejecución
 | Analytics | http://localhost:8004 | http://localhost:8004/swagger | http://localhost:8004/health |
 | MCP Gateway | http://localhost:8005/mcp | — | http://localhost:8005/health |
 
-> **Postman:** importa [ShopDemo.postman_collection.json](Documentación del Proyecto/ShopDemo.postman_collection.json) — las variables ya apuntan a `localhost`. Ver [Configurar Postman](#configurar-postman-según-entorno).
+> **Postman:** importa [ShopDemo.postman_collection.json](Documentación_Del_Proyecto/ShopDemo.postman_collection.json) — las variables ya apuntan a `localhost`. Ver [Configurar Postman](#configurar-postman-según-entorno).
 
 ---
 
@@ -247,7 +247,7 @@ curl http://localhost:8004/health   # si Analytics está activo
 curl http://localhost:8005/health   # si MCP está activo
 ```
 
-**Event Hubs (opcional):** edita `.env` en cada API con `EVENT_HUBS_ENABLED=true` y la connection string. Guía: [INTEGRACION-AZURE-EVENT-HUBS.md](Documentación del Proyecto/INTEGRACION-AZURE-EVENT-HUBS.md).
+**Event Hubs (opcional):** edita `.env` en cada API con `EVENT_HUBS_ENABLED=true` y la connection string. Guía: [INTEGRACION-AZURE-EVENT-HUBS.md](Documentación_Del_Proyecto/INTEGRACION-AZURE-EVENT-HUBS.md).
 
 **Detener:** `Ctrl+C` en cada terminal o `docker compose down`.
 
@@ -265,7 +265,7 @@ curl http://localhost:8005/health   # si MCP está activo
 
 Los puertos siguen siendo **8001–8004**. El AppHost inyecta `EventHubs__*` y la URL de Inventory para Orders.
 
-Guía: [IMPLEMENTACION-ANALYTICS-ASPIRE.md](Documentación del Proyecto/analytics/IMPLEMENTACION-ANALYTICS-ASPIRE.md)
+Guía: [IMPLEMENTACION-ANALYTICS-ASPIRE.md](Documentación_Del_Proyecto/analytics/IMPLEMENTACION-ANALYTICS-ASPIRE.md)
 
 ---
 
@@ -296,7 +296,7 @@ dotnet run --project Source/AI/ShopDemo.Mcp.Api    # etapa 14+; requiere 8001, 8
 | 3 | `dotnet run --project Source/AI/ShopDemo.Mcp.Api` o `docker compose up --build` |
 | 4 | Probar: `curl http://localhost:8005/health` y endpoint MCP `http://localhost:8005/mcp` |
 
-Guía: [Documentación del Proyecto/integracion-ia/README.md](Documentación del Proyecto/integracion-ia/README.md) · Despliegue nube: [Azure](Documentación del Proyecto/integracion-ia/IMPLEMENTACION-DESPLIEGUE-MCP-AZURE.md) · [AWS](Documentación del Proyecto/integracion-ia/IMPLEMENTACION-DESPLIEGUE-MCP-AWS.md)
+Guía: [Documentación_Del_Proyecto/integracion-ia/README.md](Documentación_Del_Proyecto/integracion-ia/README.md) · Despliegue nube: [Azure](Documentación_Del_Proyecto/integracion-ia/IMPLEMENTACION-DESPLIEGUE-MCP-AZURE.md) · [AWS](Documentación_Del_Proyecto/integracion-ia/IMPLEMENTACION-DESPLIEGUE-MCP-AWS.md)
 
 ---
 
@@ -310,7 +310,7 @@ Guía: [Documentación del Proyecto/integracion-ia/README.md](Documentación del
 | 2 | Build imágenes en daemon Minikube (`minikube docker-env`) |
 | 3 | `apply-k8s-manifests.sh k8s local` o pasos en [k8s/README.md](k8s/README.md) |
 
-Guía completa: [IMPLEMENTACION-KUBERNETES-LOCAL.md](Documentación del Proyecto/despliegue/kubernetes/IMPLEMENTACION-KUBERNETES-LOCAL.md)
+Guía completa: [IMPLEMENTACION-KUBERNETES-LOCAL.md](Documentación_Del_Proyecto/despliegue/kubernetes/IMPLEMENTACION-KUBERNETES-LOCAL.md)
 
 **Postman con Ingress:** `catalogBaseUrl` = `http://shopdemo.local/catalog` (tras configurar hosts o `minikube tunnel`).
 
@@ -324,10 +324,10 @@ Dos caminos de **release** en Azure. Ambos usan imágenes en **Azure Container R
 
 | Camino | Servicio Azure | Ideal para | Guía |
 |---|---|---|---|
-| **ACA** | Container Apps | Release serverless, más simple | [GUIA-RELEASE-SCRIPT-AZURE](Documentación del Proyecto/despliegue/azure/GUIA-RELEASE-SCRIPT-AZURE.md) |
-| **AKS** | Kubernetes Service | Compartidos `k8s/` + deployments `k8s/azure/` | [GUIA-RELEASE-KUBERNETES](Documentación del Proyecto/despliegue/kubernetes/GUIA-RELEASE-KUBERNETES.md) |
+| **ACA** | Container Apps | Release serverless, más simple | [GUIA-RELEASE-SCRIPT-AZURE](Documentación_Del_Proyecto/despliegue/azure/GUIA-RELEASE-SCRIPT-AZURE.md) |
+| **AKS** | Kubernetes Service | Compartidos `k8s/` + deployments `k8s/azure/` | [GUIA-RELEASE-KUBERNETES](Documentación_Del_Proyecto/despliegue/kubernetes/GUIA-RELEASE-KUBERNETES.md) |
 
-**Preparación previa:** [PREPARACION-AMBIENTE-AZURE](Documentación del Proyecto/despliegue/azure/PREPARACION-AMBIENTE-AZURE.md) (suscripción, cuotas, permisos Contributor).
+**Preparación previa:** [PREPARACION-AMBIENTE-AZURE](Documentación_Del_Proyecto/despliegue/azure/PREPARACION-AMBIENTE-AZURE.md) (suscripción, cuotas, permisos Contributor).
 
 **Release AKS validado en lab:** cluster `aks-shopdemo`, 2 nodos `Standard_B2s`, 5 APIs + MCP + Ingress. Reporte con URLs: [Source/scripts/azure/deploy-aks-report.json](Source/scripts/azure/deploy-aks-report.json).
 
@@ -372,9 +372,9 @@ az account set --subscription "<TU-SUBSCRIPTION-ID>"
 |---|---|---|
 | `ACA` | 5 × `latest` (o `IMAGE_TAG` en `.env.azure`) | FQDN Container Apps en salida del script |
 | `AKS` | Igual + `kubectl apply` | `kubectl get pods -n shopdemo` |
-| `All` | Igual para ambos entornos | Postman con [GUIA-ENDPOINTS](Documentación del Proyecto/GUIA-ENDPOINTS.md) |
+| `All` | Igual para ambos entornos | Postman con [GUIA-ENDPOINTS](Documentación_Del_Proyecto/GUIA-ENDPOINTS.md) |
 
-Documentación: [ALCANCE-LAB-RELEASE](Documentación del Proyecto/despliegue/ALCANCE-LAB-RELEASE.md) · [Script](Documentación del Proyecto/despliegue/azure/GUIA-RELEASE-SCRIPT-AZURE.md) · [CLI](Documentación del Proyecto/despliegue/azure/GUIA-RELEASE-CLI-AZURE.md) · [Portal](Documentación del Proyecto/despliegue/azure/GUIA-RELEASE-PORTAL-AZURE.md) · [AKS](Documentación del Proyecto/despliegue/kubernetes/GUIA-RELEASE-KUBERNETES.md) · [Script PS](Source/scripts/azure/README.md)
+Documentación: [ALCANCE-LAB-RELEASE](Documentación_Del_Proyecto/despliegue/ALCANCE-LAB-RELEASE.md) · [Script](Documentación_Del_Proyecto/despliegue/azure/GUIA-RELEASE-SCRIPT-AZURE.md) · [CLI](Documentación_Del_Proyecto/despliegue/azure/GUIA-RELEASE-CLI-AZURE.md) · [Portal](Documentación_Del_Proyecto/despliegue/azure/GUIA-RELEASE-PORTAL-AZURE.md) · [AKS](Documentación_Del_Proyecto/despliegue/kubernetes/GUIA-RELEASE-KUBERNETES.md) · [Script PS](Source/scripts/azure/README.md)
 
 > **Checkpoints Event Hubs:** en ACA usa **Azure Storage Account** (no Azurite). En AKS/Minikube usa Azurite in-cluster (`k8s/azurite/`).
 
@@ -386,7 +386,7 @@ El script crea RG, Event Hubs, ACR, cluster y `k8s/secrets.yaml`. Tras el script
 |---|---|
 | 1 | Push de 5 imágenes a ACR (las imágenes ACR ya están en `k8s/azure/*/deployment.yaml`; `kubectl set image` solo si cambias tag) |
 | 2 | `kubectl apply` compartidos + **`k8s/azure/`** (ver [k8s/README.md](k8s/README.md)) |
-| 3 | Helm Ingress NGINX si el script falla en este paso (ver [Script §5.2](Documentación del Proyecto/despliegue/azure/GUIA-RELEASE-SCRIPT-AZURE.md)) |
+| 3 | Helm Ingress NGINX si el script falla en este paso (ver [Script §5.2](Documentación_Del_Proyecto/despliegue/azure/GUIA-RELEASE-SCRIPT-AZURE.md)) |
 | 4 | Anotación health probe Azure: `service.beta.kubernetes.io/azure-load-balancer-health-probe-request-path=/healthz` |
 | 5 | Consumer groups en Event Hubs: `analytics-service`, `inventory-service` |
 | 6 | Entrada en archivo **hosts**: `<IP-ingress> shopdemo.local` |
@@ -427,7 +427,7 @@ flowchart LR
 | 3 | Crear 5 Container Apps | Instalar Ingress NGINX |
 | 4 | Secrets `EventHubs__*` en cada app | Compartidos + `k8s/azure/` + ingress (orden en [k8s/README.md](k8s/README.md)) |
 | 5 | Copiar FQDN de cada app | Copiar IP/DNS del Ingress (`shopdemo.local` o IP pública) |
-| 6 | MCP: [IMPLEMENTACION-DESPLIEGUE-MCP-AZURE](Documentación del Proyecto/integracion-ia/IMPLEMENTACION-DESPLIEGUE-MCP-AZURE.md) | Ruta Ingress `/mcp` en `k8s/ingress/` |
+| 6 | MCP: [IMPLEMENTACION-DESPLIEGUE-MCP-AZURE](Documentación_Del_Proyecto/integracion-ia/IMPLEMENTACION-DESPLIEGUE-MCP-AZURE.md) | Ruta Ingress `/mcp` en `k8s/ingress/` |
 
 ### URLs release Azure (Postman)
 
@@ -443,7 +443,7 @@ Tras desplegar, actualiza las variables de colección:
 
 **Secrets obligatorios en nube:** `EventHubs__ConnectionString`, connection strings PostgreSQL, **Storage Account** (`storage-checkpoint`) para Source/Inventory/Analytics en ACA, URLs internas para Orders y MCP.
 
-**Observabilidad y resiliencia:** [Documentación del Proyecto/observabilidad/azure/](Documentación del Proyecto/observabilidad/azure/IMPLEMENTACION-OBSERVABILIDAD-AZURE.md) · [Documentación del Proyecto/resiliencia/azure/](Documentación del Proyecto/resiliencia/azure/IMPLEMENTACION-RESILIENCIA-AZURE.md)
+**Observabilidad y resiliencia:** [Documentación_Del_Proyecto/observabilidad/azure/](Documentación_Del_Proyecto/observabilidad/azure/IMPLEMENTACION-OBSERVABILIDAD-AZURE.md) · [Documentación_Del_Proyecto/resiliencia/azure/](Documentación_Del_Proyecto/resiliencia/azure/IMPLEMENTACION-RESILIENCIA-AZURE.md)
 
 CI/CD: [.github/workflows/](.github/workflows/) — **4 workflows** (ACA, ECS, AKS, EKS) · Checklist secrets: [.github/SECRETS-CHECKLIST.md](.github/SECRETS-CHECKLIST.md)
 
@@ -455,10 +455,10 @@ Dos caminos de **release** en AWS. Ambos usan **Amazon ECR** y despliegan **5 co
 
 | Camino | Servicio AWS | Ideal para | Guía |
 |---|---|---|---|
-| **ECS** | Fargate | Release sin Kubernetes | [GUIA-RELEASE-SCRIPT-AWS](Documentación del Proyecto/despliegue/aws/GUIA-RELEASE-SCRIPT-AWS.md) |
-| **EKS** | Elastic Kubernetes Service | Compartidos `k8s/` + deployments `k8s/aws/` | [GUIA-RELEASE-KUBERNETES](Documentación del Proyecto/despliegue/kubernetes/GUIA-RELEASE-KUBERNETES.md) |
+| **ECS** | Fargate | Release sin Kubernetes | [GUIA-RELEASE-SCRIPT-AWS](Documentación_Del_Proyecto/despliegue/aws/GUIA-RELEASE-SCRIPT-AWS.md) |
+| **EKS** | Elastic Kubernetes Service | Compartidos `k8s/` + deployments `k8s/aws/` | [GUIA-RELEASE-KUBERNETES](Documentación_Del_Proyecto/despliegue/kubernetes/GUIA-RELEASE-KUBERNETES.md) |
 
-**Preparación previa:** [PREPARACION-AMBIENTE-AWS](Documentación del Proyecto/despliegue/aws/PREPARACION-AMBIENTE-AWS.md) (IAM `ShopDemoLabECS` / `ShopDemoLabEKS`, región recomendada `us-east-2`).
+**Preparación previa:** [PREPARACION-AMBIENTE-AWS](Documentación_Del_Proyecto/despliegue/aws/PREPARACION-AMBIENTE-AWS.md) (IAM `ShopDemoLabECS` / `ShopDemoLabEKS`, región recomendada `us-east-2`).
 
 **Release EKS validado en lab (free-tier):** 4 nodos `t3.micro`, Source/Catalog, Source/Orders, Source/Inventory con LoadBalancer, Swagger en **`:8080`**. Reporte: [Source/scripts/aws/deploy-eks-free-tier-report.json](Source/scripts/aws/deploy-eks-free-tier-report.json).
 
@@ -502,9 +502,9 @@ aws sts get-caller-identity
 | `EVENT_HUBS_CONNECTION_STRING` | **Azure Portal** (Event Hubs — mensajería cross-cloud) |
 | `AWS_REGION` | Consola AWS / `aws configure` |
 
-Documentación: [ALCANCE-LAB-RELEASE](Documentación del Proyecto/despliegue/ALCANCE-LAB-RELEASE.md) · [Script](Documentación del Proyecto/despliegue/aws/GUIA-RELEASE-SCRIPT-AWS.md) · [CLI](Documentación del Proyecto/despliegue/aws/GUIA-RELEASE-CLI-AWS.md) · [Portal](Documentación del Proyecto/despliegue/aws/GUIA-RELEASE-PORTAL-AWS.md) · [Task definitions ECS](Documentación del Proyecto/despliegue/aws/ANEXO-TASK-DEFINITIONS-ECS.md) · [Script PS](Source/scripts/aws/README.md)
+Documentación: [ALCANCE-LAB-RELEASE](Documentación_Del_Proyecto/despliegue/ALCANCE-LAB-RELEASE.md) · [Script](Documentación_Del_Proyecto/despliegue/aws/GUIA-RELEASE-SCRIPT-AWS.md) · [CLI](Documentación_Del_Proyecto/despliegue/aws/GUIA-RELEASE-CLI-AWS.md) · [Portal](Documentación_Del_Proyecto/despliegue/aws/GUIA-RELEASE-PORTAL-AWS.md) · [Task definitions ECS](Documentación_Del_Proyecto/despliegue/aws/ANEXO-TASK-DEFINITIONS-ECS.md) · [Script PS](Source/scripts/aws/README.md)
 
-> **Checkpoints Event Hubs en ECS:** Azurite en Fargate. **Mensajería:** Azure Event Hubs (SSM). Task definitions: [ANEXO-TASK-DEFINITIONS-ECS](Documentación del Proyecto/despliegue/aws/ANEXO-TASK-DEFINITIONS-ECS.md).
+> **Checkpoints Event Hubs en ECS:** Azurite en Fargate. **Mensajería:** Azure Event Hubs (SSM). Task definitions: [ANEXO-TASK-DEFINITIONS-ECS](Documentación_Del_Proyecto/despliegue/aws/ANEXO-TASK-DEFINITIONS-ECS.md).
 
 ### Perfil EKS free-tier (ajustes post-script)
 
@@ -513,7 +513,7 @@ Con 4× `t3.micro` (máx. ~16 pods) el cluster no cabe con los 5 servicios + Ing
 | Servicio | Estado en free-tier |
 |---|---|
 | Catalog, Orders, Inventory | LoadBalancer + Swagger `:8080` |
-| MCP, Analytics, Ingress NGINX | Omitidos o 0 réplicas (ver [Script §6](Documentación del Proyecto/despliegue/aws/GUIA-RELEASE-SCRIPT-AWS.md)) |
+| MCP, Analytics, Ingress NGINX | Omitidos o 0 réplicas (ver [Script §6](Documentación_Del_Proyecto/despliegue/aws/GUIA-RELEASE-SCRIPT-AWS.md)) |
 | CoreDNS | Reducir a 1 réplica si hay presión de pods |
 
 | Problema | Solución |
@@ -531,7 +531,7 @@ Con 4× `t3.micro` (máx. ~16 pods) el cluster no cabe con los 5 servicios + Ing
 | 3 | **Desplegar** | Task definitions + services + Cloud Map | Compartidos + **`k8s/aws/`** (ver [k8s/README.md](k8s/README.md)) |
 | 4 | **Secretos** | SSM Parameter Store / Secrets Manager | `k8s/secrets.yaml` |
 | 5 | **Verificar** | `curl http://<alb-dns>/health` | `kubectl get pods -n shopdemo` |
-| 6 | **MCP** | [IMPLEMENTACION-DESPLIEGUE-MCP-AWS](Documentación del Proyecto/integracion-ia/IMPLEMENTACION-DESPLIEGUE-MCP-AWS.md) | Ingress `/mcp` |
+| 6 | **MCP** | [IMPLEMENTACION-DESPLIEGUE-MCP-AWS](Documentación_Del_Proyecto/integracion-ia/IMPLEMENTACION-DESPLIEGUE-MCP-AWS.md) | Ingress `/mcp` |
 
 ### Flujo común release AWS
 
@@ -555,7 +555,7 @@ Con 4× `t3.micro` (máx. ~16 pods) el cluster no cabe con los 5 servicios + Ing
 
 **Nota:** el código usa **Azure Event Hubs**; los contenedores en AWS necesitan salida HTTPS a internet hacia Azure.
 
-**Observabilidad y resiliencia:** [Documentación del Proyecto/observabilidad/aws/](Documentación del Proyecto/observabilidad/aws/IMPLEMENTACION-OBSERVABILIDAD-AWS.md) · [Documentación del Proyecto/resiliencia/aws/](Documentación del Proyecto/resiliencia/aws/IMPLEMENTACION-RESILIENCIA-AWS.md)
+**Observabilidad y resiliencia:** [Documentación_Del_Proyecto/observabilidad/aws/](Documentación_Del_Proyecto/observabilidad/aws/IMPLEMENTACION-OBSERVABILIDAD-AWS.md) · [Documentación_Del_Proyecto/resiliencia/aws/](Documentación_Del_Proyecto/resiliencia/aws/IMPLEMENTACION-RESILIENCIA-AWS.md)
 
 CI/CD: [.github/workflows/](.github/workflows/) — **4 workflows** (ACA, ECS, AKS, EKS) · Checklist: [.github/SECRETS-CHECKLIST.md](.github/SECRETS-CHECKLIST.md)
 
@@ -563,7 +563,7 @@ CI/CD: [.github/workflows/](.github/workflows/) — **4 workflows** (ACA, ECS, A
 
 ## Configurar Postman según entorno
 
-1. Importar [Documentación del Proyecto/ShopDemo.postman_collection.json](Documentación del Proyecto/ShopDemo.postman_collection.json)
+1. Importar [Documentación_Del_Proyecto/ShopDemo.postman_collection.json](Documentación_Del_Proyecto/ShopDemo.postman_collection.json)
 2. En la colección → **Variables**, elegir el perfil:
 
 | Perfil | `deploymentProfile` | Qué cambiar |
@@ -680,10 +680,10 @@ Archivo plantilla: `Source/AI/ShopDemo.Mcp.Api/.env.example`
 
 | Plataforma | Dónde poner secretos | Documentación |
 |---|---|---|
-| **Azure Container Apps** | Secrets de cada Container App | [despliegue/azure](Documentación del Proyecto/despliegue/azure/) |
-| **Azure AKS** | Secrets K8s / Key Vault | [despliegue/aks](Documentación del Proyecto/despliegue/aks/) |
-| **AWS ECS** | SSM Parameter Store / Secrets Manager | [despliegue/aws](Documentación del Proyecto/despliegue/aws/) |
-| **Amazon EKS** | Secrets K8s / Parameter Store | [despliegue/eks](Documentación del Proyecto/despliegue/eks/) |
+| **Azure Container Apps** | Secrets de cada Container App | [despliegue/azure](Documentación_Del_Proyecto/despliegue/azure/) |
+| **Azure AKS** | Secrets K8s / Key Vault | [despliegue/aks](Documentación_Del_Proyecto/despliegue/aks/) |
+| **AWS ECS** | SSM Parameter Store / Secrets Manager | [despliegue/aws](Documentación_Del_Proyecto/despliegue/aws/) |
+| **Amazon EKS** | Secrets K8s / Parameter Store | [despliegue/eks](Documentación_Del_Proyecto/despliegue/eks/) |
 | **GitHub Actions** | Repository secrets | [.github/SECRETS-CHECKLIST.md](.github/SECRETS-CHECKLIST.md) |
 
 > **Regla:** nunca commitear connection strings reales. Usa `.env` local (gitignored), user secrets o secretos de la plataforma.
@@ -695,7 +695,7 @@ Archivo plantilla: `Source/AI/ShopDemo.Mcp.Api/.env.example`
 1. Elige modo de ejecución: [Inicio local](#inicio-local-desarrollo-y-pruebas) o [Release](#release-azure).
 2. Completa el [checklist E2E](#checklist-antes-del-flujo-e2e).
 3. Importa y configura [Postman](#configurar-postman-según-entorno).
-4. Ejecuta carpeta **Flujo integrado (E2E)** o sigue [GUIA-ENDPOINTS.md](Documentación del Proyecto/GUIA-ENDPOINTS.md).
+4. Ejecuta carpeta **Flujo integrado (E2E)** o sigue [GUIA-ENDPOINTS.md](Documentación_Del_Proyecto/GUIA-ENDPOINTS.md).
 
 Con Event Hubs activo, el stock se auto-registra y Analytics lista eventos en `GET /api/analytics/events`.
 
@@ -716,8 +716,8 @@ ShopDemo/
 │   └── scripts/          # PowerShell Azure/AWS, tooling docs
 ├── k8s/              # Manifiestos K8s: compartidos + local/ azure/ aws/
 ├── spec-driven/      # Specs, plantillas Cursor y Claude Code
-├── Documentación del Proyecto/    # Documentación técnica del lab ShopDemo
-├── Documentación de Estudio del Curso/  # Tópicos de Estudio (teoría general, 13 capítulos)
+├── Documentación_Del_Proyecto/    # Documentación técnica del lab ShopDemo
+├── Documentación_De_Estudio_Del_Curso/  # Tópicos de Estudio (teoría general, 13 capítulos)
 └── .github/workflows/  # CI/CD: deploy-azure, deploy-aws, deploy-aks, deploy-eks
 ```
 
@@ -728,26 +728,26 @@ ShopDemo/
 | Tema | Enlace |
 |---|---|
 | **Contexto global para agentes (Cursor)** | [AGENTS.md](AGENTS.md) · reglas en [.cursor/rules/](.cursor/rules/) |
-| **Tópicos de Estudio** | [Documentación de Estudio del Curso/README.md](Documentación de Estudio del Curso/README.md) — [01](Documentación de Estudio del Curso/01-patrones-diseno.md) … [13](Documentación de Estudio del Curso/13-sintesis-integracion.md) |
+| **Tópicos de Estudio** | [Documentación_De_Estudio_Del_Curso/README.md](Documentación_De_Estudio_Del_Curso/README.md) — [01](Documentación_De_Estudio_Del_Curso/01-patrones-diseno.md) … [13](Documentación_De_Estudio_Del_Curso/13-sintesis-integracion.md) |
 | **Código y scripts** | [Source/README.md](Source/README.md) |
-| **Guía de desarrollo (código paso a paso)** | [Documentación del Proyecto/GUIA-DESARROLLO-INTEGRACIONES.md](Documentación del Proyecto/GUIA-DESARROLLO-INTEGRACIONES.md) |
-| Anexos de código | [Shared](Documentación del Proyecto/ANEXO-CODIGO-SHARED.md) · [Catalog](Documentación del Proyecto/catalog/ANEXO-CODIGO-CATALOG.md) · [Orders](Documentación del Proyecto/orders/ANEXO-CODIGO-ORDERS.md) · [Inventory](Documentación del Proyecto/inventory/ANEXO-CODIGO-INVENTORY.md) · [Event Hubs](Documentación del Proyecto/ANEXO-CODIGO-EVENT-HUBS.md) · [Analytics/Aspire](Documentación del Proyecto/analytics/ANEXO-CODIGO-ANALYTICS-ASPIRE.md) · [MCP](Documentación del Proyecto/integracion-ia/ANEXO-CODIGO-MCP.md) |
+| **Guía de desarrollo (código paso a paso)** | [Documentación_Del_Proyecto/GUIA-DESARROLLO-INTEGRACIONES.md](Documentación_Del_Proyecto/GUIA-DESARROLLO-INTEGRACIONES.md) |
+| Anexos de código | [Shared](Documentación_Del_Proyecto/ANEXO-CODIGO-SHARED.md) · [Catalog](Documentación_Del_Proyecto/catalog/ANEXO-CODIGO-CATALOG.md) · [Orders](Documentación_Del_Proyecto/orders/ANEXO-CODIGO-ORDERS.md) · [Inventory](Documentación_Del_Proyecto/inventory/ANEXO-CODIGO-INVENTORY.md) · [Event Hubs](Documentación_Del_Proyecto/ANEXO-CODIGO-EVENT-HUBS.md) · [Analytics/Aspire](Documentación_Del_Proyecto/analytics/ANEXO-CODIGO-ANALYTICS-ASPIRE.md) · [MCP](Documentación_Del_Proyecto/integracion-ia/ANEXO-CODIGO-MCP.md) |
 | Scripts Azure (PowerShell) | [Source/scripts/azure/README.md](Source/scripts/azure/README.md) |
 | Scripts AWS (PowerShell) | [Source/scripts/aws/README.md](Source/scripts/aws/README.md) |
 | **CI/CD GitHub Actions** | [.github/README.md](.github/README.md) · [Portal web](.github/SETUP-GITHUB-PORTAL.md) · [SETUP-GITHUB](.github/SETUP-GITHUB.md) · [GH-CLI](.github/GH-CLI-COMMANDS.md) · [SECRETS-CHECKLIST](.github/SECRETS-CHECKLIST.md) |
-| Preparación Azure / AWS | [PREPARACION-AZURE](Documentación del Proyecto/despliegue/azure/PREPARACION-AMBIENTE-AZURE.md) · [PREPARACION-AWS](Documentación del Proyecto/despliegue/aws/PREPARACION-AMBIENTE-AWS.md) |
+| Preparación Azure / AWS | [PREPARACION-AZURE](Documentación_Del_Proyecto/despliegue/azure/PREPARACION-AMBIENTE-AZURE.md) · [PREPARACION-AWS](Documentación_Del_Proyecto/despliegue/aws/PREPARACION-AMBIENTE-AWS.md) |
 | Reportes release lab | [AKS](Source/scripts/azure/deploy-aks-report.json) · [EKS free-tier](Source/scripts/aws/deploy-eks-free-tier-report.json) |
-| Arquitectura | [Documentación del Proyecto/ARQUITECTURA.md](Documentación del Proyecto/ARQUITECTURA.md) |
-| Endpoints y Postman | [Documentación del Proyecto/GUIA-ENDPOINTS.md](Documentación del Proyecto/GUIA-ENDPOINTS.md) |
-| Event Hubs | [Documentación del Proyecto/INTEGRACION-AZURE-EVENT-HUBS.md](Documentación del Proyecto/INTEGRACION-AZURE-EVENT-HUBS.md) |
-| Aspire | [Documentación del Proyecto/INTEGRACION-ASPIRE.md](Documentación del Proyecto/INTEGRACION-ASPIRE.md) |
-| Despliegue | [Documentación del Proyecto/despliegue/README.md](Documentación del Proyecto/despliegue/README.md) |
-| Observabilidad | [Documentación del Proyecto/observabilidad/README.md](Documentación del Proyecto/observabilidad/README.md) |
-| Resiliencia | [Documentación del Proyecto/resiliencia/README.md](Documentación del Proyecto/resiliencia/README.md) |
-| Integración IA | [Documentación del Proyecto/integracion-ia/README.md](Documentación del Proyecto/integracion-ia/README.md) |
+| Arquitectura | [Documentación_Del_Proyecto/ARQUITECTURA.md](Documentación_Del_Proyecto/ARQUITECTURA.md) |
+| Endpoints y Postman | [Documentación_Del_Proyecto/GUIA-ENDPOINTS.md](Documentación_Del_Proyecto/GUIA-ENDPOINTS.md) |
+| Event Hubs | [Documentación_Del_Proyecto/INTEGRACION-AZURE-EVENT-HUBS.md](Documentación_Del_Proyecto/INTEGRACION-AZURE-EVENT-HUBS.md) |
+| Aspire | [Documentación_Del_Proyecto/INTEGRACION-ASPIRE.md](Documentación_Del_Proyecto/INTEGRACION-ASPIRE.md) |
+| Despliegue | [Documentación_Del_Proyecto/despliegue/README.md](Documentación_Del_Proyecto/despliegue/README.md) |
+| Observabilidad | [Documentación_Del_Proyecto/observabilidad/README.md](Documentación_Del_Proyecto/observabilidad/README.md) |
+| Resiliencia | [Documentación_Del_Proyecto/resiliencia/README.md](Documentación_Del_Proyecto/resiliencia/README.md) |
+| Integración IA | [Documentación_Del_Proyecto/integracion-ia/README.md](Documentación_Del_Proyecto/integracion-ia/README.md) |
 | Spec-driven (Cursor + Claude) | [spec-driven/README.md](spec-driven/README.md) |
-| Cheat sheets CLI | [Documentación del Proyecto/cheat-sheets/](Documentación del Proyecto/cheat-sheets/) |
-| Teoría lab (ShopDemo) | [TEORIA-DOCKER-KUBERNETES-AOT](Documentación del Proyecto/TEORIA-DOCKER-KUBERNETES-AOT.md) — complementa tópicos [07](Documentación de Estudio del Curso/07-contenedores-docker.md) y [08](Documentación de Estudio del Curso/08-kubernetes-orquestacion.md) |
+| Cheat sheets CLI | [Documentación_Del_Proyecto/cheat-sheets/](Documentación_Del_Proyecto/cheat-sheets/) |
+| Teoría lab (ShopDemo) | [TEORIA-DOCKER-KUBERNETES-AOT](Documentación_Del_Proyecto/TEORIA-DOCKER-KUBERNETES-AOT.md) — complementa tópicos [07](Documentación_De_Estudio_Del_Curso/07-contenedores-docker.md) y [08](Documentación_De_Estudio_Del_Curso/08-kubernetes-orquestacion.md) |
 | Manifiestos Kubernetes | [k8s/](k8s/) |
 
 ---

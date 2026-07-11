@@ -8,14 +8,14 @@ Orchestration: Aspire (local). Messaging: Azure Event Hubs. Deploy: Azure (ACA/A
 ## Spec-driven workflow
 
 1. **Always** read the relevant `spec-driven/specs/<area>/SPEC.md` before coding.
-2. Follow linked `docs/**/REQUERIMIENTOS` and `IMPLEMENTACION` documents.
+2. Follow linked `Documentación del Proyecto/**/REQUERIMIENTOS` and `IMPLEMENTACION` documents.
 3. Validate acceptance criteria in the SPEC when done.
 4. User-facing replies: **Spanish**. Code comments: English, minimal.
 
 ## Build & test
 
 ```bash
-dotnet build ShopDemo.slnx
+dotnet build Source/ShopDemo.slnx
 ```
 
 ## Key paths
@@ -24,8 +24,8 @@ dotnet build ShopDemo.slnx
 |---|---|
 | Specs | `spec-driven/specs/` |
 | K8s | `k8s/` |
-| MCP | `AI/ShopDemo.Mcp.Api/` |
-| Course docs | `docs/` |
+| MCP | `Source/AI/ShopDemo.Mcp.Api/` |
+| Course docs | `Documentación del Proyecto/` |
 
 ## Deploy commands
 
@@ -37,4 +37,4 @@ dotnet build ShopDemo.slnx
 
 - Do not commit secrets (`.env`, `k8s/secrets.yaml`, connection strings).
 - Minimize diff scope; match existing architecture per service.
-- Phase 1: do not modify Catalog/Orders/Inventory `Program.cs` unless SPEC explicitly requires it.
+- Phase 1: do not modify Source/Catalog, Source/Orders, Source/Inventory `Program.cs` unless SPEC explicitly requires it.

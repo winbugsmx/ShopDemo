@@ -10,42 +10,42 @@ Desplegar o actualizar ShopDemo en Azure Container Apps y/o AKS siguiendo la doc
 
 | Capa | Documento |
 |---|---|
-| **A — Negocio** | [REQUERIMIENTOS-DESPLIEGUE-AZURE.md](../../../docs/despliegue/azure/REQUERIMIENTOS-DESPLIEGUE-AZURE.md) |
-| **A — Negocio** | [HISTORIAS-USUARIO-DESPLIEGUE-AZURE.md](../../../docs/despliegue/azure/HISTORIAS-USUARIO-DESPLIEGUE-AZURE.md) |
-| **B — Técnica** | [ANEXO-ESPECIFICACION-TECNICA-DESPLIEGUE-AZURE.md](../../../docs/despliegue/azure/ANEXO-ESPECIFICACION-TECNICA-DESPLIEGUE-AZURE.md) |
-| **B — Técnica** | [ANEXO-HISTORIAS-TECNICAS-DESPLIEGUE-AZURE.md](../../../docs/despliegue/azure/ANEXO-HISTORIAS-TECNICAS-DESPLIEGUE-AZURE.md) |
-| **C — Pedagogía** | [ANEXO-PEDAGOGIA-DESPLIEGUE-AZURE.md](../../../docs/despliegue/azure/ANEXO-PEDAGOGIA-DESPLIEGUE-AZURE.md) |
-| Implementación | [IMPLEMENTACION-DESPLIEGUE-AZURE.md](../../../docs/despliegue/azure/IMPLEMENTACION-DESPLIEGUE-AZURE.md) |
+| **A — Negocio** | [REQUERIMIENTOS-DESPLIEGUE-AZURE.md](../../../Documentación del Proyecto/despliegue/azure/REQUERIMIENTOS-DESPLIEGUE-AZURE.md) |
+| **A — Negocio** | [HISTORIAS-USUARIO-DESPLIEGUE-AZURE.md](../../../Documentación del Proyecto/despliegue/azure/HISTORIAS-USUARIO-DESPLIEGUE-AZURE.md) |
+| **B — Técnica** | [ANEXO-ESPECIFICACION-TECNICA-DESPLIEGUE-AZURE.md](../../../Documentación del Proyecto/despliegue/azure/ANEXO-ESPECIFICACION-TECNICA-DESPLIEGUE-AZURE.md) |
+| **B — Técnica** | [ANEXO-HISTORIAS-TECNICAS-DESPLIEGUE-AZURE.md](../../../Documentación del Proyecto/despliegue/azure/ANEXO-HISTORIAS-TECNICAS-DESPLIEGUE-AZURE.md) |
+| **C — Pedagogía** | [ANEXO-PEDAGOGIA-DESPLIEGUE-AZURE.md](../../../Documentación del Proyecto/despliegue/azure/ANEXO-PEDAGOGIA-DESPLIEGUE-AZURE.md) |
+| Implementación | [IMPLEMENTACION-DESPLIEGUE-AZURE.md](../../../Documentación del Proyecto/despliegue/azure/IMPLEMENTACION-DESPLIEGUE-AZURE.md) |
 
 ### Azure AKS (si aplica)
 
 | Capa | Documento |
 |---|---|
-| **A — Negocio** | [REQUERIMIENTOS-DESPLIEGUE-AKS.md](../../../docs/despliegue/aks/REQUERIMIENTOS-DESPLIEGUE-AKS.md) |
-| **B — Técnica** | [ANEXO-ESPECIFICACION-TECNICA-DESPLIEGUE-AKS.md](../../../docs/despliegue/aks/ANEXO-ESPECIFICACION-TECNICA-DESPLIEGUE-AKS.md) |
-| Implementación | [IMPLEMENTACION-DESPLIEGUE-AKS.md](../../../docs/despliegue/aks/IMPLEMENTACION-DESPLIEGUE-AKS.md) |
+| **A — Negocio** | [REQUERIMIENTOS-DESPLIEGUE-AKS.md](../../../Documentación del Proyecto/despliegue/aks/REQUERIMIENTOS-DESPLIEGUE-AKS.md) |
+| **B — Técnica** | [ANEXO-ESPECIFICACION-TECNICA-DESPLIEGUE-AKS.md](../../../Documentación del Proyecto/despliegue/aks/ANEXO-ESPECIFICACION-TECNICA-DESPLIEGUE-AKS.md) |
+| Implementación | [IMPLEMENTACION-DESPLIEGUE-AKS.md](../../../Documentación del Proyecto/despliegue/aks/IMPLEMENTACION-DESPLIEGUE-AKS.md) |
 
 ### MCP en Azure
 
 | Documento |
 |---|
-| [REQUERIMIENTOS-DESPLIEGUE-MCP.md](../../../docs/integracion-ia/REQUERIMIENTOS-DESPLIEGUE-MCP.md) |
-| [IMPLEMENTACION-DESPLIEGUE-MCP-AZURE.md](../../../docs/integracion-ia/IMPLEMENTACION-DESPLIEGUE-MCP-AZURE.md) |
+| [REQUERIMIENTOS-DESPLIEGUE-MCP.md](../../../Documentación del Proyecto/integracion-ia/REQUERIMIENTOS-DESPLIEGUE-MCP.md) |
+| [IMPLEMENTACION-DESPLIEGUE-MCP-AZURE.md](../../../Documentación del Proyecto/integracion-ia/IMPLEMENTACION-DESPLIEGUE-MCP-AZURE.md) |
 
-Guía: [GUIA-ESTRUCTURA-DOCUMENTACION.md](../../../docs/GUIA-ESTRUCTURA-DOCUMENTACION.md)
+Guía: [GUIA-ESTRUCTURA-DOCUMENTACION.md](../../../Documentación del Proyecto/GUIA-ESTRUCTURA-DOCUMENTACION.md)
 
 ## Alcance (agente)
 
 - ACR, Container Apps, PostgreSQL ACI, Event Hubs, Storage checkpoints
 - Opcional: AKS + `k8s/azure/`
-- Scripts: `scripts/azure/`
+- Scripts: `Source/scripts/azure/`
 
 ## Criterios de aceptación
 
 ### Negocio (CA-N)
 
 - [ ] Flujo E2E en nube: crear producto → confirmar pedido sin error (CA-AZ-03, CA-AZ-04)
-- [ ] La tienda responde vía URLs públicas de Catalog/Orders
+- [ ] La tienda responde vía URLs públicas de Source/Catalog/Orders
 
 ### Técnico (CA-T)
 

@@ -5,9 +5,9 @@ description: AWS deployment steps (ECS / EKS)
 Deploy ShopDemo to **AWS** only.
 
 References:
-- `docs/despliegue/aws/IMPLEMENTACION-DESPLIEGUE-AWS.md`
-- `docs/despliegue/eks/IMPLEMENTACION-DESPLIEGUE-EKS.md`
-- `docs/integracion-ia/IMPLEMENTACION-DESPLIEGUE-MCP-AWS.md`
+- `Documentación del Proyecto/despliegue/aws/IMPLEMENTACION-DESPLIEGUE-AWS.md`
+- `Documentación del Proyecto/despliegue/eks/IMPLEMENTACION-DESPLIEGUE-EKS.md`
+- `Documentación del Proyecto/integracion-ia/IMPLEMENTACION-DESPLIEGUE-MCP-AWS.md`
 - `.github/workflows/deploy-aws.yml`
 - `spec-driven/specs/07-deploy-aws/SPEC.md`
 

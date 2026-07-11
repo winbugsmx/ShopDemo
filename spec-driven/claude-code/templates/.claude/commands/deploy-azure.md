@@ -5,9 +5,9 @@ description: Azure deployment steps (ACA / AKS)
 Deploy ShopDemo to **Azure** only.
 
 References:
-- `docs/despliegue/azure/IMPLEMENTACION-DESPLIEGUE-AZURE.md`
-- `docs/despliegue/aks/IMPLEMENTACION-DESPLIEGUE-AKS.md`
-- `docs/integracion-ia/IMPLEMENTACION-DESPLIEGUE-MCP-AZURE.md`
+- `Documentación del Proyecto/despliegue/azure/IMPLEMENTACION-DESPLIEGUE-AZURE.md`
+- `Documentación del Proyecto/despliegue/aks/IMPLEMENTACION-DESPLIEGUE-AKS.md`
+- `Documentación del Proyecto/integracion-ia/IMPLEMENTACION-DESPLIEGUE-MCP-AZURE.md`
 - `.github/workflows/deploy-azure.yml`
 - `spec-driven/specs/06-deploy-azure/SPEC.md`
 

@@ -24,12 +24,12 @@ on:
   push:
     branches: [master]
     paths:
-      - 'Catalog/**'
-      - 'Orders/**'
-      - 'Inventory/**'
-      - 'Aspire/ShopDemo.Analytics.Api/**'
-      - 'AI/ShopDemo.Mcp.Api/**'
-      - 'ShopDemo.Shared/**'
+      - 'Source/Catalog/**'
+      - 'Source/Orders/**'
+      - 'Source/Inventory/**'
+      - 'Source/Aspire/ShopDemo.Analytics.Api/**'
+      - 'Source/AI/ShopDemo.Mcp.Api/**'
+      - 'Source/ShopDemo.Shared/**'
       - 'k8s/**'
       - '.github/workflows/deploy-aks.yml'
       - '.github/scripts/**'
@@ -50,12 +50,12 @@ jobs:
         with:
           filters: |
             apps:
-              - 'Catalog/**'
-              - 'Orders/**'
-              - 'Inventory/**'
-              - 'Aspire/ShopDemo.Analytics.Api/**'
-              - 'AI/ShopDemo.Mcp.Api/**'
-              - 'ShopDemo.Shared/**'
+              - 'Source/Catalog/**'
+              - 'Source/Orders/**'
+              - 'Source/Inventory/**'
+              - 'Source/Aspire/ShopDemo.Analytics.Api/**'
+              - 'Source/AI/ShopDemo.Mcp.Api/**'
+              - 'Source/ShopDemo.Shared/**'
             k8s:
               - 'k8s/**'
 
@@ -130,27 +130,27 @@ jobs:
       matrix:
         include:
           - service: catalog
-            dockerfile: Catalog/ShopDemo.Catalog.Api/Dockerfile
+            dockerfile: Source/Catalog/ShopDemo.Catalog.Api/Dockerfile
             image: shopdemo-catalog
             deployment: shopdemo-catalog
             container: catalog-api
           - service: orders
-            dockerfile: Orders/ShopDemo.Orders.Api/Dockerfile
+            dockerfile: Source/Orders/ShopDemo.Orders.Api/Dockerfile
             image: shopdemo-orders
             deployment: shopdemo-orders
             container: orders-api
           - service: inventory
-            dockerfile: Inventory/ShopDemo.Inventory.Api/Dockerfile
+            dockerfile: Source/Inventory/ShopDemo.Inventory.Api/Dockerfile
             image: shopdemo-inventory
             deployment: shopdemo-inventory
             container: inventory-api
           - service: analytics
-            dockerfile: Aspire/ShopDemo.Analytics.Api/Dockerfile
+            dockerfile: Source/Aspire/ShopDemo.Analytics.Api/Dockerfile
             image: shopdemo-analytics
             deployment: shopdemo-analytics
             container: analytics-api
           - service: mcp
-            dockerfile: AI/ShopDemo.Mcp.Api/Dockerfile
+            dockerfile: Source/AI/ShopDemo.Mcp.Api/Dockerfile
             image: shopdemo-mcp
             deployment: shopdemo-mcp
             container: mcp-api
@@ -169,7 +169,7 @@ jobs:
         run: |
           ACR_LOGIN=$(az acr show --name ${{ env.ACR_NAME }} --query loginServer -o tsv)
           IMAGE="$ACR_LOGIN/${{ matrix.image }}:${{ github.sha }}"
-          docker build -f ${{ matrix.dockerfile }} -t "$IMAGE" -t "$ACR_LOGIN/${{ matrix.image }}:latest" .
+          docker build -f ${{ matrix.dockerfile }} -t "$IMAGE" -t "$ACR_LOGIN/${{ matrix.image }}:latest" Source
           docker push "$IMAGE"
           docker push "$ACR_LOGIN/${{ matrix.image }}:latest"
           echo "IMAGE=$IMAGE" >> "$GITHUB_ENV"

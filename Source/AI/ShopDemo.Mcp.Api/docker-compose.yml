@@ -1,0 +1,11 @@
+services:
+  mcp-api:
+    build:
+      context: ../..
+      dockerfile: Source/AI/ShopDemo.Mcp.Api/Dockerfile
+    ports:
+      - "8005:8080"
+    env_file:
+      - .env
+    environment:
+      ASPNETCORE_ENVIRONMENT: Production

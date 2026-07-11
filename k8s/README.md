@@ -107,7 +107,7 @@ az eventhubs eventhub consumer-group create --resource-group rg-shopdemo-lab \
 
 Si el Load Balancer del Ingress no responde externamente:
 
-1. Instalar Ingress NGINX con Helm (ver [GUIA-RELEASE-SCRIPT-AZURE §5.2](../docs/despliegue/azure/GUIA-RELEASE-SCRIPT-AZURE.md))
+1. Instalar Ingress NGINX con Helm (ver [GUIA-RELEASE-SCRIPT-AZURE §5.2](../Documentación del Proyecto/despliegue/azure/GUIA-RELEASE-SCRIPT-AZURE.md))
 2. Anotar el Service del controller:
 
 ```yaml
@@ -117,30 +117,30 @@ externalTrafficPolicy: Local
 
 3. Agregar en **hosts**: `<IP-ingress> shopdemo.local`
 
-URLs validadas (lab): [scripts/azure/deploy-aks-report.json](../scripts/azure/deploy-aks-report.json)
+URLs validadas (lab): [Source/scripts/azure/deploy-aks-report.json](../Source/scripts/azure/deploy-aks-report.json)
 
 ## EKS free-tier
 
-Con 4× `t3.micro` (~16 pods) suele bastar solo Catalog + Orders + Inventory. Ver perfil post-script: [deploy-eks-free-tier-report.json](../scripts/aws/deploy-eks-free-tier-report.json)
+Con 4× `t3.micro` (~16 pods) suele bastar solo Catalog + Orders + Inventory. Ver perfil post-script: [deploy-eks-free-tier-report.json](../Source/scripts/aws/deploy-eks-free-tier-report.json)
 
 ## Documentación
 
 | Entorno | Guía |
 |---|---|
-| Minikube (local) | [IMPLEMENTACION-KUBERNETES-LOCAL](../docs/despliegue/kubernetes/IMPLEMENTACION-KUBERNETES-LOCAL.md) |
-| Elección de ruta | [GUIA-RELEASE-KUBERNETES](../docs/despliegue/kubernetes/GUIA-RELEASE-KUBERNETES.md) |
-| Azure AKS | [IMPLEMENTACION-DESPLIEGUE-AKS](../docs/despliegue/aks/IMPLEMENTACION-DESPLIEGUE-AKS.md) |
-| Amazon EKS | [IMPLEMENTACION-DESPLIEGUE-EKS](../docs/despliegue/eks/IMPLEMENTACION-DESPLIEGUE-EKS.md) |
-| Script Azure AKS | [scripts/azure/README.md](../scripts/azure/README.md) |
-| Script AWS EKS | [scripts/aws/README.md](../scripts/aws/README.md) |
+| Minikube (local) | [IMPLEMENTACION-KUBERNETES-LOCAL](../Documentación del Proyecto/despliegue/kubernetes/IMPLEMENTACION-KUBERNETES-LOCAL.md) |
+| Elección de ruta | [GUIA-RELEASE-KUBERNETES](../Documentación del Proyecto/despliegue/kubernetes/GUIA-RELEASE-KUBERNETES.md) |
+| Azure AKS | [IMPLEMENTACION-DESPLIEGUE-AKS](../Documentación del Proyecto/despliegue/aks/IMPLEMENTACION-DESPLIEGUE-AKS.md) |
+| Amazon EKS | [IMPLEMENTACION-DESPLIEGUE-EKS](../Documentación del Proyecto/despliegue/eks/IMPLEMENTACION-DESPLIEGUE-EKS.md) |
+| Script Azure AKS | [Source/scripts/azure/README.md](../Source/scripts/azure/README.md) |
+| Script AWS EKS | [Source/scripts/aws/README.md](../Source/scripts/aws/README.md) |
 | CI/CD AKS/EKS | [.github/workflows/deploy-aks.yml](../.github/workflows/deploy-aks.yml) · [deploy-eks.yml](../.github/workflows/deploy-eks.yml) |
-| MCP Gateway | [IMPLEMENTACION-DESPLIEGUE-MCP-AZURE](../docs/integracion-ia/IMPLEMENTACION-DESPLIEGUE-MCP-AZURE.md) |
+| MCP Gateway | [IMPLEMENTACION-DESPLIEGUE-MCP-AZURE](../Documentación del Proyecto/integracion-ia/IMPLEMENTACION-DESPLIEGUE-MCP-AZURE.md) |
 
 ## Tópicos de Estudio
 
 | # | Tópico | Enlace |
 |---|---|---|
-| 07 | Contenedores y Docker | [07-contenedores-docker.md](../docs/teoria-entrevistas/07-contenedores-docker.md) |
-| 08 | Kubernetes | [08-kubernetes-orquestacion.md](../docs/teoria-entrevistas/08-kubernetes-orquestacion.md) |
+| 07 | Contenedores y Docker | [07-contenedores-docker.md](../Documentación de Estudio del Curso/07-contenedores-docker.md) |
+| 08 | Kubernetes | [08-kubernetes-orquestacion.md](../Documentación de Estudio del Curso/08-kubernetes-orquestacion.md) |
 
-Índice completo: [teoria-entrevistas/README.md](../docs/teoria-entrevistas/README.md)
+Índice completo: [DocumentaciÃ³n de Estudio del Curso/README.md](../Documentación de Estudio del Curso/README.md)

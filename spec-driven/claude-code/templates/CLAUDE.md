@@ -10,7 +10,7 @@ Deploy targets: **Azure** (ACA, AKS) and **AWS** (ECS, EKS). Messaging: Azure Ev
 Before any implementation:
 
 1. Open `spec-driven/specs/<module>/SPEC.md`
-2. Read linked documents under `docs/`
+2. Read linked documents under `Documentación del Proyecto/`
 3. Satisfy acceptance criteria listed in the SPEC
 
 Specs index: `spec-driven/specs/README.md`
@@ -28,13 +28,13 @@ Specs index: `spec-driven/specs/README.md`
 ## Build
 
 ```bash
-dotnet build ShopDemo.slnx
+dotnet build Source/ShopDemo.slnx
 ```
 
 ## MCP
 
 Template: `spec-driven/claude-code/templates/mcp.template.json` → copy to `.mcp.json`  
-Local server: `http://localhost:8005/mcp` (requires `AI/ShopDemo.Mcp.Api`)
+Local server: `http://localhost:8005/mcp` (requires `Source/AI/ShopDemo.Mcp.Api`)
 
 ## Language
 

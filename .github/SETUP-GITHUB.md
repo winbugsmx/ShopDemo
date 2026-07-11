@@ -50,7 +50,7 @@ copy .env.aws.example .env.aws
 .\Deploy-AwsShopDemo.ps1 -Mode All   # o ECS / EKS por separado
 ```
 
-Completar post-script AKS/EKS según [GUIA-RELEASE-SCRIPT-AZURE](../docs/despliegue/azure/GUIA-RELEASE-SCRIPT-AZURE.md) y [GUIA-RELEASE-SCRIPT-AWS](../docs/despliegue/aws/GUIA-RELEASE-SCRIPT-AWS.md).
+Completar post-script AKS/EKS según [GUIA-RELEASE-SCRIPT-AZURE](../Documentación del Proyecto/despliegue/azure/GUIA-RELEASE-SCRIPT-AZURE.md) y [GUIA-RELEASE-SCRIPT-AWS](../Documentación del Proyecto/despliegue/aws/GUIA-RELEASE-SCRIPT-AWS.md).
 
 ## 3. Cargar secrets
 
@@ -107,7 +107,7 @@ Pegar JSON en secret `AZURE_CREDENTIALS` (environments `azure` y `azure-aks`).
 
 ## 7. OIDC AWS (recomendado)
 
-Ver [PREPARACION-AMBIENTE-AWS.md](../docs/despliegue/aws/PREPARACION-AMBIENTE-AWS.md) y políticas en `scripts/aws/iam-policy-shopdemo-lab-*.json`.
+Ver [PREPARACION-AMBIENTE-AWS.md](../Documentación del Proyecto/despliegue/aws/PREPARACION-AMBIENTE-AWS.md) y políticas en `Source/scripts/aws/iam-policy-shopdemo-lab-*.json`.
 
 Secret `AWS_ROLE_ARN` en environments `aws` y `aws-eks`.
 
@@ -117,4 +117,4 @@ Secret `AWS_ROLE_ARN` en environments `aws` y `aws-eks`.
 - [SETUP-GITHUB-PORTAL.md](SETUP-GITHUB-PORTAL.md) — configuración desde el portal web (alumnos)
 - [GH-CLI-COMMANDS.md](GH-CLI-COMMANDS.md) — comandos `gh` por environment y secrets del lab
 - [SECRETS-CHECKLIST.md](SECRETS-CHECKLIST.md) — checklist completo
-- [ALCANCE-LAB-RELEASE.md](../docs/despliegue/ALCANCE-LAB-RELEASE.md) — CI/CD § merge a main
+- [ALCANCE-LAB-RELEASE.md](../Documentación del Proyecto/despliegue/ALCANCE-LAB-RELEASE.md) — CI/CD § merge a main

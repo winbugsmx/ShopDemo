@@ -12,12 +12,12 @@ on:
   push:
     branches: [master]
     paths:
-      - 'Catalog/**'
-      - 'Orders/**'
-      - 'Inventory/**'
-      - 'Aspire/ShopDemo.Analytics.Api/**'
-      - 'AI/ShopDemo.Mcp.Api/**'
-      - 'ShopDemo.Shared/**'
+      - 'Source/Catalog/**'
+      - 'Source/Orders/**'
+      - 'Source/Inventory/**'
+      - 'Source/Aspire/ShopDemo.Analytics.Api/**'
+      - 'Source/AI/ShopDemo.Mcp.Api/**'
+      - 'Source/ShopDemo.Shared/**'
       - '.github/workflows/deploy-aws.yml'
       - '.github/scripts/**'
 
@@ -74,27 +74,27 @@ jobs:
       matrix:
         include:
           - service: catalog
-            dockerfile: Catalog/ShopDemo.Catalog.Api/Dockerfile
+            dockerfile: Source/Catalog/ShopDemo.Catalog.Api/Dockerfile
             repository: shopdemo-catalog
             task_family: shopdemo-catalog
             container_name: catalog-api
           - service: orders
-            dockerfile: Orders/ShopDemo.Orders.Api/Dockerfile
+            dockerfile: Source/Orders/ShopDemo.Orders.Api/Dockerfile
             repository: shopdemo-orders
             task_family: shopdemo-orders
             container_name: orders-api
           - service: inventory
-            dockerfile: Inventory/ShopDemo.Inventory.Api/Dockerfile
+            dockerfile: Source/Inventory/ShopDemo.Inventory.Api/Dockerfile
             repository: shopdemo-inventory
             task_family: shopdemo-inventory
             container_name: inventory-api
           - service: analytics
-            dockerfile: Aspire/ShopDemo.Analytics.Api/Dockerfile
+            dockerfile: Source/Aspire/ShopDemo.Analytics.Api/Dockerfile
             repository: shopdemo-analytics
             task_family: shopdemo-analytics
             container_name: analytics-api
           - service: mcp
-            dockerfile: AI/ShopDemo.Mcp.Api/Dockerfile
+            dockerfile: Source/AI/ShopDemo.Mcp.Api/Dockerfile
             repository: shopdemo-mcp
             task_family: shopdemo-mcp
             container_name: mcp-api
@@ -126,7 +126,7 @@ jobs:
           ECR_REGISTRY: ${{ steps.ecr.outputs.registry }}
         run: |
           docker build -f ${{ matrix.dockerfile }} \
-            -t "$ECR_REGISTRY/${{ matrix.repository }}:${{ github.sha }}" .
+            -t "$ECR_REGISTRY/${{ matrix.repository }}:${{ github.sha }}" Source
           docker push "$ECR_REGISTRY/${{ matrix.repository }}:${{ github.sha }}"
 
       - name: Deploy ECS service with new image and config

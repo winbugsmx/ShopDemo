@@ -67,7 +67,7 @@ flowchart TB
 
 ## 4. Specs y documentación existente
 
-Los archivos `spec-driven/specs/*/SPEC.md` **no duplican** los PDFs largos del curso: enlazan a `docs/**/REQUERIMIENTOS` e `IMPLEMENTACION` y añaden criterios verificables para el agente.
+Los archivos `spec-driven/specs/*/SPEC.md` **no duplican** los PDFs largos del curso: enlazan a `Documentación del Proyecto/**/REQUERIMIENTOS` e `IMPLEMENTACION` y añaden criterios verificables para el agente.
 
 ---
 

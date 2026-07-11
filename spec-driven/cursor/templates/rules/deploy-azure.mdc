@@ -1,13 +1,13 @@
 ---
 description: Azure deployment (ACA, AKS, ACR) — use only for Azure tasks
-globs: docs/despliegue/azure/**/*
+globs: Documentación del Proyecto/despliegue/azure/**/*
 alwaysApply: false
 ---
 
 # Azure deploy
 
 - Spec: `spec-driven/specs/06-deploy-azure/SPEC.md`
-- Guides: `docs/despliegue/azure/`, `docs/despliegue/aks/`, `docs/integracion-ia/IMPLEMENTACION-DESPLIEGUE-MCP-AZURE.md`
+- Guides: `Documentación del Proyecto/despliegue/azure/`, `Documentación del Proyecto/despliegue/aks/`, `Documentación del Proyecto/integracion-ia/IMPLEMENTACION-DESPLIEGUE-MCP-AZURE.md`
 - Use `az` CLI and Portal steps from implementation docs.
 - Container apps: `ca-shopdemo-*`. MCP: `ca-shopdemo-mcp`.
 - Do not use `aws` CLI in this context.

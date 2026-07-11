@@ -65,14 +65,14 @@ docker-compose.override.yml
 k8s/secrets.yaml
 
 # Azure deploy scripts — configuración local con secretos
-scripts/azure/.env.azure
+Source/scripts/azure/.env.azure
 
 # AWS deploy scripts
-scripts/aws/.env.aws
-scripts/aws/.deploy-state.json
+Source/scripts/aws/.env.aws
+Source/scripts/aws/.deploy-state.json
 
 # Docs tooling (mermaid-cli)
-scripts/docs/node_modules/
+Source/scripts/docs/node_modules/
 
 # Spec-driven — archivos locales activados por el alumno (pueden contener URLs/secretos)
 CLAUDE.local.md

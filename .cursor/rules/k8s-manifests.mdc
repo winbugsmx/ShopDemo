@@ -32,6 +32,6 @@ Script: `APPLY_INFRA=true bash .github/scripts/apply-k8s-manifests.sh k8s {local
 
 ## Al editar manifiestos
 
-Actualizar también: [k8s/README.md](../../k8s/README.md), guías en `docs/despliegue/{kubernetes,aks,eks}/`, [ALCANCE-LAB-RELEASE.md](../../docs/despliegue/ALCANCE-LAB-RELEASE.md).
+Actualizar también: [k8s/README.md](../../k8s/README.md), guías en `Documentación del Proyecto/despliegue/{kubernetes,aks,eks}/`, [ALCANCE-LAB-RELEASE.md](../../Documentación del Proyecto/despliegue/ALCANCE-LAB-RELEASE.md).
 
 Probes: `/health` (readiness), `/alive` (liveness). Namespace: `shopdemo`.

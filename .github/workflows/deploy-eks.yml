@@ -24,12 +24,12 @@ on:
   push:
     branches: [master]
     paths:
-      - 'Catalog/**'
-      - 'Orders/**'
-      - 'Inventory/**'
-      - 'Aspire/ShopDemo.Analytics.Api/**'
-      - 'AI/ShopDemo.Mcp.Api/**'
-      - 'ShopDemo.Shared/**'
+      - 'Source/Catalog/**'
+      - 'Source/Orders/**'
+      - 'Source/Inventory/**'
+      - 'Source/Aspire/ShopDemo.Analytics.Api/**'
+      - 'Source/AI/ShopDemo.Mcp.Api/**'
+      - 'Source/ShopDemo.Shared/**'
       - 'k8s/**'
       - '.github/workflows/deploy-eks.yml'
       - '.github/scripts/**'
@@ -51,12 +51,12 @@ jobs:
         with:
           filters: |
             apps:
-              - 'Catalog/**'
-              - 'Orders/**'
-              - 'Inventory/**'
-              - 'Aspire/ShopDemo.Analytics.Api/**'
-              - 'AI/ShopDemo.Mcp.Api/**'
-              - 'ShopDemo.Shared/**'
+              - 'Source/Catalog/**'
+              - 'Source/Orders/**'
+              - 'Source/Inventory/**'
+              - 'Source/Aspire/ShopDemo.Analytics.Api/**'
+              - 'Source/AI/ShopDemo.Mcp.Api/**'
+              - 'Source/ShopDemo.Shared/**'
             k8s:
               - 'k8s/**'
 
@@ -184,27 +184,27 @@ jobs:
       matrix:
         include:
           - service: catalog
-            dockerfile: Catalog/ShopDemo.Catalog.Api/Dockerfile
+            dockerfile: Source/Catalog/ShopDemo.Catalog.Api/Dockerfile
             repository: shopdemo-catalog
             deployment: shopdemo-catalog
             container: catalog-api
           - service: orders
-            dockerfile: Orders/ShopDemo.Orders.Api/Dockerfile
+            dockerfile: Source/Orders/ShopDemo.Orders.Api/Dockerfile
             repository: shopdemo-orders
             deployment: shopdemo-orders
             container: orders-api
           - service: inventory
-            dockerfile: Inventory/ShopDemo.Inventory.Api/Dockerfile
+            dockerfile: Source/Inventory/ShopDemo.Inventory.Api/Dockerfile
             repository: shopdemo-inventory
             deployment: shopdemo-inventory
             container: inventory-api
           - service: analytics
-            dockerfile: Aspire/ShopDemo.Analytics.Api/Dockerfile
+            dockerfile: Source/Aspire/ShopDemo.Analytics.Api/Dockerfile
             repository: shopdemo-analytics
             deployment: shopdemo-analytics
             container: analytics-api
           - service: mcp
-            dockerfile: AI/ShopDemo.Mcp.Api/Dockerfile
+            dockerfile: Source/AI/ShopDemo.Mcp.Api/Dockerfile
             repository: shopdemo-mcp
             deployment: shopdemo-mcp
             container: mcp-api
@@ -252,7 +252,7 @@ jobs:
           ECR_REGISTRY: ${{ steps.ecr.outputs.registry }}
         run: |
           IMAGE="$ECR_REGISTRY/${{ matrix.repository }}:${{ github.sha }}"
-          docker build -f ${{ matrix.dockerfile }} -t "$IMAGE" -t "$ECR_REGISTRY/${{ matrix.repository }}:latest" .
+          docker build -f ${{ matrix.dockerfile }} -t "$IMAGE" -t "$ECR_REGISTRY/${{ matrix.repository }}:latest" Source
           docker push "$IMAGE"
           docker push "$ECR_REGISTRY/${{ matrix.repository }}:latest"
           echo "IMAGE=$IMAGE" >> "$GITHUB_ENV"

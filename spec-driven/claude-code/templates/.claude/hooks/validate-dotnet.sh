@@ -9,4 +9,4 @@ if ! command -v dotnet >/dev/null 2>&1; then
   exit 0
 fi
 
-dotnet build ShopDemo.slnx --no-restore -v q 2>/dev/null || dotnet build ShopDemo.slnx -v q
+dotnet build Source/ShopDemo.slnx --no-restore -v q 2>/dev/null || dotnet build Source/ShopDemo.slnx -v q

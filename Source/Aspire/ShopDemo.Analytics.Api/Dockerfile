@@ -1,0 +1,24 @@
+FROM mcr.microsoft.com/dotnet/aspnet:10.0 AS base
+WORKDIR /app
+EXPOSE 8080
+ENV ASPNETCORE_URLS=http://+:8080
+
+FROM mcr.microsoft.com/dotnet/sdk:10.0 AS build
+ARG BUILD_CONFIGURATION=Release
+WORKDIR /src
+
+COPY ["Source/Aspire/ShopDemo.Analytics.Api/ShopDemo.Analytics.Api.csproj", "Source/Aspire/ShopDemo.Analytics.Api/"]
+COPY ["Source/Aspire/ShopDemo.ServiceDefaults/ShopDemo.ServiceDefaults.csproj", "Source/Aspire/ShopDemo.ServiceDefaults/"]
+COPY ["Source/ShopDemo.Shared/ShopDemo.Shared.csproj", "Source/ShopDemo.Shared/"]
+
+RUN dotnet restore "Source/Aspire/ShopDemo.Analytics.Api/ShopDemo.Analytics.Api.csproj"
+
+COPY . .
+WORKDIR "/src/Aspire/ShopDemo.Analytics.Api"
+RUN dotnet publish -c $BUILD_CONFIGURATION -o /app/publish /p:UseAppHost=false --no-restore
+
+FROM base AS final
+WORKDIR /app
+COPY --from=build /app/publish .
+USER app
+ENTRYPOINT ["dotnet", "ShopDemo.Analytics.Api.dll"]

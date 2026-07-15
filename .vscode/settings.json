@@ -1,0 +1,6 @@
+{
+  "markdown.mermaid.enablePreview": true,
+  "markdown.preview.securityLevel": "allowInsecureLocalContent",
+  "markdown-preview-enhanced.enableTypographer": false,
+  "markdown-preview-enhanced.mermaidTheme": "default"
+}
